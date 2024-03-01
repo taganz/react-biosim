@@ -12,6 +12,7 @@ import RectangleReproductionArea from "@/simulation/world/areas/reproduction/Rec
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
 import RectangleHealthArea from "@/simulation/world/areas/health/RectangleHealthArea";
 import EllipseHealthArea from "@/simulation/world/areas/health/EllipseHealthArea";
+import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 
 const defaultX = 0;
 const defaultY = 0;
@@ -78,6 +79,18 @@ const addPresets: Record<string, MapPainterAddObjectPreset> = {
         1
       ),
   },
+  rectangleSpawn: {
+    name: "Rectangle Spawn",
+    create: () =>
+      new RectangleSpawnArea(
+        defaultX,
+        defaultY,
+        defaultWidth,
+        defaultHeight,
+        true
+      ),
+  },
+
 };
 
 export default function MapDesignerFooter() {
