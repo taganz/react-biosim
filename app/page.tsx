@@ -60,7 +60,14 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={6}>
-                  Source code:{" "}
+                  Source code :{" "}
+                  <a
+                    href="https://github.com/taganz/react-biosim"
+                    target="_blank"
+                  >
+                    https://github.com/taganz/react-biosim
+                  </a>
+                  <br></br>A fork from:{" "}
                   <a
                     href="https://github.com/carlo697/react-biosim"
                     target="_blank"
