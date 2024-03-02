@@ -56,9 +56,8 @@ export default function SimulationCanvas({ className }: Props) {
 
        // RD 1/3/24  -- see also World
       world.populationStrategy = new AsexualZonePopulation(); 
-      world.xrPopulate = 0.8; 
-      world.yrPopulate = 0.8;
-      world.initialPopulation = initialPopulation;
+      //world.initialPopulation = initialPopulation;
+      world.initialPopulation = 500;
       //world.populationStrategy = new AsexualRandomPopulation();
 
       world.selectionMethod = new InsideReproductionAreaSelection();
@@ -94,7 +93,8 @@ export default function SimulationCanvas({ className }: Props) {
 
     applyInitialValues(world);
 
-    world.objects = [
+
+    const objectsPredef1 = [
       // A reproduction zone at the center
       new RectangleReproductionArea(0.25, 0.25, 0.5, 0.5, true),
       // A map divided in two sections by 5 squares
@@ -105,8 +105,24 @@ export default function SimulationCanvas({ className }: Props) {
       new RectangleObject(0.8, 0.8, 0.2, 0.2),
       // A spawn zone at the center
       new RectangleSpawnArea(0.4, 0.4, 0.2, 0.2, true),
+    ];
+
+    
+    const objectsPredef2 = [
+      // A spawn zone at top left
+      new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
+      // A reproduction zone at  center
+      new RectangleReproductionArea(0.3, 0.6, 0.2, 0.4, true),
+      // A map divided at bottom by 5 columns
+      new RectangleObject(0.1, 0.6, 0.04, 0.4),
+      new RectangleObject(0.3, 0.6, 0.04, 0.4),
+      new RectangleObject(0.5, 0.6, 0.04, 0.4),
+      new RectangleObject(0.7, 0.6, 0.04, 0.4),
+      new RectangleObject(0.9, 0.6, 0.04, 0.4),
       
     ];
+
+    world.objects = objectsPredef2;
 
     // Initialize world and start simulation
     world.initializeWorld(true);
