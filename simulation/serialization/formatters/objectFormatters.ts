@@ -5,6 +5,7 @@ import { DataFormatter } from "./DataFormatter";
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
 import RectangleHealthArea from "@/simulation/world/areas/health/RectangleHealthArea";
 import EllipseHealthArea from "@/simulation/world/areas/health/EllipseHealthArea";
+import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 
 const objectFormatters: {
   [key: string]: DataFormatter<any, { [key: string]: any }>;
@@ -119,6 +120,22 @@ const objectFormatters: {
       );
     },
   },
+
+  RectangleSpawnArea: {
+    serialize({ x, y, width, height, relative }: RectangleSpawnArea) {
+      return { x, y, width, height, relative };
+    },
+    deserialize(data): RectangleSpawnArea {
+      return new RectangleSpawnArea(
+        data.x,
+        data.y,
+        data.width,
+        data.height,
+        data.relative
+      );
+    },
+  },
+
 };
 
 export default objectFormatters;

@@ -12,8 +12,9 @@ import RectangleReproductionArea from "@/simulation/world/areas/reproduction/Rec
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
 import RectangleHealthArea from "@/simulation/world/areas/health/RectangleHealthArea";
 import EllipseHealthArea from "@/simulation/world/areas/health/EllipseHealthArea";
-import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
+import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";  // RD
 
+// default position and size for objects when created
 const defaultX = 0;
 const defaultY = 0;
 const defaultWidth = 0.2;
@@ -24,6 +25,7 @@ type MapPainterAddObjectPreset = {
   create: () => WorldObject;
 };
 
+// select input content
 const addPresets: Record<string, MapPainterAddObjectPreset> = {
   rectangle: {
     name: "Rectangle",
