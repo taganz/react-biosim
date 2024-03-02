@@ -6,13 +6,27 @@ import PopulationStrategy from "./PopulationStrategy";
 export default class AsexualZonePopulation implements PopulationStrategy {
   populate(world: World, parents?: Creature[]): Creature[] {
     const creatures: Creature[] = [];
-    const pos : number[] = world.clampWorld(world.xrPopulate * world.size, world.yrPopulate * world.size);
+    let pos : [number, number] = [0.5, 0.5];
+
+    // get spawn zone
+    for (
+      let objectIndex = 0;
+      objectIndex < world.objects.length;
+      objectIndex++
+      ) {
+      const obj = world.objects[objectIndex];
+
+      // Is it a spawn area?
+      if (obj.areaType === 2) {
+        pos = world.clampWorld((obj.x + obj.width/2) * world.size, (obj.y + obj.height/2) * world.size);
+        break;
+      }
+    }
     
-    console.log("populate - world.initialPopulation", world.initialPopulation);
+    
     // First generation
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
-        console.log("populate-", i);
         // Generate the creature
         //let position = world.getRandomAvailablePositionDeepCheck(creatures);
         let position = world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1]);

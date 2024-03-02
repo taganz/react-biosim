@@ -1,9 +1,11 @@
 "use client";
 
-import AsexualRandomPopulation from "@/simulation/creature/population/AsexualRandomPopulation";
+import AsexualZonePopulation from "@/simulation/creature/population/AsexualZonePopulation";
+//import AsexualRandomPopulation from "@/simulation/creature/population/AsexualRandomPopulation";
 import InsideReproductionAreaSelection from "@/simulation/creature/selection/InsideReproductionAreaSelection";
 import World from "@/simulation/world/World";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
+import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
@@ -51,8 +53,14 @@ export default function SimulationCanvas({ className }: Props) {
       world.actions.loadFromList(enabledActions);
 
       // Population
+
+       // RD 1/3/24  -- see also World
+      world.populationStrategy = new AsexualZonePopulation(); 
+      world.xrPopulate = 0.8; 
+      world.yrPopulate = 0.8;
       world.initialPopulation = initialPopulation;
-      world.populationStrategy = new AsexualRandomPopulation();
+      //world.populationStrategy = new AsexualRandomPopulation();
+
       world.selectionMethod = new InsideReproductionAreaSelection();
 
       // Neural networks
@@ -95,6 +103,9 @@ export default function SimulationCanvas({ className }: Props) {
       new RectangleObject(0.4, 0.4, 0.2, 0.2),
       new RectangleObject(0.6, 0.6, 0.2, 0.2),
       new RectangleObject(0.8, 0.8, 0.2, 0.2),
+      // A spawn zone at the center
+      new RectangleSpawnArea(0.4, 0.4, 0.2, 0.2, true),
+      
     ];
 
     // Initialize world and start simulation

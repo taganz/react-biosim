@@ -1,7 +1,7 @@
 import CreatureActions from "../creature/actions/CreatureActions";
 import Creature from "../creature/Creature";
 import { MutationMode } from "../creature/genome/MutationMode";
-import AsexualRandomPopulation from "../creature/population/AsexualRandomPopulation";
+//import AsexualRandomPopulation from "../creature/population/AsexualRandomPopulation";
 import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
 import EastWallSelection from "../creature/selection/EastWallSelection";
@@ -62,11 +62,11 @@ export default class World {
   totalTime: number = 0;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
 
-  // RD 1/3/24
+  // RD 1/3/24  -- see also SimulationCanvas
   populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
   //populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
-  xrPopulate = 0.5; 
-  yrPopulate = 0.5;
+  xrPopulate = 0.3; 
+  yrPopulate = 0.3;
 
   selectionMethod: SelectionMethod = new EastWallSelection();
 
