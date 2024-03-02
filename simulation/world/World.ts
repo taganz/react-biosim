@@ -2,6 +2,7 @@ import CreatureActions from "../creature/actions/CreatureActions";
 import Creature from "../creature/Creature";
 import { MutationMode } from "../creature/genome/MutationMode";
 import AsexualRandomPopulation from "../creature/population/AsexualRandomPopulation";
+import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
 import EastWallSelection from "../creature/selection/EastWallSelection";
 import SelectionMethod from "../creature/selection/SelectionMethod";
@@ -22,6 +23,8 @@ export const colors = {
   obstacle: "rgb(60, 60, 60)",
   healing: "rgba(0,255,0, 0.1)",
   danger: "rgba(255,0,0, 0.1)",
+  spawn: "rgba(255, 255, 0, 0.1)",
+
 };
 
 export default class World {
@@ -59,7 +62,12 @@ export default class World {
   totalTime: number = 0;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
 
-  populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
+  // RD 1/3/24
+  populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
+  //populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
+  xrPopulate = 0.5; 
+  yrPopulate = 0.5;
+
   selectionMethod: SelectionMethod = new EastWallSelection();
 
   events: EventTarget = new EventTarget();
@@ -415,6 +423,44 @@ export default class World {
     } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
 
     return position;
+  }
+
+
+  
+  // RD 25/2/24, x,y in [0.1]
+        // sistema que vagi trobant posicions lliures entorn a x, y
+        // si son 1000 fer un quadrat de 30 x 30 centrat en x, y 
+        // anar provant aqui dins
+        // algun sistema de que no es pengi. si no troba llocs lliure ampliar el quadrat
+  public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number): [number, number] {
+    // Generate a position until it corresponds to an empty tile
+    let position: [number, number];
+    let tileRange = Math.sqrt(this.initialPopulation) * 1.1;
+    let warning = this.initialPopulation * 1.5; // basic infinite loop prevention
+    do {
+      if (warning-- == 0) {
+        console.warn("getCenteredAvailablePositionDeepCheck -- warning == 0", tileRange, this.initialPopulation);
+        tileRange *= 1.1;
+        warning = this.initialPopulation * 1.5;
+      }
+      position = [
+        Math.floor(x + (Math.random() * 2 - 1) * tileRange),
+        Math.floor(y + (Math.random() * 2 - 1) * tileRange),
+      ];
+      position = this.clampWorld(position[0], position[1]);
+      //console.log("warning: ", warning, "position ", position);
+    } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
+
+    return position;
+  }
+
+
+
+  // RD 25/2/24  
+  public clampWorld(x: number, y: number): [number, number] {
+    const clampedX = Math.min(Math.max(x, 0), this.size-1);
+    const clampedY = Math.min(Math.max(y, 0), this.size-1);
+    return [clampedX, clampedY];
   }
 
   public isTileEmptyDeepCheck(
