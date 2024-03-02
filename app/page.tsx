@@ -79,7 +79,7 @@ export default function Home() {
                     href="https://www.youtube.com/watch?v=N3tRFayqVtk"
                     target="_blank"
                   >
-                    "I programmed some creatures. They Evolved"
+                    &apos;I programmed some creatures. They Evolved&apos;;
                   </a>
                   , by davidrandallmiller.
                 </TabPanel>
