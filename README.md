@@ -1,7 +1,41 @@
-# What is this
+# Evolution simulator
+
+This is a tool to simulate evolution and natural selection
+
+## What you will see in this simulation
+
+In this simulation, you will see how creatures evolve.
+The creatures have a "brain" that is determined by their genome.
+The "brain" determines how the creatures move. Since the genome is random at the beginning, you will see that the creatures move unpredictably.
+After a few generations, you will see how "natural selection" causes the creatures' brains to "adapt" to maximize their chances of survival.
+
+## How it works
+
+The simulation will start on its own.
+You will see generations of creatures succeeding.
+In each generation, the following occurs:
+- Creatures of different species are born (with random genomes).
+- They move according to their "brain."
+- Generations last for a certain number of steps.
+- When the generation ends, creatures that are not in the reproduction zone die.
+- The survivors reproduce, passing their genome to their descendants. Mutations can occur during reproduction.
+- And the next generation begins.
+
+## What to observe
+
+In each generation, there is a percentage of survivors. You can see this in the status bar.
+In the "Stats" tab, you can see how the percentage of survival changes.
+
+## How to experiment
+
+In the "map" tab, you can change the distribution of obstacles, the survival zone, and the spawn zone.
+
+## Credits
 
 Source code : https://github.com/taganz/react-biosim
+
 A fork from: https://github.com/carlo697/react-biosim
+
 Based on the video: "I programmed some creatures. They Evolved", by davidrandallmiller.
 
 ## Changes at taganz version
