@@ -74,6 +74,14 @@ export default function Home() {
                   >
                     https://github.com/carlo697/react-biosim
                   </a>
+                  <br></br>Based on the video:{" "}
+                  <a
+                    href="https://www.youtube.com/watch?v=N3tRFayqVtk"
+                    target="_blank"
+                  >
+                    "I programmed some creatures. They Evolved"
+                  </a>
+                  , by davidrandallmiller.
                 </TabPanel>
               </Tabs>
             </div>
