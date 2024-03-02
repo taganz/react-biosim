@@ -1,3 +1,4 @@
+import Creature from "@/simulation/creature/Creature";
 import { lerp } from "../../helpers/helpers";
 import World, { colors } from "../World";
 import WorldObject from "../WorldObject";
@@ -28,6 +29,13 @@ export default class MovingRectangleObstacle implements WorldObject {
     } else {
       this.setWorldTransform(x, y, width, height);
     }
+  }
+  clone(): WorldObject {
+    throw new Error("Method not implemented.");
+  }
+  areaType?: number | undefined;
+  areaEffectOnCreature?(creature: Creature): void {
+    throw new Error("Method not implemented.");
   }
 
   computePixels() {
