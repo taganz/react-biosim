@@ -1,7 +1,7 @@
 import JotaiProvider from "@/components/providers/JotaiProvider";
 import "@/styles/globals.scss";
 import Script from 'next/script'
-
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export const metadata = {
   title: "react-biosim",
@@ -15,6 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      { /* Microsoft Clarity tag */ }
       <Script
         id="clarity2"
         strategy="afterInteractive"
@@ -30,6 +31,8 @@ export default function RootLayout({
       <body>
         <JotaiProvider>{children}</JotaiProvider>
       </body>
+      { /* Google Analytics tag */ }
+      <GoogleAnalytics  gaId ="G-4GMMLPGZ7Q" />
     </html>
   );
 }
