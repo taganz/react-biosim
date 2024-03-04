@@ -40,15 +40,6 @@ export default class MovingRectangleObstacle implements WorldObject {
     throw new Error("Method not implemented.");
   }
 
-  clone(): WorldObject {
-    throw new Error("Method not implemented.");
-  }
-
-  areaType?: number | undefined;
-  areaEffectOnCreature?(creature: Creature): void {
-    throw new Error("Method not implemented.");
-  }
-
   computePixels() {
     throw new Error("Method not implemented.");
   }
