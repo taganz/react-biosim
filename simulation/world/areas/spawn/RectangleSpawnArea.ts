@@ -5,6 +5,9 @@ import SpawnArea from "./SpawnArea";
 export default class RectangleSpawnArea extends SpawnArea(
   RectangleObject
 ) {
+
+  name = "RectangleSpawnArea";
+
   constructor(
     x: number,
     y: number,
