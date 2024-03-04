@@ -2,13 +2,18 @@ import shuffle from "lodash.shuffle";
 import World from "../../world/World";
 import Creature from "../Creature";
 import PopulationStrategy from "./PopulationStrategy";
+import WorldObject from "@/simulation/world/WorldObject";
 
+// if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class AsexualZonePopulation implements PopulationStrategy {
   populate(world: World, parents?: Creature[]): Creature[] {
     const creatures: Creature[] = [];
     let pos : [number, number] = [0.5, 0.5];
-
-    // get spawn zone
+    let zonePopulation : boolean = false;
+    let halfWidth : number = 0;
+    let halfHeight : number = 0;
+     
+    // if a spawn zone exists will use zone population
     for (
       let objectIndex = 0;
       objectIndex < world.objects.length;
@@ -18,7 +23,10 @@ export default class AsexualZonePopulation implements PopulationStrategy {
 
       // Is it a spawn area?
       if (obj.areaType === 2) {
-        pos = world.clampWorld((obj.x + obj.width/2) * world.size, (obj.y + obj.height/2) * world.size);
+        zonePopulation = true;
+        pos = world.clampWorld((obj.x + obj.width/2) * world.size, (obj.y + obj.height/2) * world.size);  // rectangle center
+        halfWidth = obj.width/2 * world.size;
+        halfHeight = obj.height/2 * world.size;
         break;
       }
     }
@@ -28,8 +36,12 @@ export default class AsexualZonePopulation implements PopulationStrategy {
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
         // Generate the creature
-        //let position = world.getRandomAvailablePositionDeepCheck(creatures);
-        let position = world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1]);
+        if (zonePopulation == false) {
+          var position = world.getRandomAvailablePositionDeepCheck(creatures);
+        }
+        else {
+          var position = world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight);
+        }
         
         const creature = new Creature(world, position);
         creatures.push(creature);
@@ -55,8 +67,12 @@ export default class AsexualZonePopulation implements PopulationStrategy {
 
             // Produce a child
             const creature = parent.reproduce();
-            //creature.position = world.getRandomAvailablePositionDeepCheck(creatures);
-            creature.position =  world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1]);
+            if (zonePopulation == false) {
+              creature.position = world.getRandomAvailablePositionDeepCheck(creatures);
+            }
+            else {
+              creature.position =  world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight);
+            }
             creatures.push(creature);
           }
         }

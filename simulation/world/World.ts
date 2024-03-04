@@ -427,25 +427,29 @@ export default class World {
 
 
   
-  // RD 25/2/24, x,y in [0.1]
-        // sistema que vagi trobant posicions lliures entorn a x, y
-        // si son 1000 fer un quadrat de 30 x 30 centrat en x, y 
-        // anar provant aqui dins
-        // algun sistema de que no es pengi. si no troba llocs lliure ampliar el quadrat
-  public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number): [number, number] {
+  // RD 
+  public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number, hw: number, hh: number): [number, number] {
     // Generate a position until it corresponds to an empty tile
     let position: [number, number];
-    let tileRange = Math.sqrt(this.initialPopulation) * 1.1;
+    let hw2 : number = hw;
+    let hh2 : number = hh;
+    // if population doesn't fit inside the spawn area, make area bigger
+    // note: won't work well if rectangle is partially outside the canvas?
+    if (hw2 * hh2 * 4 < this.initialPopulation * 1.3) {
+        hw2 = Math.sqrt(this.initialPopulation * hw2 / hh2);
+        hh2 = Math.sqrt(this.initialPopulation * hh2 / hw2);
+    }
     let warning = this.initialPopulation * 1.5; // basic infinite loop prevention
     do {
       if (warning-- == 0) {
-        console.warn("getCenteredAvailablePositionDeepCheck -- warning == 0", tileRange, this.initialPopulation);
-        tileRange *= 1.1;
+        console.warn("getCenteredAvailablePositionDeepCheck -- warning == 0", hw2, hh2, this.initialPopulation);
+        hw2 *= 1.3;
+        hh2 *= 1.3;
         warning = this.initialPopulation * 1.5;
       }
       position = [
-        Math.floor(x + (Math.random() * 2 - 1) * tileRange),
-        Math.floor(y + (Math.random() * 2 - 1) * tileRange),
+        Math.floor(x + (Math.random() * 2 - 1) * hw2),
+        Math.floor(y + (Math.random() * 2 - 1) * hh2),
       ];
       position = this.clampWorld(position[0], position[1]);
       //console.log("warning: ", warning, "position ", position);
