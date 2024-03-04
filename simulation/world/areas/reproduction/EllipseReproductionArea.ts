@@ -5,6 +5,8 @@ import ReproductionArea from "./ReproductionArea";
 export default class EllipseReproductionArea extends ReproductionArea(
   EllipseObject
 ) {
+  name = "EllipseReproductionArea";
+
   constructor(
     x: number,
     y: number,

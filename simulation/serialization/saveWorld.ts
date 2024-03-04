@@ -51,7 +51,7 @@ export function serializeObjects(objects: WorldObject[]) {
     const obj = objects[objectIndex];
 
     // Find the formatter
-    const className: string = Object.getPrototypeOf(obj).constructor.name;
+    const className: string = obj.name;
     const formatter = objectFormatters[className];
     if (formatter) {
       // If the formatter was found, serialize the object

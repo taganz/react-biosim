@@ -4,6 +4,8 @@ import HealthAreaMixin from "./HealthArea";
 export default class RectangleHealthArea extends HealthAreaMixin(
   RectangleObject
 ) {
+  name = "RectangleHealthArea";
+
   constructor(
     x: number,
     y: number,

@@ -9,7 +9,6 @@ import {
 import Button from "@/components/global/Button";
 import { useCallback, useEffect } from "react";
 import { HealthArea } from "@/simulation/world/areas/health/HealthArea";
-import { getName } from "@/helpers/worldObjects";
 import { FaClone, FaTrash } from "react-icons/fa";
 
 export default function MapDesignerLayerProperties() {
@@ -103,7 +102,7 @@ export default function MapDesignerLayerProperties() {
       {selectedObject && (
         <>
           <h4>
-            <strong>Type:</strong> {getName(selectedObject)}
+            <strong>Type:</strong> {selectedObject.name}
           </h4>
 
           <div className="grid gap-4 sm:grid-cols-2">

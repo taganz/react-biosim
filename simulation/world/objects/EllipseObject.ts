@@ -2,6 +2,8 @@ import { colors } from "../World";
 import WorldObject from "../WorldObject";
 
 export default class EllipseObject implements WorldObject {
+  name = "EllipseObject";
+
   pixels: [number, number][] = [];
 
   worldX: number = 0;

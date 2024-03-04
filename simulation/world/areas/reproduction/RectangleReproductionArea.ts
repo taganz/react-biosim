@@ -5,6 +5,8 @@ import ReproductionArea from "./ReproductionArea";
 export default class RectangleReproductionArea extends ReproductionArea(
   RectangleObject
 ) {
+  name = "RectangleReproductionArea";
+
   constructor(
     x: number,
     y: number,

@@ -11,7 +11,6 @@ import {
 } from "../../store/mapDesignerAtoms";
 import classNames from "classnames";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
-import { getName } from "@/helpers/worldObjects";
 
 interface Props {
   index: number;
@@ -77,7 +76,7 @@ export default function MapDesignerLayer({ index, obj }: Props) {
       <button className="flex w-full items-center gap-2" onClick={handleClick}>
         <canvas className="aspect-square h-10 bg-white" ref={canvas}></canvas>
 
-        <h4>{getName(obj)}</h4>
+        <h4>{obj.name}</h4>
       </button>
 
       <div className="absolute right-0 top-0 flex h-full flex-col bg-grey-mid">

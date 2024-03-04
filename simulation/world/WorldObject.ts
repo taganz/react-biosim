@@ -1,6 +1,8 @@
 import Creature from "../creature/Creature";
 
 export default interface WorldObject {
+  name: string;
+
   x: number;
   y: number;
   width: number;

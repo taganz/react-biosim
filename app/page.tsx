@@ -10,6 +10,13 @@ import PopulationPanel from "@/components/simulation/tabs/population/PopulationP
 import SavePanel from "@/components/simulation/tabs/save/SavePanel";
 import SettingsPanel from "@/components/simulation/tabs/settings/SettingsPanel";
 import StatsPanel from "@/components/simulation/tabs/stats/StatsPanel";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Evolution Simulation in the Browser",
+  description:
+    'Evolution and natural selection simulation running in the browser. Inspired on the video "I programmed some creatures. They Evolved." (by David R. Miller).',
+};
 
 export default function Home() {
   return (
@@ -17,7 +24,7 @@ export default function Home() {
       <div className="min-h-screen">
         <div className="section-container py-5">
           <h1 className="mb-10 text-center text-4xl lg:text-5xl">
-            Evolution Simulator
+            Evolution Simulation
           </h1>
 
           <div className="grid gap-8 lg:grid-cols-2">

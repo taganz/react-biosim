@@ -2,6 +2,8 @@ import { colors } from "../World";
 import WorldObject from "../WorldObject";
 
 export default class RectangleObject implements WorldObject {
+  name = "RectangleObject";
+
   pixels: [number, number][] = [];
 
   worldX: number = 0;

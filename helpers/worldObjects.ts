@@ -3,10 +3,6 @@ import { Coordinates } from "./coordinates";
 
 export const HANDLE_SIZE = 10;
 
-export function getName(obj: WorldObject) {
-  return Object.getPrototypeOf(obj).constructor.name;
-}
-
 export function getHandles(obj: WorldObject): Coordinates[] {
   const normalizedHandles = [
     { x: obj.x, y: obj.y },

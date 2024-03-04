@@ -2,6 +2,8 @@ import EllipseObject from "../../objects/EllipseObject";
 import HealthAreaMixin from "./HealthArea";
 
 export default class EllipseHealthArea extends HealthAreaMixin(EllipseObject) {
+  name = "EllipseHealthArea";
+
   constructor(
     x: number,
     y: number,
