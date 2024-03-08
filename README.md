@@ -2,13 +2,13 @@
 
 ## Live Demo
 
->  You can test this app [here](https://evolution-simulation-v2.netlify.app/).
+>  You can test this app [here](https://react-biosim.vercel.app/).
 
 ## What is this?
 
-This is a web app (build with TypeScript and React) that runs an evolution and natural selection simulation. This app is inspired on the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)) whose repo is [here](https://github.com/davidrmiller/biosim4).
+This repo is a fork from [this original project](https://github.com/carlo697/react-biosim). 
 
-This repo is actually my second version of this project. The first one you can find here: [js-biosim](https://github.com/carlo697/js-biosim). That version used pure HTML, CSS and TS. Since that made the UI difficult to develop, I made the decision to move it to React and that's how this report was born.
+This is a web app (build with TypeScript and React) that runs an evolution and natural selection simulation. This app is inspired on the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)) whose repo is [here](https://github.com/davidrmiller/biosim4).
 
 The simulation consists of a **map** of 100x100 (by default) squares. Scattered over the map we can find **creatures**. A creature is a colored square that represents an organism in the simulation. Each creature has an int array that is used as its **genome**. Each int in that array is a **gene**. A creature could have a genome of size 4 (meaning it has 4 genes) while other creature in the same simulation could have one of size 16. The genome of a creature gives shape to a simple neural network which dictates how the creature will behave and react.
 
