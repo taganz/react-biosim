@@ -65,8 +65,7 @@ export default class World {
   // RD 1/3/24  -- see also SimulationCanvas
   populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
   //populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
-  xrPopulate = 0.3; 
-  yrPopulate = 0.3;
+
 
   selectionMethod: SelectionMethod = new EastWallSelection();
 

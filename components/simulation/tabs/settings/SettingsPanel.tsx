@@ -13,6 +13,7 @@ import {
   mutationProbabilityAtom,
   worldAtom,
   worldSizeAtom,
+  stepsPerGenAtom,
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
@@ -35,6 +36,7 @@ export default function SettingsPanel() {
   const actions = Object.values(world?.actions.data ?? {});
 
   useSyncAtomWithWorldProperty(worldSizeAtom, (world) => world.size);
+  useSyncAtomWithWorldProperty(stepsPerGenAtom, (world) => world.stepsPerGen);
   useSyncAtomWithWorldProperty(
     initialPopulationAtom,
     (world) => world.initialPopulation
@@ -115,6 +117,7 @@ export default function SettingsPanel() {
               atom={initialPopulationAtom}
               label="Initial population"
             />
+          <NumberInput atom={stepsPerGenAtom} label="Steps per generation" />
           </div>
         </div>
 

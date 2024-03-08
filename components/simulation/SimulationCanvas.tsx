@@ -22,6 +22,7 @@ import {
   restartAtom,
   worldAtom,
   worldSizeAtom,
+  stepsPerGenAtom,
 } from "./store";
 
 interface Props {
@@ -36,6 +37,7 @@ export default function SimulationCanvas({ className }: Props) {
 
   // Initial settings
   const worldSize = useAtomValue(worldSizeAtom);
+  const stepsPerGen = useAtomValue(stepsPerGenAtom);
   const initialPopulation = useAtomValue(initialPopulationAtom);
   const initialGenomeSize = useAtomValue(initialGenomeSizeAtom);
   const maxGenomeSize = useAtomValue(maxGenomeSizeAtom);
@@ -53,6 +55,7 @@ export default function SimulationCanvas({ className }: Props) {
     (world: World) => {
       // Map
       world.size = worldSize;
+      world.stepsPerGen = stepsPerGen;
 
       // Sensors and actions
       world.sensors.loadFromList(enabledSensors);
@@ -79,18 +82,7 @@ export default function SimulationCanvas({ className }: Props) {
       world.geneInsertionDeletionProbability = geneInsertionDeletionProbability;
       world.deletionRatio = 0.5;
     },
-    [
-      enabledActions,
-      enabledSensors,
-      initialGenomeSize,
-      initialPopulation,
-      maxGenomeSize,
-      maxNeurons,
-      mutationMode,
-      mutationProbability,
-      geneInsertionDeletionProbability,
-      worldSize,
-    ]
+    [enabledActions, enabledSensors, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability, worldSize, stepsPerGen]
   );
 
   // Instantiate the world

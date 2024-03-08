@@ -9,6 +9,7 @@ export const restartAtom = atom(false);
 
 // Initial settings
 export const worldSizeAtom = atom(100);
+export const stepsPerGenAtom = atom(450);
 export const initialPopulationAtom = atom(1000);
 export const initialGenomeSizeAtom = atom(4);
 export const maxGenomeSizeAtom = atom(30);
