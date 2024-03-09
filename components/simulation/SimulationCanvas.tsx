@@ -65,10 +65,9 @@ export default function SimulationCanvas({ className }: Props) {
 
        // RD 1/3/24  -- see also World
       world.populationStrategy = new AsexualZonePopulation(); 
-      //world.initialPopulation = initialPopulation;
-      world.initialPopulation = 500;
       //world.populationStrategy = new AsexualRandomPopulation();
-
+      world.initialPopulation = initialPopulation;
+      
       world.selectionMethod = new InsideReproductionAreaSelection();
 
       // Neural networks
@@ -82,7 +81,7 @@ export default function SimulationCanvas({ className }: Props) {
       world.geneInsertionDeletionProbability = geneInsertionDeletionProbability;
       world.deletionRatio = 0.5;
     },
-    [enabledActions, enabledSensors, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability, worldSize, stepsPerGen]
+    [worldSize, stepsPerGen, enabledSensors, enabledActions, initialPopulation, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability]
   );
 
   // Instantiate the world
