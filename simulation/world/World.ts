@@ -39,7 +39,7 @@ export default class World {
   currentStep: number = 0;
   timePerStep: number = 0;
   stepsPerGen: number = 300;
-  immediateSteps: number = 1;
+  immediateSteps: number = 1;    // number of steps to run without redrawing
   initialGenomeSize: number = 20;
   maxGenomeSize: number = 30;
   maxNumberNeurons: number = 5;
@@ -305,7 +305,7 @@ export default class World {
           creature.computeStep();
         }
       }
-      // console.log("step!");
+      //console.log("step ", this.currentStep );
 
       this.currentStep++;
 
@@ -315,14 +315,34 @@ export default class World {
         this.currentGen++;
         await this.startGeneration();
       }
+
     }
 
     this.redraw();
 
+
+    // RD if everybody is dead, wait and restart
+    let someBodyIsAlive = false;
+    for (let i = 0; i < this.currentCreatures.length; i++) {
+      someBodyIsAlive = this.currentCreatures[i].isAlive;
+      if (someBodyIsAlive) {
+        break;
+      }
+    }
+    if (someBodyIsAlive == false) {
+      console.log("All creatures dead. Restarting at step ",this.currentStep )
+      // Small pause
+      await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
+      this.initializeWorld(true);
+      this.resume();
+      return;
+    }
+  
     this.timeoutId = window.setTimeout(
       this.computeStep.bind(this),
       this.timePerStep
     );
+    
   }
 
   private endGeneration(): void {}
@@ -423,9 +443,9 @@ export default class World {
 
     return position;
   }
-
-
   
+  
+
   // RD 
   public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number, hw: number, hh: number): [number, number] {
     // Generate a position until it corresponds to an empty tile
