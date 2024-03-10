@@ -85,6 +85,7 @@ export default function SimulationCanvas({ className }: Props) {
   );
 
   // Instantiate the world
+  // RD 10/3/24 - It seems like it enters here twice when initialized. It enters, destroys the world, and enters again ??
   useEffect(() => {
     // Create world and store it
     const world = new World(canvas.current, 100);
@@ -146,7 +147,7 @@ export default function SimulationCanvas({ className }: Props) {
 
       if (!isPaused) {
         world.startRun();
-      }
+        }
     }
   }, [applyInitialValues, world]);
 
