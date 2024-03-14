@@ -6,6 +6,7 @@ import Footer from "@/components/simulation/footer/Footer";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
 import LoadPanel from "@/components/simulation/tabs/load/LoadPanel";
 import MapPanel from "@/components/simulation/tabs/map/MapPanel";
+import StartPanel from "@/components/simulation/tabs/start/StartPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
 import SavePanel from "@/components/simulation/tabs/save/SavePanel";
 import SettingsPanel from "@/components/simulation/tabs/settings/SettingsPanel";
@@ -33,40 +34,45 @@ export default function Home() {
             <div>
               <Tabs>
                 <TabList>
-                  <Tab index={0}>Population</Tab>
-                  <Tab index={1}>Stats</Tab>
-                  <Tab index={2}>Settings</Tab>
-                  <Tab index={3}>Map</Tab>
-                  <Tab index={4}>Save</Tab>
-                  <Tab index={5}>Load</Tab>
-                  <Tab index={6}>About</Tab>
+                  <Tab index={0}>Start</Tab>
+                  <Tab index={1}>Population</Tab>
+                  <Tab index={2}>Stats</Tab>
+                  <Tab index={3}>Settings</Tab>
+                  <Tab index={4}>Map</Tab>
+                  <Tab index={5}>Save</Tab>
+                  <Tab index={6}>Load</Tab>
+                  <Tab index={7}>About</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
-                  <PopulationPanel />
+                  <StartPanel />
                 </TabPanel>
 
                 <TabPanel index={1}>
-                  <StatsPanel />
+                  <PopulationPanel />
                 </TabPanel>
 
                 <TabPanel index={2}>
-                  <SettingsPanel />
+                  <StatsPanel />
                 </TabPanel>
 
                 <TabPanel index={3}>
-                  <MapPanel />
+                  <SettingsPanel />
                 </TabPanel>
 
                 <TabPanel index={4}>
-                  <SavePanel />
+                  <MapPanel />
                 </TabPanel>
 
                 <TabPanel index={5}>
-                  <LoadPanel />
+                  <SavePanel />
                 </TabPanel>
 
                 <TabPanel index={6}>
+                  <LoadPanel />
+                </TabPanel>
+
+                <TabPanel index={7}>
                   Source code :{" "}
                   <a
                     href="https://github.com/taganz/react-biosim"
@@ -86,7 +92,7 @@ export default function Home() {
                     href="https://www.youtube.com/watch?v=N3tRFayqVtk"
                     target="_blank"
                   >
-                    &apos;I programmed some creatures. They Evolved&apos;;
+                    &apos;I programmed some creatures. They Evolved&apos;
                   </a>
                   , by davidrandallmiller.
                 </TabPanel>
