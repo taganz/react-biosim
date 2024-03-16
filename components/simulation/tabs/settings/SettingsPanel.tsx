@@ -1,6 +1,9 @@
 "use client";
 
 import NumberInput from "@/components/global/inputs/NumberInput";
+import {worldInitialValuesAtom} from "../../store";
+import {worldAtom} from "../../store";
+
 import {
   enabledActionsAtom,
   enabledSensorsAtom,
@@ -11,8 +14,8 @@ import {
   maxNeuronsAtom,
   mutationModeAtom,
   mutationProbabilityAtom,
-  worldAtom,
-  worldSizeAtom,
+  restartAtom,
+  sizeAtom,
   stepsPerGenAtom,
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
@@ -29,46 +32,34 @@ import {
 import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 
 export default function SettingsPanel() {
-  const world = useAtomValue(worldAtom);
-  const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
-  const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
-  const sensors = Object.values(world?.sensors.data ?? {});
-  const actions = Object.values(world?.actions.data ?? {});
+  /*
 
-  useSyncAtomWithWorldProperty(worldSizeAtom, (world) => world.size);
-  useSyncAtomWithWorldProperty(stepsPerGenAtom, (world) => world.stepsPerGen);
-  useSyncAtomWithWorldProperty(
-    initialPopulationAtom,
-    (world) => world.initialPopulation
-  );
-  useSyncAtomWithWorldProperty(
-    initialGenomeSizeAtom,
-    (world) => world.initialGenomeSize
-  );
-  useSyncAtomWithWorldProperty(
-    maxGenomeSizeAtom,
-    (world) => world.maxGenomeSize
-  );
-  useSyncAtomWithWorldProperty(
-    maxNeuronsAtom,
-    (world) => world.maxNumberNeurons
-  );
 
-  useSyncAtomWithWorldProperty(mutationModeAtom, (world) => world.mutationMode);
-  useSyncAtomWithWorldProperty(
-    mutationProbabilityAtom,
-    (world) => world.mutationProbability
-  );
-  useSyncAtomWithWorldProperty(
-    geneInsertionDeletionProbabilityAtom,
-    (world) => world.geneInsertionDeletionProbability
-  );
+
+  const [worldInitialValues, setInitialValueAtom] = useAtom(worldInitialValuesAtom);
+  const [size, setSize] = useAtom(sizeAtom);
+  const [stepsPerGen, setStepsPerGen] = useAtom(stepsPerGenAtom);
+  const [initialPopulation, setInitialPopulation] = useAtom(initialPopulationAtom);
+  const initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
+  const maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
+  const maxNeurons = worldInitialValues.maxNeuronsAtom;
+  const mutationMode = worldInitialValues.mutationModeAtom;
+  const mutationProbability = worldInitialValues.mutationProbabilityAtom;
+  const geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbabilityAtom;
+
+*/
+const world = useAtomValue(worldAtom);
+const sensors = Object.values(world?.sensors.data ?? {});
+const actions = Object.values(world?.actions.data ?? {});
+const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
+const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
 
   useSyncAtomWithWorldProperty(
     enabledSensorsAtom,
     (world) => world.sensors.getList(),
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
+  
   useSyncAtomWithWorldProperty(
     enabledActionsAtom,
     (world) => world.actions.getList(),
@@ -101,7 +92,7 @@ export default function SettingsPanel() {
 
   const getActionLabel = (action: Action) =>
     `${getPrettyName(action.name)} (1 neuron)`;
-
+   
   return (
     <div>
       <p className="mb-2">
@@ -112,11 +103,8 @@ export default function SettingsPanel() {
         <div>
           <h3 className="mb-1 text-2xl font-bold">World</h3>
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput atom={worldSizeAtom} label="World Size" />
-            <NumberInput
-              atom={initialPopulationAtom}
-              label="Initial population"
-            />
+            <NumberInput atom={sizeAtom} label="World Size" />
+            <NumberInput atom={initialPopulationAtom} label="Initial population"/>
           <NumberInput atom={stepsPerGenAtom} label="Steps per generation" />
           </div>
         </div>
@@ -124,10 +112,7 @@ export default function SettingsPanel() {
         <div>
           <h3 className="mb-1 text-2xl font-bold">Neuronal Networks</h3>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput
-              atom={initialGenomeSizeAtom}
-              label="Initial genome size"
-            />
+            <NumberInput atom={initialGenomeSizeAtom} label="Initial genome size"/>
             <NumberInput atom={maxGenomeSizeAtom} label="Max genome size" />
             <NumberInput atom={maxNeuronsAtom} label="Max neurons" />
           </div>

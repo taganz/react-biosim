@@ -9,6 +9,8 @@ import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnAre
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
+import {worldInitialValuesAtom, restartAtom, worldAtom} from "./store";
+import {worldObjectsAtom} from "./store/worldAtoms";
 import {
   enabledActionsAtom,
   enabledSensorsAtom,
@@ -19,9 +21,7 @@ import {
   maxNeuronsAtom,
   mutationModeAtom,
   mutationProbabilityAtom,
-  restartAtom,
-  worldAtom,
-  worldSizeAtom,
+  sizeAtom,
   stepsPerGenAtom,
 } from "./store";
 
@@ -36,25 +36,26 @@ export default function SimulationCanvas({ className }: Props) {
   const [shouldRestart, setShouldRestart] = useAtom(restartAtom);
 
   // Initial settings
-  const worldSize = useAtomValue(worldSizeAtom);
-  const stepsPerGen = useAtomValue(stepsPerGenAtom);
-  const initialPopulation = useAtomValue(initialPopulationAtom);
-  const initialGenomeSize = useAtomValue(initialGenomeSizeAtom);
-  const maxGenomeSize = useAtomValue(maxGenomeSizeAtom);
-  const maxNeurons = useAtomValue(maxNeuronsAtom);
-  const mutationMode = useAtomValue(mutationModeAtom);
-  const mutationProbability = useAtomValue(mutationProbabilityAtom);
-  const geneInsertionDeletionProbability = useAtomValue(
-    geneInsertionDeletionProbabilityAtom
-  );
-  const enabledSensors = useAtomValue(enabledSensorsAtom);
-  const enabledActions = useAtomValue(enabledActionsAtom);
+  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+  const size = worldInitialValues.sizeAtom;
+  const stepsPerGen = worldInitialValues.stepsPerGenAtom;
+  const initialPopulation = worldInitialValues.initialPopulationAtom;
+  const initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
+  const maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
+  const maxNeurons = worldInitialValues.maxNeuronsAtom;
+  const mutationMode = worldInitialValues.mutationModeAtom;
+  const mutationProbability = worldInitialValues.mutationProbabilityAtom;
+  const geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbabilityAtom;
+  const enabledSensors = worldInitialValues.enabledSensorsAtom;
+  const enabledActions = worldInitialValues.enabledActionsAtom;
+  const worldObjects = useAtomValue(worldObjectsAtom);
 
+  
   // Function to set initial values
   const applyInitialValues = useCallback(
     (world: World) => {
       // Map
-      world.size = worldSize;
+      world.size = size;
       world.stepsPerGen = stepsPerGen;
 
       // Sensors and actions
@@ -80,50 +81,24 @@ export default function SimulationCanvas({ className }: Props) {
       world.mutationProbability = mutationProbability;
       world.geneInsertionDeletionProbability = geneInsertionDeletionProbability;
       world.deletionRatio = 0.5;
+
+      // map objects
+      world.objects = worldObjects;
+  
     },
-    [worldSize, stepsPerGen, enabledSensors, enabledActions, initialPopulation, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability]
+    [size, stepsPerGen, enabledSensors, enabledActions, initialPopulation, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability, worldObjects]
   );
 
   // Instantiate the world
   // RD 10/3/24 - It seems like it enters here twice when initialized. It enters, destroys the world, and enters again ??
+  //   -- li falta una dependencia???
   useEffect(() => {
     // Create world and store it
     const world = new World(canvas.current, 100);
     setWorld(world);
 
     applyInitialValues(world);
-
-
-    const objectsPredef1 = [
-      // A reproduction zone at the center
-      new RectangleReproductionArea(0.25, 0.25, 0.5, 0.5, true),
-      // A map divided in two sections by 5 squares
-      new RectangleObject(0, 0, 0.2, 0.2),
-      new RectangleObject(0.2, 0.2, 0.2, 0.2),
-      new RectangleObject(0.4, 0.4, 0.2, 0.2),
-      new RectangleObject(0.6, 0.6, 0.2, 0.2),
-      new RectangleObject(0.8, 0.8, 0.2, 0.2),
-      // A spawn zone at the center
-      new RectangleSpawnArea(0.4, 0.4, 0.2, 0.2, true),
-    ];
-
-    
-    const objectsPredef2 = [
-      // A spawn zone at top left
-      new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
-      // A reproduction zone at  center
-      new RectangleReproductionArea(0.3, 0.6, 0.2, 0.4, true),
-      // A map divided at bottom by 5 columns
-      new RectangleObject(0.1, 0.6, 0.04, 0.4),
-      new RectangleObject(0.3, 0.6, 0.04, 0.4),
-      new RectangleObject(0.5, 0.6, 0.04, 0.4),
-      new RectangleObject(0.7, 0.6, 0.04, 0.4),
-      new RectangleObject(0.9, 0.6, 0.04, 0.4),
-      
-    ];
-
-    world.objects = objectsPredef2;
-
+ 
     // Initialize world and start simulation
     world.initializeWorld(true);
     world.startRun();

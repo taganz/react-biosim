@@ -32,19 +32,30 @@ export default class World {
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  
+  // initial settings - to be set externally
   size: number = 10;
-  initialPopulation: number = 10;
+  stepsPerGen: number = 0;
+  initialPopulation: number = 0;
+  initialGenomeSize: number = 0;
+  maxGenomeSize: number = 0;
+  maxNumberNeurons: number = 0;
+  mutationProbability: number = 0;
+  geneInsertionDeletionProbability: number = 0;
+  sensors: CreatureSensors = new CreatureSensors();
+  actions: CreatureActions = new CreatureActions();
 
+   // World
+   grid: Grid = [];
+   objects: WorldObject[] = [];   // to be set externally
+
+   
+
+  // status
   currentGen: number = 0;
   currentStep: number = 0;
   timePerStep: number = 0;
-  stepsPerGen: number = 300;
   immediateSteps: number = 1;    // number of steps to run without redrawing
-  initialGenomeSize: number = 20;
-  maxGenomeSize: number = 30;
-  maxNumberNeurons: number = 5;
-  mutationProbability: number = 0.01;
-  geneInsertionDeletionProbability: number = 0.005;
   deletionRatio: number = 0.5;
   mutationMode: MutationMode = MutationMode.wholeGene;
   pauseBetweenGenerations: number = 0;
@@ -72,14 +83,9 @@ export default class World {
   events: EventTarget = new EventTarget();
   timeoutId?: number;
 
-  // World
-  grid: Grid = [];
-  objects: WorldObject[] = [];
+ 
 
-  // Sensors and actions
-  sensors: CreatureSensors = new CreatureSensors();
-  actions: CreatureActions = new CreatureActions();
-
+  
   constructor(canvas: HTMLCanvasElement | null, size: number) {
     if (canvas) {
       this.canvas = canvas;
@@ -130,7 +136,7 @@ export default class World {
   private selectAndPopulate(): void {
     if (this.initialPopulation >= this.size * this.size) {
       throw new Error(
-        "The population cannot be greater than the number of available tiles in the world"
+        "The population cannot be greater than the number of available tiles in the world: ".concat(this.initialPopulation.toString(), " vs ", (this.size * this.size).toString())
       );
     }
 
