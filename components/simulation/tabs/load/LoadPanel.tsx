@@ -11,12 +11,32 @@ export default function LoadPanel() {
   const world = useAtomValue(worldAtom);
   const [data, setData] = useState("");
 
-  const handleSave = () => {
+  const handleLoad = () => {
     if (world) {
       loadWorld(world, data);
     }
   };
 
+  const handleLoadFile = (e : any) => {
+    const file = e.target.files[0]; 
+    if (!file) {
+      return;
+    }
+    const fileReader = new FileReader(); 
+    fileReader.readAsText( file ) ; 
+    fileReader.onload  = () => {
+      console.log(fileReader.result); 
+      setData(fileReader.result as string);
+      if (world) {
+        loadWorld(world, data);
+      }
+    }
+    fileReader.onerror = () => {
+      console.log(fileReader.error);
+    } 
+  };
+
+  
   return (
     <div>
       <p className="mb-2">
@@ -31,8 +51,15 @@ export default function LoadPanel() {
         maxRows={20}
       />
 
-      <div className="mt-2 text-center">
-        <Button onClick={handleSave}>Load</Button>
+      {/*<div className="mt-2 text-center">*/}
+      <div className="mt-2">
+        <Button onClick={handleLoad}>Load</Button>
+        <br/><p>Beta:</p><br/>
+        <input 
+          className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:font-semibold"
+          type="file"
+          multiple={false}
+          onChange={handleLoadFile}></input>
       </div>
     </div>
   );
