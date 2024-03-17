@@ -11,6 +11,7 @@ import {
 import { BsArrowsFullscreen, BsFullscreenExit } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { TfiCheckBox } from "react-icons/tfi";
+import {worldObjectsAtom} from "../../store";
 
 export default function MapDesignerHeader() {
   const world = useAtomValue(worldAtom);
@@ -19,12 +20,16 @@ export default function MapDesignerHeader() {
   const [objects, setObjects] = useAtom(mapDesignerObjectsAtom);
   const [isFullscreen, setIsFullscreen] = useAtom(mapDesignerFullscreenAtom);
 
+  const [setWorldObjects, setWorldObjectsAtom] = useAtom(worldObjectsAtom);
+  
+  //RD set objects in world and initialize, store also in atom for further initializations
   const handleUse = () => {
     if (world) {
       const isPaused = world.isPaused;
       world.size = worldSize;
       world.objects = objects.map((obj) => obj.clone());
       world.initializeWorld(true);
+      setWorldObjectsAtom(world.objects);
 
       if (!isPaused) {
         world.startRun();
