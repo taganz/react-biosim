@@ -40,6 +40,7 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
           onChange={(value) => setPauseBetweenSteps(value)}
         >
           <Toggle value={0}>0</Toggle>
+          <Toggle value={10}>10</Toggle>
           <Toggle value={50}>50</Toggle>
           <Toggle value={200}>200</Toggle>
         </ToggleGroup>
