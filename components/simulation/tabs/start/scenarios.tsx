@@ -1,8 +1,13 @@
 import {Option} from "./Dropdown";
 import WorldObject from "@/simulation/world/WorldObject";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
+import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
+import EllipseObject from "@/simulation/world/objects/EllipseObject";
+
+
+// TODO implement missing objects - Health
 
 
 // format for maps recoverd from save files
@@ -14,9 +19,10 @@ type mapFromSaveFile = {
       "width": number,
       "height": number,
       "relative": boolean,
+      "individualPixels"?: boolean;
       "color"?: string
     },
-    "type": "RectangleObject" | "RectangleReproductionArea" | "RectangleSpawnArea",
+    "type": "RectangleObject" | "RectangleReproductionArea" | "RectangleSpawnArea" | "EllipseObject" | "EllipseReproductionArea",
     };
 
 // this reads the exported map cut from a save file
@@ -33,6 +39,12 @@ function convertMapSim (m : mapFromSaveFile[]): WorldObject[] {
         break;
         case "RectangleSpawnArea":
         a.push(new RectangleSpawnArea(d.x, d.y, d.width, d.height, true));
+        break;
+        case "EllipseReproductionArea":
+        a.push(new EllipseReproductionArea(d.x, d.y, d.width, d.height, true));
+        break;
+        case "EllipseObject":
+        a.push(new EllipseObject(d.x, d.y, d.width, d.height, true, true));
         break;
         default: 
         console.error("convertMapSim invalid type ", m[i].type)
@@ -64,7 +76,10 @@ return a;
   ]});
 
 
-  const mapSim9 : mapFromSaveFile[] = [{"data":{"x":0,"y":0.82,"width":0.72,"height":0.18000000000000005,"relative":true},"type":"RectangleReproductionArea"},{"data":{"x":0.59,"y":0.57,"width":0.06000000000000005,"height":0.28000000000000014,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.9,"y":0.6,"width":0.04,"height":0.4,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.06,"y":0.01,"width":0.6599999999999999,"height":0.55,"relative":true},"type":"RectangleSpawnArea"},{"data":{"x":0.38,"y":0.22,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},{"data":{"x":0.25,"y":0.47,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},{"data":{"x":0.66,"y":0.3,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},{"data":{"x":0,"y":0.76,"width":0.5900000000000001,"height":0.09000000000000008,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"}];
+  const mapSim9 : mapFromSaveFile[] = [{"data":{"x":0,"y":0.82,"width":0.72,"height":0.18000000000000005,"relative":true},"type":"RectangleReproductionArea"},{"data":{"x":0.59,"y":0.57,"width":0.06000000000000005,"height":0.28000000000000014,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.9,"y":0.6,"width":0.04,"height":0.4,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.06,"y":0.01,"width":0.6599999999999999,"height":0.55,"relative":true},"type":"RectangleSpawnArea"},
+  {"data":{"x":0.38,"y":0.22,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},
+  {"data":{"x":0.25,"y":0.47,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},
+  {"data":{"x":0.66,"y":0.3,"width":0.2,"height":0.2,"relative":true,"individualPixels":true,"color":"rgb(60, 60, 60)"},"type":"EllipseObject"},{"data":{"x":0,"y":0.76,"width":0.5900000000000001,"height":0.09000000000000008,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"}];
   const mapSim11 : mapFromSaveFile[] = [{"data":{"x":0.41,"y":0.61,"width":0.36000000000000004,"height":0.38,"relative":true},"type":"RectangleSpawnArea"},
   {"data":{"x":0,"y":0,"width":0.3,"height":0.21,"relative":true},"type":"RectangleReproductionArea"},
   {"data":{"x":0.46,"y":0.17,"width":0.11999999999999994,"height":0.04999999999999999,"relative":true},"type":"RectangleReproductionArea"},
