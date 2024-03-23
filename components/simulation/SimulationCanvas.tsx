@@ -142,7 +142,7 @@ export default function SimulationCanvas({ className }: Props) {
         world.startRun();
         }
     }
-  }, [applyInitialValues, world, restartCount]);
+  }, [applyInitialValues, world, restartCount, setRestartCount]);
 
   // Restart the simulation
   useEffect(() => {

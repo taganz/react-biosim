@@ -29,7 +29,7 @@ export default function StatsPanel() {
       //return ((value / initialPopulation) * 100).toFixed(1).toString() + "%";
       return ((value ).toFixed(1).toString());
     },
-    [initialPopulation]
+    []
   );
 
   const generationFormatter = useCallback((value: number) => {

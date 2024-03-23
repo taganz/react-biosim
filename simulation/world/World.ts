@@ -4,7 +4,7 @@ import { MutationMode } from "../creature/genome/MutationMode";
 //import AsexualRandomPopulation from "../creature/population/AsexualRandomPopulation";
 import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
-import EastWallSelection from "../creature/selection/EastWallSelection";
+//import EastWallSelection from "../creature/selection/EastWallSelection";
 import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
 import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
