@@ -5,9 +5,9 @@ import {worldObjectsAtom} from "../../store/worldAtoms";
 
 
 import WorldObject from "@/simulation/world/WorldObject";
-import {Dropdown, Option} from "./Dropdown";
+import {Dropdown, Option} from "../../../global/inputs/Dropdown";
 import { Color } from 'd3';
-import {scenarios, objectLists} from "./scenarios";
+import {scenariosOptions, scenariosObjectLists} from "./scenarios";
 export default function ScenariosSelection () {
     
   const setWorldObjectsAtom = useSetAtom(worldObjectsAtom);
@@ -22,14 +22,14 @@ export default function ScenariosSelection () {
   
   // Función para manejar el cambio de selección
   const handleSelection = (value: string) => {
-        updateObjects(objectLists[parseInt(value)].worldObjects);
+        updateObjects(scenariosObjectLists[parseInt(value)].worldObjects);
     }
     
   
 return (
   <div className="mb-1">
     <h2>Scenario for next simulation: </h2>
-    <Dropdown options={scenarios} onSelect={handleSelection} />
+    <Dropdown options={scenariosOptions} onSelect={handleSelection} />
     <br/>
     <p>You need to restart the simulation for these scenario to work. </p>
   </div>

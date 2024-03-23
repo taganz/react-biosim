@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { worldAtom } from "../../store";
-import { useAtomValue } from "jotai";
+import { worldAtom, restartCountAtom } from "../../store";
+import { useAtom, useAtomValue } from "jotai";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
@@ -17,6 +17,7 @@ export default function StatsPanel() {
   const world = useAtomValue(worldAtom);
   const [data, setData] = useState<SingleGeneration[]>([]);
   const [updates, setUpdates] = useState(0);
+  const restartCount = useAtom(restartCountAtom);
 
   const initialPopulation = useWorldPropertyValue(
     (world) => world.initialPopulation,
@@ -56,7 +57,7 @@ export default function StatsPanel() {
         );
       };
     }
-  }, [onStartGeneration, world]);
+  }, [onStartGeneration, world, restartCount]);
 
   return (
     <div>

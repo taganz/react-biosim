@@ -22,7 +22,10 @@ import {
   mutationModeAtom,
   mutationProbabilityAtom,
   sizeAtom,
+  selectionMethodAtom,
+  populationStrategyAtom,
   stepsPerGenAtom,
+  restartCountAtom
 } from "./store";
 import GreatestDistanceSelection from "@/simulation/creature/selection/GreatestDistanceSelection";
 
@@ -35,10 +38,13 @@ export default function SimulationCanvas({ className }: Props) {
   const [world, setWorld] = useAtom(worldAtom);
 
   const [shouldRestart, setShouldRestart] = useAtom(restartAtom);
+  const [restartCount, setRestartCount] = useAtom(restartCountAtom);
 
   // Initial settings
   const worldInitialValues = useAtomValue(worldInitialValuesAtom);
   const size = worldInitialValues.sizeAtom;
+  const selectionMethod = worldInitialValues.selectionMethod;
+  const populationStrategy = worldInitialValues.populationStrategy;
   const stepsPerGen = worldInitialValues.stepsPerGenAtom;
   const initialPopulation = worldInitialValues.initialPopulationAtom;
   const initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
@@ -66,14 +72,17 @@ export default function SimulationCanvas({ className }: Props) {
       // Population
 
        // RD 1/3/24  -- see also World
-      world.populationStrategy = new AsexualZonePopulation(); 
+      //world.populationStrategy = new AsexualZonePopulation(); 
       //world.populationStrategy = new AsexualRandomPopulation();
+      world.populationStrategy = populationStrategy;
+      console.log("world.populationStrategy: ", world.populationStrategy.constructor.name);
       world.initialPopulation = initialPopulation;
       
       // --> pending selection option
 
       //world.selectionMethod = new InsideReproductionAreaSelection();
-      world.selectionMethod = new GreatestDistanceSelection();
+      world.selectionMethod = selectionMethod;
+      console.log("world.selectionMethod: ", world.selectionMethod.constructor.name);
 
       // Neural networks
       world.initialGenomeSize = initialGenomeSize;
@@ -90,7 +99,7 @@ export default function SimulationCanvas({ className }: Props) {
       world.objects = worldObjects;
   
     },
-    [size, stepsPerGen, enabledSensors, enabledActions, initialPopulation, initialGenomeSize, maxGenomeSize, maxNeurons, mutationMode, mutationProbability, geneInsertionDeletionProbability, worldObjects]
+    [size, stepsPerGen, worldObjects, worldInitialValues]
   );
 
   // Instantiate the world
@@ -102,7 +111,7 @@ export default function SimulationCanvas({ className }: Props) {
     setWorld(world);
 
     applyInitialValues(world);
- 
+
     // Initialize world and start simulation
     world.initializeWorld(true);
     world.startRun();
@@ -118,17 +127,22 @@ export default function SimulationCanvas({ className }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // --> treure callback si tinc el restartCount?
   const restartSimulation = useCallback(() => {
     if (world) {
       const isPaused = world.isPaused;
       applyInitialValues(world);
       world.initializeWorld(true);
-
+    
+      setRestartCount((e)=> e+1);
+      console.log("restart # ", restartCount);
+        
+      
       if (!isPaused) {
         world.startRun();
         }
     }
-  }, [applyInitialValues, world]);
+  }, [applyInitialValues, world, restartCount]);
 
   // Restart the simulation
   useEffect(() => {

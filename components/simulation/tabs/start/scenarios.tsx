@@ -1,4 +1,4 @@
-import {Option} from "./Dropdown";
+import {Option} from "../../../global/inputs/Dropdown";
 import WorldObject from "@/simulation/world/WorldObject";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
@@ -56,7 +56,7 @@ return a;
 
   // List of scenarios.
   // TODO To be read from file 
-  export const objectLists : {title: string, worldObjects : WorldObject[]}[] = [];
+  export const scenariosObjectLists : {title: string, worldObjects : WorldObject[]}[] = [];
 
 
   const map1 : mapFromSaveFile[] = [{"data":{"x":0.81,"y":0,"width":0.18999999999999995,"height":0.19999999999999996,"relative":true},"type":"RectangleReproductionArea"}];
@@ -79,12 +79,12 @@ return a;
   {"data":{"x":0.24,"y":0.56,"width":0.24,"height":0.08999999999999986,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"}];
   
   const mapCarlos : mapFromSaveFile[] = [{"data":{"x":0.25,"y":0.25,"width":0.5,"height":0.5,"relative":true},"type":"RectangleReproductionArea"},{"data":{"x":0,"y":0,"width":0.2,"height":0.2,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.2,"y":0.2,"width":0.2,"height":0.2,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.4,"y":0.4,"width":0.2,"height":0.2,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.6,"y":0.6,"width":0.2,"height":0.2,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"},{"data":{"x":0.8,"y":0.8,"width":0.2,"height":0.2,"relative":true,"color":"rgb(60, 60, 60)"},"type":"RectangleObject"}];
-  objectLists.push({title: "Start here", worldObjects: convertMapSim(map1)});
-  objectLists.push({title: "Vertical bins", worldObjects: convertMapSim(map2)});
-  objectLists.push({title: "Go to the bottom", worldObjects: convertMapSim(mapSim9)});
-  objectLists.push({title: "Search path to the corner", worldObjects: convertMapSim(mapSim11)});
-  objectLists.push({title: "Carlos original", worldObjects: convertMapSim(mapCarlos)});
+  scenariosObjectLists.push({title: "Start here", worldObjects: convertMapSim(map1)});
+  scenariosObjectLists.push({title: "Vertical bins", worldObjects: convertMapSim(map2)});
+  scenariosObjectLists.push({title: "Go to the bottom", worldObjects: convertMapSim(mapSim9)});
+  scenariosObjectLists.push({title: "Search path to the corner", worldObjects: convertMapSim(mapSim11)});
+  scenariosObjectLists.push({title: "Carlos original", worldObjects: convertMapSim(mapCarlos)});
   
 
 //export const scenarios: Option[] = Array.from({ length: objectLists.length }, (_, i) => ({ value: i.toString(), label: `scenario ${i + 1}` }));
-export const scenarios: Option[] = Array.from({ length: objectLists.length }, (_, i) => ({ value: i.toString(), label: objectLists[i].title }));
+export const scenariosOptions: Option[] = Array.from({ length: scenariosObjectLists.length }, (_, i) => ({ value: i.toString(), label: scenariosObjectLists[i].title }));

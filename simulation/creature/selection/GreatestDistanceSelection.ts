@@ -8,7 +8,7 @@ export default class GreatestDistanceSelection
   implements SelectionMethod
 {
   fitnessValueName = "Distance index";
-
+  
   getSurvivors(world: World): {survivors: Creature[], fitnessMaxValue : number} {
     const distanceValuesSorted : Creature [] = world.currentCreatures.sort((a, b) =>{ return b.distanceCovered - a.distanceCovered});
     const top = Math.floor(world.currentCreatures.length * topPercentSelected);   

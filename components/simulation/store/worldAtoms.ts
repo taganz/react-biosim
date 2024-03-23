@@ -4,14 +4,21 @@ import { SensorName } from "@/simulation/creature/sensors/CreatureSensors";
 import World from "@/simulation/world/World";
 import WorldObject from "@/simulation/world/WorldObject";
 import { atom } from "jotai";
+import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
+import InsideReproductionAreaSelection from "@/simulation/creature/selection/InsideReproductionAreaSelection";
+import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
+import AsexualRandomPopulation from "@/simulation/creature/population/AsexualRandomPopulation";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 export const worldAtom = atom<World | null>(null);
 export const restartAtom = atom(false);
+export const restartCountAtom = atom(0);  // refresh tabs on restart
 
 // Initial settings
 export const sizeAtom = atom(100);
+export const selectionMethodAtom = atom<SelectionMethod>(new InsideReproductionAreaSelection());
+export const populationStrategyAtom = atom<PopulationStrategy>(new AsexualRandomPopulation());
 export const stepsPerGenAtom = atom(300);
 export const initialPopulationAtom = atom(500);
 export const initialGenomeSizeAtom = atom(4);
@@ -48,6 +55,8 @@ export const enabledActionsAtom = atom<ActionName[]>([
 // Initial settings
 export const worldInitialValuesAtom = atom((get) => ({
   sizeAtom: get(sizeAtom), 
+  selectionMethod: get(selectionMethodAtom),
+  populationStrategy: get(populationStrategyAtom),
   stepsPerGenAtom: get(stepsPerGenAtom),
   initialPopulationAtom: get(initialPopulationAtom),
   initialGenomeSizeAtom: get(initialGenomeSizeAtom),

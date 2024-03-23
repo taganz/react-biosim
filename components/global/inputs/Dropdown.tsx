@@ -1,3 +1,5 @@
+// given Option[] calls onSelect(value) 
+
 import React, { useState } from 'react';
 
 export interface Option {
@@ -10,9 +12,8 @@ export interface DropdownProps {
   onSelect: (value: string) => void;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ options, onSelect }) => {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-
+export const Dropdown: React.FC<DropdownProps> = ({ options, onSelect}) => {
+  const [selectedOption, setSelectedOption] = useState<string>("");
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setSelectedOption(value);

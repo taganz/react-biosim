@@ -1,10 +1,13 @@
 "use client";
 
 import NumberInput from "@/components/global/inputs/NumberInput";
-import {worldInitialValuesAtom} from "../../store";
-import {worldAtom} from "../../store";
-
+import {Dropdown, Option} from "../../../global/inputs/Dropdown"; 
+import {selectionMethodOptions, selectSelectionMethod} from "./selectionMethodOptions";
+import {populationStrategyOptions, selectPopulationStrategy} from "./populationStrategyOptions"
+import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
+import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
 import {
+  worldAtom,
   enabledActionsAtom,
   enabledSensorsAtom,
   geneInsertionDeletionProbabilityAtom,
@@ -14,46 +17,29 @@ import {
   maxNeuronsAtom,
   mutationModeAtom,
   mutationProbabilityAtom,
-  restartAtom,
+  populationStrategyAtom,
+  selectionMethodAtom,
   sizeAtom,
   stepsPerGenAtom,
+  restartCountAtom
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
-import { useAtom, useAtomValue } from "jotai";
-import {
-  Sensor,
-  SensorName,
-} from "@/simulation/creature/sensors/CreatureSensors";
-import {
-  Action,
-  ActionName,
-} from "@/simulation/creature/actions/CreatureActions";
+import { useAtom, useSetAtom, useAtomValue } from "jotai";
+import {Sensor,SensorName} from "@/simulation/creature/sensors/CreatureSensors";
+import {Action, ActionName} from "@/simulation/creature/actions/CreatureActions";
 import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 
 export default function SettingsPanel() {
-  /*
 
-
-
-  const [worldInitialValues, setInitialValueAtom] = useAtom(worldInitialValuesAtom);
-  const [size, setSize] = useAtom(sizeAtom);
-  const [stepsPerGen, setStepsPerGen] = useAtom(stepsPerGenAtom);
-  const [initialPopulation, setInitialPopulation] = useAtom(initialPopulationAtom);
-  const initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
-  const maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
-  const maxNeurons = worldInitialValues.maxNeuronsAtom;
-  const mutationMode = worldInitialValues.mutationModeAtom;
-  const mutationProbability = worldInitialValues.mutationProbabilityAtom;
-  const geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbabilityAtom;
-
-*/
 const world = useAtomValue(worldAtom);
 const sensors = Object.values(world?.sensors.data ?? {});
 const actions = Object.values(world?.actions.data ?? {});
 const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
 const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
-
+const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
+const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
+const restartCount = useAtom(restartCountAtom);
   useSyncAtomWithWorldProperty(
     enabledSensorsAtom,
     (world) => world.sensors.getList(),
@@ -93,6 +79,19 @@ const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
   const getActionLabel = (action: Action) =>
     `${getPrettyName(action.name)} (1 neuron)`;
    
+
+
+    const handleSelectionMethodOptions = (value: string) => {
+      const sp : SelectionMethod = selectSelectionMethod(value); 
+      console.log("handleSelectionMethodOptions ", value, sp);
+      setSelectionMethod(sp);
+    }
+
+    const handlePopulationStrategy = (value: string) => {
+      const sp : PopulationStrategy = selectPopulationStrategy(value); 
+      setPopulationStrategy(sp);
+    }
+    
   return (
     <div>
       <p className="mb-2">
@@ -106,6 +105,19 @@ const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
             <NumberInput atom={sizeAtom} label="World Size" />
             <NumberInput atom={initialPopulationAtom} label="Initial population"/>
           <NumberInput atom={stepsPerGenAtom} label="Steps per generation" />
+          </div>
+        </div>
+
+        <div>
+          <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
+          <div className="mb-1">
+            <h2>Selection method: <br/>current: {world?.selectionMethod.constructor.name} </h2>
+            <Dropdown options={selectionMethodOptions} 
+                      onSelect={handleSelectionMethodOptions}/>
+            <br/>
+            <h2>Population strategy: <br/>current: {world?.populationStrategy.constructor.name} </h2>
+            <Dropdown options={populationStrategyOptions} onSelect={handlePopulationStrategy} />
+            <br/>
           </div>
         </div>
 

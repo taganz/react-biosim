@@ -21,6 +21,8 @@ export default class InsideReproductionAreaSelection
       }
     }
 
-    return {survivors: parents, fitnessMaxValue: parents.length};
+    const fit = Number((parents.length/world.initialPopulation*100).toFixed(1));
+
+    return {survivors: parents, fitnessMaxValue: fit};
   }
 }
