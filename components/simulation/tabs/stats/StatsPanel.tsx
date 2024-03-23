@@ -9,7 +9,8 @@ import LinearGraph from "@/components/global/graphs/LinearGraph";
 import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 
 function getter(data: SingleGeneration): [number, number] {
-  return [data.generation, data.survivorCount];
+  //return [data.generation, data.survivorCount];
+  return [data.generation, data.maxFitnessValue];
 }
 
 export default function StatsPanel() {
@@ -22,9 +23,10 @@ export default function StatsPanel() {
     0
   );
 
-  const survivorCountFormatter = useCallback(
+  const maxFitnessFormatter = useCallback(
     (value: number) => {
-      return ((value / initialPopulation) * 100).toFixed(1).toString() + "%";
+      //return ((value / initialPopulation) * 100).toFixed(1).toString() + "%";
+      return ((value ).toFixed(1).toString());
     },
     [initialPopulation]
   );
@@ -46,7 +48,7 @@ export default function StatsPanel() {
         WorldEvents.startGeneration,
         onStartGeneration
       );
-
+      console.log("world.selectionMethod.fitnessValueName", world.selectionMethod.fitnessValueName);
       return () => {
         world.events.removeEventListener(
           WorldEvents.startGeneration,
@@ -58,7 +60,7 @@ export default function StatsPanel() {
 
   return (
     <div>
-      <h3 className="mb-1 text-2xl font-bold">Survival Rate (%)</h3>
+      <h3 className="mb-1 text-2xl font-bold">{world == null ? "<error world == null>" : world?.selectionMethod.fitnessValueName}</h3>
       <LinearGraph
         data={data}
         getter={getter}
@@ -69,7 +71,7 @@ export default function StatsPanel() {
         postSmooth={true}
         postSmoothness={2}
         xLabelFormatter={generationFormatter}
-        yLabelFormatter={survivorCountFormatter}
+        yLabelFormatter={maxFitnessFormatter}
         className="aspect-[2/1] w-full bg-white"
       />
     </div>

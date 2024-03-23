@@ -5,7 +5,9 @@ import SelectionMethod from "./SelectionMethod";
 export default class InsideReproductionAreaSelection
   implements SelectionMethod
 {
-  getSurvivors(world: World): Creature[] {
+  fitnessValueName = "Survival rate (%)";
+
+  getSurvivors(world: World): {survivors: Creature[], fitnessMaxValue : number} {
     const parents = [];
 
     for (const creature of world.currentCreatures) {
@@ -19,6 +21,6 @@ export default class InsideReproductionAreaSelection
       }
     }
 
-    return parents;
+    return {survivors: parents, fitnessMaxValue: parents.length};
   }
 }

@@ -24,6 +24,7 @@ import {
   sizeAtom,
   stepsPerGenAtom,
 } from "./store";
+import GreatestDistanceSelection from "@/simulation/creature/selection/GreatestDistanceSelection";
 
 interface Props {
   className?: string;
@@ -69,7 +70,10 @@ export default function SimulationCanvas({ className }: Props) {
       //world.populationStrategy = new AsexualRandomPopulation();
       world.initialPopulation = initialPopulation;
       
-      world.selectionMethod = new InsideReproductionAreaSelection();
+      // --> pending selection option
+
+      //world.selectionMethod = new InsideReproductionAreaSelection();
+      world.selectionMethod = new GreatestDistanceSelection();
 
       // Neural networks
       world.initialGenomeSize = initialGenomeSize;

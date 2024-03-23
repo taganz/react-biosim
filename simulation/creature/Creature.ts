@@ -11,6 +11,12 @@ import CreatureActions from "./actions/CreatureActions";
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
 
+const distanceStraightMin = 35;   // <--- ajustar, passar a parametres de la simulacio?
+const distanceStraightMax = 9999;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
+const stepsStoppedPenalization = 100;
+  
+type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
+
 export default class Creature {
   world: World;
 
@@ -33,6 +39,13 @@ export default class Creature {
   brain!: Network;
   genome: Genome;
 
+  // Activity
+  distancePartial : number = 0;
+  distanceCovered : number = 0;
+  stepsStopped : number = 0;
+  lastDirection : direction = null;
+  stepDirection : direction = null;
+  
   private _health: number = maxHealth;
 
   constructor(world: World, position: [number, number], genome?: Genome) {
@@ -282,10 +295,38 @@ export default class Creature {
     this.lastPosition[0] = this.position[0];
     this.lastPosition[1] = this.position[1];
 
+    // Move
     if (probX !== 0 || probY !== 0) {
       this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
     }
+
+    // Increment distance covered
+    if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
+    {
+      // has not moved
+      this.stepsStopped+= 1;
+      if (this.stepsStopped > stepsStoppedPenalization) {
+        this.distanceCovered-= 1;
+        this.distanceCovered = this.distanceCovered < 0 ? 0 : this.distanceCovered;
+      }
+    }
+    else {
+      // has moved
+      this.stepsStopped = 0;
+      // If keeping same direction for some time, increase distance moved
+      if (this.stepDirection != null && this.lastDirection == this.stepDirection  && this.distancePartial < distanceStraightMax) {
+        this.distancePartial += 1;
+        if (this.distancePartial > distanceStraightMin ) {
+          this.distanceCovered += 1;
+        }
+      }
+      else {
+        // has changed direction 
+        this.distancePartial = 0;
+      }
   }
+  this.lastDirection = this.stepDirection;
+}
 
   move(x: number, y: number) {
     const finalX = this.position[0] + x;
@@ -310,6 +351,18 @@ export default class Creature {
       this.position[1] = finalY;
       this.lastMovement[0] = x;
       this.lastMovement[1] = y;
+
+      if (x==0 && y==0) this.stepDirection = null;
+      else if (x==0 && y==1) this.stepDirection = "N";
+      else if (x==1 && y==1) this.stepDirection = "NE";
+      else if (x==1 && y==0) this.stepDirection = "E";
+      else if (x==1 && y==-1) this.stepDirection = "SE";
+      else if (x==0 && y==-1) this.stepDirection = "S";
+      else if (x==-1 && y==-1) this.stepDirection = "SW";
+      else if (x==-1 && y==0) this.stepDirection = "W";
+      else if (x==-1 && y==1) this.stepDirection = "NW";
+      else console.log("move error", x, y);
+      
     }
   }
 

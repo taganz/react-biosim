@@ -5,6 +5,7 @@ import { MutationMode } from "../creature/genome/MutationMode";
 import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
 import EastWallSelection from "../creature/selection/EastWallSelection";
+import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
 import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
 import { WorldEvents } from "../events/WorldEvents";
@@ -72,13 +73,15 @@ export default class World {
   pauseTime: number = 0;
   totalTime: number = 0;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
+  lastFitnessMaxValue : number = 0;
 
   // RD 1/3/24  -- see also SimulationCanvas
   populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
   //populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
 
 
-  selectionMethod: SelectionMethod = new EastWallSelection();
+  //selectionMethod: SelectionMethod = new EastWallSelection();  
+  selectionMethod: SelectionMethod = new InsideReproductionAreaSelection();  
 
   events: EventTarget = new EventTarget();
   timeoutId?: number;
@@ -140,8 +143,9 @@ export default class World {
       );
     }
 
-    const survivors = this.selectionMethod.getSurvivors(this);
+    const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
 
+    
     // Small pause
     if (this.pauseBetweenGenerations > 0) {
       this.currentCreatures = survivors;
@@ -160,6 +164,8 @@ export default class World {
     }
 
     this.lastCreatureCount = newCreatures.length;
+    this.lastFitnessMaxValue = fitnessMaxValue;
+    
   }
 
   private initializeGrid(): void {
@@ -312,6 +318,9 @@ export default class World {
         }
       }
       //console.log("step ", this.currentStep );
+      
+      //const c = this.currentCreatures[0];
+      //console.log(this.currentGen, this.currentStep, c.lastDirection, c.stepDirection, c.position[0], c.position[1], c.distancePartial, c.distanceCovered, c.stepsStopped);
 
       this.currentStep++;
 
@@ -555,7 +564,7 @@ export default class World {
     this.clearCanvas();
     this.resizeCanvas();
 
-    this.selectionMethod?.onDrawBeforeCreatures?.(this);
+    //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
     // Draw creatures
     for (let i = 0; i < this.currentCreatures.length; i++) {
@@ -580,7 +589,7 @@ export default class World {
       }
     }
 
-    this.selectionMethod?.onDrawAfterCreatures?.(this);
+    //this.selectionMethod?.onDrawAfterCreatures?.(this);
 
     // Draw objects
     for (let i = 0; i < this.objects.length; i++) {

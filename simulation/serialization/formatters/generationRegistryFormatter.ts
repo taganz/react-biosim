@@ -11,17 +11,20 @@ const generationRegistryFormatter: DataFormatter<
     generations,
     maxSurvivorCount,
     minSurvivorCount,
+    maxFitnessValue
   }: GenerationRegistry) {
     return {
       generations: generations.map(
-        ({ generation: g, startingPopulation: sP, survivorCount: sC }) => ({
+        ({ generation: g, startingPopulation: sP, survivorCount: sC, maxFitnessValue: fV }) => ({
           g,
           sP,
           sC,
+          fV
         })
       ),
       maxSurvivorCount,
       minSurvivorCount,
+      maxFitnessValue
     };
   },
   deserialize(data: SavedGenerationRegistry, world: World): GenerationRegistry {
@@ -29,10 +32,11 @@ const generationRegistryFormatter: DataFormatter<
     result.maxSurvivorCount = data.maxSurvivorCount;
     result.minSurvivorCount = data.minSurvivorCount;
     result.generations = data.generations.map(
-      ({ g: generation, sP: startingPopulation, sC: survivorCount }) => ({
+      ({ g: generation, sP: startingPopulation, sC: survivorCount, fV: maxFitnessValue }) => ({
         generation,
         startingPopulation,
         survivorCount,
+        maxFitnessValue
       })
     );
     return result;
