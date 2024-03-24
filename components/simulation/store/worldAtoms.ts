@@ -27,7 +27,7 @@ export const selectionMethodAtom = atom<SelectionMethod>(new InsideReproductionA
 export const populationStrategyAtom = atom<PopulationStrategy>(new AsexualZonePopulation());
 export const initialGenomeSizeAtom = atom(4);
 export const maxGenomeSizeAtom = atom(30);
-export const maxNeuronsAtom = atom(15);
+export const maxNumberNeuronsAtom = atom(15);
 export const mutationModeAtom = atom<MutationMode>(MutationMode.wholeGene);
 export const mutationProbabilityAtom = atom(0.05);
 export const geneInsertionDeletionProbabilityAtom = atom(0.015);
@@ -79,7 +79,7 @@ export const worldInitialValuesAtom = atom((get) => ({
   initialPopulationAtom: get(initialPopulationAtom),
   initialGenomeSizeAtom: get(initialGenomeSizeAtom),
   maxGenomeSizeAtom: get(maxGenomeSizeAtom),
-  maxNeuronsAtom: get(maxNeuronsAtom),
+  maxNumberNeuronsAtom: get(maxNumberNeuronsAtom),
   mutationModeAtom: get(mutationModeAtom),
   mutationProbabilityAtom: get(mutationProbabilityAtom),
   geneInsertionDeletionProbabilityAtom: get(geneInsertionDeletionProbabilityAtom),

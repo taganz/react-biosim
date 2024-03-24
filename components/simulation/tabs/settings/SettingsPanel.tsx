@@ -14,7 +14,7 @@ import {
   initialGenomeSizeAtom,
   initialPopulationAtom,
   maxGenomeSizeAtom,
-  maxNeuronsAtom,
+  maxNumberNeuronsAtom,
   mutationModeAtom,
   mutationProbabilityAtom,
   populationStrategyAtom,
@@ -126,7 +126,7 @@ const restartCount = useAtom(restartCountAtom);
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <NumberInput atom={initialGenomeSizeAtom} label="Initial genome size"/>
             <NumberInput atom={maxGenomeSizeAtom} label="Max genome size" />
-            <NumberInput atom={maxNeuronsAtom} label="Max neurons" />
+            <NumberInput atom={maxNumberNeuronsAtom} label="Max neurons" />
           </div>
         </div>
 

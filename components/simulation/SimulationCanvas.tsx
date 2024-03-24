@@ -3,7 +3,7 @@
 import World from "@/simulation/world/World";
 import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldObjectsAtom, restartCountAtom, worldInitialValuesAtom, restartAtom, worldAtom} from "./store";
+import {restartCountAtom, worldInitialValuesAtom, restartAtom, worldAtom} from "./store";
 
 interface Props {
   className?: string;
@@ -38,9 +38,9 @@ export default function SimulationCanvas({ className }: Props) {
       console.log("world.selectionMethod: ", world.selectionMethod.constructor.name);
 
       // Neural networks
-      world.initialGenomeSize = worldInitialValues.maxGenomeSizeAtom;;
+      world.initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;;
       world.maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
-      world.maxNumberNeurons = worldInitialValues.maxNeuronsAtom;
+      world.maxNumberNeurons = worldInitialValues.maxNumberNeuronsAtom;
 
       // Mutations
       world.mutationMode = worldInitialValues.mutationModeAtom;
