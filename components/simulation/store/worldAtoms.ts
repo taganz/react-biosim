@@ -55,8 +55,8 @@ export const enabledActionsAtom = atom<ActionName[]>([
 // Initial settings
 export const worldInitialValuesAtom = atom((get) => ({
   sizeAtom: get(sizeAtom), 
-  selectionMethod: get(selectionMethodAtom),
-  populationStrategy: get(populationStrategyAtom),
+  selectionMethodAtom: get(selectionMethodAtom),
+  populationStrategyAtom: get(populationStrategyAtom),
   stepsPerGenAtom: get(stepsPerGenAtom),
   initialPopulationAtom: get(initialPopulationAtom),
   initialGenomeSizeAtom: get(initialGenomeSizeAtom),

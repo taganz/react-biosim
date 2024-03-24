@@ -57,7 +57,7 @@ export default class World {
   currentStep: number = 0;
   timePerStep: number = 0;
   immediateSteps: number = 1;    // number of steps to run without redrawing
-  deletionRatio: number = 0.5;
+  deletionRatio: number = 0.5;    // --> not used?
   mutationMode: MutationMode = MutationMode.wholeGene;
   pauseBetweenGenerations: number = 0;
 
