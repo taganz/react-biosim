@@ -38,7 +38,7 @@ export default function SimulationCanvas({ className }: Props) {
       console.log("world.selectionMethod: ", world.selectionMethod.constructor.name);
 
       // Neural networks
-      world.initialGenomeSize = worldInitialValues.maxGenomeSizeAtom;;
+      world.initialGenomeSize = worldInitialValues.initialGenomeSizeAtomSizeAtom;;
       world.maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
       world.maxNumberNeurons = worldInitialValues.maxNeuronsAtom;
 
