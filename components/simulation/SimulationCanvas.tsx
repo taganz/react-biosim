@@ -15,13 +15,10 @@ export default function SimulationCanvas({ className }: Props) {
   const [shouldRestart, setShouldRestart] = useAtom(restartAtom);
   const [restartCount, setRestartCount] = useAtom(restartCountAtom);
   const worldInitialValues = useAtomValue(worldInitialValuesAtom);
-  const worldObjects = useAtomValue(worldObjectsAtom);
-  const size = worldInitialValues.sizeAtom;
   
   
   // Function to set initial values
-  const applyInitialValues = useCallback(
-    (world: World) => {
+  const applyInitialValues = useCallback((world: World) => {
       // Map
       world.size = worldInitialValues.sizeAtom;
       world.stepsPerGen = worldInitialValues.stepsPerGenAtom;
@@ -52,30 +49,26 @@ export default function SimulationCanvas({ className }: Props) {
       world.deletionRatio = 0.5;
 
       // map objects
-      world.objects = worldObjects;
+      world.objects = worldInitialValues.worldObjectsAtom;
   
     },
-    [worldObjects, worldInitialValues]
+    [worldInitialValues]
   );
 
   // Instantiate the world
-
   useEffect(() => {
     // Create world and store it
-    const world = new World(canvas.current, 100);
+    const world = new World(canvas.current, worldInitialValues.sizeAtom);
     setWorld(world);
 
-    applyInitialValues(world);
-
     // Initialize world and start simulation
+    applyInitialValues(world);
     world.initializeWorld(true);
     world.startRun();
-
     console.log("World instantiated");
 
     return () => {
       console.log("World destroyed");
-
       setWorld(null);
       world.pause();
     };
