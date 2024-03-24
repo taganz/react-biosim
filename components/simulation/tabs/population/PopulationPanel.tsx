@@ -15,9 +15,7 @@ export default function PopulationPanel() {
 
   const [species, setSpecies] = useState<Species[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<Species | undefined>();
-  const [selectedCreature, setSelectedCreature] = useState<
-    Creature | undefined
-  >();
+  const [selectedCreature, setSelectedCreature] = useState<Creature | undefined>();
   const renderedSpecies = species.slice(0, 42);
 
   const onStartGeneration = useCallback(() => {
