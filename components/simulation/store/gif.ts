@@ -1,4 +1,4 @@
-
+import GIF from 'gif.js';
 import { atom } from "jotai";
 export const recordingAtom = atom(false);
 export const recordingStopPendingAtom = atom(false);
