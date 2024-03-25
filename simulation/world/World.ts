@@ -322,6 +322,10 @@ export default class World {
       //const c = this.currentCreatures[0];
       //console.log(this.currentGen, this.currentStep, c.lastDirection, c.stepDirection, c.position[0], c.position[1], c.distancePartial, c.distanceCovered, c.stepsStopped);
 
+      this.events.dispatchEvent(
+        new CustomEvent(WorldEvents.endStep, { detail: { world: this } })
+      );
+
       this.currentStep++;
 
       if (this.currentStep > this.stepsPerGen) {
@@ -595,7 +599,14 @@ export default class World {
     for (let i = 0; i < this.objects.length; i++) {
       this.objects[i].draw(this.ctx, this.size);
     }
-  }
+
+    
+    this.ctx.fillStyle = "#000";
+    this.ctx.fill();
+    this.ctx.font = "18px Courier";
+    this.ctx.fillText("Gen ".concat(this.currentGen.toString()), 10, 20);
+    
+}
 
   public drawRectStroke(
     x: number,
