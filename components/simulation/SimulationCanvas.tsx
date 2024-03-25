@@ -100,5 +100,5 @@ export default function SimulationCanvas({ className }: Props) {
     }
   }, [restartSimulation, setShouldRestart, shouldRestart]);
 
-  return <canvas className={className} ref={canvas}></canvas>;
+  return <canvas className={className} id="simCanvas" ref={canvas}></canvas>;
 }

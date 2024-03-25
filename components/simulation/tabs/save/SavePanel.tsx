@@ -7,6 +7,7 @@ import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardT
 import { useState } from "react";
 import { saveWorld } from "@/simulation/serialization/saveWorld";
 import { saveAs } from "file-saver";
+import CanvasToGIF from "./CanvasToGif";
 
 export default function SavePanel() {
   const world = useAtomValue(worldAtom);
@@ -19,6 +20,7 @@ export default function SavePanel() {
       setData(json);
     }
   };
+
 
   const handleSaveToFile = () => {
     if (world) {
@@ -51,6 +53,8 @@ export default function SavePanel() {
         <br/>
         <br/><p>Beta:</p><br/>
         <Button onClick={handleSaveToFile}>Save to file</Button>
+        <br/>
+        <CanvasToGIF></CanvasToGIF>
       </div>
     </div>
   );

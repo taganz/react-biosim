@@ -567,10 +567,13 @@ export default class World {
   public redraw(): void {
     this.clearCanvas();
     this.resizeCanvas();
+    // RD
+    this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color with 10% opacity
+    this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
 
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
-    // Draw creatures
+    // Draw creatures 
     for (let i = 0; i < this.currentCreatures.length; i++) {
       const creature = this.currentCreatures[i];
 
@@ -600,7 +603,7 @@ export default class World {
       this.objects[i].draw(this.ctx, this.size);
     }
 
-    
+    // Draw generation #
     this.ctx.fillStyle = "#000";
     this.ctx.fill();
     this.ctx.font = "18px Courier";
