@@ -12,7 +12,7 @@ export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
 
 const distanceStraightMin = 35;   // <--- ajustar, passar a parametres de la simulacio?
-const distanceStraightMax = 9999;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
+const distanceStraightMax = 120;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
 const stepsStoppedPenalization = 100;
   
 type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
@@ -300,6 +300,12 @@ export default class Creature {
       this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
     }
 
+  this.computeDistanceIndex();
+
+  this.lastDirection = this.stepDirection;
+} 
+
+computeDistanceIndex(){
     // Increment distance covered
     if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
     {
@@ -325,7 +331,6 @@ export default class Creature {
         this.distancePartial = 0;
       }
   }
-  this.lastDirection = this.stepDirection;
 }
 
   move(x: number, y: number) {
