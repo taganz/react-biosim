@@ -81,7 +81,7 @@ export default class Creature {
     this.createBrainFromGenome();
   }
 
-  createBrainFromGenome() {
+  private createBrainFromGenome() {
     // Create connections from genes
     const connections: Connection[] = [];
     for (let geneIdx = 0; geneIdx < this.genome.genes.length; geneIdx++) {
@@ -269,11 +269,11 @@ export default class Creature {
     return this.genome.getColor();
   }
 
-  calculateInputs(): number[] {
+  private calculateInputs(): number[] {
     return this.sensors.calculateOutputs(this);
   }
 
-  calculateOutputs(inputs: number[]): number[] {
+  private calculateOutputs(inputs: number[]): number[] {
     return this.brain.feedForward(inputs);
   }
 
@@ -305,7 +305,7 @@ export default class Creature {
   this.lastDirection = this.stepDirection;
 } 
 
-computeDistanceIndex(){
+private computeDistanceIndex(){
     // Increment distance covered
     if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
     {
@@ -333,7 +333,7 @@ computeDistanceIndex(){
   }
 }
 
-  move(x: number, y: number) {
+  private move(x: number, y: number) {
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
 
