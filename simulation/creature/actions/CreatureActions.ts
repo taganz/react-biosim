@@ -1,17 +1,22 @@
 import Creature from "../Creature";
+import * as constants from "../../simulationConstants"
 
+// --> revisar. per evitar tenir-ho repetit a worldAtoms
 export type ActionName =
   | "MoveNorth"
   | "MoveSouth"
   | "MoveEast"
   | "MoveWest"
   | "RandomMove"
-  | "MoveForward";
+  | "MoveForward"
+  | "Photosynthesis"
+  | "Reproduction";
 
 export type Action = {
   name: ActionName;
   enabled: boolean;
 };
+
 
 export type Actions = Record<ActionName, Action>;
 
@@ -19,11 +24,11 @@ export default class CreatureActions {
   data: Actions = {
     MoveNorth: {
       name: "MoveNorth",
-      enabled: true,
+      enabled: false,
     },
     MoveSouth: {
       name: "MoveSouth",
-      enabled: true,
+      enabled: false,
     },
     MoveEast: {
       name: "MoveEast",
@@ -31,14 +36,22 @@ export default class CreatureActions {
     },
     MoveWest: {
       name: "MoveWest",
-      enabled: true,
+      enabled: false,
     },
     RandomMove: {
       name: "RandomMove",
-      enabled: true,
+      enabled: false,
     },
     MoveForward: {
       name: "MoveForward",
+      enabled: false,
+    },
+    Photosynthesis: {
+      name: "Photosynthesis",
+      enabled: true,
+    },
+    Reproduction: {
+      name: "Reproduction",
       enabled: true,
     },
   };
@@ -139,6 +152,34 @@ export default class CreatureActions {
           creature.lastMovement[1]
         );
       }
+      //RD: --> MoveForward no tenia aquestes linies. Per que???
+      currentIndex++;
+      input = values[currentIndex];
     }
+
+    // Photosynthesis
+    if (this.data.Photosynthesis.enabled) {
+      if (input > 0) {
+        creature.mass += constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE;
+        //creature.log("foto", creature.mass);
+      }
+
+      currentIndex++;
+      input = values[currentIndex];
+    }
+
+
+    // Reproduction
+    if (this.data.Photosynthesis.enabled) {
+      if (input > 0) {
+        creature.mass -= creature.massAtBirth;    // --> ajustar
+        
+        creature.log("reproduction");
+      }
+
+      currentIndex++;
+      input = values[currentIndex];
+    }
+
   }
 }
