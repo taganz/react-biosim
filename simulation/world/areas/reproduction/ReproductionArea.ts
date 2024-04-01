@@ -1,4 +1,4 @@
-import { colors } from "../../World";
+import { colors } from "@/simulation/simulationConstants";
 import WorldObject from "../../WorldObject";
 
 type WorldObjectConstructor = new (...args: any[]) => WorldObject;

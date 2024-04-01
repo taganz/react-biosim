@@ -1,4 +1,4 @@
-import { colors } from "../World";
+import { colors } from "@/simulation/simulationConstants";
 import WorldObject from "../WorldObject";
 
 export default class RectangleObject implements WorldObject {

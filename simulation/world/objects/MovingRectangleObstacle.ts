@@ -1,6 +1,7 @@
 import Creature from "@/simulation/creature/Creature";
 import { lerp } from "../../helpers/helpers";
-import World, { colors } from "../World";
+import World from "../World";
+import { colors } from "@/simulation/simulationConstants";
 import WorldObject from "../WorldObject";
 
 export default class MovingRectangleObstacle implements WorldObject {
