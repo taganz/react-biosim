@@ -24,7 +24,8 @@ export type SensorName =
   | "BorderDistance"
   | "Touch"
   | "Pain"
-  | "PopulationDensity";
+  | "PopulationDensity"
+  | "Mass";
 
 export type Sensor = {
   name: SensorName;
@@ -99,6 +100,11 @@ export default class CreatureSensors {
     PopulationDensity: {
       name: "PopulationDensity",
       enabled: false,
+      neuronCount: 1,
+    },
+    Mass: {
+      name: "Mass",
+      enabled: true,
       neuronCount: 1,
     },
   };
@@ -265,6 +271,11 @@ export default class CreatureSensors {
       }
 
       values.push(populationCount * 0.125);
+    }
+
+    // Mass
+    if (this.data.Mass.enabled) {
+      values.push(creature.mass);
     }
 
     return values;
