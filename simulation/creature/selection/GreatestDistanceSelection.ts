@@ -1,8 +1,9 @@
 import World from "../../world/World";
 import Creature from "../Creature";
 import SelectionMethod from "./SelectionMethod";
+import {GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS} from "../../simulationConstants"
 
-const topPercentSelected = 0.05;  
+const topPercentSelected = GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS;  
 
 export default class GreatestDistanceSelection
   implements SelectionMethod
