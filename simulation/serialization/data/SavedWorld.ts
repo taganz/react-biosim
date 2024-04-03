@@ -22,7 +22,8 @@ export default interface SavedWorld {
   deletionRatio: number;
   mutationMode: MutationMode;
   pauseBetweenGenerations: number;
-
+  lastCreatureIdCreated: number;
+  
   // Stats
   lastCreatureCount: number;
   lastSurvivorsCount: number;

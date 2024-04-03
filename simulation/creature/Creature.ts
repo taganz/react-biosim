@@ -7,6 +7,7 @@ import Neuron, { NeuronType } from "./brain/Neuron";
 import NeuronNode from "./NeuronNode";
 import CreatureSensors from "./sensors/CreatureSensors";
 import CreatureActions from "./actions/CreatureActions";
+import * as constants from "../simulationConstants"
 
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
@@ -14,11 +15,15 @@ export const maxHealth = 100;
 const distanceStraightMin = 35;   // <--- ajustar, passar a parametres de la simulacio?
 const distanceStraightMax = 120;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
 const stepsStoppedPenalization = 100;
+
   
 type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
 
 export default class Creature {
   world: World;
+
+  id : number;
+  stepBirth : number;  
 
   // Position
   position: [number, number];
@@ -45,11 +50,28 @@ export default class Creature {
   stepsStopped : number = 0;
   lastDirection : direction = null;
   stepDirection : direction = null;
+
+  // predator prey
+  mass : number = 0;
+  massAtBirth : number = 0;
   
   private _health: number = maxHealth;
 
-  constructor(world: World, position: [number, number], genome?: Genome) {
+  constructor(world: World, position: [number, number], mass?: number, genome?: Genome) {
     this.world = world;
+
+    this.id = ++world.lastCreatureIdCreated;
+    this.stepBirth = world.currentStep;
+    this.log("created step".concat(this.stepBirth.toString()));
+
+    if (mass) {
+      this.mass = mass;
+      this.massAtBirth = mass;
+    }
+    else {
+      this.mass = constants.CREATURE_MASS_GENERATION_0;
+      this.massAtBirth = constants.CREATURE_MASS_GENERATION_0;
+    }
 
     // Position
     this.position = position;
@@ -303,6 +325,13 @@ export default class Creature {
   this.computeDistanceIndex();
 
   this.lastDirection = this.stepDirection;
+
+  // If mass < 0 dies
+  this.mass -= constants.MASS_LOSS_PER_STEP;
+  if (this.mass < 0) {
+    this.die();
+  }
+  //this.log("mass ", this.mass);
 } 
 
 private computeDistanceIndex(){
@@ -339,18 +368,18 @@ private computeDistanceIndex(){
 
     // Check if something is blocking the path
     if (
-      this.world.isTileInsideWorld(finalX, finalY) &&
-      this.world.isTileEmpty(finalX, finalY) &&
+      this.world.grid.isTileInsideWorld(finalX, finalY) &&
+      this.world.grid.isTileEmpty(finalX, finalY) &&
       (x === 0 ||
         y === 0 ||
-        this.world.isTileEmpty(this.position[0] + x, this.position[1]) ||
-        this.world.isTileEmpty(this.position[0], this.position[1] + y))
+        this.world.grid.isTileEmpty(this.position[0] + x, this.position[1]) ||
+        this.world.grid.isTileEmpty(this.position[0], this.position[1] + y))
     ) {
       // Mark the grid point so that no other creature
       // can translate to this position
-      this.world.grid[finalX][finalY].creature = this;
+      this.world.grid.cell(finalX,finalY).creature = this;
       // Free the grid point
-      this.world.grid[this.position[0]][this.position[1]].creature = null;
+      this.world.grid.cell(this.position[0], this.position[1]).creature = null;
 
       this.position[0] = finalX;
       this.position[1] = finalY;
@@ -377,9 +406,16 @@ private computeDistanceIndex(){
   }
 
   reproduce(): Creature {
+    // --> cal calcular quina massa hem de passar, de moment poso massAtBirth, 
+    // --> si no te prou massa no hauria de deixar
+    // pero cal multiplicar per algun factor de l'actuador
+    const massTransferred = this.massAtBirth
+    this.mass -= massTransferred;
+
     return new Creature(
       this.world,
       [this.position[0], this.position[1]],
+      massTransferred, 
       this.genome.clone(
         true,
         this.world.mutationMode,
@@ -400,7 +436,8 @@ private computeDistanceIndex(){
 
     if (result <= 0 && result !== this._health) {
       // Free grid point
-      this.world.grid[this.position[0]][this.position[1]].creature = null;
+      //this.world.grid[this.position[0]][this.position[1]].creature = null;
+      this.die();
       // console.log("free!!!")
     }
 
@@ -409,5 +446,27 @@ private computeDistanceIndex(){
 
   get health() {
     return this._health;
+  }
+
+  log(msg: string, msg2? : any, msg3? : any, msg4? : any) {
+    if (!msg2) msg2 = "";
+    if (!msg3) msg3 = "";
+    if (!msg4) msg4 = "";
+    
+    if (constants.DEBUG_CREATURE_ID == -1) {
+      return;
+    }
+    if (constants.DEBUG_CREATURE_ID == 0 || constants.DEBUG_CREATURE_ID == this.id)  {
+      const genStepString = this.world.currentGen.toString().concat(".", this.world.currentStep.toString());
+      console.log(genStepString, " #", this.id, ": ", msg, msg2, msg3, msg4);
+    }
+  }
+
+  private die () {
+    this.log("die");
+    this._health = -1;
+    // --> aixo hauria de fer-ho world...?
+    this.world.grid.cell(this.position[0], this.position[1]).creature = null;
+      
   }
 }

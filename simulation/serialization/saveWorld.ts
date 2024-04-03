@@ -103,6 +103,7 @@ export function saveWorld(world: World): SavedWorld {
     deletionRatio: world.deletionRatio,
     mutationMode: world.mutationMode,
     pauseBetweenGenerations: world.pauseBetweenGenerations,
+    lastCreatureIdCreated: world.lastCreatureIdCreated,
 
     species,
 

@@ -15,9 +15,10 @@ export function deserializeSpecies(world: World, species: SavedSpecies[]) {
   species.forEach((savedSpecies) => {
     savedSpecies.creatures.forEach((savedCreature) => {
       const genome: Genome = new Genome(savedSpecies.genes);
-      const creature = new Creature(world, savedCreature.position, genome);
+      const creature = new Creature(world, savedCreature.position, savedCreature.mass, genome);
       creature.lastMovement = savedCreature.lastMovement;
       creature.lastPosition = savedCreature.lastPosition;
+      creature.massAtBirth = savedCreature.massAtBirth;
 
       deserializedCreatures.push(creature);
     });
@@ -65,6 +66,7 @@ export function loadWorld(world: World, data: string) {
   world.deletionRatio = parsed.deletionRatio;
   world.mutationMode = parsed.mutationMode;
   world.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
+  world.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
 
   // Stats
   world.lastCreatureCount = parsed.lastCreatureCount;

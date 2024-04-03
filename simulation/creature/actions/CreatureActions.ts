@@ -173,8 +173,13 @@ export default class CreatureActions {
     if (this.data.Photosynthesis.enabled) {
       if (input > 0) {
         creature.mass -= creature.massAtBirth;    // --> ajustar
-        
-        creature.log("reproduction");
+        const offspring : Creature | null = creature.world.creatureBirth(creature, creature.position);
+        if (!offspring) {
+          console.log("reproduction - offspring null")
+        }
+        else {
+          creature.log("reproduction", offspring, offspring?.id);
+        }
       }
 
       currentIndex++;
