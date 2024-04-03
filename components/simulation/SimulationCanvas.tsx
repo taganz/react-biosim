@@ -30,12 +30,12 @@ export default function SimulationCanvas({ className }: Props) {
       // Population
 
       world.populationStrategy = worldInitialValues.populationStrategyAtom;;
-      console.log("world.populationStrategy: ", world.populationStrategy.constructor.name);
+      console.log("populationStrategy: ", world.populationStrategy.constructor.name);
       world.initialPopulation = worldInitialValues.initialPopulationAtom;
       
       //world.selectionMethod = new InsideReproductionAreaSelection();
       world.selectionMethod = worldInitialValues.selectionMethodAtom;
-      console.log("world.selectionMethod: ", world.selectionMethod.constructor.name);
+      console.log("selectionMethod: ", world.selectionMethod.constructor.name);
 
       // Neural networks
       world.initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
@@ -58,12 +58,12 @@ export default function SimulationCanvas({ className }: Props) {
   // Instantiate the world
   useEffect(() => {
     // Create world and store it
-    const world = new World(canvas.current, worldInitialValues.sizeAtom);
+    const world = new World(canvas.current);
     setWorld(world);
 
     // Initialize world and start simulation
     applyInitialValues(world);
-    world.initializeWorld(true);
+    world.initializeWorld(worldInitialValues.sizeAtom);
     world.startRun();
     console.log("World instantiated");
 
@@ -80,7 +80,7 @@ export default function SimulationCanvas({ className }: Props) {
     if (world) {
       const isPaused = world.isPaused;
       applyInitialValues(world);
-      world.initializeWorld(true);
+      world.initializeWorld(worldInitialValues.sizeAtom);
     
       setRestartCount((e)=> e+1);
       console.log("restart # ", restartCount);

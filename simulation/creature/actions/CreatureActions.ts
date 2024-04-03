@@ -173,13 +173,48 @@ export default class CreatureActions {
     if (this.data.Photosynthesis.enabled) {
       if (input > 0) {
         creature.mass -= creature.massAtBirth;    // --> ajustar
-        const offspring : Creature | null = creature.world.creatureBirth(creature, creature.position);
-        if (!offspring) {
-          console.log("reproduction - offspring null")
+
+        // --> revisar amb calma
+        //var offspringPosition = this.getNearByAvailablePosic(this.currentCreatures, targetBirthPosition[0], targetBirthPosition[1], 100, 100);
+        var creature : Creature | null = null;
+        var targetBirthPosition = creature.position;
+        var offspringPositionTest : [number, number];
+        var offspringPosition : [number, number] | null = null;
+        offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]+1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]+1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]-1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]+1];
+        offspringPositionTest = creature.world.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.world.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    
+        if (offspringPosition) {
+          const offspring : Creature | null = creature.world.newCreature(creature.position, creature.massAtBirth, creature.genome);
         }
         else {
-          creature.log("reproduction", offspring, offspring?.id);
+          console.log("reproduction - couldn't find a offspringPosition ")
         }
+
       }
 
       currentIndex++;

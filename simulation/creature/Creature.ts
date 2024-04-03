@@ -8,6 +8,7 @@ import NeuronNode from "./NeuronNode";
 import CreatureSensors from "./sensors/CreatureSensors";
 import CreatureActions from "./actions/CreatureActions";
 import * as constants from "../simulationConstants"
+import { GridPosition } from "../world/grid/Grid";
 
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
@@ -26,8 +27,8 @@ export default class Creature {
   stepBirth : number;  
 
   // Position
-  position: [number, number];
-  lastPosition: [number, number];
+  position: GridPosition;
+  lastPosition: GridPosition;
   urgeToMove: [number, number];
   lastMovement: [number, number];
 
@@ -57,7 +58,7 @@ export default class Creature {
   
   private _health: number = maxHealth;
 
-  constructor(world: World, position: [number, number], mass?: number, genome?: Genome) {
+  constructor(world: World, position: GridPosition, mass?: number, genome?: Genome) {
     this.world = world;
 
     this.id = ++world.lastCreatureIdCreated;
@@ -101,6 +102,7 @@ export default class Creature {
     this.networkOutputCount = this.actions.neuronsCount;
 
     this.createBrainFromGenome();
+
   }
 
   private createBrainFromGenome() {
@@ -403,28 +405,6 @@ private computeDistanceIndex(){
   addUrgeToMove(x: number, y: number) {
     this.urgeToMove[0] = this.urgeToMove[0] + x;
     this.urgeToMove[1] = this.urgeToMove[1] + y;
-  }
-
-  reproduce(): Creature {
-    // --> cal calcular quina massa hem de passar, de moment poso massAtBirth, 
-    // --> si no te prou massa no hauria de deixar
-    // pero cal multiplicar per algun factor de l'actuador
-    const massTransferred = this.massAtBirth
-    this.mass -= massTransferred;
-
-    return new Creature(
-      this.world,
-      [this.position[0], this.position[1]],
-      massTransferred, 
-      this.genome.clone(
-        true,
-        this.world.mutationMode,
-        this.world.maxGenomeSize,
-        this.world.mutationProbability,
-        this.world.geneInsertionDeletionProbability,
-        this.world.deletionRatio
-      )
-    );
   }
 
   get isAlive() {

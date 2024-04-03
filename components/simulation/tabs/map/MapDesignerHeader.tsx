@@ -26,9 +26,8 @@ export default function MapDesignerHeader() {
   const handleUse = () => {
     if (world) {
       const isPaused = world.isPaused;
-      world.size = worldSize;
       world.objects = objects.map((obj) => obj.clone());
-      world.initializeWorld(true);
+      world.initializeWorld(worldSize);
       setWorldObjectsAtom(world.objects);
 
       if (!isPaused) {

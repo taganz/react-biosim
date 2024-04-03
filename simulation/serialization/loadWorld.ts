@@ -96,5 +96,5 @@ export function loadWorld(world: World, data: string) {
   }
 
   // Initialize world
-  world.initializeWorld(false);
+  world.initializeWorld(parsed.size);
 }

@@ -13,6 +13,7 @@ import { GenerationRegistry } from "./stats/GenerationRegistry";
 import * as constants from "@/simulation/simulationConstants"
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import WorldObject from "./WorldObject";
+import Genome from "@/simulation/creature/genome/Genome";
 
 
 export default class World {
@@ -34,10 +35,11 @@ export default class World {
   actions: CreatureActions = new CreatureActions();
 
    // World
-   grid: Grid;
+   grid: Grid = new Grid(0);
    objects: WorldObject[] = [];   // to be set externally
+   currentCreatures: Creature[] = [];
 
-   lastCreatureIdCreated : number = 0;
+   lastCreatureIdCreated : number = 0;   // --> aprofitar posicio en array per id de creatures?
 
   // status
   currentGen: number = 0;
@@ -47,8 +49,6 @@ export default class World {
   deletionRatio: number = 0.5;    // --> not used?
   mutationMode: MutationMode = MutationMode.wholeGene;
   pauseBetweenGenerations: number = 0;
-
-  currentCreatures: Creature[] = [];
 
   // Stats
   lastCreatureCount: number = 0;
@@ -62,12 +62,8 @@ export default class World {
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
   lastFitnessMaxValue : number = 0;
 
-  // RD 1/3/24  -- see also SimulationCanvas
   populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
-  //populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
-
-
-  //selectionMethod: SelectionMethod = new EastWallSelection();  
+  
   selectionMethod: SelectionMethod = new InsideReproductionAreaSelection();  
 
   events: EventTarget = new EventTarget();
@@ -76,49 +72,56 @@ export default class World {
  
 
   
-  constructor(canvas: HTMLCanvasElement | null, size: number) {
-    this.grid = new Grid(size);
+  constructor(canvas: HTMLCanvasElement | null) {
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-      this.size = size;
-
+    
       window.addEventListener("resize", this.redraw.bind(this));
     } else {
       throw new Error("Cannot found canvas");
     }
   }
 
-  public initializeWorld(restart: boolean): void {
+  public initializeWorld(size: number): void {
+    console.log("initializeWorld size ", size);
+    this.size = size;
+    this.grid = new Grid(size);
     this.sensors.updateInternalValues();
     this.actions.updateInternalValues();
 
-    // If there's a simulation already running
-    if (restart) {
-      this.pause();
-      this.currentGen = 0;
-      this.currentStep = 0;
-      this.totalTime = 0;
+    this.currentGen = 0;
+    this.currentStep = 0;
+    this.totalTime = 0;
 
-      // Stats
-      this.lastCreatureCount = 0;
-      this.lastSurvivorsCount = 0;
-      this.lastSurvivalRate = 0;
-      this.lastGenerationDuration = 0;
-      this.totalTime = 0;
-      this.generationRegistry = new GenerationRegistry(this);
+    // Stats
+    this.lastCreatureCount = 0;
+    this.lastSurvivorsCount = 0;
+    this.lastSurvivalRate = 0;
+    this.lastGenerationDuration = 0;
+    this.totalTime = 0;
+    this.generationRegistry = new GenerationRegistry(this);
 
-      // Clear previous creatures
-      this.currentCreatures = [];
-      this.lastCreatureIdCreated = 0;   // resets at generation
-    }
+    // Clear previous creatures
+    this.currentCreatures = [];
+    this.lastCreatureIdCreated = 0;   // resets at generation
     
     this.initializeGrid();
 
-    this.computeGrid();
-    if (restart) {
-      this.selectAndPopulate();
+    //this.computeGrid();
+    
+    // --> should take into account objects size
+    if (this.initialPopulation >= this.size * this.size) {
+      throw new Error(
+        "The population cannot be greater than the number of available tiles in the world: ".concat(this.initialPopulation.toString(), " vs ", (this.size * this.size).toString())
+      );
     }
+
+    this.populationStrategy.populate(this);
+    console.log("New population:", this.currentCreatures.length);
+    console.log(`Genome size: ${this.initialGenomeSize} genes`);
+    
+    this.lastCreatureCount = this.currentCreatures.length;
     this.redraw();
 
     this.events.dispatchEvent(
@@ -126,88 +129,36 @@ export default class World {
     );
   }
 
-  private selectAndPopulate(): void {
-    if (this.initialPopulation >= this.size * this.size) {
-      throw new Error(
-        "The population cannot be greater than the number of available tiles in the world: ".concat(this.initialPopulation.toString(), " vs ", (this.size * this.size).toString())
-      );
-    }
 
-    const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
-
-    
-    // Small pause
-    if (this.pauseBetweenGenerations > 0) {
-      this.currentCreatures = survivors;
-      this.redraw();
-    }
-
-    const newCreatures = this.populationStrategy.populate(this, survivors);
-    this.currentCreatures = newCreatures;
-
-    if (this.currentGen > 0) {
-      this.lastSurvivorsCount = survivors.length;
-      this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
-    } else {
-      console.log("New population:", newCreatures.length);
-      console.log(`Genome size: ${this.initialGenomeSize} genes`);
-    }
-
-    this.lastCreatureCount = newCreatures.length;
-    this.lastFitnessMaxValue = fitnessMaxValue;
-    
+  // creates a new creature, add to currentCreatures, add to grid
+  public newCreatureFirstGeneration(position : GridPosition) {
+    const creature = new Creature(this, position);
+    this.grid.addCreature(creature);
+    this.currentCreatures.push(creature);
   }
 
-  // A creature wants to give birth. If there is some place near this position will return new creature. If not will return null
-  // --> arreglar
-  creatureBirth (parent : Creature, targetBirthPosition : [number, number]) : Creature | null {
-
-    // --> revisar amb calma
-    //var offspringPosition = this.getNearByAvailablePosic(this.currentCreatures, targetBirthPosition[0], targetBirthPosition[1], 100, 100);
-    var creature : Creature | null = null;
-    var offspringPositionTest : [number, number];
-    var offspringPosition : [number, number] | null = null;
-    offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]+1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]+1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]-1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]+1];
-    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
-    
-    if (offspringPosition) {
-      creature = new Creature(this, offspringPosition, parent.massAtBirth, parent.genome);
-      this.currentCreatures.push(creature);
-    }
-  
+  // creates a new creature, add to currentCreatures, add to grid, mutate genome
+  public newCreature(position : GridPosition, massAtBirth: number, genome: Genome) : Creature {
+    const creature = new Creature(this, position, massAtBirth, genome.clone(
+      true,
+      this.mutationMode,
+      this.maxGenomeSize,
+      this.mutationProbability,
+      this.geneInsertionDeletionProbability,
+      this.deletionRatio
+    )
+    );
+    this.grid.addCreature(creature);
+    this.currentCreatures.push(creature);
     return creature;
   }
+
+  // --> to be moved to grid
   private initializeGrid(): void {
     // Generate pixels of objects
     for (let i = 0; i < this.objects.length; i++) {
       this.objects[i].computePixels(this.size);
     }
-
 
     for (let x = 0; x < this.size; x++) {
       // Create column
@@ -254,8 +205,10 @@ export default class World {
     // }
   }
 
-
-
+  public computeGrid() {
+    console.warn("world.computeGrid is deprecated --> should investigate why is gui calling it!!")
+  }
+  /*
   // place creatures in the grid
   public computeGrid() {
     this.grid.clear();
@@ -270,7 +223,6 @@ export default class World {
           creature;
       }
     }
-
     // // Use this to check if there are more than one creature in any
     // // grid point
     // let creatureAliveCount = 0;
@@ -298,6 +250,7 @@ export default class World {
     //   );
     // }
   }
+  */
 
   startRun(): void {
     this.computeStep();
@@ -324,10 +277,10 @@ export default class World {
       );
 
       // Recompute grid - place creatures in the grid 
-      this.computeGrid();
+      //this.computeGrid();
 
       // Compute step of every creature
-      console.log("entering step creatures: ", this.currentCreatures.length);
+      //console.log("entering step creatures: ", this.currentCreatures.length);
       for (let i = 0; i < this.currentCreatures.length; i++) {
         const creature = this.currentCreatures[i];
         if (creature.isAlive) {
@@ -380,7 +333,7 @@ export default class World {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
-      this.initializeWorld(true);
+      this.initializeWorld(this.size);
       this.resume();
       return;
     }
@@ -401,8 +354,21 @@ export default class World {
     this.pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
     this.lastCreatureIdCreated = 0;
+    
+    this.grid.clear();
 
-    this.selectAndPopulate();
+    const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
+    console.log("generation ", this.currentGen, " step ", this.currentStep, " survivors found: ", survivors.length);
+    
+    // Small pause
+    if (this.pauseBetweenGenerations > 0) {
+      this.currentCreatures = survivors;
+      this.redraw();
+    }
+    this.populationStrategy.populate(this, survivors);
+    this.lastSurvivorsCount = survivors.length;
+    this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
+    this.lastFitnessMaxValue = fitnessMaxValue;
 
     // Generation registry
     this.generationRegistry.startGeneration();

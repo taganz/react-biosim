@@ -32,13 +32,15 @@ export const CREATURE_MASS_GENERATION_0 = 1;
 export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
-
-// selection methods
 export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
 export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
 //export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
-export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
-//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
+
+
+//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
+export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
+
+
 export const RUN_MUTATION_MODE : MutationMode = MutationMode.wholeGene;
 
 export const colors = {
@@ -53,7 +55,7 @@ export const colors = {
 // run parameters
 export const RUN_WORLD_SIZE = 100;
 export const RUN_STEPS_PER_GENERATION = 300;
-export const RUN_INITIAL_POPULATION = 500;
+export const RUN_INITIAL_POPULATION = 50; //500;
 export const RUN_INITIAL_GENOME_SIZE = 4;
 export const RUN_MAX_GENOME_SIZE = 30;
 export const RUN_MAX_NUMBER_NEURONS = 15;

@@ -2,20 +2,34 @@ import shuffle from "lodash.shuffle";
 import World from "../../world/World";
 import Creature from "../Creature";
 import PopulationStrategy from "./PopulationStrategy";
+import {GridPosition} from "../../world/grid/Grid";
+
 
 export default class AsexualRandomPopulation implements PopulationStrategy {
-  populate(world: World, parents?: Creature[]): Creature[] {
-    const creatures: Creature[] = [];
+
+  populate(world: World, parents?: Creature[]): void {
+    //const creatures: Creature[] = [];
 
     // First generation
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
+        
         // Generate the creature
-        let position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
-        const creature = new Creature(world, position);
-        creatures.push(creature);
+        let position : GridPosition | null = world.grid.getRandomAvailablePosition();
+        if (position != null) {
+          world.newCreatureFirstGeneration(position);
+        }
+        else {
+          console.warn("no free position found");
+        }
       }
-    } else if (parents) {
+
+    } else {
+    
+      if (!parents) {
+          throw new Error ("generations > 0 should have parents");
+      }
+
       // Determine how many children per parent are needed
       const childrenPerParent = Math.max(
         Math.ceil(world.initialPopulation / parents.length),
@@ -33,17 +47,17 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
             if (childIdx > 0) {
               totalNeededCreatures--;
             }
-
-            // Produce a child
-            const creature = parent.reproduce();
-            creature.position =
-              world.grid.getRandomAvailablePositionDeepCheck(creatures);
-            creatures.push(creature);
+            let position : GridPosition | null = world.grid.getRandomAvailablePosition();
+            if (position != null) {
+              world.newCreature(position, parent.massAtBirth, parent.genome);
+            }
+            else {
+              console.warn("no free position found 2");
+            }
           }
         }
       }
     }
 
-    return creatures;
   }
 }

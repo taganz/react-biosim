@@ -1,14 +1,15 @@
 import shuffle from "lodash.shuffle";
 import World from "../../world/World";
+import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../Creature";
 import PopulationStrategy from "./PopulationStrategy";
 import WorldObject from "@/simulation/world/WorldObject";
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class AsexualZonePopulation implements PopulationStrategy {
-  populate(world: World, parents?: Creature[]): Creature[] {
-    const creatures: Creature[] = [];
-    let pos : [number, number] = [0.5, 0.5];
+  populate(world: World, parents?: Creature[]): void {
+    //const creatures: Creature[] = [];
+    let pos : GridPosition | null = null;
     let zonePopulation : boolean = false;
     let halfWidth : number = 0;
     let halfHeight : number = 0;
@@ -31,21 +32,27 @@ export default class AsexualZonePopulation implements PopulationStrategy {
       }
     }
     
-    
     // First generation
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
         // Generate the creature
         if (zonePopulation == false) {
-          var position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
+          pos = world.grid.getRandomAvailablePosition();
+          //var position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
         }
         else {
-          var position = world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
+          pos = pos==null ? [Math.floor(world.size/2), Math.floor(world.size/2)] : pos;
+          pos = world.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
+          //var position = world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
+        }        
+        if (pos != null) {
+          world.newCreatureFirstGeneration(pos);
         }
-        
-        const creature = new Creature(world, position);
-        creatures.push(creature);
+        else {
+          console.warn("no position for creature");
+        }
       }
+        
     } else if (parents) {
       // Determine how many children per parent are needed
       const childrenPerParent = Math.max(
@@ -66,14 +73,20 @@ export default class AsexualZonePopulation implements PopulationStrategy {
             }
 
             // Produce a child
-            const creature = parent.reproduce();
+            let offspringPosition : GridPosition | null;
             if (zonePopulation == false) {
-              creature.position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
+              offspringPosition = world.grid.getRandomAvailablePosition();
             }
             else {
-              creature.position =  world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
+              pos = pos==null ? [Math.floor(world.size/2), Math.floor(world.size/2)] : pos;
+              offspringPosition =  world.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
             }
-            creatures.push(creature);
+            if (offspringPosition != null) {
+              parent.world.newCreature(offspringPosition, parent.massAtBirth, parent.genome);
+            }
+            else {
+              console.warn("no position for creature 2");
+            }
           }
         }
       }
