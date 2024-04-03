@@ -10,23 +10,10 @@ import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
 import { WorldEvents } from "../events/WorldEvents";
 import { GenerationRegistry } from "./stats/GenerationRegistry";
+import * as constants from "@/simulation/simulationConstants"
+import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import WorldObject from "./WorldObject";
 
-type GridPoint = {
-  creature: Creature | null;
-  objects: WorldObject[];
-  isSolid: boolean;
-};
-type Grid = Array<Array<GridPoint>>;
-
-export const colors = {
-  reproduction: "rgba(0,0,255,0.1)",
-  obstacle: "rgb(60, 60, 60)",
-  healing: "rgba(0,255,0, 0.1)",
-  danger: "rgba(255,0,0, 0.1)",
-  spawn: "rgba(255, 255, 0, 0.1)",
-
-};
 
 export default class World {
   static instance?: World;
@@ -47,10 +34,10 @@ export default class World {
   actions: CreatureActions = new CreatureActions();
 
    // World
-   grid: Grid = [];
+   grid: Grid;
    objects: WorldObject[] = [];   // to be set externally
 
-   
+   lastCreatureIdCreated : number = 0;
 
   // status
   currentGen: number = 0;
@@ -90,6 +77,7 @@ export default class World {
 
   
   constructor(canvas: HTMLCanvasElement | null, size: number) {
+    this.grid = new Grid(size);
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -122,9 +110,11 @@ export default class World {
 
       // Clear previous creatures
       this.currentCreatures = [];
+      this.lastCreatureIdCreated = 0;   // resets at generation
     }
-
+    
     this.initializeGrid();
+
     this.computeGrid();
     if (restart) {
       this.selectAndPopulate();
@@ -168,24 +158,67 @@ export default class World {
     
   }
 
+  // A creature wants to give birth. If there is some place near this position will return new creature. If not will return null
+  // --> arreglar
+  creatureBirth (parent : Creature, targetBirthPosition : [number, number]) : Creature | null {
+
+    // --> revisar amb calma
+    //var offspringPosition = this.getNearByAvailablePosic(this.currentCreatures, targetBirthPosition[0], targetBirthPosition[1], 100, 100);
+    var creature : Creature | null = null;
+    var offspringPositionTest : [number, number];
+    var offspringPosition : [number, number] | null = null;
+    offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]+1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]+1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]-1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]+1];
+    offspringPositionTest = this.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+    if (!this.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+    
+    if (offspringPosition) {
+      creature = new Creature(this, offspringPosition, parent.massAtBirth, parent.genome);
+      this.currentCreatures.push(creature);
+    }
+  
+    return creature;
+  }
   private initializeGrid(): void {
     // Generate pixels of objects
     for (let i = 0; i < this.objects.length; i++) {
       this.objects[i].computePixels(this.size);
     }
 
-    // Initialize the grid
-    this.grid = [];
+
     for (let x = 0; x < this.size; x++) {
       // Create column
-      const col: Array<GridPoint> = [];
+      const col: Array<GridCell> = [];
       for (let y = 0; y < this.size; y++) {
         // Create and push row
-        col.push({ creature: null, objects: [], isSolid: false });
+        col.push({ creature: null, objects: [], isSolid: false, water: constants.WATER_GRIDPOINT_DEFAULT, energy: constants.ENERGY_GRIDPOINT_DEFAULT });
       }
 
       // Push column
-      this.grid.push(col);
+      this.grid.addRow(col);
     }
 
     // Check objects
@@ -199,10 +232,11 @@ export default class World {
       for (let pixelIdx = 0; pixelIdx < obj.pixels.length; pixelIdx++) {
         const [x, y] = obj.pixels[pixelIdx];
         // Set pixel
-        this.grid[x][y].objects.push(obj);
+        //this.grid[x][y].objects.push(obj);
+        this.grid.cell(x, y).objects.push(obj);
         // Is it solid?
         if (obj.areaType === undefined) {
-          this.grid[x][y].isSolid = true;
+          this.grid.cell(x,y).isSolid = true;
         }
       }
     }
@@ -220,19 +254,11 @@ export default class World {
     // }
   }
 
-  private clearGrid() {
-    for (let y = 0; y < this.size; y++) {
-      for (let x = 0; x < this.size; x++) {
-        const point = this.grid[x][y];
-        point.creature = null;
-        // point.obstacle = null;
-        // point.areas = [];
-      }
-    }
-  }
 
+
+  // place creatures in the grid
   public computeGrid() {
-    this.clearGrid();
+    this.grid.clear();
 
     // Set creatures
     for (let i = 0; i < this.currentCreatures.length; i++) {
@@ -240,7 +266,7 @@ export default class World {
 
       if (creature.isAlive) {
         // Set creature if it's alive
-        this.grid[creature.position[0]][creature.position[1]].creature =
+        this.grid.cell(creature.position[0], creature.position[1]).creature =
           creature;
       }
     }
@@ -297,15 +323,17 @@ export default class World {
         new CustomEvent(WorldEvents.startStep, { detail: { world: this } })
       );
 
-      // Recompute grid
+      // Recompute grid - place creatures in the grid 
       this.computeGrid();
 
       // Compute step of every creature
+      console.log("entering step creatures: ", this.currentCreatures.length);
       for (let i = 0; i < this.currentCreatures.length; i++) {
         const creature = this.currentCreatures[i];
         if (creature.isAlive) {
+          //console.log("step creature ", creature.id);
           // Effect of the areas the creature is in
-          const point = this.grid[creature.position[0]][creature.position[1]];
+          const point = this.grid.cell(creature.position[0], creature.position[1]);
           for (
             let objectIndex = 0;
             objectIndex < point.objects.length;
@@ -342,7 +370,7 @@ export default class World {
 
     // RD if everybody is dead, wait and restart
     let someBodyIsAlive = false;
-    for (let i = 0; i < this.currentCreatures.length; i++) {
+    for (let i = 0; i < this.currentCreatures.length; i++) {  // --> aixo es podria calcular al bucle adalt
       someBodyIsAlive = this.currentCreatures[i].isAlive;
       if (someBodyIsAlive) {
         break;
@@ -372,6 +400,7 @@ export default class World {
     this.lastGenerationDate = new Date();
     this.pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
+    this.lastCreatureIdCreated = 0;
 
     this.selectAndPopulate();
 
@@ -421,120 +450,6 @@ export default class World {
     return !this.timeoutId;
   }
 
-  public getRandomPosition(): [number, number] {
-    return [
-      Math.floor(Math.random() * this.size),
-      Math.floor(Math.random() * this.size),
-    ];
-  }
-
-  public getRandomAvailablePosition() {
-    // Generate a position until it corresponds to an empty tile
-    let position: [number, number];
-    do {
-      position = this.getRandomPosition();
-    } while (!this.isTileEmpty(position[0], position[1]));
-
-    return position;
-  }
-
-  public isTileEmpty(x: number, y: number): boolean {
-    // for (let i = 0; i < this.currentCreatures.length; i++) {
-    //   const creature = this.currentCreatures[i];
-    //   if (creature.isAlive && creature.position[0] === x && creature.position[1] === y) {
-    //     return false;
-    //   }
-    // }
-    // return true;
-
-    const gridPoint = this.grid[x][y];
-    return !this.grid[x][y].creature && !gridPoint.isSolid;
-  }
-
-  public getRandomAvailablePositionDeepCheck(
-    creatures: Creature[]
-  ): [number, number] {
-    // Generate a position until it corresponds to an empty tile
-    let position: [number, number];
-    do {
-      position = this.getRandomPosition();
-    } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
-
-    return position;
-  }
-  
-  
-
-  // RD 
-  public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number, hw: number, hh: number): [number, number] {
-    // Generate a position until it corresponds to an empty tile
-    let position: [number, number];
-    let hw2 : number = hw;
-    let hh2 : number = hh;
-    // if population doesn't fit inside the spawn area, make area bigger
-    // note: won't work well if rectangle is partially outside the canvas?
-    if (hw2 * hh2 * 4 < this.initialPopulation * 1.3) {
-        hw2 = Math.sqrt(this.initialPopulation * hw2 / hh2);
-        hh2 = Math.sqrt(this.initialPopulation * hh2 / hw2);
-    }
-    let warning = this.initialPopulation * 1.5; // basic infinite loop prevention
-    do {
-      if (warning-- == 0) {
-        console.warn("getCenteredAvailablePositionDeepCheck -- warning == 0", hw2, hh2, this.initialPopulation);
-        hw2 *= 1.3;
-        hh2 *= 1.3;
-        warning = this.initialPopulation * 1.5;
-      }
-      position = [
-        Math.floor(x + (Math.random() * 2 - 1) * hw2),
-        Math.floor(y + (Math.random() * 2 - 1) * hh2),
-      ];
-      position = this.clampWorld(position[0], position[1]);
-      //console.log("warning: ", warning, "position ", position);
-    } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
-
-    return position;
-  }
-
-
-
-  // RD 25/2/24  
-  public clampWorld(x: number, y: number): [number, number] {
-    const clampedX = Math.min(Math.max(x, 0), this.size-1);
-    const clampedY = Math.min(Math.max(y, 0), this.size-1);
-    return [clampedX, clampedY];
-  }
-
-  public isTileEmptyDeepCheck(
-    creatures: Creature[],
-    x: number,
-    y: number
-  ): boolean {
-    let hasCreature = false;
-
-    for (let i = 0; i < creatures.length; i++) {
-      const creature = creatures[i];
-      if (
-        creature.isAlive &&
-        creature.position[0] === x &&
-        creature.position[1] === y
-      ) {
-        hasCreature = true;
-        break;
-      }
-    }
-
-    const gridPoint = this.grid[x][y];
-    return !hasCreature && !gridPoint.isSolid;
-  }
-
-  public isTileInsideWorld(x: number, y: number): boolean {
-    if (x < 0 || y < 0 || x >= this.size || y >= this.size) {
-      return false;
-    }
-
-    return true;
-  }
 
   public mouseEventPosToWorld(e: MouseEvent): number[] {
     const rect = this.canvas.getBoundingClientRect();

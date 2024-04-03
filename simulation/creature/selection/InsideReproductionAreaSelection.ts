@@ -11,7 +11,7 @@ export default class InsideReproductionAreaSelection
     const parents = [];
 
     for (const creature of world.currentCreatures) {
-      const gridPoint = world.grid[creature.position[0]][creature.position[1]];
+      const gridPoint = world.grid.cell(creature.position[0], creature.position[1]);
 
       if (
         creature.isAlive &&

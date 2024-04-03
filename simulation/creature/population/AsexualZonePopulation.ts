@@ -24,7 +24,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
       // Is it a spawn area?
       if (obj.areaType === 2) {
         zonePopulation = true;
-        pos = world.clampWorld((obj.x + obj.width/2) * world.size, (obj.y + obj.height/2) * world.size);  // rectangle center
+        pos = world.grid.clamp((obj.x + obj.width/2) * world.size, (obj.y + obj.height/2) * world.size);  // rectangle center
         halfWidth = obj.width/2 * world.size;
         halfHeight = obj.height/2 * world.size;
         break;
@@ -37,10 +37,10 @@ export default class AsexualZonePopulation implements PopulationStrategy {
       for (let i = 0; i < world.initialPopulation; i++) {
         // Generate the creature
         if (zonePopulation == false) {
-          var position = world.getRandomAvailablePositionDeepCheck(creatures);
+          var position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
         }
         else {
-          var position = world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight);
+          var position = world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
         }
         
         const creature = new Creature(world, position);
@@ -68,10 +68,10 @@ export default class AsexualZonePopulation implements PopulationStrategy {
             // Produce a child
             const creature = parent.reproduce();
             if (zonePopulation == false) {
-              creature.position = world.getRandomAvailablePositionDeepCheck(creatures);
+              creature.position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
             }
             else {
-              creature.position =  world.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight);
+              creature.position =  world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
             }
             creatures.push(creature);
           }

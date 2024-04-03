@@ -11,7 +11,7 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
         // Generate the creature
-        let position = world.getRandomAvailablePositionDeepCheck(creatures);
+        let position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
         const creature = new Creature(world, position);
         creatures.push(creature);
       }
@@ -37,7 +37,7 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
             // Produce a child
             const creature = parent.reproduce();
             creature.position =
-              world.getRandomAvailablePositionDeepCheck(creatures);
+              world.grid.getRandomAvailablePositionDeepCheck(creatures);
             creatures.push(creature);
           }
         }
