@@ -176,7 +176,7 @@ export default class CreatureActions {
 
         // --> revisar amb calma
         //var offspringPosition = this.getNearByAvailablePosic(this.currentCreatures, targetBirthPosition[0], targetBirthPosition[1], 100, 100);
-        var creature : Creature | null = null;
+        var creature : Creature;
         var targetBirthPosition = creature.position;
         var offspringPositionTest : [number, number];
         var offspringPosition : [number, number] | null = null;

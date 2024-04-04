@@ -60,7 +60,7 @@ export default class MovingRectangleObstacle implements WorldObject {
   }
 
   draw() {
-    this.world.drawRect(
+    this.world.worldCanvas.drawRect(
       this.absoluteX,
       this.absoluteY,
       this.absoluteWidth,

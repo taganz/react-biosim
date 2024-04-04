@@ -9,10 +9,11 @@ import WorldObject from "@/simulation/world/WorldObject";
 export default class AsexualZonePopulation implements PopulationStrategy {
   populate(world: World, parents?: Creature[]): void {
     //const creatures: Creature[] = [];
-    let pos : GridPosition | null = null;
+    let pos : GridPosition = [Math.floor(world.size/2), Math.floor(world.size/2)];
     let zonePopulation : boolean = false;
     let halfWidth : number = 0;
     let halfHeight : number = 0;
+    let offspringPosition : GridPosition | null;
      
     // if a spawn zone exists will use zone population
     for (
@@ -35,18 +36,16 @@ export default class AsexualZonePopulation implements PopulationStrategy {
     // First generation
     if (world.currentGen === 0) {
       for (let i = 0; i < world.initialPopulation; i++) {
+
         // Generate the creature
         if (zonePopulation == false) {
-          pos = world.grid.getRandomAvailablePosition();
-          //var position = world.grid.getRandomAvailablePositionDeepCheck(creatures);
+          offspringPosition = world.grid.getRandomAvailablePosition();
         }
         else {
-          pos = pos==null ? [Math.floor(world.size/2), Math.floor(world.size/2)] : pos;
-          pos = world.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
-          //var position = world.grid.getCenteredAvailablePositionDeepCheck(creatures, pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
+          offspringPosition = world.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, world.initialPopulation);
         }        
-        if (pos != null) {
-          world.newCreatureFirstGeneration(pos);
+        if (offspringPosition != null) {
+          world.newCreatureFirstGeneration(offspringPosition);
         }
         else {
           console.warn("no position for creature");
@@ -73,7 +72,6 @@ export default class AsexualZonePopulation implements PopulationStrategy {
             }
 
             // Produce a child
-            let offspringPosition : GridPosition | null;
             if (zonePopulation == false) {
               offspringPosition = world.grid.getRandomAvailablePosition();
             }

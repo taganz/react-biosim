@@ -213,7 +213,7 @@ export default class CreatureSensors {
       let y = creature.position[1] - 1;
       let tile;
       if (y >= 0) {
-        tile = creature.world.grid[x][y];
+        tile = creature.world.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
@@ -221,7 +221,7 @@ export default class CreatureSensors {
       x = creature.position[0] + 1;
       y = creature.position[1];
       if (x < creature.world.size) {
-        tile = creature.world.grid[x][y];
+        tile = creature.world.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
@@ -229,7 +229,7 @@ export default class CreatureSensors {
       x = creature.position[0];
       y = creature.position[1] + 1;
       if (y < creature.world.size) {
-        tile = creature.world.grid[x][y];
+        tile = creature.world.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
@@ -237,7 +237,7 @@ export default class CreatureSensors {
       x = creature.position[0] - 1;
       y = creature.position[1];
       if (x >= 0) {
-        tile = creature.world.grid[x][y];
+        tile = creature.world.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
     }
@@ -264,7 +264,7 @@ export default class CreatureSensors {
           x < creature.world.size &&
           y < creature.world.size
         ) {
-          if (creature.world.grid[x][y].creature) {
+          if (creature.world.grid.cell(x,y).creature) {
             populationCount++;
           }
         }

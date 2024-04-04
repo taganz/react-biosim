@@ -1,5 +1,4 @@
 import RectangleObject from "../../objects/RectangleObject";
-import World from "../../World";
 import SpawnArea from "./SpawnArea";
 
 export default class RectangleSpawnArea extends SpawnArea(

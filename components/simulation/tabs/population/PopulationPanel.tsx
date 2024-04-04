@@ -9,6 +9,7 @@ import { Species } from "./Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import Creature from "@/simulation/creature/Creature";
+//import { GridPosition } from "@/simulation/world/grid/Grid";
 
 export default function PopulationPanel() {
   const world = useAtomValue(worldAtom);
@@ -72,7 +73,7 @@ export default function PopulationPanel() {
       if (world) {
         // Get creature at the mouse coordinates
         const [worldX, worldY] = world.worldCanvas.mouseEventPosToWorld(e);
-        const creature = world.grid[worldX][worldY].creature;
+        const creature = world.grid.cell(worldX, worldY).creature;
 
         if (creature) {
           selectCreature(creature);
@@ -90,6 +91,7 @@ export default function PopulationPanel() {
     }
   }, [world]);
 
+  // draw a small square at cursor position to select creature
   const onMouseMoveCanvas = useCallback(
     (e: MouseEvent) => {
       if (world && world.isPaused) {

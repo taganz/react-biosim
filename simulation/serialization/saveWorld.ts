@@ -33,6 +33,8 @@ export function serializeSpecies(world: World) {
       lastMovement: creature.lastMovement,
       lastPosition: creature.lastPosition,
       position: creature.lastPosition,
+      mass: creature.mass,
+      massAtBirth: creature.massAtBirth
     });
   }
 

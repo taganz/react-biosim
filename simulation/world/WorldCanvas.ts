@@ -16,65 +16,14 @@ import WorldObject from "./WorldObject";
 import Genome from "@/simulation/creature/genome/Genome";
 
 
+
+
 export default class WorldCanvas {
   
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   size: number;
-  /*
-  static instance?: World;
-
-  
-  // initial settings - to be set externally
-  size: number = 10;
-  stepsPerGen: number = 0;
-  initialPopulation: number = 0;
-  initialGenomeSize: number = 0;
-  maxGenomeSize: number = 0;
-  maxNumberNeurons: number = 0;
-  mutationProbability: number = 0;
-  geneInsertionDeletionProbability: number = 0;
-  sensors: CreatureSensors = new CreatureSensors();
-  actions: CreatureActions = new CreatureActions();
-
-   // World
-   grid: Grid = new Grid(0);
-   objects: WorldObject[] = [];   // to be set externally
-   currentCreatures: Creature[] = [];
-
-   lastCreatureIdCreated : number = 0;   // --> aprofitar posicio en array per id de creatures?
-
-  // status
-  currentGen: number = 0;
-  currentStep: number = 0;
-  timePerStep: number = 0;
-  immediateSteps: number = 1;    // number of steps to run without redrawing
-  deletionRatio: number = 0.5;    // --> not used?
-  mutationMode: MutationMode = MutationMode.wholeGene;
-  pauseBetweenGenerations: number = 0;
-
-  // Stats
-  lastCreatureCount: number = 0;
-  lastSurvivorsCount: number = 0;
-  lastSurvivalRate: number = 0;
-  lastGenerationDate: Date = new Date();
-  lastGenerationDuration: number = 0;
-  lastPauseDate: Date | undefined = new Date();
-  pauseTime: number = 0;
-  totalTime: number = 0;
-  generationRegistry: GenerationRegistry = new GenerationRegistry(this);
-  lastFitnessMaxValue : number = 0;
-
-  populationStrategy:   PopulationStrategy = new AsexualZonePopulation(); 
-  
-  selectionMethod: SelectionMethod = new InsideReproductionAreaSelection();  
-
-  events: EventTarget = new EventTarget();
-  timeoutId?: number;
-
- */
-
-  
+    
   constructor(canvas: HTMLCanvasElement | null, size: number) {
     if (canvas) {
       this.canvas = canvas;
@@ -84,8 +33,6 @@ export default class WorldCanvas {
       throw new Error("Cannot found canvas");
     }
   }
-
-
 
   public mouseEventPosToWorld(e: MouseEvent): GridPosition {
     const rect = this.canvas.getBoundingClientRect();
@@ -98,7 +45,6 @@ export default class WorldCanvas {
       Math.floor(relativeY * this.size),
     ];
   }
-
 
   private clearCanvas(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
