@@ -135,6 +135,7 @@ export default class World {
     const creature = new Creature(this, position);
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
+    this.lastCreatureIdCreated += 1;
   }
 
   // creates a new creature, add to currentCreatures, add to grid, mutate genome
@@ -150,6 +151,7 @@ export default class World {
     );
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
+    this.lastCreatureIdCreated += 1;
     return creature;
   }
 
@@ -353,18 +355,19 @@ export default class World {
     this.lastGenerationDate = new Date();
     this.pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
-    this.lastCreatureIdCreated = 0;
-    
-    this.grid.clear();
-
+   
+    // Get survivors and calculate maximum fitness for this generation
     const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
     console.log("generation ", this.currentGen, " step ", this.currentStep, " survivors found: ", survivors.length);
+
+    // Reset creatures
+    this.grid.clearCreatures();
+    this.currentCreatures = [];
+    this.lastCreatureIdCreated = 0;   // resets at generation
+
+
     
-    // Small pause
-    if (this.pauseBetweenGenerations > 0) {
-      this.currentCreatures = survivors;
-      this.redraw();
-    }
+    // Repopulate with survivors
     this.populationStrategy.populate(this, survivors);
     this.lastSurvivorsCount = survivors.length;
     this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
@@ -373,6 +376,7 @@ export default class World {
     // Generation registry
     this.generationRegistry.startGeneration();
 
+    // Event
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startGeneration, { detail: { world: this } })
     );

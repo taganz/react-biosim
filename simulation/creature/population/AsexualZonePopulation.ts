@@ -92,6 +92,5 @@ export default class AsexualZonePopulation implements PopulationStrategy {
       }
     }
 
-    return creatures;
   }
 }

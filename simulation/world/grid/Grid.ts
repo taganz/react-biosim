@@ -39,7 +39,7 @@ export class Grid {
   }
 
     // clear creatures, keep other values
-    public clear() {
+    public clearCreatures() {
         for (let y = 0; y < this._size; y++) {
           for (let x = 0; x < this._size; x++) {
             const point = this._grid[x][y];
