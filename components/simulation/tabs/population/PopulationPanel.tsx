@@ -71,7 +71,7 @@ export default function PopulationPanel() {
     (e: MouseEvent) => {
       if (world) {
         // Get creature at the mouse coordinates
-        const [worldX, worldY] = world.mouseEventPosToWorld(e);
+        const [worldX, worldY] = world.worldCanvas.mouseEventPosToWorld(e);
         const creature = world.grid[worldX][worldY].creature;
 
         if (creature) {
@@ -93,9 +93,9 @@ export default function PopulationPanel() {
   const onMouseMoveCanvas = useCallback(
     (e: MouseEvent) => {
       if (world && world.isPaused) {
-        const [worldX, worldY] = world.mouseEventPosToWorld(e);
-        world.redraw();
-        world.drawRectStroke(worldX, worldY, 1, 1, "rgba(0,0,0,0.5)", 1.5);
+        const [worldX, worldY] = world.worldCanvas.mouseEventPosToWorld(e);
+        world.worldCanvas.redraw(world.currentCreatures, world.objects, world.currentGen);
+        world.worldCanvas.drawRectStroke(worldX, worldY, 1, 1, "rgba(0,0,0,0.5)", 1.5);
       }
     },
     [world]
