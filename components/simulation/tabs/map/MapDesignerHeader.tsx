@@ -22,7 +22,7 @@ export default function MapDesignerHeader() {
 
   const [setWorldObjects, setWorldObjectsAtom] = useAtom(worldObjectsAtom);
   
-  //RD set objects in world and initialize, store also in atom for further initializations
+  // Button "Use Map": set objects in world and initialize, store also in atom for further initializations
   const handleUse = () => {
     if (world) {
       const isPaused = world.isPaused;
