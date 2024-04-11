@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import { useEffect, useRef } from "react";
 import { Species } from "./Species";
 import { useWindowSize } from "react-use";
@@ -15,7 +15,7 @@ export default function SelectedSpeciesPanel({
   species,
   selectedSpecies,
 }: Props) {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const graphCanvas = useRef<HTMLCanvasElement>(null);
   const { width } = useWindowSize();
 
@@ -27,8 +27,8 @@ export default function SelectedSpeciesPanel({
     (actualSelectedSpecies && actualSelectedSpecies.creatures.length) ?? 0;
 
   const populationPercentage = (
-    actualSelectedSpecies && world
-      ? (actualSelectedSpecies.creatures.length / world.initialPopulation) * 100
+    actualSelectedSpecies && worldController
+      ? (actualSelectedSpecies.creatures.length / worldController.initialPopulation) * 100
       : 0
   ).toFixed(2);
 
@@ -48,7 +48,7 @@ export default function SelectedSpeciesPanel({
 
   return (
     <>
-      {selectedSpecies && world ? (
+      {selectedSpecies && worldController ? (
         <div className="flex flex-col gap-3">
           <h3 className="text-center text-2xl font-bold">
             Selected species{" "}

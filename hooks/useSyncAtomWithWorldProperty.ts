@@ -1,19 +1,19 @@
-import { worldAtom } from "@/components/simulation/store";
-import World from "@/simulation/world/World";
+import { worldControllerAtom } from "@/components/simulation/store";
+import WorldController from "@/simulation/world/WorldController";
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { useEffect } from "react";
 import useWorldPropertyValue from "./useWorldPropertyValue";
 
 export default function useSyncAtomWithWorldProperty<T>(
   atom: PrimitiveAtom<T>,
-  getter: (world: World) => T,
+  getter: (worldController: WorldController) => T,
   compare?: (a: T, b: T) => boolean
 ) {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [atomValue, setAtomValue] = useAtom(atom);
   const value = useWorldPropertyValue(getter, atomValue, compare);
 
   useEffect(() => {
-    if (world) setAtomValue(value);
-  }, [world, value, setAtomValue]);
+    if (worldController) setAtomValue(value);
+  }, [worldController, value, setAtomValue]);
 }

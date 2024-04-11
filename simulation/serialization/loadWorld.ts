@@ -1,7 +1,7 @@
 import Creature from "../creature/Creature";
 import Genome from "../creature/genome/Genome";
 import { GenerationRegistry } from "../world/stats/GenerationRegistry";
-import World from "../world/World";
+import WorldController from "../world/WorldController";
 import WorldObject from "../world/WorldObject";
 import SavedSpecies from "./data/SavedSpecies";
 import SavedWorld from "./data/SavedWorld";
@@ -9,13 +9,13 @@ import SavedWorldObject from "./data/SavedWorldObject";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
 import objectFormatters from "./formatters/objectFormatters";
 
-export function deserializeSpecies(world: World, species: SavedSpecies[]) {
+export function deserializeSpecies(world: WorldController, species: SavedSpecies[]) {
   const deserializedCreatures: Creature[] = [];
 
   species.forEach((savedSpecies) => {
     savedSpecies.creatures.forEach((savedCreature) => {
       const genome: Genome = new Genome(savedSpecies.genes);
-      const creature = new Creature(world, savedCreature.position, savedCreature.mass, genome);
+      const creature = new Creature(worldController, savedCreature.position, savedCreature.mass, genome);
       creature.lastMovement = savedCreature.lastMovement;
       creature.lastPosition = savedCreature.lastPosition;
       creature.massAtBirth = savedCreature.massAtBirth;
@@ -28,7 +28,7 @@ export function deserializeSpecies(world: World, species: SavedSpecies[]) {
 }
 
 export function deserializeObjects(objects: SavedWorldObject[]) {
-  // Clear world objects
+  // Clear worldController objects
   const deserializedObjects: WorldObject[] = [];
 
   // Load objects
@@ -44,57 +44,57 @@ export function deserializeObjects(objects: SavedWorldObject[]) {
   return deserializedObjects;
 }
 
-export function loadWorld(world: World, data: string) {
+export function loadWorld(worldController: WorldController, data: string) {
   const parsed = JSON.parse(data) as SavedWorld;
 
-  world.pause();
+  worldController.pause();
 
-  // Load basic world data
-  world.size = parsed.size;
-  world.initialPopulation = parsed.initialPopulation;
-  world.currentGen = parsed.currentGen;
-  world.currentStep = parsed.currentStep;
-  world.timePerStep = parsed.timePerStep;
-  world.stepsPerGen = parsed.stepsPerGen;
-  world.immediateSteps = parsed.immediateSteps;
-  world.initialGenomeSize = parsed.initialGenomeSize;
-  world.maxGenomeSize = parsed.maxGenomeSize;
-  world.maxNumberNeurons = parsed.maxNumberNeurons;
-  world.mutationProbability = parsed.mutationProbability;
-  world.geneInsertionDeletionProbability =
+  // Load basic worldController data
+  worldController.size = parsed.size;
+  worldController.initialPopulation = parsed.initialPopulation;
+  worldController.currentGen = parsed.currentGen;
+  worldController.currentStep = parsed.currentStep;
+  worldController.pauseBetweenSteps = parsed.pauseBetweenSteps;
+  worldController.stepsPerGen = parsed.stepsPerGen;
+  worldController.immediateSteps = parsed.immediateSteps;
+  worldController.initialGenomeSize = parsed.initialGenomeSize;
+  worldController.maxGenomeSize = parsed.maxGenomeSize;
+  worldController.maxNumberNeurons = parsed.maxNumberNeurons;
+  worldController.mutationProbability = parsed.mutationProbability;
+  worldController.geneInsertionDeletionProbability =
     parsed.geneInsertionDeletionProbability;
-  world.deletionRatio = parsed.deletionRatio;
-  world.mutationMode = parsed.mutationMode;
-  world.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
-  world.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
+  worldController.deletionRatio = parsed.deletionRatio;
+  worldController.mutationMode = parsed.mutationMode;
+  worldController.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
+  worldController.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
 
   // Stats
-  world.lastCreatureCount = parsed.lastCreatureCount;
-  world.lastSurvivorsCount = parsed.lastSurvivorsCount;
-  world.lastSurvivalRate = parsed.lastSurvivalRate;
-  world.lastGenerationDuration = parsed.lastGenerationDuration;
-  world.totalTime = parsed.totalTime;
+  worldController.lastCreatureCount = parsed.lastCreatureCount;
+  worldController.lastSurvivorsCount = parsed.lastSurvivorsCount;
+  worldController.lastSurvivalRate = parsed.lastSurvivalRate;
+  worldController.lastGenerationDuration = parsed.lastGenerationDuration;
+  worldController.totalTime = parsed.totalTime;
 
   // Enable sensors and actions
-  world.sensors.loadFromList(parsed.sensors);
-  world.actions.loadFromList(parsed.actions);
+  worldController.sensors.loadFromList(parsed.sensors);
+  worldController.actions.loadFromList(parsed.actions);
 
   // Load creatures
-  world.currentCreatures = deserializeSpecies(world, parsed.species);
+  worldController.currentCreatures = deserializeSpecies(worldController, parsed.species);
 
   // Load objects
-  world.objects = deserializeObjects(parsed.objects);
+  worldController.objects = deserializeObjects(parsed.objects);
 
   // Load generation registry
   if (parsed.generations) {
-    world.generationRegistry = generationRegistryFormatter.deserialize(
+    worldController.generationRegistry = generationRegistryFormatter.deserialize(
       parsed.generations,
-      world
+      worldController
     );
   } else {
-    world.generationRegistry = new GenerationRegistry(world);
+    worldController.generationRegistry = new GenerationRegistry(worldController);
   }
 
-  // Initialize world
-  world.initializeWorld(parsed.size);
+  // Initialize worldController
+  worldController.startRun();
 }

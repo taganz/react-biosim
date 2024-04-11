@@ -1,5 +1,5 @@
 import { GenerationRegistry } from "../../world/stats/GenerationRegistry";
-import World from "../../world/World";
+import WorldController from "../../world/WorldController";
 import SavedGenerationRegistry from "../data/SavedGenerationRegistry";
 import { DataFormatter } from "./DataFormatter";
 
@@ -27,8 +27,8 @@ const generationRegistryFormatter: DataFormatter<
       maxFitnessValue
     };
   },
-  deserialize(data: SavedGenerationRegistry, world: World): GenerationRegistry {
-    const result = new GenerationRegistry(world);
+  deserialize(data: SavedGenerationRegistry, worldController: WorldController): GenerationRegistry {
+    const result = new GenerationRegistry(worldController);
     result.maxSurvivorCount = data.maxSurvivorCount;
     result.minSurvivorCount = data.minSurvivorCount;
     result.generations = data.generations.map(

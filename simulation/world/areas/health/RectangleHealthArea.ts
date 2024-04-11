@@ -36,7 +36,7 @@ export default class RectangleHealthArea extends HealthAreaMixin(
 //   healthPerStep: number = 0;
 
 //   constructor(
-//     public world: World,
+//     public worldController: WorldController,
 //     public x: number,
 //     public y: number,
 //     public width: number,
@@ -44,7 +44,7 @@ export default class RectangleHealthArea extends HealthAreaMixin(
 //     public relative: boolean = true,
 //     healthPerStep: number = 0
 //   ) {
-//     super(world, x, y, width, height, relative);
+//     super(worldController, x, y, width, height, relative);
 
 //     this.healthPerStep = healthPerStep;
 //     if (this.healthPerStep >= 0) {

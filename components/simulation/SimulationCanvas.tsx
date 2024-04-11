@@ -1,104 +1,120 @@
 "use client";
 
-import World from "@/simulation/world/World";
-import { useAtom, useAtomValue } from "jotai";
+import WorldCanvas from "@/simulation/world/WorldCanvas";
+import WorldController from "@/simulation/world/WorldController";
+import {WorldEvents} from "@/simulation/events/WorldEvents";
+import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {restartCountAtom, worldInitialValuesAtom, restartAtom, worldAtom} from "./store";
+import {worldControllerAtom, worldCreaturesAtom, worldObjectsAtom} from "./store";
+import {sizeAtom, worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
+import {immediateStepsAtom} from "./store/guiControlsAtoms";
 
 interface Props {
   className?: string;
 }
 
 export default function SimulationCanvas({ className }: Props) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const [world, setWorld] = useAtom(worldAtom);
-  const [shouldRestart, setShouldRestart] = useAtom(restartAtom);
-  const [restartCount, setRestartCount] = useAtom(restartCountAtom);
-  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
-  
-  
-  // Function to set initial values
-  const applyInitialValues = useCallback((world: World) => {
-      // Map
-      world.size = worldInitialValues.sizeAtom;
-      world.stepsPerGen = worldInitialValues.stepsPerGenAtom;
+  const canvasRef = useRef(null);
+  const counter = useRef(0);
+  const counterMax = useRef(0);
+  const size = useAtomValue(sizeAtom);
+  const worldCreatures = useAtomValue(worldCreaturesAtom);
+  const worldObjects = useAtomValue(worldObjectsAtom);
+  const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
+  const [worldController, setWorld] = useAtom(worldControllerAtom);
+  const immediateSteps = useAtomValue(immediateStepsAtom);
+  //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
 
-      // Sensors and actions
-      world.sensors.loadFromList(worldInitialValues.enabledSensorsAtom);
-      world.actions.loadFromList(worldInitialValues.enabledActionsAtom);
+ 
+  useEffect(
+    function instantiateWorldCanvas() {
 
-      // Population
+      if (canvasRef.current) {
+        const canvas : HTMLCanvasElement = canvasRef.current;
+        setWorldCanvas(new WorldCanvas(canvas, size, worldCreatures, worldObjects));
+        //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
+      } else {
+        throw new Error("Cannot found canvas");
+      }
+      //setImmediateStepsCount(immediateSteps);
+      console.log("sc - instantiate worldcanvas");
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
-      world.populationStrategy = worldInitialValues.populationStrategyAtom;;
-      console.log("populationStrategy: ", world.populationStrategy.constructor.name);
-      world.initialPopulation = worldInitialValues.initialPopulationAtom;
-      
-      //world.selectionMethod = new InsideReproductionAreaSelection();
-      world.selectionMethod = worldInitialValues.selectionMethodAtom;
-      console.log("selectionMethod: ", world.selectionMethod.constructor.name);
 
-      // Neural networks
-      world.initialGenomeSize = worldInitialValues.initialGenomeSizeAtom;
-      world.maxGenomeSize = worldInitialValues.maxGenomeSizeAtom;
-      world.maxNumberNeurons = worldInitialValues.maxNumberNeuronsAtom;
 
-      // Mutations
-      world.mutationMode = worldInitialValues.mutationModeAtom;
-      world.mutationProbability = worldInitialValues.mutationProbabilityAtom;;
-      world.geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbabilityAtom;
-      world.deletionRatio = 0.5;
-
-      // map objects
-      world.objects = worldInitialValues.worldObjectsAtom;
-  
-    },
-    [worldInitialValues]
-  );
-
-  // Instantiate the world
-  useEffect(() => {
-    // Create world and store it
-    const world = new World(canvas.current);
-    setWorld(world);
-
-    // Initialize world and start simulation
-    applyInitialValues(world);
-    world.initializeWorld(worldInitialValues.sizeAtom);
-    world.startRun();
-    console.log("World instantiated");
-
-    return () => {
-      console.log("World destroyed");
-      setWorld(null);
-      world.pause();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // --> treure callback si tinc el restartCount?
-  const restartSimulation = useCallback(() => {
-    if (world) {
-      const isPaused = world.isPaused;
-      applyInitialValues(world);
-      world.initializeWorld(worldInitialValues.sizeAtom);
-    
-      setRestartCount((e)=> e+1);
-      console.log("restart # ", restartCount);
-        
-      
-      if (!isPaused) {
-        world.startRun();
-        }
+  // Redraw canvas
+  const handleRedraw = useCallback(() => {
+    //console.log("sc - redraw() - counter.current: ", counter.current);
+    if (!worldCanvas) {
+      console.error("SimulationCanvas worldCanvas not found at redraw()");
+      return;
     }
-  }, [applyInitialValues, world, restartCount, setRestartCount]);
-
-  // Restart the simulation
-  useEffect(() => {
-    if (shouldRestart) {
-      restartSimulation();
-      setShouldRestart(false);
+    if (!worldController) {
+      console.error("SimulationCanvas worldController not found at redraw()");
+      return;
     }
-  }, [restartSimulation, setShouldRestart, shouldRestart]);
+    if (counter.current > 1) {
+      //console.log("NO redraw ");
+      counter.current-= 1;
+    } else {
+      worldCanvas.redraw(worldController.generations.currentCreatures);
+      //console.log("redraw ");
+      counter.current = counterMax.current;
+    }
+  },[worldCanvas, worldController]);
 
-  return <canvas className={className} id="simCanvas" ref={canvas}></canvas>;
+  /*
+  //TODO - mirar per que no es crida mai
+  const handleInitializeWorld = useCallback(() => {
+    counter.current = immediateSteps;
+    console.log("sc - initialize world - immediate steps: ", immediateSteps, "counter.current: ", counter.current);
+    handleRedraw();
+  }, [handleRedraw, immediateSteps]);
+*/
+  useEffect (
+    function resetCounter() {
+      counterMax.current = immediateSteps;
+      counter.current = counterMax.current;  
+      console.log("sc - reset counter - immediate steps ", immediateSteps); //, "counter.current: ", counter.current);
+    }, [immediateSteps]);
+
+  //TODO - cal afegir resize --> redraw?
+  useEffect(
+    function bindWorldControllerEvents() {
+      console.log("sc - add listeners");
+      if (worldController) {
+        /*
+        worldController.events.addEventListener(
+          WorldEvents.initializeWorld,
+          handleInitializeWorld
+        );
+        */
+        worldController.events.addEventListener(
+          WorldEvents.startGeneration,
+          handleRedraw
+        );
+        worldController.events.addEventListener(
+          WorldEvents.endStep,
+          handleRedraw
+        );
+        return () => {/*
+          worldController.events.removeEventListener(
+            WorldEvents.initializeWorld,
+            handleInitializeWorld
+          );
+          */
+          worldController.events.removeEventListener(
+            WorldEvents.startGeneration,
+            handleRedraw
+          );
+          worldController.events.addEventListener(
+            WorldEvents.endStep,
+            handleRedraw
+          );
+        };
+      }
+    }, [worldController, handleRedraw]);
+  
+  return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }

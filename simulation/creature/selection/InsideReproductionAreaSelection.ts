@@ -1,4 +1,5 @@
-import World from "../../world/World";
+import WorldGenerations from "@/simulation/world/WorldGenerations";
+import {Grid} from "../../world/grid/Grid";
 import Creature from "../Creature";
 import SelectionMethod from "./SelectionMethod";
 
@@ -7,11 +8,11 @@ export default class InsideReproductionAreaSelection
 {
   fitnessValueName = "Survival rate (%)";
 
-  getSurvivors(world: World): {survivors: Creature[], fitnessMaxValue : number} {
+  getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     const parents = [];
 
-    for (const creature of world.currentCreatures) {
-      const gridPoint = world.grid.cell(creature.position[0], creature.position[1]);
+    for (const creature of generations.currentCreatures) {
+      const gridPoint = generations.grid.cell(creature.position[0], creature.position[1]);
 
       if (
         creature.isAlive &&
@@ -21,7 +22,7 @@ export default class InsideReproductionAreaSelection
       }
     }
 
-    const fit = Number((parents.length/world.initialPopulation*100).toFixed(1));
+    const fit = Number((parents.length/generations.initialPopulation*100).toFixed(1));
 
     return {survivors: parents, fitnessMaxValue: fit};
   }

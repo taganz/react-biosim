@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { useWindowSize } from "react-use";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@/helpers/worldObjects";
 
 export default function MapDesignerCanvas() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const canvas = useRef<HTMLCanvasElement>(null);
   const isFullscreen = useAtomValue(mapDesignerFullscreenAtom);
 
@@ -234,7 +234,7 @@ export default function MapDesignerCanvas() {
   // Draw the map
   useEffect(() => {
     draw();
-  }, [draw, world, width, isFullscreen]);
+  }, [draw, worldController, width, isFullscreen]);
 
   return (
     <canvas

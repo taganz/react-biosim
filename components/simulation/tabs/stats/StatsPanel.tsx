@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { worldAtom, restartCountAtom } from "../../store";
+import { worldControllerAtom, restartCountAtom } from "../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
@@ -14,13 +14,13 @@ function getter(data: SingleGeneration): [number, number] {
 }
 
 export default function StatsPanel() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [data, setData] = useState<SingleGeneration[]>([]);
   const [updates, setUpdates] = useState(0);
   const restartCount = useAtom(restartCountAtom);
 
   const initialPopulation = useWorldPropertyValue(
-    (world) => world.initialPopulation,
+    (worldController) => worldController.initialPopulation,
     0
   );
 
@@ -40,28 +40,28 @@ export default function StatsPanel() {
     setUpdates((value) => value + 1);
   }, []);
 
-  // Bind world events
+  // Bind worldController events
   useEffect(() => {
-    if (world) {
-      setData(world.generationRegistry.generations);
+    if (worldController) {
+      setData(worldController.generationRegistry.generations);
 
-      world.events.addEventListener(
+      worldController.events.addEventListener(
         WorldEvents.startGeneration,
         onStartGeneration
       );
-      console.log("world.selectionMethod.fitnessValueName", world.selectionMethod.fitnessValueName);
+      console.log("worldController.selectionMethod.fitnessValueName", worldController.selectionMethod.fitnessValueName);
       return () => {
-        world.events.removeEventListener(
+        worldController.events.removeEventListener(
           WorldEvents.startGeneration,
           onStartGeneration
         );
       };
     }
-  }, [onStartGeneration, world, restartCount]);
+  }, [onStartGeneration, worldController, restartCount]);
 
   return (
     <div>
-      <h3 className="mb-1 text-2xl font-bold">{world == null ? "<error world == null>" : world?.selectionMethod.fitnessValueName}</h3>
+      <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.selectionMethod.fitnessValueName}</h3>
       <LinearGraph
         data={data}
         getter={getter}

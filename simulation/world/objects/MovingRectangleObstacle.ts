@@ -1,6 +1,6 @@
 import Creature from "@/simulation/creature/Creature";
 import { lerp } from "../../helpers/helpers";
-import World from "../World";
+import WorldController from "../WorldController";
 import { colors } from "@/simulation/simulationConstants";
 import WorldObject from "../WorldObject";
 
@@ -15,7 +15,7 @@ export default class MovingRectangleObstacle implements WorldObject {
   absoluteHeight: number = 0;
 
   constructor(
-    public world: World,
+    public worldController: WorldController,
     public x: number,
     public y: number,
     public width: number,
@@ -46,7 +46,7 @@ export default class MovingRectangleObstacle implements WorldObject {
   }
 
   computeStep() {
-    const life = this.world.currentStep / this.world.stepsPerGen;
+    const life = this.worldController.currentStep / this.worldController.stepsPerGen;
     // console.log(life)
     const x = lerp(this.x, this.finalX, life);
     const y = lerp(this.y, this.finalY, life);
@@ -60,7 +60,7 @@ export default class MovingRectangleObstacle implements WorldObject {
   }
 
   draw() {
-    this.world.worldCanvas.drawRect(
+    this.worldController.worldCanvas.drawRect(
       this.absoluteX,
       this.absoluteY,
       this.absoluteWidth,
@@ -75,9 +75,9 @@ export default class MovingRectangleObstacle implements WorldObject {
     width: number,
     height: number
   ) {
-    const worldSize = this.world.size - 1;
+    const worldSize = this.worldController.size - 1;
 
-    // Calculate world coordinates
+    // Calculate worldController coordinates
     const absoluteWidth = Math.ceil(width * worldSize);
     const absoluteHeight = Math.ceil(height * worldSize);
     left = Math.ceil(left * worldSize);
@@ -87,9 +87,9 @@ export default class MovingRectangleObstacle implements WorldObject {
   }
 
   setWorldTransform(left: number, top: number, width: number, height: number) {
-    const worldSize = this.world.size - 1;
+    const worldSize = this.worldController.size - 1;
 
-    // Calculate world coordinates
+    // Calculate worldController coordinates
     const right = left + width;
     const bottom = top + height;
 

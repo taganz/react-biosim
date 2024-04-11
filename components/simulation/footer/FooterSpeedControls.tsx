@@ -1,35 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import classNames from "classnames";
-import useWorldProperty from "@/hooks/useWorldProperty";
+import {pauseBetweenStepsAtom, pauseBetweenGenerationsAtom, immediateStepsAtom} from "../store/guiControlsAtoms";
+import {worldControllerAtom} from "../store";
+import { useAtom, useAtomValue } from "jotai";
 
 interface Props
   extends React.PropsWithChildren,
     React.ComponentPropsWithoutRef<"div"> {}
 
 export function FooterSpeedControls({ className, ...rest }: Props) {
+  const [pauseBetweenSteps, setPauseBetweenSteps] = useAtom(pauseBetweenStepsAtom);
+  const [pauseBetweenGenerations, setPauseBetweenGenerations] = useAtom(pauseBetweenGenerationsAtom);
+  const [immediateSteps, setImmediateSteps] = useAtom(immediateStepsAtom);
+  const worldController = useAtomValue(worldControllerAtom);
+
   const finalClassName = classNames(
     "flex flex-wrap gap-4 text-xs lg:text-sm",
     className
   );
 
-  const [pauseBetweenSteps, setPauseBetweenSteps] = useWorldProperty<number>(
-    (world) => world.timePerStep,
-    (world, value) => (world.timePerStep = value),
-    0
-  );
-  const [pauseBetweenGenerations, setPauseBetweenGenerations] =
-    useWorldProperty(
-      (world) => world.pauseBetweenGenerations,
-      (world, value) => (world.pauseBetweenGenerations = value),
-      0
-    );
-  const [immediateSteps, setImmediateSteps] = useWorldProperty(
-    (world) => world.immediateSteps,
-    (world, value) => (world.immediateSteps = value),
-    1
-  );
+  useEffect(()=>{
+    if (worldController) {
+      worldController.pauseBetweenSteps = pauseBetweenSteps;
+      worldController.pauseBetweenGenerations = pauseBetweenGenerations;
+    }
+    //console.log("FooterSpeedControls ", immediateSteps);
+  }, [worldController, pauseBetweenSteps, pauseBetweenGenerations, immediateSteps]);
 
   return (
     <div className={finalClassName} {...rest}>

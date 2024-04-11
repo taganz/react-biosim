@@ -7,7 +7,7 @@ import {populationStrategyOptions, selectPopulationStrategy} from "./populationS
 import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
 import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
 import {
-  worldAtom,
+  worldControllerAtom,
   enabledActionsAtom,
   enabledSensorsAtom,
   geneInsertionDeletionProbabilityAtom,
@@ -32,9 +32,9 @@ import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 
 export default function SettingsPanel() {
 
-const world = useAtomValue(worldAtom);
-const sensors = Object.values(world?.sensors.data ?? {});
-const actions = Object.values(world?.actions.data ?? {});
+const worldController = useAtomValue(worldControllerAtom);
+const sensors = Object.values(worldController?.sensors.data ?? {});
+const actions = Object.values(worldController?.actions.data ?? {});
 const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
 const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
 const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
@@ -42,13 +42,13 @@ const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
 const restartCount = useAtom(restartCountAtom);
   useSyncAtomWithWorldProperty(
     enabledSensorsAtom,
-    (world) => world.sensors.getList(),
+    (worldController) => worldController.sensors.getList(),
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
   
   useSyncAtomWithWorldProperty(
     enabledActionsAtom,
-    (world) => world.actions.getList(),
+    (worldController) => worldController.actions.getList(),
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
 
@@ -100,9 +100,9 @@ const restartCount = useAtom(restartCountAtom);
 
       <div className="flex flex-col gap-8">
         <div>
-          <h3 className="mb-1 text-2xl font-bold">World</h3>
+          <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput atom={sizeAtom} label="World Size" />
+            <NumberInput atom={sizeAtom} label="WorldController Size" />
             <NumberInput atom={initialPopulationAtom} label="Initial population"/>
           <NumberInput atom={stepsPerGenAtom} label="Steps per generation" />
           </div>
@@ -111,11 +111,11 @@ const restartCount = useAtom(restartCountAtom);
         <div>
           <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
           <div className="mb-1">
-            <h2>Selection method: <br/>current: {world?.selectionMethod.constructor.name} </h2>
+            <h2>Selection method: <br/>current: {worldController?.selectionMethod.constructor.name} </h2>
             <Dropdown options={selectionMethodOptions} 
                       onSelect={handleSelectionMethodOptions}/>
             <br/>
-            <h2>Population strategy: <br/>current: {world?.populationStrategy.constructor.name} </h2>
+            <h2>Population strategy: <br/>current: {worldController?.populationStrategy.constructor.name} </h2>
             <Dropdown options={populationStrategyOptions} onSelect={handlePopulationStrategy} />
             <br/>
           </div>

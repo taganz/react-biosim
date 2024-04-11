@@ -6,12 +6,12 @@ import SavedSpecies from "./SavedSpecies";
 import SavedWorldObject from "./SavedWorldObject";
 
 export default interface SavedWorld {
-  // World
+  // WorldController
   size: number;
   initialPopulation: number;
   currentGen: number;
   currentStep: number;
-  timePerStep: number;
+  pauseBetweenSteps: number;
   stepsPerGen: number;
   immediateSteps: number;
   initialGenomeSize: number;

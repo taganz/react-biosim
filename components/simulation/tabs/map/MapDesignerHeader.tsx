@@ -2,7 +2,7 @@
 
 import Button from "@/components/global/Button";
 import { useAtom, useAtomValue } from "jotai";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import {
   mapDesignerFullscreenAtom,
   mapDesignerObjectsAtom,
@@ -14,7 +14,7 @@ import { TfiCheckBox } from "react-icons/tfi";
 import {worldObjectsAtom} from "../../store";
 
 export default function MapDesignerHeader() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
 
   const [worldSize, setWorldSize] = useAtom(mapDesignerWorldSizeAtom);
   const [objects, setObjects] = useAtom(mapDesignerObjectsAtom);
@@ -22,24 +22,24 @@ export default function MapDesignerHeader() {
 
   const [setWorldObjects, setWorldObjectsAtom] = useAtom(worldObjectsAtom);
   
-  // Button "Use Map": set objects in world and initialize, store also in atom for further initializations
+  // Button "Use Map": set objects in worldController and initialize, store also in atom for further initializations
   const handleUse = () => {
-    if (world) {
-      const isPaused = world.isPaused;
-      world.objects = objects.map((obj) => obj.clone());
-      world.initializeWorld(worldSize);
-      setWorldObjectsAtom(world.objects);
+    if (worldController) {
+      const isPaused = worldController.isPaused;
+      worldController.objects = objects.map((obj) => obj.clone());
+      worldController.startRun();
+      setWorldObjectsAtom(worldController.objects);
 
       if (!isPaused) {
-        world.startRun();
+        worldController.startRun();
       }
     }
   };
 
   const handleReset = () => {
-    if (world) {
-      setWorldSize(world.size);
-      setObjects(world.objects.map((obj) => obj.clone()));
+    if (worldController) {
+      setWorldSize(worldController.size);
+      setObjects(worldController.objects.map((obj) => obj.clone()));
     }
   };
 

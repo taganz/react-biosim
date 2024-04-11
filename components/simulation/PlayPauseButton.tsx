@@ -1,29 +1,25 @@
 "use client";
 
 import React from "react";
+import { useAtomValue } from "jotai";
 import Button from "../global/Button";
-import useWorldProperty from "@/hooks/useWorldProperty";
+import { worldControllerAtom } from "./store";
 
 export default function PlayPauseButton() {
-  const [isPaused, setIsPaused] = useWorldProperty(
-    (world) => world.isPaused,
-    (world) => {
-      if (world.isPaused) {
-        world.resume();
-      } else {
-        world.pause();
-      }
-    },
-    false
-  );
+  const worldController = useAtomValue(worldControllerAtom);
 
   const handleClick = () => {
-    setIsPaused(!isPaused);
+    if (worldController) {
+      worldController.isPaused ? worldController.resume() : worldController.pause();
+    } else {
+      throw new Error ("worldController not found");
+    }
+
   };
 
   return (
     <Button variant="dark" onClick={handleClick}>
-      {isPaused ? "Play" : "Pause"}
+      {!worldController ? "Initializing..." : (worldController.isPaused ? "Play" : "Pause")}
     </Button>
   );
 }

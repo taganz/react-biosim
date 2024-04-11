@@ -1,4 +1,4 @@
-import World from "../../world/World";
+import WorldGenerations from "../../world/WorldGenerations";
 import Creature from "../Creature";
 import SelectionMethod from "./SelectionMethod";
 import {GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS} from "../../simulationConstants"
@@ -10,11 +10,11 @@ export default class GreatestDistanceSelection
 {
   fitnessValueName = "Distance index";
   
-  getSurvivors(world: World): {survivors: Creature[], fitnessMaxValue : number} {
-    const distanceValuesSorted : Creature [] = world.currentCreatures.sort((a, b) =>{ return b.distanceCovered - a.distanceCovered});
-    const top = Math.floor(world.currentCreatures.length * topPercentSelected);   
+  getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
+    const distanceValuesSorted : Creature [] = generations.currentCreatures.sort((a, b) =>{ return b.distanceCovered - a.distanceCovered});
+    const top = Math.floor(generations.currentCreatures.length * topPercentSelected);   
     const fitMax = distanceValuesSorted[0]?.distanceCovered;
-    //console.log(world.currentGen, world.currentStep, " max value: ", fitMax, " cut value: ", distanceValuesSorted[top]?.distanceCovered);
+    //console.log(worldController.currentGen, worldController.currentStep, " max value: ", fitMax, " cut value: ", distanceValuesSorted[top]?.distanceCovered);
     const parents = distanceValuesSorted.slice(0, top)
     
     

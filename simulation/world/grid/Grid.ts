@@ -1,5 +1,6 @@
 import Creature from "../../creature/Creature";
 import WorldObject from "../WorldObject";
+import * as constants from "@/simulation/simulationConstants"
 
 export type GridCell = {
     creature: Creature | null;
@@ -18,13 +19,57 @@ export class Grid {
     
     _grid : Array<Array<GridCell>>;
     _size : number;
+    _objects : WorldObject[];
 
-    constructor(size: number) {
-        this._grid = [];
-        this._size = size;
+    constructor(size: number, objects: WorldObject[]) {
+      this._grid = [];
+      this._size = size;
+
+      // Generate pixels of objects
+      this._objects = objects;
+      for (let i = 0; i < this._objects.length; i++) {
+        this._objects[i].computePixels(this._size);
+      }
+
+      for (let x = 0; x < this._size; x++) {
+        // Create column
+        const col: Array<GridCell> = [];
+        for (let y = 0; y < this._size; y++) {
+          // Create and push row
+          col.push({ creature: null, objects: [], isSolid: false, water: constants.WATER_GRIDPOINT_DEFAULT, energy: constants.ENERGY_GRIDPOINT_DEFAULT });
+        }
+
+        // Push column
+        this._grid.push(col);
+      }
+
+      // Check objects
+      for (
+        let objectIndex = 0;
+        objectIndex < this._objects.length;
+        objectIndex++
+      ) {
+        const obj = this._objects[objectIndex];
+
+        for (let pixelIdx = 0; pixelIdx < obj.pixels.length; pixelIdx++) {
+          const [x, y] = obj.pixels[pixelIdx];
+          // Set pixel
+          //this._grid[x][y].objects.push(obj);
+          this._grid[x][y].objects.push(obj);
+          // Is it solid?
+          if (obj.areaType === undefined) {
+            this._grid[x][y].isSolid = true;
+          }
+        }
+      }
     }
 
-
+    get size() : number {
+      return this._size;
+    }
+    get objects() : WorldObject[] {
+      return this._objects;
+    }
     public addRow(row: GridCell[]) : void {
         this._grid.push(row);
     }
@@ -71,7 +116,7 @@ export class Grid {
         return true;
     }
 
-    // --> not testing x, y inside world!
+    // --> not testing x, y inside worldController!
     public isTileEmpty(x: number, y: number): boolean {
       // for (let i = 0; i < this.currentCreatures.length; i++) {
       //   const creature = this.currentCreatures[i];

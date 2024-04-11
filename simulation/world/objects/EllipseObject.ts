@@ -101,7 +101,7 @@ export default class EllipseObject implements WorldObject {
     width: number,
     height: number
   ) {
-    // Calculate world coordinates
+    // Calculate worldController coordinates
     const absoluteWidth = Math.floor(width * worldSize);
     const absoluteHeight = Math.floor(height * worldSize);
     left = Math.floor(left * worldSize);
@@ -117,7 +117,7 @@ export default class EllipseObject implements WorldObject {
     width: number,
     height: number
   ) {
-    // Calculate world coordinates
+    // Calculate worldController coordinates
     this.worldRight = left + width;
     this.worldBottom = top + height;
 

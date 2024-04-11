@@ -1,4 +1,4 @@
-import World from "../World";
+import WorldController from "../WorldController";
 
 export type SingleGeneration = {
   generation: number;
@@ -13,15 +13,15 @@ export class GenerationRegistry {
   maxSurvivorCount: number = Number.MIN_VALUE;
   maxFitnessValue : number = 0;
 
-  constructor(public world: World) {}
+  constructor(public worldController: WorldController) {}
 
   startGeneration() {
     // Register generation stats
-    if (this.world.currentGen > 0) {
-      const generation = this.world.currentGen - 1;
-      const survivorCount = this.world.lastSurvivorsCount;
-      const startingPopulation = this.world.lastCreatureCount;
-      const maxFitnessValue = this.world.lastFitnessMaxValue;
+    if (this.worldController.currentGen > 0) {
+      const generation = this.worldController.currentGen - 1;
+      const survivorCount = this.worldController.lastSurvivorsCount;
+      const startingPopulation = this.worldController.lastCreatureCount;
+      const maxFitnessValue = this.worldController.lastFitnessMaxValue;
 
       if (survivorCount > this.maxSurvivorCount) {
         this.maxSurvivorCount = survivorCount;

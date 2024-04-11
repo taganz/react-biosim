@@ -1,21 +1,8 @@
-import CreatureActions from "../creature/actions/CreatureActions";
 import Creature from "../creature/Creature";
-import { MutationMode } from "../creature/genome/MutationMode";
-//import AsexualRandomPopulation from "../creature/population/AsexualRandomPopulation";
 import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
-//import EastWallSelection from "../creature/selection/EastWallSelection";
-import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
-import SelectionMethod from "../creature/selection/SelectionMethod";
-import CreatureSensors from "../creature/sensors/CreatureSensors";
-import { WorldEvents } from "../events/WorldEvents";
-import { GenerationRegistry } from "./stats/GenerationRegistry";
-import * as constants from "@/simulation/simulationConstants"
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import WorldObject from "./WorldObject";
-import Genome from "@/simulation/creature/genome/Genome";
-
-
 
 
 export default class WorldCanvas {
@@ -23,14 +10,23 @@ export default class WorldCanvas {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   size: number;
+  objects : WorldObject[];
+  lastGenerationDrawn : number = 0;
+  lastCreaturesDrawn : Creature[]  = [];
     
-  constructor(canvas: HTMLCanvasElement | null, size: number) {
+  constructor(canvas: HTMLCanvasElement, size: number, creatures : Creature[], objects : WorldObject[]) {
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
       this.size = size;    
+      console.log("WorldCanvas started. Size: ", this.size);
     } else {
       throw new Error("Cannot found canvas");
+    }
+    if (objects) {
+      this.objects = objects;
+    } else {
+      throw new Error ("objects not found");
     }
   }
 
@@ -55,18 +51,23 @@ export default class WorldCanvas {
     this.canvas.height = this.canvas.clientHeight;
   }
 
-  public redraw(currentCreatures: Creature[], objects: WorldObject[], currentGen: number ): void {
+  public redraw(creatures?: Creature[], currentGen?: number ): void {
     this.clearCanvas();
     this.resizeCanvas();
     // RD
     this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color with 10% opacity
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
 
+    currentGen = currentGen ? currentGen : this.lastGenerationDrawn;
+    this.lastGenerationDrawn  = currentGen;
+    creatures = creatures ? creatures : this.lastCreaturesDrawn;
+    this.lastCreaturesDrawn = creatures;
+
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
     // Draw creatures 
-    for (let i = 0; i < currentCreatures.length; i++) {
-      const creature = currentCreatures[i];
+    for (let i = 0; i < creatures.length; i++) {
+      const creature = creatures[i];
 
       if (creature.isAlive) {
         const position = creature.position;
@@ -90,8 +91,8 @@ export default class WorldCanvas {
     //this.selectionMethod?.onDrawAfterCreatures?.(this);
 
     // Draw objects
-    for (let i = 0; i < objects.length; i++) {
-      objects[i].draw(this.ctx, this.size);
+    for (let i = 0; i < this.objects.length; i++) {
+      this.objects[i].draw(this.ctx, this.size);
     }
 
     // Draw generation #

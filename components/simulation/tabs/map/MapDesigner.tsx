@@ -10,7 +10,7 @@ import {
 import MapDesignerHeader from "./MapDesignerHeader";
 import MapDesignerFooter from "./MapDesignerFooter";
 import MapDesignerCanvas from "./MapDesignerCanvas";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import ToggleableFullscreen from "@/components/global/ToggleableFullscreen";
 import classNames from "classnames";
 import { useEffectOnce, useInterval } from "react-use";
@@ -19,7 +19,7 @@ import useSavedMap from "./useSavedMap";
 export default function MapDesigner() {
   const isFullscreen = useAtomValue(mapDesignerFullscreenAtom);
 
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [worldSize, setWorldSize] = useAtom(mapDesignerWorldSizeAtom);
   const [objects, setObjects] = useAtom(mapDesignerObjectsAtom);
 
@@ -27,19 +27,19 @@ export default function MapDesigner() {
   const { savedObjects, setSavedObjects, savedWorldSize, setSavedWorldSize } =
     useSavedMap();
 
-  // Initialize this component with values from the world or the local storage
+  // Initialize this component with values from the worldController or the local storage
   useEffectOnce(() => {
-    if (world) {
+    if (worldController) {
       if (savedObjects) {
         setObjects([...savedObjects]);
       } else {
-        setObjects(world.objects.map((obj) => obj.clone()));
+        setObjects(worldController.objects.map((obj) => obj.clone()));
       }
 
       if (savedWorldSize) {
         setWorldSize(savedWorldSize);
       } else {
-        setWorldSize(world.size);
+        setWorldSize(worldController.size);
       }
     }
   });

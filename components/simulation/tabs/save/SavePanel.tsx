@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import { useAtomValue } from "jotai";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import { useState } from "react";
@@ -10,12 +10,12 @@ import { saveAs } from "file-saver";
 import CanvasToGIF from "./CanvasToGif";
 
 export default function SavePanel() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [data, setData] = useState("");
 
   const handleSave = () => {
-    if (world) {
-      const savedWorld = saveWorld(world);
+    if (worldController) {
+      const savedWorld = saveWorld(worldController);
       const json = JSON.stringify(savedWorld);
       setData(json);
     }
@@ -23,20 +23,20 @@ export default function SavePanel() {
 
 
   const handleSaveToFile = () => {
-    if (world) {
-      const savedWorld = saveWorld(world);
+    if (worldController) {
+      const savedWorld = saveWorld(worldController);
       const json = JSON.stringify(savedWorld);
       setData(json);
 
       const blob = new Blob ([json]  , { type: 'text/plain;charset=utf-8'})
-      saveAs( blob, 'sim_generation '.concat(world.currentGen.toString()) ); 
+      saveAs( blob, 'sim_generation '.concat(worldController.currentGen.toString()) ); 
     }
   };
 
   return (
     <div>
       <p className="mb-2">
-        Press the &quot;Save&quot; button below to generate a JSON code of world
+        Press the &quot;Save&quot; button below to generate a JSON code of worldController
         that you can back up somewhere else! If you want to load it, use the
         &quot;Load&quot; tab.
       </p>

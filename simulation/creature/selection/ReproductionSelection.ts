@@ -1,4 +1,4 @@
-import World from "../../world/World";
+import WorldGenerations from "../../world/WorldGenerations";
 import Creature from "../Creature";
 import SelectionMethod from "./SelectionMethod";
 
@@ -7,11 +7,11 @@ export default class ReproductionSelection
 {
   fitnessValueName = "Reproduction";
   
-  getSurvivors(world: World): {survivors: Creature[], fitnessMaxValue : number} {
+  getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     
     const parents = [];
     
-    for (const creature of world.currentCreatures) {
+    for (const creature of generations.currentCreatures) {
       
       if (
         creature.isAlive && creature.stepBirth > 1

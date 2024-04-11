@@ -1,5 +1,5 @@
 import RectangleObject from "../../objects/RectangleObject";
-import World from "../../World";
+import WorldController from "../../WorldController";
 import ReproductionArea from "./ReproductionArea";
 
 export default class RectangleReproductionArea extends ReproductionArea(

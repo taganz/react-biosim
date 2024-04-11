@@ -1,4 +1,4 @@
-import World from "../world/World";
+import WorldGenerations from "../world/WorldGenerations";
 import { Network } from "./brain/Network";
 import Genome from "./genome/Genome";
 import { probabilityToBool } from "../helpers/helpers";
@@ -8,7 +8,7 @@ import NeuronNode from "./NeuronNode";
 import CreatureSensors from "./sensors/CreatureSensors";
 import CreatureActions from "./actions/CreatureActions";
 import * as constants from "../simulationConstants"
-import { GridPosition } from "../world/grid/Grid";
+import {GridPosition } from "../world/grid/Grid";
 
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
@@ -21,11 +21,11 @@ const stepsStoppedPenalization = 100;
 type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
 
 export default class Creature {
-  world: World;
+  generations: WorldGenerations;
 
   id : number;
   stepBirth : number;  
-
+  
   // Position
   position: GridPosition;
   lastPosition: GridPosition;
@@ -58,13 +58,12 @@ export default class Creature {
   
   private _health: number = maxHealth;
 
-  constructor(world: World, position: GridPosition, mass?: number, genome?: Genome) {
-    this.world = world;
+  constructor(generations: WorldGenerations, position: GridPosition, mass?: number, genome?: Genome) {
+    this.generations = generations;
 
-    this.id = ++world.lastCreatureIdCreated;
-    this.stepBirth = world.currentStep;
-    this.log("created step".concat(this.stepBirth.toString()));
-
+    this.id = generations.lastCreatureIdCreated;
+    this.stepBirth = generations.currentStep;
+    
     if (mass) {
       this.mass = mass;
       this.massAtBirth = mass;
@@ -81,14 +80,14 @@ export default class Creature {
     this.lastMovement = [0, 0];
 
     // Sensors and actions
-    this.sensors = world.sensors;
-    this.actions = world.actions;
+    this.sensors = generations.sensors;
+    this.actions = generations.actions;
 
     if (genome) {
       this.genome = genome;
     } else {
       this.genome = new Genome(
-        [...new Array(this.world.initialGenomeSize)].map(() =>
+        [...new Array(this.generations.initialGenomeSize)].map(() =>
           Genome.generateRandomGene()
         )
       );
@@ -116,14 +115,14 @@ export default class Creature {
       if (sourceType === NeuronType.SENSOR) {
         sourceId %= this.networkInputCount;
       } else {
-        sourceId %= this.world.maxNumberNeurons;
+        sourceId %= this.generations.maxNumberNeurons;
       }
 
       // Renumber sinkId
       if (sinkType === NeuronType.ACTION) {
         sinkId %= this.networkOutputCount;
       } else {
-        sinkId %= this.world.maxNumberNeurons;
+        sinkId %= this.generations.maxNumberNeurons;
       }
 
       // Renumber weigth to a -4 and 4
@@ -370,18 +369,18 @@ private computeDistanceIndex(){
 
     // Check if something is blocking the path
     if (
-      this.world.grid.isTileInsideWorld(finalX, finalY) &&
-      this.world.grid.isTileEmpty(finalX, finalY) &&
+      this.generations.grid.isTileInsideWorld(finalX, finalY) &&
+      this.generations.grid.isTileEmpty(finalX, finalY) &&
       (x === 0 ||
         y === 0 ||
-        this.world.grid.isTileEmpty(this.position[0] + x, this.position[1]) ||
-        this.world.grid.isTileEmpty(this.position[0], this.position[1] + y))
+        this.generations.grid.isTileEmpty(this.position[0] + x, this.position[1]) ||
+        this.generations.grid.isTileEmpty(this.position[0], this.position[1] + y))
     ) {
       // Mark the grid point so that no other creature
       // can translate to this position
-      this.world.grid.cell(finalX,finalY).creature = this;
+      this.generations.grid.cell(finalX,finalY).creature = this;
       // Free the grid point
-      this.world.grid.cell(this.position[0], this.position[1]).creature = null;
+      this.generations.grid.cell(this.position[0], this.position[1]).creature = null;
 
       this.position[0] = finalX;
       this.position[1] = finalY;
@@ -416,7 +415,7 @@ private computeDistanceIndex(){
 
     if (result <= 0 && result !== this._health) {
       // Free grid point
-      //this.world.grid[this.position[0]][this.position[1]].creature = null;
+      //this.generations.grid[this.position[0]][this.position[1]].creature = null;
       this.die();
       // console.log("free!!!")
     }
@@ -437,7 +436,7 @@ private computeDistanceIndex(){
       return;
     }
     if (constants.DEBUG_CREATURE_ID == 0 || constants.DEBUG_CREATURE_ID == this.id)  {
-      const genStepString = this.world.currentGen.toString().concat(".", this.world.currentStep.toString());
+      const genStepString = this.generations.currentGen.toString().concat(".", this.generations.currentStep.toString());
       console.log(genStepString, " #", this.id, ": ", msg, msg2, msg3, msg4);
     }
   }
@@ -445,8 +444,8 @@ private computeDistanceIndex(){
   private die () {
     this.log("die");
     this._health = -1;
-    // --> aixo hauria de fer-ho world...?
-    this.world.grid.cell(this.position[0], this.position[1]).creature = null;
+    // --> aixo hauria de fer-ho generations...?
+    this.generations.grid.cell(this.position[0], this.position[1]).creature = null;
       
   }
 }

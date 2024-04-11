@@ -142,25 +142,26 @@ export default class CreatureSensors {
 
   calculateOutputs(creature: Creature): number[] {
     const values: number[] = [];
+    const worldSize = creature.generations.grid.size;
 
     // HorizontalPosition
     if (this.data.HorizontalPosition.enabled) {
-      values.push(creature.position[0] / creature.world.size);
+      values.push(creature.position[0] / worldSize);
     }
 
     // VerticalPosition
     if (this.data.VerticalPosition.enabled) {
-      values.push(creature.position[1] / creature.world.size);
+      values.push(creature.position[1] / worldSize);
     }
 
     // Age
     if (this.data.Age.enabled) {
-      values.push(creature.world.currentStep / creature.world.stepsPerGen);
+      values.push(creature.generations.currentStep / creature.generations.stepsPerGen);
     }
 
     // Oscillator
     if (this.data.Oscillator.enabled) {
-      values.push((Math.sin(creature.world.currentStep / 10) + 1) / 2);
+      values.push((Math.sin(creature.generations.currentStep / 10) + 1) / 2);
     }
 
     // Random
@@ -180,26 +181,26 @@ export default class CreatureSensors {
 
     const horizontalDistance = Math.min(
       creature.position[0],
-      creature.world.size - creature.position[0]
+      worldSize - creature.position[0]
     );
     // HorizontalBorderDistance
     if (this.data.HorizontalBorderDistance.enabled) {
-      values.push((horizontalDistance / creature.world.size) * 2);
+      values.push((horizontalDistance / worldSize) * 2);
     }
 
     const verticalDistance = Math.min(
       creature.position[1],
-      creature.world.size - creature.position[1]
+      worldSize - creature.position[1]
     );
     // VerticalBorderDistance
     if (this.data.VerticalBorderDistance.enabled) {
-      values.push((verticalDistance / creature.world.size) * 2);
+      values.push((verticalDistance / worldSize) * 2);
     }
 
     // BorderDistance
     if (this.data.BorderDistance.enabled) {
       values.push(
-        (Math.min(horizontalDistance, verticalDistance) / creature.world.size) *
+        (Math.min(horizontalDistance, verticalDistance) / worldSize) *
           2
       );
     }
@@ -213,23 +214,23 @@ export default class CreatureSensors {
       let y = creature.position[1] - 1;
       let tile;
       if (y >= 0) {
-        tile = creature.world.grid.cell(x,y);
+        tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
       // Right
       x = creature.position[0] + 1;
       y = creature.position[1];
-      if (x < creature.world.size) {
-        tile = creature.world.grid.cell(x,y);
+      if (x < worldSize) {
+        tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
       // Bottom
       x = creature.position[0];
       y = creature.position[1] + 1;
-      if (y < creature.world.size) {
-        tile = creature.world.grid.cell(x,y);
+      if (y < worldSize) {
+        tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
@@ -237,7 +238,7 @@ export default class CreatureSensors {
       x = creature.position[0] - 1;
       y = creature.position[1];
       if (x >= 0) {
-        tile = creature.world.grid.cell(x,y);
+        tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
     }
@@ -261,10 +262,10 @@ export default class CreatureSensors {
         if (
           x >= 0 &&
           y >= 0 &&
-          x < creature.world.size &&
-          y < creature.world.size
+          x < worldSize &&
+          y < worldSize
         ) {
-          if (creature.world.grid.cell(x,y).creature) {
+          if (creature.generations.grid.cell(x,y).creature) {
             populationCount++;
           }
         }

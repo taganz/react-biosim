@@ -1,5 +1,5 @@
 import shuffle from "lodash.shuffle";
-import World from "../../world/World";
+import WorldGenerations from "../../world/WorldGenerations";
 import Creature from "../Creature";
 import PopulationStrategy from "./PopulationStrategy";
 import {GridPosition} from "../../world/grid/Grid";
@@ -7,17 +7,17 @@ import {GridPosition} from "../../world/grid/Grid";
 
 export default class AsexualRandomPopulation implements PopulationStrategy {
 
-  populate(world: World, parents?: Creature[]): void {
+  populate(worldGenerations: WorldGenerations, parents?: Creature[]): void {
     //const creatures: Creature[] = [];
 
     // First generation
-    if (world.currentGen === 0) {
-      for (let i = 0; i < world.initialPopulation; i++) {
+    if (worldGenerations.currentGen === 0) {
+      for (let i = 0; i < worldGenerations.initialPopulation; i++) {
         
         // Generate the creature
-        let position : GridPosition | null = world.grid.getRandomAvailablePosition();
+        let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
         if (position != null) {
-          world.newCreatureFirstGeneration(position);
+          worldGenerations.newCreature(position);
         }
         else {
           console.warn("no free position found");
@@ -32,10 +32,10 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
 
       // Determine how many children per parent are needed
       const childrenPerParent = Math.max(
-        Math.ceil(world.initialPopulation / parents.length),
+        Math.ceil(worldGenerations.initialPopulation / parents.length),
         1
       );
-      let totalNeededCreatures = world.initialPopulation - parents.length;
+      let totalNeededCreatures = worldGenerations.initialPopulation - parents.length;
 
       // Add extra creatures to achieve the target population, but
       // we want all survivors to have at least one children
@@ -47,9 +47,9 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
             if (childIdx > 0) {
               totalNeededCreatures--;
             }
-            let position : GridPosition | null = world.grid.getRandomAvailablePosition();
+            let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
             if (position != null) {
-              world.newCreature(position, parent.massAtBirth, parent.genome);
+              worldGenerations.newCreature(position, parent.massAtBirth, parent.genome);
             }
             else {
               console.warn("no free position found 2");

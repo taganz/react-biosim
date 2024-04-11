@@ -1,6 +1,6 @@
-import World from "../../world/World";
+import WorldGenerations from "../../world/WorldGenerations";
 import Creature from "../Creature";
 
 export default interface PopulationStrategy {
-  populate(world: World, parents?: Creature[]): void;
+  populate(generations: WorldGenerations, parents?: Creature[]): void;
 }

@@ -1,19 +1,19 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { loadWorld } from "@/simulation/serialization/loadWorld";
 import TextareaInput from "@/components/global/inputs/TextareaInput";
 
 export default function LoadPanel() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [data, setData] = useState("");
 
   const handleLoad = () => {
-    if (world) {
-      loadWorld(world, data);
+    if (worldController) {
+      loadWorld(worldController, data);
     }
   };
 
@@ -27,8 +27,8 @@ export default function LoadPanel() {
     fileReader.onload  = () => {
       console.log(fileReader.result); 
       setData(fileReader.result as string);
-      if (world) {
-        loadWorld(world, data);
+      if (worldController) {
+        loadWorld(worldController, data);
       }
     }
     fileReader.onerror = () => {
@@ -40,7 +40,7 @@ export default function LoadPanel() {
   return (
     <div>
       <p className="mb-2">
-        Paste below the JSON code of a previously saved world and load it with
+        Paste below the JSON code of a previously saved worldController and load it with
         the &quot;Load&quot; button.
       </p>
 

@@ -1,23 +1,23 @@
 import { useCallback, useState } from "react";
-import { worldAtom } from "@/components/simulation/store";
-import World from "@/simulation/world/World";
+import { worldControllerAtom } from "@/components/simulation/store";
+import WorldController from "@/simulation/world/WorldController";
 import { useAtomValue } from "jotai";
 import { useInterval } from "react-use";
 
 export default function useWorldProperty<T>(
-  getter: (world: World) => T,
-  setter: (world: World, value: T) => void,
+  getter: (worldController: WorldController) => T,
+  setter: (worldController: WorldController, value: T) => void,
   defaultValue: T,
   compare?: (a: T, b: T) => boolean
 ): [T, (value: T) => void] {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
   const [value, setValue] = useState(() =>
-    world ? getter(world) : defaultValue
+    worldController ? getter(worldController) : defaultValue
   );
 
   useInterval(() => {
-    if (world) {
-      const newValue = getter(world);
+    if (worldController) {
+      const newValue = getter(worldController);
       if (compare) {
         if (!compare(value, newValue)) {
           setValue(newValue);
@@ -30,12 +30,12 @@ export default function useWorldProperty<T>(
 
   const set = useCallback(
     (value: T) => {
-      if (world) {
-        setter(world, value);
+      if (worldController) {
+        setter(worldController, value);
         setValue(value);
       }
     },
-    [setter, world]
+    [setter, worldController]
   );
 
   return [value, set];

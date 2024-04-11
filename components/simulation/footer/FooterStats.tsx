@@ -5,16 +5,16 @@ import React from "react";
 
 export default function FooterStats() {
   const lastGenerationDuration = useWorldPropertyValue(
-    (world) => world.lastGenerationDuration,
+    (worldController) => worldController.lastGenerationDuration,
     0
   );
-  const totalTime = useWorldPropertyValue((world) => world.totalTime, 0);
+  const totalTime = useWorldPropertyValue((worldController) => worldController.totalTime, 0);
   const lastSurvivorCount = useWorldPropertyValue(
-    (world) => world.lastSurvivorsCount,
+    (worldController) => worldController.lastSurvivorsCount,
     0
   );
   const lastSurvivalRate = useWorldPropertyValue(
-    (world) => world.lastSurvivalRate,
+    (worldController) => worldController.lastSurvivalRate,
     0
   );
 

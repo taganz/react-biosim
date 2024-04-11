@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { worldAtom } from "../../store";
+import { worldControllerAtom, worldCanvasAtom } from "../../store";
 import { useCallback, useEffect, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
@@ -12,7 +12,8 @@ import Creature from "@/simulation/creature/Creature";
 //import { GridPosition } from "@/simulation/world/grid/Grid";
 
 export default function PopulationPanel() {
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
+  const worldCanvas = useAtomValue(worldCanvasAtom);
 
   const [species, setSpecies] = useState<Species[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<Species | undefined>();
@@ -20,17 +21,17 @@ export default function PopulationPanel() {
   const renderedSpecies = species.slice(0, 42);
 
   const onStartGeneration = useCallback(() => {
-    if (!world) return;
+    if (!worldController) return;
 
     const creatureMap = new Map<string, Species>();
 
     // Create the species from the creature list
     for (
       let creatureIdx = 0;
-      creatureIdx < world.currentCreatures.length;
+      creatureIdx < worldController.generations.currentCreatures.length;
       creatureIdx++
     ) {
-      const creature = world.currentCreatures[creatureIdx];
+      const creature = worldController.generations.currentCreatures[creatureIdx];
       const genomeString = creature.genome.toDecimalString(false);
 
       let species: Species | undefined = creatureMap.get(genomeString);
@@ -48,7 +49,7 @@ export default function PopulationPanel() {
     );
 
     setSpecies(newSpecies);
-  }, [world]);
+  }, [worldController]);
 
   const selectCreature = useCallback(
     (creature: Creature | undefined) => {
@@ -70,74 +71,84 @@ export default function PopulationPanel() {
 
   const onClickCanvas = useCallback(
     (e: MouseEvent) => {
-      if (world) {
+      if (worldController && worldCanvas) {
         // Get creature at the mouse coordinates
-        const [worldX, worldY] = world.worldCanvas.mouseEventPosToWorld(e);
-        const creature = world.grid.cell(worldX, worldY).creature;
+        const [worldX, worldY] = worldCanvas.mouseEventPosToWorld(e);
+        const creature = worldController.grid.cell(worldX, worldY).creature;
 
         if (creature) {
           selectCreature(creature);
         } else {
           selectCreature(undefined);
         }
+      } else {
+          throw new Error ("something missing here...")
       }
     },
-    [world, selectCreature]
+    [worldController, worldCanvas, selectCreature]
   );
 
   const onMouseEnterCanvas = useCallback(() => {
-    if (world && world.isPaused) {
-      world.computeGrid();
+    if (worldController && worldController.isPaused) {
+        //TODO investigar que era aixo
+   //   worldController.computeGrid();
     }
-  }, [world]);
+  }, [worldController]);
 
   // draw a small square at cursor position to select creature
   const onMouseMoveCanvas = useCallback(
     (e: MouseEvent) => {
-      if (world && world.isPaused) {
-        const [worldX, worldY] = world.worldCanvas.mouseEventPosToWorld(e);
-        world.worldCanvas.redraw(world.currentCreatures, world.objects, world.currentGen);
-        world.worldCanvas.drawRectStroke(worldX, worldY, 1, 1, "rgba(0,0,0,0.5)", 1.5);
+      if (worldCanvas)  {
+        if (worldController && worldController.isPaused) {
+          const [worldX, worldY] = worldCanvas.mouseEventPosToWorld(e);
+          worldCanvas.redraw();
+          worldCanvas.drawRectStroke(worldX, worldY, 1, 1, "rgba(0,0,0,0.5)", 1.5);
+        }
+      } else {
+        throw new Error ("worldCanvas not found");
       }
     },
-    [world]
+    [worldController, worldCanvas]
   );
 
-  // Bind world events
+  // Bind worldController events
   useEffect(() => {
-    if (world) {
+    if (worldController) {
       onStartGeneration();
 
-      world.events.addEventListener(
+      worldController.events.addEventListener(
         WorldEvents.startGeneration,
         onStartGeneration
       );
 
       return () => {
-        world.events.removeEventListener(
+        worldController.events.removeEventListener(
           WorldEvents.startGeneration,
           onStartGeneration
         );
       };
     }
-  }, [onStartGeneration, world]);
+  }, [onStartGeneration, worldController]);
 
   // Bind canvas events
   useEffect(() => {
-    if (world) {
-      world.canvas.addEventListener("click", onClickCanvas);
-      world.canvas.addEventListener("mouseenter", onMouseEnterCanvas);
-      world.canvas.addEventListener("mousemove", onMouseMoveCanvas);
+    if (worldCanvas) {
+      worldCanvas.canvas.addEventListener("click", onClickCanvas);
+      worldCanvas.canvas.addEventListener("mouseenter", onMouseEnterCanvas);
+      worldCanvas.canvas.addEventListener("mousemove", onMouseMoveCanvas);
 
       return () => {
-        world.canvas.removeEventListener("click", onClickCanvas);
-        world.canvas.removeEventListener("mouseenter", onMouseEnterCanvas);
-        world.canvas.removeEventListener("mousemove", onMouseMoveCanvas);
+        worldCanvas.canvas.removeEventListener("click", onClickCanvas);
+        worldCanvas.canvas.removeEventListener("mouseenter", onMouseEnterCanvas);
+        worldCanvas.canvas.removeEventListener("mousemove", onMouseMoveCanvas);
       };
+    } else {
+      throw new Error("worldCanvas not found");
     }
-  }, [world, species, onClickCanvas, onMouseEnterCanvas, onMouseMoveCanvas]);
+    
+  }, [worldCanvas, species, onClickCanvas, onMouseEnterCanvas, onMouseMoveCanvas]);
 
-  const totalAliveCreatures = world?.currentCreatures.length ?? 0;
+  const totalAliveCreatures = worldController?.generations.currentCreatures.length ?? 0;
   const totalSpeciesAlive = species.length;
 
   return (

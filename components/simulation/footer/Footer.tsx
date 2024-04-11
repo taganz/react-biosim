@@ -13,9 +13,9 @@ import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 export default function Footer() {
   const [extended, setExtended] = useState(false);
 
-  const currentStep = useWorldPropertyValue((world) => world.currentStep, 0);
-  const currentGeneration = useWorldPropertyValue((world) => world.currentGen, 0);
-  const stepsPerGeneration = useWorldPropertyValue((world) => world.stepsPerGen, 0);
+  const currentStep = useWorldPropertyValue((worldController) => worldController.currentStep, 0);
+  const currentGeneration = useWorldPropertyValue((worldController) => worldController.currentGen, 0);
+  const stepsPerGeneration = useWorldPropertyValue((worldController) => worldController.stepsPerGen, 0);
 
   return (
     <div className="sticky bottom-0 bg-grey-mid/80 shadow-sm backdrop-blur-sm">

@@ -4,7 +4,7 @@ import GIF from 'gif.js';
 import Button from "@/components/global/Button";
 import {stateInitialAtom, stateStartPendingAtom, stateRecordingAtom, stateSavePendingAtom, gifAtom, framesAtom} from "../../store/gif";
 
-import {worldAtom} from "../../store"
+import {worldControllerAtom} from "../../store"
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import {atom, useAtom, useAtomValue} from 'jotai';
 import {gifWorkerAsString} from "./gifWorkerAsString"
@@ -12,15 +12,15 @@ import {gifWorkerAsString} from "./gifWorkerAsString"
 
 const CanvasToGIF: React.FC = () => {
 
-  const world = useAtomValue(worldAtom);
+  const worldController = useAtomValue(worldControllerAtom);
 
   // gif parameters
 
   // record a frame every N steps to keep generation size to 100 frames
-  const gifStepsBetweenImageRecord = world ? Math.floor(world.stepsPerGen/100) : 5;  
+  const gifStepsBetweenImageRecord = worldController ? Math.floor(worldController.stepsPerGen/100) : 5;  
 
   // delay in gif frames to keep gif duration similar to real time
-  const gifFrameDelay = world ? Math.floor(world.stepsPerGen / 15) : 40;    
+  const gifFrameDelay = worldController ? Math.floor(worldController.stepsPerGen / 15) : 40;    
 
   // states
   const [stateInitial, setStateInitial] = useAtom(stateInitialAtom);
@@ -79,7 +79,7 @@ const CanvasToGIF: React.FC = () => {
       (gif as GIF).on('finished', (blob: any) => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'sim'.concat(world==null ? "" : world.currentGen.toString(), '.gif');
+        a.download = 'sim'.concat(worldController==null ? "" : worldController.currentGen.toString(), '.gif');
         document.body.appendChild(a);
         a.click();
       });
@@ -134,40 +134,40 @@ const CanvasToGIF: React.FC = () => {
     }
   };
 
-  // Bind world events
+  // Bind worldController events
   useEffect(() => {
-    if (world) {
+    if (worldController) {
       //onEndStep();
 
-      world.events.addEventListener(
+      worldController.events.addEventListener(
         WorldEvents.endStep,
         onEndStep
       );
 
-      world.events.addEventListener(
+      worldController.events.addEventListener(
         WorldEvents.initializeWorld,
         onInitializeWorld
       );
-      world.events.addEventListener(
+      worldController.events.addEventListener(
         WorldEvents.startGeneration,
         onStartGeneration
       );
       return () => {
-        world.events.removeEventListener(
+        worldController.events.removeEventListener(
           WorldEvents.endStep,
           onEndStep
         );
-        world.events.removeEventListener(
+        worldController.events.removeEventListener(
           WorldEvents.initializeWorld,
           onInitializeWorld
         );
-        world.events.removeEventListener(
+        worldController.events.removeEventListener(
           WorldEvents.startGeneration,
           onStartGeneration
         );
         };
     }
-  }, [onEndStep, world]);
+  }, [onEndStep, worldController]);
 
 
 
@@ -182,7 +182,7 @@ const CanvasToGIF: React.FC = () => {
     link.href = dataURL;
 
     // Set the download attribute to specify the filename
-    link.download = 'sim'.concat(world==null ? "" : world.currentGen.toString(), '.png'); 
+    link.download = 'sim'.concat(worldController==null ? "" : worldController.currentGen.toString(), '.png'); 
 
     // Simulate a click on the link to trigger the download
     link.click();
