@@ -32,6 +32,11 @@ export default function SimulationCanvas({ className }: Props) {
       worldController.startRun();  
       console.log("WorldController instantiated");
       // eslint-disable-next-line react-hooks/exhaustive-deps
+      return () => {
+        console.log("*** World destroyed ***");
+        worldController.pause();
+        setWorldController(null);
+      }
     },[]);
 
 
