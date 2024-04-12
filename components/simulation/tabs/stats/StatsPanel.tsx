@@ -6,10 +6,9 @@ import { useAtom, useAtomValue } from "jotai";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
-import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
+//import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 
 function getter(data: SingleGeneration): [number, number] {
-  //return [data.generation, data.survivorCount];
   return [data.generation, data.maxFitnessValue];
 }
 
@@ -19,14 +18,8 @@ export default function StatsPanel() {
   const [updates, setUpdates] = useState(0);
   const restartCount = useAtom(restartCountAtom);
 
-  const initialPopulation = useWorldPropertyValue(
-    (worldController) => worldController.initialPopulation,
-    0
-  );
-
   const maxFitnessFormatter = useCallback(
     (value: number) => {
-      //return ((value / initialPopulation) * 100).toFixed(1).toString() + "%";
       return ((value ).toFixed(1).toString());
     },
     []
@@ -49,7 +42,7 @@ export default function StatsPanel() {
         WorldEvents.startGeneration,
         onStartGeneration
       );
-      console.log("worldController.selectionMethod.fitnessValueName", worldController.selectionMethod.fitnessValueName);
+      console.log("worldController.selectionMethod.fitnessValueName", worldController.generations.selectionMethod.fitnessValueName);
       return () => {
         worldController.events.removeEventListener(
           WorldEvents.startGeneration,
@@ -61,7 +54,7 @@ export default function StatsPanel() {
 
   return (
     <div>
-      <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.selectionMethod.fitnessValueName}</h3>
+      <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.generations.selectionMethod.fitnessValueName}</h3>
       <LinearGraph
         data={data}
         getter={getter}
