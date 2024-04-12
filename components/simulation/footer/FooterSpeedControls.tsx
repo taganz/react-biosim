@@ -2,13 +2,18 @@ import React, { useEffect } from "react";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import classNames from "classnames";
-import {pauseBetweenStepsAtom, pauseBetweenGenerationsAtom, immediateStepsAtom} from "../store/guiControlsAtoms";
 import {worldControllerAtom} from "../store";
-import { useAtom, useAtomValue } from "jotai";
+import {atom, useAtom, useAtomValue } from "jotai";
+import * as constants from "@/simulation/simulationConstants"
 
 interface Props
   extends React.PropsWithChildren,
     React.ComponentPropsWithoutRef<"div"> {}
+
+    
+export const pauseBetweenStepsAtom = atom(0);
+export const pauseBetweenGenerationsAtom = atom(0);
+export const immediateStepsAtom = atom(1);
 
 export function FooterSpeedControls({ className, ...rest }: Props) {
   const [pauseBetweenSteps, setPauseBetweenSteps] = useAtom(pauseBetweenStepsAtom);
@@ -25,9 +30,14 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
     if (worldController) {
       worldController.pauseBetweenSteps = pauseBetweenSteps;
       worldController.pauseBetweenGenerations = pauseBetweenGenerations;
+      worldController.immediateSteps = immediateSteps;
+      console.log("FooterSpeedControls - updated immediateSteps:", immediateSteps, worldController.immediateSteps);
     }
-    //console.log("FooterSpeedControls ", immediateSteps);
+    else {
+      console.log("FooterSpeedControls - worldController not found!");
+    }
   }, [worldController, pauseBetweenSteps, pauseBetweenGenerations, immediateSteps]);
+
 
   return (
     <div className={finalClassName} {...rest}>
@@ -51,7 +61,7 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
         >
           <Toggle value={0}>0</Toggle>
           <Toggle value={1000}>1000</Toggle>
-          <Toggle value={2000}>4000</Toggle>
+          <Toggle value={4000}>4000</Toggle>
         </ToggleGroup>
       </div>
       <div className="flex flex-col items-start gap-1">

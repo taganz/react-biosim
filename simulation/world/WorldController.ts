@@ -6,7 +6,10 @@ import WorldObject from "./WorldObject";
 import worldInitialValues from "./WorldInitialValues";
 import WorldGenerations from "./WorldGenerations";
 
-
+// Manages generation-step loop
+// ImmediateSteps for canvas redraw 
+// Extintion detection and restart
+// Pause/resume
 export default class WorldController {
   static instance?: WorldController ;
 
@@ -21,26 +24,29 @@ export default class WorldController {
   // status
   currentGen: number = 0;
   currentStep: number = 0;
-  pauseBetweenSteps: number = 0;
-  //immediateSteps: number = 1;    // number of steps to run without redrawing
   deletionRatio: number = 0.5;    // --> not used?
   mutationMode: MutationMode = MutationMode.wholeGene;
+  
+  // speed controls
+  pauseBetweenSteps: number = 0;
   pauseBetweenGenerations: number = 0;
-
+  immediateSteps: number = 1;    // number of steps to run without redrawing
+  _immediateStepsCounter : number = 1;
+  
   // Stats
-  lastCreatureCount: number = 0;
-  lastSurvivorsCount: number = 0;
-  lastSurvivalRate: number = 0;
-  lastGenerationDate: Date = new Date();
-  lastGenerationDuration: number = 0;
-  lastPauseDate: Date | undefined = new Date();
-  pauseTime: number = 0;
+  lastCreatureCount: number = 0;   // used in generationregistry...
+  lastSurvivorsCount: number = 0;  // used
+  lastSurvivalRate: number = 0;   // used
+  _lastGenerationDate: Date = new Date();
+  lastGenerationDuration: number = 0; 
+  _lastPauseDate: Date | undefined = new Date();
+  _pauseTime: number = 0;
   totalTime: number = 0;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
   lastFitnessMaxValue : number = 0;
 
   events: EventTarget = new EventTarget();
-  timeoutId?: number;
+  _timeoutId?: number;
 
   
   constructor(worldInitialValues: worldInitialValues) {
@@ -65,6 +71,10 @@ export default class WorldController {
     this.currentGen = 0;
     this.currentStep = 0;
     this.totalTime = 0;
+
+    // speed controls
+    this._immediateStepsCounter = this.immediateSteps;
+
 
     // Stats
     this.lastSurvivorsCount = 0;
@@ -95,6 +105,8 @@ export default class WorldController {
       new CustomEvent(WorldEvents.endStep, { detail: { worldController: this } })
     );
 
+    this.sendRedrawEventEveryImmediateSteps();
+    
     // RD if everybody is dead, wait and restart
     if (stepSurvivors == 0) {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
@@ -103,61 +115,86 @@ export default class WorldController {
       this.startRun();
       return;
     }
-  
+
+    
     this.currentStep++;
 
     if (this.currentStep > this.stepsPerGen) {
-      this.endGeneration();
+      await this.endGeneration();
       this.currentStep = 0;
-      this.currentGen++;
-      await this.startGeneration();
+      this.startGeneration();
     }
 
-
-    this.timeoutId = window.setTimeout(
-      this.computeStep.bind(this),
-      this.pauseBetweenSteps
-    );
-    
+    // loop after pause
+    this._timeoutId = window.setTimeout(
+        this.computeStep.bind(this),
+        this.pauseBetweenSteps
+      );
+      
   }
 
-  private endGeneration(): void {
-    this.generations.endGeneration();
-  }
-
-  private async startGeneration(): Promise<void> {
-    this.lastGenerationDuration =
-      new Date().getTime() - this.lastGenerationDate.getTime() - this.pauseTime;
-    this.lastGenerationDate = new Date();
-    this.pauseTime = 0;
-    this.totalTime += this.lastGenerationDuration;
-    this.lastPauseDate = undefined;
-    this.generationRegistry.startGeneration();
-
-    this.events.dispatchEvent(
-      new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
-    );
-
+  private async endGeneration(): Promise<void> {
     // Small pause
     if (this.pauseBetweenGenerations > 0) {
       await new Promise((resolve) =>
         setTimeout(() => resolve(true), this.pauseBetweenGenerations)
       );
     }
+    this._immediateStepsCounter = this.immediateSteps;
+    this.generations.endGeneration();
   }
 
+  //private async startGeneration(): Promise<void> {
+  private startGeneration() : void {
+    this.currentGen++;
+    this.lastGenerationDuration =
+      new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
+    this._lastGenerationDate = new Date();
+    this._pauseTime = 0;
+    this.totalTime += this.lastGenerationDuration;
+    this._lastPauseDate = undefined;
+    this.generationRegistry.startGeneration();
+
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
+    );
+
+
+  }
+
+  private sendRedrawEventEveryImmediateSteps() : void { 
+    if (this.immediateSteps == 1) {
+      this.events.dispatchEvent(
+        new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
+      );
+    } else
+    if (this._immediateStepsCounter > 0) {
+      this._immediateStepsCounter--;
+      if (this._immediateStepsCounter == 0) {
+        console.log("redraw!", this.currentStep, "this.immediateSteps: ", this.immediateSteps);
+        this.events.dispatchEvent(
+          new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
+        );
+        this._immediateStepsCounter = this.immediateSteps;
+      } 
+    }
+  }
+
+  
+
+
   pause(): void {
-    if (this.timeoutId) {
-      window.clearTimeout(this.timeoutId);
-      this.timeoutId = undefined;
-      this.lastPauseDate = new Date();
+    if (this._timeoutId) {
+      window.clearTimeout(this._timeoutId);
+      this._timeoutId = undefined;
+      this._lastPauseDate = new Date();
     }
   }
 
   resume(): void {
-    if (!this.timeoutId) {
-      this.pauseTime += this.lastPauseDate
-        ? new Date().getTime() - this.lastPauseDate.getTime()
+    if (!this._timeoutId) {
+      this._pauseTime += this._lastPauseDate
+        ? new Date().getTime() - this._lastPauseDate.getTime()
         : 0;
 
       this.computeStep();
@@ -166,16 +203,9 @@ export default class WorldController {
 
 
   get isPaused(): boolean {
-    return !this.timeoutId;
+    return !this._timeoutId;
   }
 
-/*
-  public relativeToWorld(x: number, y: number): number[] {
-    const worldX = Math.floor(x * this.size);
-    const worldY = Math.floor(y * this.size);
 
-    return [worldX, worldY];
-  }
-*/
 
 }
