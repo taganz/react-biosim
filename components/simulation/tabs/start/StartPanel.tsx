@@ -6,20 +6,12 @@ import React, { useEffect } from "react";
 import {worldInitialValuesAtom, worldControllerAtom} from "../../store";
 
 import ScenariosSelection from "./ScenarioSelection";
-import WorldInitialValues from "@/simulation/world/WorldInitialValues";
 
 export default function StartPanel() {
-  const setWorld = useSetAtom(worldControllerAtom);
-  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+
    
   
-  useEffect(() => {
-    let worldController = new WorldController(worldInitialValues as WorldInitialValues);
-    setWorld(worldController);
-    worldController.startRun();  
-    console.log("WorldController instantiated");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
    
 
