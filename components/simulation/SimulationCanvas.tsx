@@ -39,7 +39,7 @@ export default function SimulationCanvas({ className }: Props) {
       }
     },[]);
 
-
+  //TODO add return --> destroy canvas
   useEffect(
     function instantiateWorldCanvas() {
       if (canvasRef.current) {
