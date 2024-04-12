@@ -3,15 +3,16 @@
 import React from "react";
 import Button from "../global/Button";
 import { useSetAtom, useAtomValue } from "jotai";
-import { worldControllerAtom, restartAtom } from "./store";
+import { worldControllerAtom, restartAtom, worldInitialValuesAtom } from "./store";
 
 export default function RestartButton() {
   const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
+  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
 
   const handleClick = () => {
     restart(true);
-    worldController?.startRun();
+    worldController?.startRun(worldInitialValues);
   };
 
   return (
