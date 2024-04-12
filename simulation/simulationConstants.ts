@@ -54,7 +54,7 @@ export const colors = {
   
 // run parameters
 export const RUN_WORLD_SIZE = 100;
-export const RUN_STEPS_PER_GENERATION = 300;
+export const RUN_STEPS_PER_GENERATION = 10; //300;
 export const RUN_INITIAL_POPULATION = 500; //500;
 export const RUN_INITIAL_GENOME_SIZE = 4;
 export const RUN_MAX_GENOME_SIZE = 30;
