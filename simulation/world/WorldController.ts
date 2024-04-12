@@ -78,7 +78,7 @@ export default class WorldController {
 
 
     // Stats
-    this.lastSurvivorsCount = 0;
+    //this.lastSurvivorsCount = 0;
     this.lastSurvivalRate = 0;
     this.lastGenerationDuration = 0;
     this.totalTime = 0;
@@ -95,7 +95,7 @@ export default class WorldController {
 
   private async computeStep(): Promise<void> {
           
-    console.log("gen.step: ", this.currentGen, ".", this.currentStep);
+    //console.log("gen.step: ", this.currentGen, ".", this.currentStep);
 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startStep, { detail: { worldController: this } })
