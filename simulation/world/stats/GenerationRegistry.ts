@@ -19,9 +19,9 @@ export class GenerationRegistry {
     // Register generation stats
     if (this.worldController.currentGen > 0) {
       const generation = this.worldController.currentGen - 1;
-      const survivorCount = this.worldController.lastSurvivorsCount;
-      const startingPopulation = this.worldController.lastCreatureCount;
-      const maxFitnessValue = this.worldController.lastFitnessMaxValue;
+      const survivorCount = this.worldController.generations.lastSurvivorsCount;
+      const startingPopulation = this.worldController.generations.lastCreatureCount;
+      const maxFitnessValue = this.worldController.generations.lastFitnessMaxValue;
 
       if (survivorCount > this.maxSurvivorCount) {
         this.maxSurvivorCount = survivorCount;
@@ -31,7 +31,7 @@ export class GenerationRegistry {
         this.minSurvivorCount = survivorCount;
       }
 
-      
+      console.log("gen registry: ", this.worldController.currentGen, ".", this.worldController.currentStep," ----", generation, survivorCount, startingPopulation, maxFitnessValue )      ;
       this.generations.push({ generation, survivorCount, startingPopulation, maxFitnessValue });
     }
   }

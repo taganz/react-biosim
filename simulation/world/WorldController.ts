@@ -34,8 +34,8 @@ export default class WorldController {
   _immediateStepsCounter : number = 1;
   
   // Stats
-  lastCreatureCount: number = 0;   // used in generationregistry...
-  lastSurvivorsCount: number = 0;  // used
+  //lastCreatureCount: number = 0;   // used in generationregistry...
+  //lastSurvivorsCount: number = 0;  // used
   lastSurvivalRate: number = 0;   // used
   _lastGenerationDate: Date = new Date();
   lastGenerationDuration: number = 0; 
@@ -43,7 +43,7 @@ export default class WorldController {
   _pauseTime: number = 0;
   totalTime: number = 0;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
-  lastFitnessMaxValue : number = 0;
+  //lastFitnessMaxValue : number = 0;
 
   events: EventTarget = new EventTarget();
   _timeoutId?: number;
@@ -55,6 +55,7 @@ export default class WorldController {
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(worldInitialValues, this.grid);
     this.stepsPerGen = worldInitialValues.stepsPerGen;
+    console.log("*** worldControlled constructor ***");
   }
 
   public startRun(worldInitialValues?: worldInitialValues ): void {
@@ -94,12 +95,14 @@ export default class WorldController {
 
   private async computeStep(): Promise<void> {
           
+    console.log("gen.step: ", this.currentGen, ".", this.currentStep);
+
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startStep, { detail: { worldController: this } })
     );
 
     // Compute step of every creature
-    const stepSurvivors : number = this.generations.step();
+    const numberOfSurvivorsThisStep : number = this.generations.step();
     
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.endStep, { detail: { worldController: this } })
@@ -108,7 +111,7 @@ export default class WorldController {
     this.sendRedrawEventEveryImmediateSteps();
     
     // RD if everybody is dead, wait and restart
-    if (stepSurvivors == 0) {
+    if (numberOfSurvivorsThisStep == 0) {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
@@ -142,6 +145,8 @@ export default class WorldController {
     }
     this._immediateStepsCounter = this.immediateSteps;
     this.generations.endGeneration();
+    this.generationRegistry.startGeneration();
+
   }
 
   //private async startGeneration(): Promise<void> {
@@ -153,8 +158,7 @@ export default class WorldController {
     this._pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
     this._lastPauseDate = undefined;
-    this.generationRegistry.startGeneration();
-
+    
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
     );

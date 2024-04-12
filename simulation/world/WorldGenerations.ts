@@ -6,10 +6,7 @@ import PopulationStrategy from "../creature/population/PopulationStrategy";
 import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
 import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
-import { WorldEvents } from "../events/WorldEvents";
-import { GenerationRegistry } from "./stats/GenerationRegistry";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
-import WorldObject from "./WorldObject";
 import Genome from "@/simulation/creature/genome/Genome";
 import worldInitialValues from "./WorldInitialValues";
 
@@ -34,16 +31,16 @@ export default class WorldGenerations {
   currentGen : number = 0;
   stepsPerGen : number = 0;
 
-  // Stats
+  // Stats for GenerationRegistry
   lastCreatureCount: number = 0;
   lastSurvivorsCount: number = 0;
-  lastSurvivalRate: number = 0;
+  lastFitnessMaxValue : number = 0;
+  //lastSurvivalRate: number = 0;
   //lastGenerationDate: Date = new Date();
   //lastGenerationDuration: number = 0;
   //lastPauseDate: Date | undefined = new Date();
   //pauseTime: number = 0;
   //totalTime: number = 0;
-  lastFitnessMaxValue : number = 0;
   populationStrategy:   PopulationStrategy; 
   selectionMethod: SelectionMethod;  
   mutationMode : MutationMode;
@@ -167,7 +164,7 @@ public endGeneration(): void {
   // Repopulate with survivors
   this.populationStrategy.populate(this, survivors);
   this.lastSurvivorsCount = survivors.length;
-  this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
+  //this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
   this.lastFitnessMaxValue = fitnessMaxValue;
 
 
