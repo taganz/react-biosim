@@ -13,6 +13,8 @@ import worldInitialValues from "./WorldInitialValues";
 
 export default class WorldGenerations {
   
+  grid: Grid;
+  
   initialPopulation: number = 0;
   initialGenomeSize: number = 0;
   maxGenomeSize: number = 0;
@@ -45,7 +47,6 @@ export default class WorldGenerations {
   selectionMethod: SelectionMethod;  
   mutationMode : MutationMode;
   deletionRatio : number;
-  grid: Grid;
     
   // get initial values
   constructor(worldInitialValues: worldInitialValues, grid: Grid) {
