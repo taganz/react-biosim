@@ -1,6 +1,6 @@
 "use client";
 
-import NumberInput from "@/components/global/inputs/NumberInput";
+//import NumberInput from "@/components/global/inputs/NumberInput";
 import {Dropdown, Option} from "../../../global/inputs/Dropdown"; 
 import {selectionMethodOptions, selectSelectionMethod} from "./selectionMethodOptions";
 import {populationStrategyOptions, selectPopulationStrategy} from "./populationStrategyOptions"
@@ -8,63 +8,75 @@ import PopulationStrategy from "@/simulation/creature/population/PopulationStrat
 import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
 import {
   worldControllerAtom,
-  enabledActionsAtom,
-  enabledSensorsAtom,
-  geneInsertionDeletionProbabilityAtom,
-  initialGenomeSizeAtom,
-  initialPopulationAtom,
-  maxGenomeSizeAtom,
-  maxNumberNeuronsAtom,
-  mutationModeAtom,
-  mutationProbabilityAtom,
-  populationStrategyAtom,
-  selectionMethodAtom,
-  sizeAtom,
-  stepsPerGenAtom,
-  restartCountAtom
+  restartCountAtom,
+  worldInitialValuesAtom
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
-import { useAtom, useSetAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import {Sensor,SensorName} from "@/simulation/creature/sensors/CreatureSensors";
 import {Action, ActionName} from "@/simulation/creature/actions/CreatureActions";
-import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
+//import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
+import { ChangeEvent } from "react";
+import * as constants from "@/simulation/simulationConstants"
+
+
+const enabledSensorsAtom = atom(constants.RUN_ENABLED_SENSORS);
+const enabledActionsAtom = atom(constants.RUN_ENABLED_ACTIONS);
+const selectionMethodAtom = atom(constants.RUN_SELECTION_METHOD);
+const populationStrategyAtom = atom(constants.RUN_POPULATION_STRATEGY);
+const mutationModeAtom = atom(constants.RUN_MUTATION_MODE);
+
+
 
 export default function SettingsPanel() {
 
 const worldController = useAtomValue(worldControllerAtom);
-const sensors = Object.values(worldController?.sensors.data ?? {});
-const actions = Object.values(worldController?.actions.data ?? {});
-const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
-const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);
+//const sensors = Object.values(worldController?.generations.sensors.data ?? {});
+const sensors = Object.values(worldController?.generations.sensors.data ?? {});
+const actions = Object.values(worldController?.generations.actions.data ?? {});
+const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);   
+const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
 const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
 const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
 const restartCount = useAtom(restartCountAtom);
+const [worldInitialValues, setWorldInitialValues] = useAtom(worldInitialValuesAtom);
+  
+setEnabledSensors(worldInitialValues.enabledSensors);
+setEnabledActions(worldInitialValues.enabledActions);
+/*
   useSyncAtomWithWorldProperty(
     enabledSensorsAtom,
-    (worldController) => worldController.sensors.getList(),
+    (worldController) => worldController.generations.sensors.getList(),
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
   
   useSyncAtomWithWorldProperty(
     enabledActionsAtom,
-    (worldController) => worldController.actions.getList(),
+    (worldController) => worldController.generations.actions.getList(),
     (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
-
-  const handleSensorChange = (name: SensorName, checked: boolean) => {
+*/
+const handleSensorChange = (name: SensorName, checked: boolean) => {
+  //const handleSensorChange = (name: SensorName, checked: ChangeEvent<HTMLInputElement>) => {
     if (checked) {
       setEnabledSensors([...enabledSensors, name]);
+      setWorldInitialValues(prev => ({ ...prev, enabledSensors: [...enabledSensors, name] }));
     } else if (enabledSensors.length > 1) {
       setEnabledSensors(enabledSensors.filter((item) => item !== name));
+      setWorldInitialValues(prev => ({ ...prev, enabledSensors: enabledSensors.filter((item) => item !== name) }));
     }
   };
+
+                  
 
   const handleActionChange = (name: ActionName, checked: boolean) => {
     if (checked) {
       setEnabledActions([...enabledActions, name]);
+      setWorldInitialValues(prev => ({ ...prev, enabledActions: [...enabledActions, name] }));
     } else if (enabledActions.length > 1) {
       setEnabledActions(enabledActions.filter((item) => item !== name));
+      setWorldInitialValues(prev => ({ ...prev, enabledActions: enabledActions.filter((item) => item !== name) }));
     }
   };
 
@@ -87,10 +99,21 @@ const restartCount = useAtom(restartCountAtom);
       setSelectionMethod(sp);
     }
 
+    
     const handlePopulationStrategy = (value: string) => {
       const sp : PopulationStrategy = selectPopulationStrategy(value); 
       setPopulationStrategy(sp);
     }
+    
+
+/*
+  const handleChangePopulation = (e) => {
+    //const newValues = {... worldInitialValues};
+    //newValues.initialPopulation = e.target.value;
+    //setWorldInitialValues(newValues)
+    setWorldInitialValues(prevState => ({ ...prevState, initialPopulation: e.target.value }))
+  }
+*/
     
   return (
     <div>
@@ -102,20 +125,51 @@ const restartCount = useAtom(restartCountAtom);
         <div>
           <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput atom={sizeAtom} label="WorldController Size" />
-            <NumberInput atom={initialPopulationAtom} label="Initial population"/>
-          <NumberInput atom={stepsPerGenAtom} label="Steps per generation" />
+
+        {/*  size  */}
+        <div className="flex flex-col">
+          <label className="grow">WorldController Size</label>
+          <input
+              type="number"
+              value={worldInitialValues.size.toString()}
+              onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
+              className="min-w-0 bg-grey-mid p-1"
+            >
+          </input>
+        </div>
+        {/*  initialPopulation  */}
+        <div className="flex flex-col">
+          <label className="grow">Initial population</label>
+          <input
+              type="number"
+              value={worldInitialValues.initialPopulation.toString()}
+              onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, initialPopulation: parseInt(e.target.value)}))}} 
+              className="min-w-0 bg-grey-mid p-1"
+            >
+          </input>
+        </div>
+        {/*  stepsPerGen  */}
+        <div className="flex flex-col">
+          <label className="grow">Steps per generation</label>
+          <input
+              type="number"
+              value={worldInitialValues.stepsPerGen.toString()}
+              onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
+              className="min-w-0 bg-grey-mid p-1"
+            >
+          </input>
+        </div>
           </div>
         </div>
 
         <div>
           <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
           <div className="mb-1">
-            <h2>Selection method: <br/>current: {worldController?.selectionMethod.constructor.name} </h2>
+            <h2>Selection method: <br/>current: {worldController?.generations.selectionMethod.constructor.name} </h2>
             <Dropdown options={selectionMethodOptions} 
                       onSelect={handleSelectionMethodOptions}/>
             <br/>
-            <h2>Population strategy: <br/>current: {worldController?.populationStrategy.constructor.name} </h2>
+            <h2>Population strategy: <br/>current: {worldController?.generations.populationStrategy.constructor.name} </h2>
             <Dropdown options={populationStrategyOptions} onSelect={handlePopulationStrategy} />
             <br/>
           </div>
@@ -124,9 +178,39 @@ const restartCount = useAtom(restartCountAtom);
         <div>
           <h3 className="mb-1 text-2xl font-bold">Neuronal Networks</h3>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput atom={initialGenomeSizeAtom} label="Initial genome size"/>
-            <NumberInput atom={maxGenomeSizeAtom} label="Max genome size" />
-            <NumberInput atom={maxNumberNeuronsAtom} label="Max neurons" />
+          {/*  initialGenomeSize  */}
+            <div className="flex flex-col">
+              <label className="grow">Initial genome size</label>
+              <input
+                  type="number"
+                  value={worldInitialValues.initialGenomeSize.toString()}
+                  onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, initialGenomeSize: parseInt(e.target.value)}))}} 
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+          {/*  maxGenomeSize  */}
+          <div className="flex flex-col">
+              <label className="grow">Max genome size</label>
+              <input
+                  type="number"
+                  value={worldInitialValues.maxGenomeSize.toString()}
+                  onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, maxGenomeSize: parseInt(e.target.value)}))}} 
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+          {/*  maxNumberNeurons  */}
+          <div className="flex flex-col">
+              <label className="grow">Max neurons</label>
+              <input
+                  type="number"
+                  value={worldInitialValues.maxNumberNeurons.toString()}
+                  onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, maxNumberNeurons: parseInt(e.target.value)}))}} 
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
           </div>
         </div>
 
@@ -138,34 +222,70 @@ const restartCount = useAtom(restartCountAtom);
               <option value="singleBit">Single Bits</option>
               <option value="singleHexDigit">Single Hexadecimal Digits</option>
             </SelectInput>
-            <NumberInput
-              atom={mutationProbabilityAtom}
-              label="Mutation probability (0 - 1)"
-              step={0.001}
-            />
-            <NumberInput
-              atom={geneInsertionDeletionProbabilityAtom}
-              label="Gene insertion/deletion probability (0 - 1)"
-              step={0.001}
-            />
+          {/*  mutationProbability  */}
+          <div className="flex flex-col">
+              <label className="grow">Mutation probability (0 - 1)</label>
+              <input
+                  type="number"
+                  value={worldInitialValues.mutationProbability.toString()}
+                  onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, mutationProbability: parseFloat(e.target.value)}))}} 
+                  step="0.01"
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+          {/*  geneInsertionDeletionProbability  */}
+          <div className="flex flex-col">
+              <label className="grow">Max neurons</label>
+              <input
+                  type="number"
+                  value={worldInitialValues.geneInsertionDeletionProbability.toString()}
+                  onChange={(e) => {setWorldInitialValues(prevState => ({ ...prevState, geneInsertionDeletionProbability: parseFloat(e.target.value)}))}} 
+                  step="0.001"
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
           </div>
         </div>
 
+          {/*  sensors  */}
+          {/*
+          <div>
+            <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+                  {sensors.map((sensor) => (
+                   <><input
+                      id={sensor.name}
+                      key={sensor.name}
+                      type="checkbox"
+                      checked={enabledSensors.includes(sensor.name)}
+                      onChange={(checked) => handleSensorChange(sensor.name, checked)}
+                      className="inline-block h-4 w-4 min-w-0 shrink-0 bg-grey-mid p-2" /><label className="grow text-sm" htmlFor={sensor.name}>
+                        {getSensorLabel(sensor)}
+                      </label>
+                    </>
+                  ))}
+            </div> 
+            */}
+
+        
+        {/*  sensors  */}
         <div>
           <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-            {sensors.map((sensor) => (
-              <CheckboxInput
-                id={sensor.name}
-                key={sensor.name}
-                label={getSensorLabel(sensor)}
-                checked={enabledSensors.includes(sensor.name)}
-                onChange={(checked) => handleSensorChange(sensor.name, checked)}
-              />
-            ))}
+              {sensors.map((sensor) => (
+                <CheckboxInput
+                  id={sensor.name}
+                  key={sensor.name}
+                  label={getSensorLabel(sensor)}
+                  checked={enabledSensors.includes(sensor.name)}
+                  onChange={(checked) => handleSensorChange(sensor.name, checked)}
+                />
+              ))}
           </div>
         </div>
-
+        {/*  actions  */}
         <div>
           <h3 className="mb-1 text-2xl font-bold">Actions</h3>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
@@ -175,8 +295,7 @@ const restartCount = useAtom(restartCountAtom);
                 key={actions.name}
                 label={getActionLabel(actions)}
                 checked={enabledActions.includes(actions.name)}
-                onChange={(checked) =>
-                  handleActionChange(actions.name, checked)
+                onChange={(checked) => handleActionChange(actions.name, checked)
                 }
               />
             ))}

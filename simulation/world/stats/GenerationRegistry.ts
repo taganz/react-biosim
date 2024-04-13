@@ -31,7 +31,7 @@ export class GenerationRegistry {
         this.minSurvivorCount = survivorCount;
       }
 
-      console.log("gen registry: ", this.worldController.currentGen, ".", this.worldController.currentStep," ----", generation, survivorCount, startingPopulation, maxFitnessValue )      ;
+      //console.log("gen registry: ", this.worldController.currentGen, ".", this.worldController.currentStep," ----", generation, survivorCount, startingPopulation, maxFitnessValue )      ;
       this.generations.push({ generation, survivorCount, startingPopulation, maxFitnessValue });
     }
   }

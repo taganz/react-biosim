@@ -6,7 +6,7 @@ import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import {worldControllerAtom, worldCreaturesAtom, worldObjectsAtom, worldInitialValuesAtom} from "./store";
-import {sizeAtom, worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
+import {worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
 import WorldInitialValues from "@/simulation/world/WorldInitialValues";
 
 interface Props {
@@ -17,7 +17,6 @@ export default function SimulationCanvas({ className }: Props) {
   const canvasRef = useRef(null);
   const counter = useRef(0);
   const counterMax = useRef(0);
-  const size = useAtomValue(sizeAtom);
   const worldCreatures = useAtomValue(worldCreaturesAtom);
   const worldObjects = useAtomValue(worldObjectsAtom);
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
@@ -44,12 +43,16 @@ export default function SimulationCanvas({ className }: Props) {
     function instantiateWorldCanvas() {
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(canvas, size, worldCreatures, worldObjects));
+        setWorldCanvas(new WorldCanvas(canvas, worldInitialValues.size, worldCreatures, worldObjects));
         //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
       } else {
         throw new Error("Cannot found canvas");
       }
       console.log("sc - instantiate worldcanvas");
+      return () => {
+        console.log("*** worldcanvas destroyed ***");
+        setWorldCanvas(null);
+      }
       // eslint-disable-next-line react-hooks/exhaustive-deps      
   },[]);
 
