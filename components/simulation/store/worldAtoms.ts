@@ -10,7 +10,7 @@ import * as constants from "@/simulation/simulationConstants"
 //export const sizeAtom = atom(constants.RUN_WORLD_SIZE);
 export const worldControllerAtom = atom<WorldController | null>(null);
 export const worldCanvasAtom = atom<WorldCanvas | null>(null);
-export const restartAtom = atom(false);
+//export const restartAtom = atom(false);
 export const restartCountAtom = atom(0);  // to refresh tabs on restart
 export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
