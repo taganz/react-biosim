@@ -1,9 +1,9 @@
 import CreatureActions from "../creature/actions/CreatureActions";
 import Creature from "../creature/Creature";
 import { MutationMode } from "../creature/genome/MutationMode";
-import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
+//import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
-import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
+//import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
 import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"

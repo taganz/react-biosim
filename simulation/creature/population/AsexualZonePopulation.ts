@@ -26,7 +26,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
       // Is it a spawn area?
       if (obj.areaType === 2) {
         zonePopulation = true;
-        pos = generations.grid.clamp((obj.x + obj.width/2) * generations.grid.size, (obj.y + obj.height/2) * worldController.size);  // rectangle center
+        pos = generations.grid.clamp((obj.x + obj.width/2) * generations.grid.size, (obj.y + obj.height/2) * generations.grid.size);  // rectangle center
         halfWidth = obj.width/2 * generations.grid.size;
         halfHeight = obj.height/2 * generations.grid.size;
         break;
@@ -42,7 +42,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
           offspringPosition = generations.grid.getRandomAvailablePosition();
         }
         else {
-          offspringPosition = generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, worldController.initialPopulation);
+          offspringPosition = generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, generations.initialPopulation);
         }        
         if (offspringPosition != null) {
           generations.newCreature(offspringPosition);
@@ -77,7 +77,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
             }
             else {
               pos = pos==null ? [Math.floor(generations.grid.size/2), Math.floor(generations.grid.size/2)] : pos;
-              offspringPosition =  generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, worldController.initialPopulation);
+              offspringPosition =  generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, generations.initialPopulation);
             }
             if (offspringPosition != null) {
               generations.newCreature(offspringPosition, parent.massAtBirth, parent.genome);

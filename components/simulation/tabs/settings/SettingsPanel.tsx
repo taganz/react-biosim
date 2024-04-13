@@ -23,8 +23,8 @@ import * as constants from "@/simulation/simulationConstants"
 
 const enabledSensorsAtom = atom(constants.RUN_ENABLED_SENSORS);
 const enabledActionsAtom = atom(constants.RUN_ENABLED_ACTIONS);
-const selectionMethodAtom = atom(constants.RUN_SELECTION_METHOD);
-const populationStrategyAtom = atom(constants.RUN_POPULATION_STRATEGY);
+//const selectionMethodAtom = atom(constants.RUN_SELECTION_METHOD);
+//const populationStrategyAtom = atom(constants.RUN_POPULATION_STRATEGY);
 const mutationModeAtom = atom(constants.RUN_MUTATION_MODE);
 
 
@@ -37,8 +37,8 @@ const sensors = Object.values(worldController?.generations.sensors.data ?? {});
 const actions = Object.values(worldController?.generations.actions.data ?? {});
 const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);   
 const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
-const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
-const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
+//const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
+//const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
 const restartCount = useAtom(restartCountAtom);
 const [worldInitialValues, setWorldInitialValues] = useAtom(worldInitialValuesAtom);
   
@@ -94,15 +94,16 @@ const handleSensorChange = (name: SensorName, checked: boolean) => {
 
 
     const handleSelectionMethodOptions = (value: string) => {
-      const sp : SelectionMethod = selectSelectionMethod(value); 
-      console.log("handleSelectionMethodOptions ", value, sp);
-      setSelectionMethod(sp);
+      //const sp : SelectionMethod = selectSelectionMethod(value); 
+      //setSelectionMethod(sp);
+      setWorldInitialValues(prev => ({ ...prev, selectionMethod: selectSelectionMethod(value) }));
     }
 
     
     const handlePopulationStrategy = (value: string) => {
-      const sp : PopulationStrategy = selectPopulationStrategy(value); 
-      setPopulationStrategy(sp);
+      //const ps : PopulationStrategy = selectPopulationStrategy(value); 
+      //setPopulationStrategy(ps);
+      setWorldInitialValues(prev => ({ ...prev, populationStrategy: selectPopulationStrategy(value) }));
     }
     
 
@@ -161,7 +162,7 @@ const handleSensorChange = (name: SensorName, checked: boolean) => {
         </div>
           </div>
         </div>
-
+        {/*  selectionMethod  */}
         <div>
           <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
           <div className="mb-1">
@@ -250,7 +251,7 @@ const handleSensorChange = (name: SensorName, checked: boolean) => {
         </div>
 
           {/*  sensors  */}
-          {/*
+          {/*   TODO to be deleted ---- I was trying to remove enabledSensors atom 
           <div>
             <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
             <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
