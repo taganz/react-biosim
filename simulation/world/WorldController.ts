@@ -13,36 +13,50 @@ import WorldGenerations from "./WorldGenerations";
 export default class WorldController {
   static instance?: WorldController ;
 
-  // world initial values
-  size: number = 10;
-  stepsPerGen: number = 0;
-  initialPopulation: number = 0;
-  objects: WorldObject[] = [];   // to be set externally
   generations : WorldGenerations;
   grid: Grid;
+
+  // --- world initial values ---
+  size: number = 10;
+  // selectionMethod in generations
+  // populationStrategy in generations
+  stepsPerGen: number = 0;
+  initialPopulation: number = 0;
+  // initialGenomeSize in generations
+  // maxGenomeSize in generations
+  // maxNumberNeurons in generations
+  mutationMode: MutationMode = MutationMode.wholeGene;
+  // mutationProbability in generations
+  // geneInsertionDeletionProbability in generations
+  // enabledSensors in generations
+  // enabledActions in generations
+  objects: WorldObject[] = [];   // to be set externally
+
+  // --- run values ---
 
   // status
   currentGen: number = 0;
   currentStep: number = 0;
   deletionRatio: number = 0.5;    // --> not used?
-  mutationMode: MutationMode = MutationMode.wholeGene;
-  
   // speed controls
   pauseBetweenSteps: number = 0;
-  pauseBetweenGenerations: number = 0;
   immediateSteps: number = 1;    // number of steps to run without redrawing
+  pauseBetweenGenerations: number = 0;
+  // lastGenerationIdCreated in generations
   _immediateStepsCounter : number = 1;
   
   // Stats
-  //lastCreatureCount: number = 0;   // used in generationregistry...
-  //lastSurvivorsCount: number = 0;  // used
+  //lastCreatureCount in generations
+  //lastSurvivorsCount in generations
   lastSurvivalRate: number = 0;   // used
   _lastGenerationDate: Date = new Date();
   lastGenerationDuration: number = 0; 
   _lastPauseDate: Date | undefined = new Date();
   _pauseTime: number = 0;
   totalTime: number = 0;
+  
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
+  
   //lastFitnessMaxValue : number = 0;
 
   events: EventTarget = new EventTarget();
@@ -50,21 +64,17 @@ export default class WorldController {
 
   
   constructor(worldInitialValues: worldInitialValues) {
-    this.size = worldInitialValues.size;
-    this.objects = worldInitialValues.worldObjects;
+    this.copyWorldInitialValues(worldInitialValues);
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(worldInitialValues, this.grid);
-    this.stepsPerGen = worldInitialValues.stepsPerGen;
     console.log("*** worldControlled constructor ***");
   }
 
   public startRun(worldInitialValues?: worldInitialValues ): void {
     if (worldInitialValues) {
-      this.size = worldInitialValues.size;
-      this.objects = worldInitialValues.worldObjects;
       this.grid = new Grid(this.size, this.objects);
       this.generations = new WorldGenerations(worldInitialValues, this.grid);
-      this.stepsPerGen = worldInitialValues.stepsPerGen;
+      this.copyWorldInitialValues(worldInitialValues);
     }
 
     
@@ -91,6 +101,33 @@ export default class WorldController {
 
     this.computeStep();
   
+  }
+
+  public resumeRun(worldInitialValues: worldInitialValues ): void {
+    this.copyWorldInitialValues(worldInitialValues);
+    this.grid = new Grid(this.size, this.objects);
+    this.generations = new WorldGenerations(worldInitialValues, this.grid);
+    this.computeStep();
+  }
+
+  private copyWorldInitialValues(worldInitialValues: worldInitialValues) : void {
+    this.size = worldInitialValues.size;
+    this.objects = worldInitialValues.worldObjects;
+    this.size = worldInitialValues.size;
+    //this.generations.selectionMethod = worldInitialValues.selectionMethod;
+    //this.generations.populationStrategy = worldInitialValues.populationStrategy;
+    this.stepsPerGen = worldInitialValues.stepsPerGen;
+    this.initialPopulation = worldInitialValues.initialPopulation;
+    //this.generations.initialGenomeSize = worldInitialValues.initialGenomeSize;
+    //this.generations.maxGenomeSize = worldInitialValues.maxGenomeSize;
+    //this.generations.maxNumberNeurons = worldInitialValues.maxNumberNeurons;
+    this.mutationMode = worldInitialValues.mutationMode;
+    //this.generations.mutationProbability = worldInitialValues.mutationProbability;
+    //this.generations.geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbability;
+    //this.generations.sensors = worldInitialValues.enabledSensors;
+    //this.generations.actions = worldInitialValues.enabledActions;
+    this.objects = worldInitialValues.worldObjects;
+
   }
 
   private async computeStep(): Promise<void> {

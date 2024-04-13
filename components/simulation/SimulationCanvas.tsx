@@ -25,20 +25,20 @@ export default function SimulationCanvas({ className }: Props) {
   const worldInitialValues = useAtomValue(worldInitialValuesAtom);
   
   useEffect(
-    function instantiateWorlsController() {
-      const worldController = new WorldController(worldInitialValues as WorldInitialValues);
+    function instantiateWorldController() {
+      console.log(worldInitialValues);
+      const worldController = new WorldController(worldInitialValues);
       setWorldController(worldController);
       worldController.startRun();  
       console.log("WorldController instantiated");
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       return () => {
         console.log("*** World destroyed ***");
         worldController.pause();
         setWorldController(null);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
-  //TODO add return --> destroy canvas
   useEffect(
     function instantiateWorldCanvas() {
       if (canvasRef.current) {

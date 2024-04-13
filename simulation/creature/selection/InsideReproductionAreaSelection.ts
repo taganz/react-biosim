@@ -6,6 +6,7 @@ import SelectionMethod from "./SelectionMethod";
 export default class InsideReproductionAreaSelection
   implements SelectionMethod
 {
+  name = "InsideReproductionAreaSelection";
   fitnessValueName = "Survival rate (%)";
 
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {

@@ -5,6 +5,7 @@ import SelectionMethod from "./SelectionMethod";
 export default class ReproductionSelection
   implements SelectionMethod
 {
+  name = "ReproductionSelection";
   fitnessValueName = "Reproduction";
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {

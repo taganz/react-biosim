@@ -1,26 +1,17 @@
-import { ActionName } from './../../creature/actions/CreatureActions';
-import { SensorName } from './../../creature/sensors/CreatureSensors';
-import { MutationMode } from "../../creature/genome/MutationMode";
 import SavedGenerationRegistry from "./SavedGenerationRegistry";
 import SavedSpecies from "./SavedSpecies";
-import SavedWorldObject from "./SavedWorldObject";
+import SavedWorldInitialValues from "./SavedWorldInitialValues";
+import WorldInitialValues from "@/simulation/world/WorldInitialValues";
 
 export default interface SavedWorld {
-  // WorldController
-  size: number;
-  initialPopulation: number;
+  
+  worldInitialValues: SavedWorldInitialValues;
+
   currentGen: number;
   currentStep: number;
   pauseBetweenSteps: number;
-  stepsPerGen: number;
   immediateSteps: number;
-  initialGenomeSize: number;
-  maxGenomeSize: number;
-  maxNumberNeurons: number;
-  mutationProbability: number;
-  geneInsertionDeletionProbability: number;
   deletionRatio: number;
-  mutationMode: MutationMode;
   pauseBetweenGenerations: number;
   lastCreatureIdCreated: number;
   
@@ -31,19 +22,7 @@ export default interface SavedWorld {
   lastGenerationDuration: number;
   totalTime: number;
 
-  // TODO: Handle populationStrategy
-  // populationStrategy: PopulationStrategy = new AsexualRandomPopulation();
-  // TODO: Handle selectionMethod
-  // selectionMethod: SelectionMethod = new EastWallSelection();
-
-  // Sensors and actions
-  sensors: SensorName[];
-  actions: ActionName[];
-
-  // Species
   species: SavedSpecies[];
-
-  objects: SavedWorldObject[];
 
   generations: SavedGenerationRegistry;
 }

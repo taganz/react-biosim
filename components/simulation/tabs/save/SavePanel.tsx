@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom } from "../../store";
+import { worldControllerAtom, worldInitialValuesAtom } from "../../store";
 import { useAtomValue } from "jotai";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import { useState } from "react";
@@ -11,24 +11,25 @@ import CanvasToGIF from "./CanvasToGif";
 
 export default function SavePanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  const [data, setData] = useState("");
+  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+  const [dataSavedWorld, setDataSavedWorld] = useState("");
 
   const handleSave = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController);
-      const json = JSON.stringify(savedWorld);
-      setData(json);
+      const savedWorld = saveWorld(worldController, worldInitialValues);
+      const jsonSavedWorld = JSON.stringify(savedWorld);
+      setDataSavedWorld(jsonSavedWorld);
     }
   };
 
 
   const handleSaveToFile = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController);
-      const json = JSON.stringify(savedWorld);
-      setData(json);
+      const savedWorld = saveWorld(worldController, worldInitialValues);
+      const jsonSavedWorld = JSON.stringify(savedWorld);
+      setDataSavedWorld(jsonSavedWorld);
 
-      const blob = new Blob ([json]  , { type: 'text/plain;charset=utf-8'})
+      const blob = new Blob ([jsonSavedWorld]  , { type: 'text/plain;charset=utf-8'})
       saveAs( blob, 'sim_generation '.concat(worldController.currentGen.toString()) ); 
     }
   };
@@ -42,7 +43,7 @@ export default function SavePanel() {
       </p>
 
       <CopyToClipboardTextarea
-        value={data}
+        value={dataSavedWorld}
         maxRows={20}
         minRows={20}
         withScrollbar

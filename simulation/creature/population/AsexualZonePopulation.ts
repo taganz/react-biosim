@@ -7,6 +7,7 @@ import WorldObject from "@/simulation/world/WorldObject";
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class AsexualZonePopulation implements PopulationStrategy {
+  name = "AsexualZonePopulation";
   populate(generations: WorldGenerations, parents?: Creature[]): void {
     //const creatures: Creature[] = [];
     let pos : GridPosition = [Math.floor(generations.grid.size/2), Math.floor(generations.grid.size/2)];

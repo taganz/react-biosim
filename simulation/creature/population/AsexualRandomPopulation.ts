@@ -7,6 +7,7 @@ import {GridPosition} from "../../world/grid/Grid";
 
 export default class AsexualRandomPopulation implements PopulationStrategy {
 
+  name = "AsexualRandomPopulation";
   populate(worldGenerations: WorldGenerations, parents?: Creature[]): void {
     //const creatures: Creature[] = [];
 

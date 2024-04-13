@@ -1,19 +1,22 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom } from "../../store";
-import { useAtomValue } from "jotai";
+import { worldControllerAtom, worldInitialValuesAtom } from "../../store";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
 import { loadWorld } from "@/simulation/serialization/loadWorld";
 import TextareaInput from "@/components/global/inputs/TextareaInput";
 
 export default function LoadPanel() {
   const worldController = useAtomValue(worldControllerAtom);
+  const setWorldInitialValues = useSetAtom(worldInitialValuesAtom);
   const [data, setData] = useState("");
 
-  const handleLoad = () => {
+  const handleLoadPasted = () => {
     if (worldController) {
-      loadWorld(worldController, data);
+      const initialValues = loadWorld(worldController, data);
+      setWorldInitialValues(initialValues);
+      worldController.startRun(initialValues);
     }
   };
 
@@ -28,7 +31,10 @@ export default function LoadPanel() {
       console.log(fileReader.result); 
       setData(fileReader.result as string);
       if (worldController) {
-        loadWorld(worldController, data);
+        const initialValues = loadWorld(worldController, data);
+        setWorldInitialValues(initialValues);
+        worldController.startRun(initialValues);
+
       }
     }
     fileReader.onerror = () => {
@@ -53,7 +59,7 @@ export default function LoadPanel() {
 
       {/*<div className="mt-2 text-center">*/}
       <div className="mt-2">
-        <Button onClick={handleLoad}>Load</Button>
+        <Button onClick={handleLoadPasted}>Load</Button>
         <br/><p>Beta:</p><br/>
         <input 
           className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:font-semibold"

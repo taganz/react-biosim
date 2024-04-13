@@ -3,6 +3,7 @@ import Creature from "../Creature";
 import WorldGenerations from "../../world/WorldGenerations";
 
 export default interface SelectionMethod {
+  name: string;
   fitnessValueName: string;
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number};
   //onDrawBeforeCreatures?(worldController: WorldController): void;
