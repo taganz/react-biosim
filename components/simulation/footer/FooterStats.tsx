@@ -10,7 +10,7 @@ export default function FooterStats() {
   );
   const totalTime = useWorldPropertyValue((worldController) => worldController.totalTime, 0);
   const lastSurvivorCount = useWorldPropertyValue(
-    (worldController) => worldController.lastSurvivorsCount,
+    (worldController) => worldController.generations.lastSurvivorsCount,
     0
   );
   const lastSurvivalRate = useWorldPropertyValue(

@@ -143,7 +143,7 @@ export default class WorldController {
         setTimeout(() => resolve(true), this.pauseBetweenGenerations)
       );
     }
-    this._immediateStepsCounter = this.immediateSteps;
+    //this._immediateStepsCounter = this.immediateSteps;
     this.generations.endGeneration();
     this.generationRegistry.startGeneration();
 
