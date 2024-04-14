@@ -74,7 +74,7 @@ export default class WorldController {
     if (worldInitialValues) {
       this.grid = new Grid(this.size, this.objects);
       this.generations = new WorldGenerations(worldInitialValues, this.grid);
-      this.copyWorldInitialValues(worldInitialValues);
+      this.loadWorldInitialValues(worldInitialValues);
     }
 
     
@@ -104,29 +104,19 @@ export default class WorldController {
   }
 
   public resumeRun(worldInitialValues: worldInitialValues ): void {
-    this.copyWorldInitialValues(worldInitialValues);
+    this.loadWorldInitialValues(worldInitialValues);
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(worldInitialValues, this.grid);
     this.computeStep();
   }
 
-  private copyWorldInitialValues(worldInitialValues: worldInitialValues) : void {
+  private loadWorldInitialValues(worldInitialValues: worldInitialValues) : void {
+    // load only worldController values. worldGeneration will load others
     this.size = worldInitialValues.size;
-    this.objects = worldInitialValues.worldObjects;
-    this.size = worldInitialValues.size;
-    //this.generations.selectionMethod = worldInitialValues.selectionMethod;
-    //this.generations.populationStrategy = worldInitialValues.populationStrategy;
     this.stepsPerGen = worldInitialValues.stepsPerGen;
     this.initialPopulation = worldInitialValues.initialPopulation;
-    //this.generations.initialGenomeSize = worldInitialValues.initialGenomeSize;
-    //this.generations.maxGenomeSize = worldInitialValues.maxGenomeSize;
-    //this.generations.maxNumberNeurons = worldInitialValues.maxNumberNeurons;
     this.mutationMode = worldInitialValues.mutationMode;
-    //this.generations.mutationProbability = worldInitialValues.mutationProbability;
-    //this.generations.geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbability;
-    //this.generations.sensors = worldInitialValues.enabledSensors;
-    //this.generations.actions = worldInitialValues.enabledActions;
-    this.objects = worldInitialValues.worldObjects;
+    this.objects = worldInitialValues.worldObjects;   
 
   }
 
