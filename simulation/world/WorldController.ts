@@ -64,7 +64,7 @@ export default class WorldController {
 
   
   constructor(worldInitialValues: worldInitialValues) {
-    this.copyWorldInitialValues(worldInitialValues);
+    this.loadWorldInitialValues(worldInitialValues);
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(worldInitialValues, this.grid);
     console.log("*** worldControlled constructor ***");
@@ -106,7 +106,7 @@ export default class WorldController {
   public resumeRun(worldInitialValues: worldInitialValues ): void {
     this.loadWorldInitialValues(worldInitialValues);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(worldInitialValues, this.grid);
+    // generations should be loaded before calling resumeRun
     this.computeStep();
   }
 
@@ -116,7 +116,7 @@ export default class WorldController {
     this.stepsPerGen = worldInitialValues.stepsPerGen;
     this.initialPopulation = worldInitialValues.initialPopulation;
     this.mutationMode = worldInitialValues.mutationMode;
-    this.objects = worldInitialValues.worldObjects;   
+    this.objects = [...worldInitialValues.worldObjects];   
 
   }
 
@@ -202,7 +202,7 @@ export default class WorldController {
     if (this._immediateStepsCounter > 0) {
       this._immediateStepsCounter--;
       if (this._immediateStepsCounter == 0) {
-        console.log("redraw!", this.currentStep, "this.immediateSteps: ", this.immediateSteps);
+        //console.log("redraw!", this.currentStep, "this.immediateSteps: ", this.immediateSteps);
         this.events.dispatchEvent(
           new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
         );

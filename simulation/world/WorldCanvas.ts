@@ -1,7 +1,5 @@
 import Creature from "../creature/Creature";
-import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
-import PopulationStrategy from "../creature/population/PopulationStrategy";
-import {Grid, GridCell, GridPosition} from "./grid/Grid"
+import {GridPosition} from "./grid/Grid"
 import WorldObject from "./objects/WorldObject";
 
 
@@ -9,12 +7,12 @@ export default class WorldCanvas {
   
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  size: number;
+  size: number;  // world size (not canvas size!), used for conversion
   objects : WorldObject[];
   lastGenerationDrawn : number = 0;
   lastCreaturesDrawn : Creature[]  = [];
     
-  constructor(canvas: HTMLCanvasElement, size: number, creatures : Creature[], objects : WorldObject[]) {
+  constructor(canvas: HTMLCanvasElement, size: number, objects : WorldObject[]) {
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;

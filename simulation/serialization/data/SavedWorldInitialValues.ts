@@ -5,6 +5,8 @@ import SavedWorldObject from './SavedWorldObject';
 import {SavedSelectionMethod} from "@/simulation/creature/selection/SelectionMethodFormatter";
 import {SavedPopulationStrategy} from "@/simulation/creature/population/PopulationStrategyFormatter";
 
+export type SavedMutationMode = string;
+
 export default interface SavedWorldInitialValues {
   size: number;
   selectionMethod: SavedSelectionMethod;
@@ -14,7 +16,7 @@ export default interface SavedWorldInitialValues {
   initialGenomeSize: number;
   maxGenomeSize: number;
   maxNumberNeurons: number;
-  mutationMode: MutationMode;
+  mutationMode: SavedMutationMode;
   mutationProbability: number;
   geneInsertionDeletionProbability: number;
   enabledSensors: SensorName[];

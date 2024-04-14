@@ -15,9 +15,9 @@ interface Props {
 
 export default function SimulationCanvas({ className }: Props) {
   const canvasRef = useRef(null);
-  const counter = useRef(0);
-  const counterMax = useRef(0);
-  const worldCreatures = useAtomValue(worldCreaturesAtom);
+  //const counter = useRef(0);
+  //const counterMax = useRef(0);
+  //const worldCreatures = useAtomValue(worldCreaturesAtom);
   const worldObjects = useAtomValue(worldObjectsAtom);
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
@@ -26,13 +26,12 @@ export default function SimulationCanvas({ className }: Props) {
   
   useEffect(
     function instantiateWorldController() {
-      console.log(worldInitialValues);
+      console.log("*** instantiate worldController with initialValues: ", worldInitialValues);
       const worldController = new WorldController(worldInitialValues);
       setWorldController(worldController);
       worldController.startRun();  
-      console.log("WorldController instantiated");
       return () => {
-        console.log("*** World destroyed ***");
+        console.log("*** worldControlled destroyed ***");
         worldController.pause();
         setWorldController(null);
       }
@@ -43,19 +42,26 @@ export default function SimulationCanvas({ className }: Props) {
     function instantiateWorldCanvas() {
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(canvas, worldInitialValues.size, worldCreatures, worldObjects));
+        setWorldCanvas(new WorldCanvas(canvas, worldInitialValues.size, worldObjects));
         //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
       } else {
         throw new Error("Cannot found canvas");
       }
-      console.log("sc - instantiate worldcanvas");
       return () => {
-        console.log("*** worldcanvas destroyed ***");
+        console.log("*** worldCanvas destroyed ***");
         setWorldCanvas(null);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps      
   },[]);
 
+    const handleInitializeWorld = useCallback( () => {
+      if (worldCanvas) {
+        console.log("SimulationCanvas handleInitializeWorld objects: ", worldInitialValues.worldObjects);
+        worldCanvas.objects = [...worldInitialValues.worldObjects];
+      } else {
+        throw new Error ("worldCanvas not found");
+      }
+  }, [worldCanvas, worldInitialValues]);
 
   //TODO - cal afegir resize --> redraw?
   useEffect(
@@ -63,12 +69,12 @@ export default function SimulationCanvas({ className }: Props) {
 
       console.log("sc - add listeners");
       if (worldController && worldCanvas) {
-        /*
+        
         worldController.events.addEventListener(
           WorldEvents.initializeWorld,
           handleInitializeWorld
         );
-        */
+        
         worldController.events.addEventListener(
           WorldEvents.startGeneration,
           () => {worldCanvas.redraw(worldController.generations.currentCreatures);}
@@ -93,7 +99,11 @@ export default function SimulationCanvas({ className }: Props) {
           );
         };
       }
-  }, [worldController, worldCanvas]);
+      else {
+        console.log("SimulationCanvas - couldn't add listeners!! ", worldController, worldCanvas);
+      }
+
+  }, [worldController, handleInitializeWorld, worldCanvas]);
   
   return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }

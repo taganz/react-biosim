@@ -31,7 +31,7 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
       worldController.pauseBetweenSteps = pauseBetweenSteps;
       worldController.pauseBetweenGenerations = pauseBetweenGenerations;
       worldController.immediateSteps = immediateSteps;
-      console.log("FooterSpeedControls - updated immediateSteps:", immediateSteps, worldController.immediateSteps);
+      //console.log("FooterSpeedControls - updated immediateSteps:", immediateSteps, worldController.immediateSteps);
     }
     else {
       console.log("FooterSpeedControls - worldController not found!");

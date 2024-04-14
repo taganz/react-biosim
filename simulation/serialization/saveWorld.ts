@@ -3,7 +3,7 @@ import { SensorName } from "./../creature/sensors/CreatureSensors";
 import WorldController from "../world/WorldController";
 import SavedSpecies from "./data/SavedSpecies";
 import SavedWorld from "./data/SavedWorld";
-import SavedWorldInitialValues from "./data/SavedWorldInitialValues";
+import SavedWorldInitialValues, {SavedMutationMode} from "./data/SavedWorldInitialValues";
 import SavedWorldObject from "./data/SavedWorldObject";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
 import objectFormatters from "./formatters/objectFormatters";

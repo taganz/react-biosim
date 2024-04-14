@@ -14,6 +14,7 @@ import worldInitialValues from "./WorldInitialValues";
 export default class WorldGenerations {
   
   grid: Grid;
+  currentCreatures: Creature[] = [];
   
   initialPopulation: number = 0;
   initialGenomeSize: number = 0;
@@ -23,11 +24,11 @@ export default class WorldGenerations {
   geneInsertionDeletionProbability: number = 0;
   sensors: CreatureSensors = new CreatureSensors();
   actions: CreatureActions = new CreatureActions();
-  currentCreatures: Creature[] = [];
-  lastGenerationSurvivors : Creature[] = [];
-
   lastCreatureIdCreated : number = 0;   // --> aprofitar posicio en array per id de creatures?
 
+  lastGenerationSurvivors : Creature[] = [];
+
+  
   // need this for creature logging
   currentStep : number = 0;
   currentGen : number = 0;

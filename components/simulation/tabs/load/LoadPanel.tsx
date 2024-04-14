@@ -16,7 +16,7 @@ export default function LoadPanel() {
     if (worldController) {
       const initialValues = loadWorld(worldController, data);
       setWorldInitialValues(initialValues);
-      worldController.startRun(initialValues);
+      worldController.resumeRun(initialValues);
     }
   };
 
@@ -31,10 +31,10 @@ export default function LoadPanel() {
       console.log(fileReader.result); 
       setData(fileReader.result as string);
       if (worldController) {
-        const initialValues = loadWorld(worldController, data);
+        const initialValues = loadWorld(worldController, fileReader.result as string);
         setWorldInitialValues(initialValues);
-        worldController.startRun(initialValues);
-
+        worldController.resumeRun(initialValues);
+        console.log("LoadPanel - worldController.startRun executed!");
       }
     }
     fileReader.onerror = () => {

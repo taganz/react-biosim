@@ -8,7 +8,7 @@ import PopulationStrategy from "@/simulation/creature/population/PopulationStrat
 import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
 import {
   worldControllerAtom,
-  restartCountAtom,
+  //restartCountAtom,
   worldInitialValuesAtom
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
@@ -39,7 +39,7 @@ const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);
 const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
 //const [populationStrategy, setPopulationStrategy] = useAtom(populationStrategyAtom);
 //const [selectionMethod, setSelectionMethod] = useAtom(selectionMethodAtom);
-const restartCount = useAtom(restartCountAtom);
+//const restartCount = useAtom(restartCountAtom);
 const [worldInitialValues, setWorldInitialValues] = useAtom(worldInitialValuesAtom);
   
 setEnabledSensors(worldInitialValues.enabledSensors);

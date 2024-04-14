@@ -3,8 +3,8 @@ import {useSetAtom, useAtom, useAtomValue} from 'jotai';
 import {worldControllerAtom, worldInitialValuesAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
-import {scenarioObjects} from "./scenarios";
-import { loadSimulationParameters, deserializeWorldInitialValues } from "@/simulation/serialization/loadWorld";
+import {scenarioObjects} from "./scenarioObjects";
+import { loadWorldControllerSimulationParameters, deserializeWorldInitialValues } from "@/simulation/serialization/loadWorld";
 import SavedWorld from '@/simulation/serialization/data/SavedWorld';
 
 export default function ScenariosSelection () {
@@ -25,8 +25,7 @@ export default function ScenariosSelection () {
       setWorldInitialValues(wiv);
 
       worldController.pause();
-      loadSimulationParameters(worldController, parsedScenario as SavedWorld);  
-      
+      loadWorldControllerSimulationParameters(worldController, parsedScenario as SavedWorld);  
       worldController.startRun();
       
     }

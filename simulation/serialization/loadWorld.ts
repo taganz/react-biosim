@@ -5,13 +5,13 @@ import WorldController from "../world/WorldController";
 import WorldObject from "../world/objects/WorldObject";
 import SavedSpecies from "./data/SavedSpecies";
 import SavedWorld from "./data/SavedWorld";
-import SavedWorldInitialValues from "./data/SavedWorldInitialValues";
 import SavedWorldObject from "./data/SavedWorldObject";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
 import objectFormatters from "./formatters/objectFormatters";
 import WorldInitialValues from "../world/WorldInitialValues";
-import {SavedSelectionMethod, selectionMethodFormatter} from "@/simulation/creature/selection/SelectionMethodFormatter";
-import {SavedPopulationStrategy, populationStrategyFormatter} from "@/simulation/creature/population/PopulationStrategyFormatter";
+import {selectionMethodFormatter} from "@/simulation/creature/selection/SelectionMethodFormatter";
+import {populationStrategyFormatter} from "@/simulation/creature/population/PopulationStrategyFormatter";
+import {deserializeMutationMode} from "@/simulation/creature/genome/MutationMode"
 
 export function deserializeObjects(objects: SavedWorldObject[]) : WorldObject[] {
   // Clear worldController objects
@@ -58,17 +58,17 @@ export function deserializeWorldInitialValues(parsed: SavedWorld) : WorldInitial
     initialGenomeSize: parsed.worldInitialValues.initialGenomeSize,
     maxGenomeSize: parsed.worldInitialValues.maxGenomeSize,
     maxNumberNeurons: parsed.worldInitialValues.maxNumberNeurons,
-    mutationMode: parsed.worldInitialValues.mutationMode,
+    mutationMode: deserializeMutationMode(parsed.worldInitialValues.mutationMode),
     mutationProbability: parsed.worldInitialValues.mutationProbability,
     geneInsertionDeletionProbability: parsed.worldInitialValues.geneInsertionDeletionProbability,
     enabledSensors: parsed.worldInitialValues.enabledSensors,
     enabledActions: parsed.worldInitialValues.enabledActions,
-    worldObjects: deserializeObjects(parsed.worldInitialValues.worldObjects)
+    worldObjects: [...deserializeObjects(parsed.worldInitialValues.worldObjects)]
   }
   return worldInitialValues;
 }
 
-export function loadSimulationParameters (worldController: WorldController, parsed: SavedWorld) : void {
+export function loadWorldControllerSimulationParameters (worldController: WorldController, parsed: SavedWorld) : void {
   worldController.currentGen = parsed.currentGen;
   worldController.currentStep = parsed.currentStep;
   worldController.pauseBetweenSteps = parsed.pauseBetweenSteps;
@@ -77,10 +77,7 @@ export function loadSimulationParameters (worldController: WorldController, pars
   worldController.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
 }
 
-export function loadWorldRunValues (worldController: WorldController, parsed: SavedWorld) : void {
-    worldController.generations.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
-    worldController.generations.lastCreatureCount = parsed.lastCreatureCount;
-    worldController.generations.lastSurvivorsCount = parsed.lastSurvivorsCount;
+export function loadWorldControllerRunValues (worldController: WorldController, parsed: SavedWorld) : void {
     worldController.lastSurvivalRate = parsed.lastSurvivalRate;
     worldController.lastGenerationDuration = parsed.lastGenerationDuration;
     worldController.totalTime = parsed.totalTime;
@@ -99,15 +96,38 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
   
 }
 
+function loadWorldGenerationValues (worldController: WorldController, parsed: SavedWorld) : void {
+  worldController.generations.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
+  worldController.generations.lastCreatureCount = parsed.lastCreatureCount;
+  worldController.generations.lastSurvivorsCount = parsed.lastSurvivorsCount;
+  worldController.generations.currentGen = parsed.currentGen;
+  worldController.generations.currentStep = parsed.currentStep;
+  worldController.generations.stepsPerGen = parsed.worldInitialValues.stepsPerGen;
+  worldController.generations.stepsPerGen = parsed.worldInitialValues.stepsPerGen;
+  worldController.generations.initialPopulation = parsed.worldInitialValues.initialPopulation;
+  worldController.generations.initialGenomeSize = parsed.worldInitialValues.initialGenomeSize;
+  worldController.generations.maxGenomeSize = parsed.worldInitialValues.maxGenomeSize;
+  worldController.generations.maxNumberNeurons = parsed.worldInitialValues.maxNumberNeurons;
+  worldController.generations.mutationMode = deserializeMutationMode(parsed.worldInitialValues.mutationMode);  
+  worldController.generations.mutationProbability = parsed.worldInitialValues.mutationProbability;
+  worldController.generations.geneInsertionDeletionProbability = parsed.worldInitialValues.geneInsertionDeletionProbability;
+  worldController.generations.sensors.loadFromList(parsed.worldInitialValues.enabledSensors);
+  worldController.generations.actions.loadFromList(parsed.worldInitialValues.enabledActions);
+  worldController.generations.selectionMethod = selectionMethodFormatter.deserialize(parsed.worldInitialValues.selectionMethod);
+  worldController.generations.populationStrategy = populationStrategyFormatter.deserialize(parsed.worldInitialValues.populationStrategy);
+  
+  worldController.generations.currentCreatures = [...deserializeSpecies(worldController, parsed.species)];
+
+}
+
 // returns worldInitialValues to allow updating atom from calling component
 export function loadWorld(worldController: WorldController, data: string) : WorldInitialValues {
   const parsed = JSON.parse(data) as SavedWorld;
   const worldInitialValues = deserializeWorldInitialValues(parsed);
   worldController.pause();
-  loadSimulationParameters(worldController, parsed);  
-  loadWorldRunValues(worldController, parsed);  
-  // Load creatures
-  worldController.generations.currentCreatures = deserializeSpecies(worldController, parsed.species);
+  loadWorldControllerSimulationParameters(worldController, parsed);  
+  loadWorldControllerRunValues(worldController, parsed);  
+  loadWorldGenerationValues(worldController, parsed);
   loadGenerationRegistry(worldController, parsed);  
   return worldInitialValues;
 }

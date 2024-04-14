@@ -21,19 +21,19 @@ export default function MapDesigner() {
 
   const worldController = useAtomValue(worldControllerAtom);
   const [worldSize, setWorldSize] = useAtom(mapDesignerWorldSizeAtom);
-  const [objects, setObjects] = useAtom(mapDesignerObjectsAtom);
+  const [mapDesignerObjects, setMapDesignerObjects] = useAtom(mapDesignerObjectsAtom);
 
   // Load objects from local storage
-  const { savedObjects, setSavedObjects, savedWorldSize, setSavedWorldSize } =
+  const { savedMapDesignerObjects, setSavedMapDesignerObjects, savedWorldSize, setSavedWorldSize } =
     useSavedMap();
 
   // Initialize this component with values from the worldController or the local storage
   useEffectOnce(() => {
     if (worldController) {
-      if (savedObjects) {
-        setObjects([...savedObjects]);
+      if (savedMapDesignerObjects) {
+        setMapDesignerObjects([...savedMapDesignerObjects]);
       } else {
-        setObjects(worldController.objects.map((obj) => obj.clone()));
+        setMapDesignerObjects(worldController.objects.map((obj) => obj.clone()));
       }
 
       if (savedWorldSize) {
@@ -46,7 +46,7 @@ export default function MapDesigner() {
 
   // Save the objects every 1 seconds
   useInterval(() => {
-    setSavedObjects(objects);
+    setSavedMapDesignerObjects(mapDesignerObjects);
     setWorldSize(worldSize);
   }, 1000);
 
@@ -66,7 +66,7 @@ export default function MapDesigner() {
             <div className="w-full overflow-x-hidden overflow-y-scroll px-5 lg:aspect-[1/2]">
               <h3 className="mb-1 text-2xl font-bold">Objects</h3>
               <div className="flex flex-col gap-1">
-                {objects.map((obstacle, index) => (
+                {mapDesignerObjects.map((obstacle, index) => (
                   <MapDesignerLayer key={index} index={index} obj={obstacle} />
                 ))}
               </div>

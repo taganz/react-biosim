@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { worldControllerAtom, restartCountAtom } from "../../store";
+import { worldControllerAtom } from "../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
@@ -16,7 +16,7 @@ export default function StatsPanel() {
   const worldController = useAtomValue(worldControllerAtom);
   const [data, setData] = useState<SingleGeneration[]>([]);
   const [updates, setUpdates] = useState(0);
-  const restartCount = useAtom(restartCountAtom);
+  //const restartCount = useAtom(restartCountAtom);
 
   const maxFitnessFormatter = useCallback(
     (value: number) => {
@@ -42,7 +42,7 @@ export default function StatsPanel() {
         WorldEvents.startGeneration,
         onStartGeneration
       );
-      console.log("worldController.selectionMethod.fitnessValueName", worldController.generations.selectionMethod.fitnessValueName);
+      //console.log("worldController.selectionMethod.fitnessValueName", worldController.generations.selectionMethod.fitnessValueName);
       return () => {
         worldController.events.removeEventListener(
           WorldEvents.startGeneration,
@@ -50,7 +50,7 @@ export default function StatsPanel() {
         );
       };
     }
-  }, [onStartGeneration, worldController, restartCount]);
+  }, [onStartGeneration, worldController]);
 
   return (
     <div>

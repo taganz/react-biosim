@@ -5,7 +5,6 @@ import PopulationStrategy from "@/simulation/creature/population/PopulationStrat
 import { MutationMode } from "@/simulation/creature/genome/MutationMode";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 
-
 export default interface WorldInitialValues {
     size: number; 
     selectionMethod: SelectionMethod;

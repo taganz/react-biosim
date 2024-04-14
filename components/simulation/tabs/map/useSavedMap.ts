@@ -14,7 +14,7 @@ export default function useSavedMap() {
     }
   );
 
-  const [savedObjects = [], setSavedObjects] = useLocalStorage<WorldObject[]>(
+  const [savedMapDesignerObjects = [], setSavedMapDesignerObjects] = useLocalStorage<WorldObject[]>(
     "mapDesignerObjects",
     [],
     {
@@ -25,5 +25,5 @@ export default function useSavedMap() {
     }
   );
 
-  return { savedObjects, setSavedObjects, savedWorldSize, setSavedWorldSize };
+  return { savedMapDesignerObjects, setSavedMapDesignerObjects, savedWorldSize, setSavedWorldSize };
 }
