@@ -2,7 +2,7 @@ import Creature from "../creature/Creature";
 import Genome from "../creature/genome/Genome";
 import { GenerationRegistry } from "../world/stats/GenerationRegistry";
 import WorldController from "../world/WorldController";
-import WorldObject from "../world/WorldObject";
+import WorldObject from "../world/objects/WorldObject";
 import SavedSpecies from "./data/SavedSpecies";
 import SavedWorld from "./data/SavedWorld";
 import SavedWorldInitialValues from "./data/SavedWorldInitialValues";

@@ -10,7 +10,7 @@ import ReproductionSelection from "@/simulation/creature/selection/ReproductionS
 import { MutationMode } from "@/simulation/creature/genome/MutationMode";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 
 // log

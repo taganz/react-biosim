@@ -2,7 +2,7 @@ import Creature from "../creature/Creature";
 import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
 import PopulationStrategy from "../creature/population/PopulationStrategy";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
-import WorldObject from "./WorldObject";
+import WorldObject from "./objects/WorldObject";
 
 
 export default class WorldCanvas {

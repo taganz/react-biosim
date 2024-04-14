@@ -1,6 +1,6 @@
 import { deserializeObjects } from "@/simulation/serialization/loadWorld";
 import { serializeObjects } from "@/simulation/serialization/saveWorld";
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import { useLocalStorage } from "react-use";
 
 export default function useSavedMap() {

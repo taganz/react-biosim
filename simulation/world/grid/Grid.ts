@@ -1,5 +1,5 @@
 import Creature from "../../creature/Creature";
-import WorldObject from "../WorldObject";
+import WorldObject from "../objects/WorldObject";
 import * as constants from "@/simulation/simulationConstants"
 
 export type GridCell = {

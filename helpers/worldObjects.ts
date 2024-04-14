@@ -1,4 +1,4 @@
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import { Coordinates } from "./coordinates";
 
 export const HANDLE_SIZE = 10;

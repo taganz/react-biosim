@@ -2,7 +2,7 @@ import { MutationMode } from "../creature/genome/MutationMode";
 import { WorldEvents } from "../events/WorldEvents";
 import { GenerationRegistry } from "./stats/GenerationRegistry";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
-import WorldObject from "./WorldObject";
+import WorldObject from "./objects/WorldObject";
 import worldInitialValues from "./WorldInitialValues";
 import WorldGenerations from "./WorldGenerations";
 

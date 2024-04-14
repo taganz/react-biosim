@@ -1,6 +1,6 @@
 import Creature from "../../../creature/Creature";
 import { colors } from "@/simulation/simulationConstants";
-import WorldObject from "../../WorldObject";
+import WorldObject from "../../objects/WorldObject";
 
 type WorldObjectType = new (...args: any[]) => WorldObject;
 

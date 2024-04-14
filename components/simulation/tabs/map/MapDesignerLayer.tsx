@@ -1,6 +1,6 @@
 "use client";
 
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import { useAtom, useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import { useWindowSize } from "react-use";

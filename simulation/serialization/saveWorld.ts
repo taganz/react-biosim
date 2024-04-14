@@ -7,7 +7,7 @@ import SavedWorldInitialValues from "./data/SavedWorldInitialValues";
 import SavedWorldObject from "./data/SavedWorldObject";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
 import objectFormatters from "./formatters/objectFormatters";
-import WorldObject from "../world/WorldObject";
+import WorldObject from "../world/objects/WorldObject";
 import WorldInitialValues from "@/simulation/world/WorldInitialValues";
 import {SavedSelectionMethod, selectionMethodFormatter} from "@/simulation/creature/selection/SelectionMethodFormatter";
 import {SavedPopulationStrategy, populationStrategyFormatter} from "@/simulation/creature/population/PopulationStrategyFormatter";

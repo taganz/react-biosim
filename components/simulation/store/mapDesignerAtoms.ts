@@ -1,4 +1,4 @@
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import { atom } from "jotai";
 
 export const mapDesignerFullscreenAtom = atom(false);

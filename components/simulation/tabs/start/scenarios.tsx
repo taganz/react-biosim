@@ -1,5 +1,5 @@
 import {Option} from "../../../global/inputs/Dropdown";
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";

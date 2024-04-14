@@ -1,6 +1,6 @@
 import SelectInput from "@/components/global/inputs/SelectInput";
 import MapDesignerLayerProperties from "./MapDesignerLayerProperties";
-import WorldObject from "@/simulation/world/WorldObject";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import { useAtom, useSetAtom } from "jotai";
 import {
