@@ -7,15 +7,16 @@ export default interface SavedWorld {
   
   worldInitialValues: SavedWorldInitialValues;
 
+  // simulation parameters
   currentGen: number;
   currentStep: number;
   pauseBetweenSteps: number;
   immediateSteps: number;
   deletionRatio: number;
   pauseBetweenGenerations: number;
+
+  // run values
   lastCreatureIdCreated: number;
-  
-  // Stats
   lastCreatureCount: number;
   lastSurvivorsCount: number;
   lastSurvivalRate: number;

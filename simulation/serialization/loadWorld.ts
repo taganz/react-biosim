@@ -46,7 +46,8 @@ function deserializeSpecies(worldController: WorldController, species: SavedSpec
   return deserializedCreatures;
 }
 
-function deserializeWorldInitialValues(parsed: SavedWorld) : WorldInitialValues{
+// can not load here, must be done in components to store atom
+export function deserializeWorldInitialValues(parsed: SavedWorld) : WorldInitialValues{
   const worldInitialValues : WorldInitialValues = {
     // Load WorldInitialValues
     size: parsed.worldInitialValues.size,
@@ -67,15 +68,17 @@ function deserializeWorldInitialValues(parsed: SavedWorld) : WorldInitialValues{
   return worldInitialValues;
 }
 
-function loadWorldRunValues (worldController: WorldController, parsed: SavedWorld) : void {
-    worldController.currentGen = parsed.currentGen;
-    worldController.currentStep = parsed.currentStep;
-    worldController.deletionRatio = parsed.deletionRatio;
-    worldController.pauseBetweenSteps = parsed.pauseBetweenSteps;
-    worldController.immediateSteps = parsed.immediateSteps;
-    worldController.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
+export function loadSimulationParameters (worldController: WorldController, parsed: SavedWorld) : void {
+  worldController.currentGen = parsed.currentGen;
+  worldController.currentStep = parsed.currentStep;
+  worldController.pauseBetweenSteps = parsed.pauseBetweenSteps;
+  worldController.immediateSteps = parsed.immediateSteps;
+  worldController.deletionRatio = parsed.deletionRatio;
+  worldController.pauseBetweenGenerations = parsed.pauseBetweenGenerations;
+}
+
+export function loadWorldRunValues (worldController: WorldController, parsed: SavedWorld) : void {
     worldController.generations.lastCreatureIdCreated = parsed.lastCreatureIdCreated;
-    // Stats
     worldController.generations.lastCreatureCount = parsed.lastCreatureCount;
     worldController.generations.lastSurvivorsCount = parsed.lastSurvivorsCount;
     worldController.lastSurvivalRate = parsed.lastSurvivalRate;
@@ -101,6 +104,7 @@ export function loadWorld(worldController: WorldController, data: string) : Worl
   const parsed = JSON.parse(data) as SavedWorld;
   const worldInitialValues = deserializeWorldInitialValues(parsed);
   worldController.pause();
+  loadSimulationParameters(worldController, parsed);  
   loadWorldRunValues(worldController, parsed);  
   // Load creatures
   worldController.generations.currentCreatures = deserializeSpecies(worldController, parsed.species);

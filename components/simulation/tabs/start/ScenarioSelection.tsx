@@ -1,16 +1,39 @@
 import React from 'react';
-import {useSetAtom} from 'jotai';
-import {worldObjectsAtom} from "../../store/worldAtoms";
+import {useSetAtom, useAtom, useAtomValue} from 'jotai';
+import {worldControllerAtom, worldInitialValuesAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
-import {scenariosOptions, scenariosObjectLists} from "./scenarios";
+import {Option} from "../../../global/inputs/Dropdown";
+import {scenarioObjects} from "./scenarios";
+import { loadSimulationParameters, deserializeWorldInitialValues } from "@/simulation/serialization/loadWorld";
+import SavedWorld from '@/simulation/serialization/data/SavedWorld';
+
 export default function ScenariosSelection () {
     
-  const setWorldObjectsAtom = useSetAtom(worldObjectsAtom);
-  
-  // Función para manejar el cambio de selección
+  const worldController = useAtomValue(worldControllerAtom);
+  const [worldInitialValues, setWorldInitialValues] = useAtom(worldInitialValuesAtom);
+
+
+  const scenariosOptions: Option[] = Array.from({ length: scenarioObjects.length }, (_, i) => ({ value: i.toString(), label: scenarioObjects[i].name }));
+
+
   const handleSelection = (value: string) => {
-        setWorldObjectsAtom(scenariosObjectLists[parseInt(value)].worldObjects);
+    if (worldController) {
+      const parsedScenario = scenarioObjects[parseInt(value)].data;
+      //const data = parsedScenario.toString().concat('"lastCreatureIdCreated":0,"lastCreatureCount":0,"lastSurvivorsCount":0,"lastSurvivalRate":0,"lastGenerationDuration":0,"totalTime":0,"species":[], "generations":{"generations":[],"maxSurvivorCount":0,"minSurvivorCount":0,"maxFitnessValue":0');
+      
+      const wiv = deserializeWorldInitialValues(parsedScenario as SavedWorld);
+      setWorldInitialValues(wiv);
+
+      worldController.pause();
+      loadSimulationParameters(worldController, parsedScenario as SavedWorld);  
+      
+      worldController.startRun();
+      
     }
+    else {
+      console.warn("ScenariosSelection worldController not found!");
+    }
+  }
     
   
 return (
