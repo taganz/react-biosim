@@ -162,16 +162,18 @@ const handleSensorChange = (name: SensorName, checked: boolean) => {
         </div>
           </div>
         </div>
-        {/*  selectionMethod  */}
         <div>
-          <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
+        {/*  selectionMethod  */}
+        <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
           <div className="mb-1">
             <h2>Selection method: <br/>current: {worldController?.generations.selectionMethod.constructor.name} </h2>
             <Dropdown options={selectionMethodOptions} 
                       onSelect={handleSelectionMethodOptions}/>
             <br/>
-            <h2>Population strategy: <br/>current: {worldController?.generations.populationStrategy.constructor.name} </h2>
-            <Dropdown options={populationStrategyOptions} onSelect={handlePopulationStrategy} />
+        {/*  populationStrategy  */}
+        <h2>Population strategy: <br/>current: {worldController?.generations.populationStrategy.constructor.name} </h2>
+            <Dropdown options={populationStrategyOptions}
+                      onSelect={handlePopulationStrategy} />
             <br/>
           </div>
         </div>

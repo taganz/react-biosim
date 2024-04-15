@@ -28,7 +28,6 @@ export default function LoadPanel() {
     const fileReader = new FileReader(); 
     fileReader.readAsText( file ) ; 
     fileReader.onload  = () => {
-      console.log(fileReader.result); 
       setData(fileReader.result as string);
       if (worldController) {
         const initialValues = loadWorld(worldController, fileReader.result as string);

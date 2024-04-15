@@ -8,7 +8,7 @@ const topPercentSelected = GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS;
 export default class GreatestDistanceSelection
   implements SelectionMethod
 {
-  name: "GreatestDistanceSelection";
+  name = "GreatestDistanceSelection";
   fitnessValueName = "Distance index";
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
