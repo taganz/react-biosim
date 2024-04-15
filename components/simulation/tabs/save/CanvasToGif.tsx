@@ -47,7 +47,8 @@ const CanvasToGIF: React.FC = () => {
     else {
       //console.log("CanvasToGif canvas not found! ", canvas);
     }
-  }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     
   
   const startRecording = () => {
@@ -88,15 +89,15 @@ const CanvasToGIF: React.FC = () => {
     }
   };
 
-  const onInitializeWorld = ()=> {
+  const onInitializeWorld = useCallback( ()=> {
     if (stateStartPending || stateRecording) {
       setStateStartPending(false);
       setStateRecording(false);
       setStateSavePending(true);
     }
-  }
+  }, [stateStartPending, stateRecording, setStateStartPending, setStateRecording, setStateSavePending ])
 
-  const onStartGeneration = ()=> {
+  const onStartGeneration = useCallback( ()=> {
     if (stateStartPending) {
       setStateStartPending(false);
       setStateRecording(true);
@@ -108,11 +109,11 @@ const CanvasToGIF: React.FC = () => {
       }      
     }
 
-  }
+  }, [stateStartPending, stateRecording, setStateStartPending, setStateRecording, setStateSavePending ]);
   
 
   // add current canvas frame to GIF
-  const onEndStep =() => {
+  const onEndStep = useCallback(() => {
     if (!canvasRef.current) {
         console.error("Canvas not found", canvasRef.current);
         return;
@@ -132,10 +133,13 @@ const CanvasToGIF: React.FC = () => {
         console.log("ctx not found ", ctx, canvasRef.current);
       }
     }
-  };
+  }, [gif, gifFrameDelay, setFrames, stateRecording, frames, gifStepsBetweenImageRecord ]);
 
   // Bind worldController events
   useEffect(() => {
+
+
+    
     if (worldController) {
       //onEndStep();
 
@@ -167,7 +171,7 @@ const CanvasToGIF: React.FC = () => {
         );
         };
     }
-  }, [onEndStep, worldController]);
+  }, [onEndStep, onInitializeWorld, onStartGeneration, worldController]);
 
 
 

@@ -20,6 +20,7 @@ export default function LoadPanel() {
     }
   };
 
+  //TODO if opening the same file looks as if doesn't load?
   const handleLoadFile = (e : any) => {
     const file = e.target.files[0]; 
     if (!file) {

@@ -181,35 +181,35 @@ export default class CreatureActions {
         var offspringPositionTest : [number, number];
         var offspringPosition : [number, number] | null = null;
         offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0], targetBirthPosition[1]+1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]+1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]-1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]+1, targetBirthPosition[1]-1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
         offspringPositionTest = [targetBirthPosition[0]-1, targetBirthPosition[1]+1];
-        offspringPositionTest = creature.worldController.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
-        if (!creature.worldController.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
+        offspringPositionTest = creature.generations.grid.clamp(offspringPositionTest[0], offspringPositionTest[1]);
+        if (!creature.generations.grid.isTileEmpty(offspringPositionTest[0], offspringPositionTest[1])) offspringPosition = offspringPositionTest;
     
         if (offspringPosition) {
-          const offspring : Creature | null = creature.worldController.newCreature(creature.position, creature.massAtBirth, creature.genome);
+          const offspring : Creature | null = creature.generations.newCreature(creature.position, creature.massAtBirth, creature.genome);
         }
         else {
           console.log("reproduction - couldn't find a offspringPosition ")
