@@ -1,5 +1,5 @@
-import { deserializeObjects } from "@/simulation/serialization/loadWorld";
-import { serializeObjects } from "@/simulation/serialization/saveWorld";
+import { deserializeObjects } from "@/simulation/serialization/formatters/objectsSerialization";
+import { serializeObjects } from "@/simulation/serialization/formatters/objectsSerialization";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import { useLocalStorage } from "react-use";
 

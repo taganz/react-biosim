@@ -8,7 +8,7 @@ import SelectionMethod from "../creature/selection/SelectionMethod";
 import CreatureSensors from "../creature/sensors/CreatureSensors";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import Genome from "@/simulation/creature/genome/Genome";
-import worldInitialValues from "./WorldInitialValues";
+import worldGenerationData from "./WorldGenerationData";
 
 
 export default class WorldGenerations {
@@ -16,75 +16,84 @@ export default class WorldGenerations {
   grid: Grid;
   currentCreatures: Creature[] = [];
   
+  // initial values
+  populationStrategy:   PopulationStrategy; 
+  selectionMethod: SelectionMethod;  
   initialPopulation: number = 0;
   initialGenomeSize: number = 0;
   maxGenomeSize: number = 0;
   maxNumberNeurons: number = 0;
+  mutationMode : MutationMode; 
   mutationProbability: number = 0;
+  deletionRatio : number;
   geneInsertionDeletionProbability: number = 0;
   sensors: CreatureSensors = new CreatureSensors();
   actions: CreatureActions = new CreatureActions();
-  lastCreatureIdCreated : number = 0;   // --> aprofitar posicio en array per id de creatures?
-
-  lastGenerationSurvivors : Creature[] = [];
-
+  // state values
+  // .. read by creature
+  lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?
+  // .. read by GenerationRegistry      //TODO passar com a parametre?
+  lastCreatureCount: number = 0;      
+  lastSurvivorsCount: number = 0;
+  lastFitnessMaxValue : number = 0;
+  lastSurvivalRate : number = 0;
   
+
+
+  // internal use
+  _lastGenerationSurvivors : Creature[] = [];
   // need this for creature logging
   currentStep : number = 0;
   currentGen : number = 0;
-  stepsPerGen : number = 0;
 
-  // Stats for GenerationRegistry
-  lastCreatureCount: number = 0;
-  lastSurvivorsCount: number = 0;
-  lastFitnessMaxValue : number = 0;
-  //lastSurvivalRate: number = 0;
-  //lastGenerationDate: Date = new Date();
-  //lastGenerationDuration: number = 0;
-  //lastPauseDate: Date | undefined = new Date();
-  //pauseTime: number = 0;
-  //totalTime: number = 0;
-  populationStrategy:   PopulationStrategy; 
-  selectionMethod: SelectionMethod;  
-  mutationMode : MutationMode;
-  deletionRatio : number;
-    
-  // get initial values
-  constructor(worldInitialValues: worldInitialValues, grid: Grid) {
+  // if creatures is not null, assume we are loading a saved state
+  constructor(worldGenerationData: worldGenerationData, grid: Grid, creatures?: Creature[]) {
         
-    // grid
     this.grid = grid;
-    this.stepsPerGen = worldInitialValues.stepsPerGen; 
     
-    // population & selection
-    this.populationStrategy = worldInitialValues.populationStrategy;;
-    this.initialPopulation = worldInitialValues.initialPopulation;
-        
+    // initial values
+    this.populationStrategy = worldGenerationData.populationStrategy;;
+    this.selectionMethod = worldGenerationData.selectionMethod;
+    this.initialPopulation = worldGenerationData.initialPopulation;
+    this.initialGenomeSize = worldGenerationData.initialGenomeSize;
+    this.maxGenomeSize = worldGenerationData.maxGenomeSize;
+    this.maxNumberNeurons = worldGenerationData.maxNumberNeurons;
+    this.mutationMode = worldGenerationData.mutationMode;
+    this.mutationProbability = worldGenerationData.mutationProbability;
+    this.deletionRatio = worldGenerationData.deletionRatio;
+    this.geneInsertionDeletionProbability = worldGenerationData.geneInsertionDeletionProbability;
+    this.sensors.loadFromList(worldGenerationData.enabledSensors);
+    this.actions.loadFromList(worldGenerationData.enabledActions);
+    //TODO  revisar aixo
+    //this.sensors.updateInternalValues();    
+    //this.actions.updateInternalValues();
+
+
     //TODO should take into account objects size
     if (this.initialPopulation >= this.grid.size * this.grid.size) {
       throw new Error(
         "The population cannot be greater than the number of available tiles in the worldController: ".concat(this.initialPopulation.toString(), " vs ", (this.grid.size * this.grid.size).toString())
       );
     }
-    this.selectionMethod = worldInitialValues.selectionMethod;
-    
-    // Neural networks
-    this.initialGenomeSize = worldInitialValues.initialGenomeSize;
-    this.maxGenomeSize = worldInitialValues.maxGenomeSize;
-    this.maxNumberNeurons = worldInitialValues.maxNumberNeurons;
-    
-    // Mutations
-    this.mutationMode = worldInitialValues.mutationMode;
-    this.mutationProbability = worldInitialValues.mutationProbability;
-    this.geneInsertionDeletionProbability = worldInitialValues.geneInsertionDeletionProbability;
-    this.deletionRatio = 0.5;
 
-    // creatures 
-    this.sensors.loadFromList(worldInitialValues.enabledSensors);
-    this.actions.loadFromList(worldInitialValues.enabledActions);
-    //this.sensors.updateInternalValues();
-    //this.actions.updateInternalValues();
-    
+    if (!creatures) {
+      this.currentCreatures = [];
+      // state values
+      this.lastCreatureIdCreated = 0;
+      this.lastCreatureCount = 0;
+      this.lastSurvivorsCount = 0;
+      this.lastFitnessMaxValue = 0;
+      this.lastSurvivalRate = 0;
+    }
+    else {
+      this.currentCreatures = [...creatures] ;
+      // state values
+      this.lastCreatureIdCreated = worldGenerationData.lastCreatureIdCreated;
+      this.lastCreatureCount = worldGenerationData.lastCreatureCount;
+      this.lastSurvivorsCount = worldGenerationData.lastSurvivorsCount;
+      this.lastFitnessMaxValue = worldGenerationData.lastFitnessMaxValue;
+      this.lastSurvivalRate = worldGenerationData.lastSurvivalRate;
+    }
 
     this.startFirstGeneration();
 
@@ -166,11 +175,11 @@ public endGeneration(): void {
   // Repopulate with survivors
   this.populationStrategy.populate(this, survivors);
   this.lastSurvivorsCount = survivors.length;
-  //this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
+  this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
   this.lastFitnessMaxValue = fitnessMaxValue;
 
 
-  this.lastGenerationSurvivors = survivors;
+  this._lastGenerationSurvivors = survivors;
 
 }
 

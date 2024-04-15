@@ -14,7 +14,7 @@ export default function FooterStats() {
     0
   );
   const lastSurvivalRate = useWorldPropertyValue(
-    (worldController) => worldController.lastSurvivalRate,
+    (worldController) => worldController.generations.lastSurvivalRate,
     0
   );
 

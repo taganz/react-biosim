@@ -3,16 +3,21 @@
 import React from "react";
 import Button from "../global/Button";
 import { useSetAtom, useAtomValue } from "jotai";
-import { worldControllerAtom, worldInitialValuesAtom } from "./store";
+import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom } from "./store";
 
 export default function RestartButton() {
   //const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
-  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+  const worldControllerData = useAtomValue(worldControllerDataAtom);
+  const worldGenerationData = useAtomValue(worldGenerationDataAtom);
 
   const handleClick = () => {
-    //restart(true);
-    worldController?.startRun(worldInitialValues);
+    if (worldController) {
+      worldController?.startRun(worldControllerData, worldGenerationData);
+    } else {
+      console.warn("RestartButton worldController not found!")
+    }
+
   };
 
   return (

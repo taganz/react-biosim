@@ -3,8 +3,10 @@ import { WorldEvents } from "../events/WorldEvents";
 import { GenerationRegistry } from "./stats/GenerationRegistry";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import WorldObject from "./objects/WorldObject";
-import worldInitialValues from "./WorldInitialValues";
+import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "./WorldGenerations";
+import WorldGenerationData from "./WorldGenerationData";
+import Creature from "../creature/Creature"
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
@@ -15,109 +17,92 @@ export default class WorldController {
 
   generations : WorldGenerations;
   grid: Grid;
+  generationRegistry: GenerationRegistry = new GenerationRegistry(this);
 
-  // --- world initial values ---
+  // initial values
   size: number = 10;
-  // selectionMethod in generations
-  // populationStrategy in generations
   stepsPerGen: number = 0;
   initialPopulation: number = 0;
-  // initialGenomeSize in generations
-  // maxGenomeSize in generations
-  // maxNumberNeurons in generations
-  mutationMode: MutationMode = MutationMode.wholeGene;
-  // mutationProbability in generations
-  // geneInsertionDeletionProbability in generations
-  // enabledSensors in generations
-  // enabledActions in generations
   objects: WorldObject[] = [];   // to be set externally
-
-  // --- run values ---
-
-  // status
-  currentGen: number = 0;
-  currentStep: number = 0;
-  deletionRatio: number = 0.5;    // --> not used?
-  // speed controls
+  
+  // user values 
   pauseBetweenSteps: number = 0;
   immediateSteps: number = 1;    // number of steps to run without redrawing
   pauseBetweenGenerations: number = 0;
-  // lastGenerationIdCreated in generations
-  _immediateStepsCounter : number = 1;
   
-  // Stats
-  //lastCreatureCount in generations
-  //lastSurvivorsCount in generations
-  lastSurvivalRate: number = 0;   // used
-  _lastGenerationDate: Date = new Date();
+  // state values
+  currentGen: number = 0;
+  currentStep: number = 0;
   lastGenerationDuration: number = 0; 
-  _lastPauseDate: Date | undefined = new Date();
-  _pauseTime: number = 0;
   totalTime: number = 0;
   
-  generationRegistry: GenerationRegistry = new GenerationRegistry(this);
-  
-  //lastFitnessMaxValue : number = 0;
 
   events: EventTarget = new EventTarget();
+  _immediateStepsCounter : number = 1;
+  _lastGenerationDate: Date = new Date();
+  _lastPauseDate: Date | undefined = new Date();
+  _pauseTime: number = 0;
   _timeoutId?: number;
 
   
-  constructor(worldInitialValues: worldInitialValues) {
-    this.loadWorldInitialValues(worldInitialValues);
+  constructor(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData) {
+    this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(worldInitialValues, this.grid);
-    console.log("*** worldControlled constructor ***");
-  }
-
-  public startRun(worldInitialValues?: worldInitialValues ): void {
-    if (worldInitialValues) {
-      this.grid = new Grid(this.size, this.objects);
-      this.generations = new WorldGenerations(worldInitialValues, this.grid);
-      this.loadWorldInitialValues(worldInitialValues);
-    }
-
-    
-    // run values
-    this.currentGen = 0;
-    this.currentStep = 0;
-    this.totalTime = 0;
-
-    // speed controls
-    this._immediateStepsCounter = this.immediateSteps;
-
-
-    // Stats
-    //this.lastSurvivorsCount = 0;
-    this.lastSurvivalRate = 0;
-    this.lastGenerationDuration = 0;
-    this.totalTime = 0;
-    this.generationRegistry = new GenerationRegistry(this);
-
-  
+    this.generations = new WorldGenerations(worldGenerationData, this.grid);
+    // request worldCanvas initialization 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
+    console.log("*** worldControlled constructor ***");
+  }
 
+  public startRun(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData ): void {
+
+    this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.grid = new Grid(this.size, this.objects);
+    this.generations = new WorldGenerations(worldGenerationData, this.grid);
+    this.generationRegistry = new GenerationRegistry(this);
+    
+    // state data
+    this.currentGen = 0;
+    this.currentStep = 0;
+    this.lastGenerationDuration = 0;
+    this.totalTime = 0;
+    
     this.computeStep();
   
   }
 
-  public resumeRun(worldInitialValues: worldInitialValues ): void {
-    this.loadWorldInitialValues(worldInitialValues);
-    this.grid = new Grid(this.size, this.objects);
-    // generations should be loaded before calling resumeRun
+  // load a previous simulation and run from its state
+  public resumeRun(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData, species: Creature[], stats: GenerationRegistry ): void {
+    
+    this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.grid = new Grid(this.size, this.objects);  
+    this.generations = new WorldGenerations(worldGenerationData, this.grid, species);
+    this.generationRegistry = stats;
+
+    // state data
+    this.currentGen = worldControllerData.currentGen;
+    this.currentStep = worldControllerData.currentStep;
+    this.lastGenerationDuration = worldControllerData.lastGenerationDuration;
+    this.totalTime = worldControllerData.totalTime;
+
     this.computeStep();
   }
 
-  private loadWorldInitialValues(worldInitialValues: worldInitialValues) : void {
-    // load only worldController values. worldGeneration will load others
-    this.size = worldInitialValues.size;
-    this.stepsPerGen = worldInitialValues.stepsPerGen;
-    this.initialPopulation = worldInitialValues.initialPopulation;
-    this.mutationMode = worldInitialValues.mutationMode;
-    this.objects = [...worldInitialValues.worldObjects];   
+  private loadWorldControllerInitialAndUserData(worldControllerData: WorldControllerData) : void {
+    // --> load only worldController values. worldGeneration will load others
 
+    // initial values
+    this.size = worldControllerData.size;
+    this.stepsPerGen = worldControllerData.stepsPerGen;
+    this.initialPopulation = worldControllerData.initialPopulation;
+    this.objects = [...worldControllerData.worldObjects];   
+
+    this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
+    this.immediateSteps = worldControllerData.immediateSteps;
+    this.size = worldControllerData.size;
+    this.pauseBetweenGenerations = worldControllerData.pauseBetweenGenerations;
   }
 
   private async computeStep(): Promise<void> {

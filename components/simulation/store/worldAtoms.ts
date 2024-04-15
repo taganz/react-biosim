@@ -1,6 +1,7 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldCanvas from "@/simulation/world/WorldCanvas";
-import WorldInitialValues from "@/simulation/world/WorldInitialValues";
+import WorldGenerationData from "@/simulation/world/WorldGenerationData";
+import WorldControllerData from "@/simulation/world/WorldControllerData";
 import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
 import * as constants from "@/simulation/simulationConstants"
@@ -20,24 +21,48 @@ export const worldCreaturesAtom = atom(<Creature[]>[]);
 export const worldObjectsAtom = atom(constants.RUN_WORLD_OBJECTS);
 
 
-const wiv : WorldInitialValues = {
-  size : constants.RUN_WORLD_SIZE,
-  selectionMethod: constants.RUN_SELECTION_METHOD,
+const wgd : WorldGenerationData = {
+  // initial values
   populationStrategy: constants.RUN_POPULATION_STRATEGY,
-  stepsPerGen: constants.RUN_STEPS_PER_GENERATION,
+  selectionMethod: constants.RUN_SELECTION_METHOD,
   initialPopulation: constants.RUN_INITIAL_POPULATION,
   initialGenomeSize: constants.RUN_INITIAL_GENOME_SIZE,
   maxGenomeSize: constants.RUN_MAX_GENOME_SIZE,
   maxNumberNeurons: constants.RUN_MAX_NUMBER_NEURONS,
   mutationMode: constants.RUN_MUTATION_MODE,
   mutationProbability: constants.RUN_MUTATION_PROBABILITY,
+  deletionRatio: constants.RUN_DELETION_RATIO,
   geneInsertionDeletionProbability: constants.RUN_GENE_INSERTION_DELETION_PROBABILITY,
   enabledSensors: constants.RUN_ENABLED_SENSORS,
   enabledActions: constants.RUN_ENABLED_ACTIONS,
-  worldObjects : constants.RUN_WORLD_OBJECTS,
+  // state values 
+  lastCreatureIdCreated: 0,
+  lastCreatureCount: 0,
+  lastSurvivorsCount: 0,
+  lastFitnessMaxValue: 0,
+  lastSurvivalRate: 0
 }
-export const worldInitialValuesAtom = atom(wiv);
+export const worldGenerationDataAtom = atom(wgd);
 
+
+const wcd : WorldControllerData = {
+  // initial values
+  size : constants.RUN_WORLD_SIZE,
+  stepsPerGen: constants.RUN_STEPS_PER_GENERATION,
+  initialPopulation: constants.RUN_INITIAL_POPULATION,
+  worldObjects : constants.RUN_WORLD_OBJECTS,
+  // user values
+  pauseBetweenSteps: 0,
+  immediateSteps: 1,
+  pauseBetweenGenerations: 0,
+  
+  // state values
+  currentGen: 0,
+  currentStep: 0,
+  lastGenerationDuration: 0,
+  totalTime: 0
+}
+export const worldControllerDataAtom = atom(wcd);
 
 
 

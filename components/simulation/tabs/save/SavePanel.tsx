@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom, worldInitialValuesAtom } from "../../store";
+import { worldControllerAtom, worldGenerationDataAtom } from "../../store";
 import { useAtomValue } from "jotai";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import { useState } from "react";
@@ -11,12 +11,12 @@ import CanvasToGIF from "./CanvasToGif";
 
 export default function SavePanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+  const worldGenerationData = useAtomValue(worldGenerationDataAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
 
   const handleSave = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController, worldInitialValues);
+      const savedWorld = saveWorld(worldController);
       const jsonSavedWorld = JSON.stringify(savedWorld);
       setDataSavedWorld(jsonSavedWorld);
     }
@@ -25,7 +25,7 @@ export default function SavePanel() {
 
   const handleSaveToFile = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController, worldInitialValues);
+      const savedWorld = saveWorld(worldController);
       const jsonSavedWorld = JSON.stringify(savedWorld);
       setDataSavedWorld(jsonSavedWorld);
 

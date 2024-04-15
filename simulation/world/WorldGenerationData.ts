@@ -3,23 +3,25 @@ import  {ActionName} from "@/simulation/creature/actions/CreatureActions";
 import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
 import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
 import { MutationMode } from "@/simulation/creature/genome/MutationMode";
-import WorldObject from "@/simulation/world/objects/WorldObject";
 
-export default interface WorldInitialValues {
-    size: number; 
-    selectionMethod: SelectionMethod;
+export default interface WorldGenerationData {
+    // initial values
     populationStrategy: PopulationStrategy;
-    stepsPerGen: number;
+    selectionMethod: SelectionMethod;
     initialPopulation: number;
     initialGenomeSize: number;
     maxGenomeSize: number;
     maxNumberNeurons: number;
     mutationMode: MutationMode;
     mutationProbability: number;
+    deletionRatio: number;
     geneInsertionDeletionProbability: number;
     enabledSensors: SensorName[];
     enabledActions: ActionName[];
-    worldObjects : WorldObject[];
-
-
+    // state values 
+    lastCreatureIdCreated: number;
+    lastCreatureCount: number;
+    lastSurvivorsCount: number;
+    lastFitnessMaxValue: number;
+    lastSurvivalRate: number;
 }

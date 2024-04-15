@@ -60,6 +60,7 @@ export const RUN_INITIAL_GENOME_SIZE = 4;
 export const RUN_MAX_GENOME_SIZE = 30;
 export const RUN_MAX_NUMBER_NEURONS = 15;
 export const RUN_MUTATION_PROBABILITY = 0.05;
+export const RUN_DELETION_RATIO = 0.5;
 export const RUN_GENE_INSERTION_DELETION_PROBABILITY = 0.015;
 export const RUN_ENABLED_SENSORS : SensorName[]= [
     "HorizontalPosition",

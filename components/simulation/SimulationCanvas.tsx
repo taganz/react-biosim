@@ -5,9 +5,9 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldControllerAtom, worldCreaturesAtom, worldObjectsAtom, worldInitialValuesAtom} from "./store";
+import {worldControllerAtom, worldControllerDataAtom, worldObjectsAtom, worldGenerationDataAtom} from "./store";
 import {worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
-import WorldInitialValues from "@/simulation/world/WorldInitialValues";
+import WorldGenerationData from "@/simulation/world/WorldGenerationData";
 
 interface Props {
   className?: string;
@@ -22,14 +22,15 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
-  const worldInitialValues = useAtomValue(worldInitialValuesAtom);
+  const worldControllerData = useAtomValue(worldControllerDataAtom);
+  const worldGenerationData = useAtomValue(worldGenerationDataAtom);
   
   useEffect(
     function instantiateWorldController() {
-      console.log("*** instantiate worldController with initialValues: ", worldInitialValues);
-      const worldController = new WorldController(worldInitialValues);
+      console.log("*** worldController instantiated *** ");
+      const worldController = new WorldController(worldControllerData, worldGenerationData);
       setWorldController(worldController);
-      worldController.startRun();  
+      worldController.startRun(worldControllerData, worldGenerationData );  
       return () => {
         console.log("*** worldControlled destroyed ***");
         worldController.pause();
@@ -42,7 +43,7 @@ export default function SimulationCanvas({ className }: Props) {
     function instantiateWorldCanvas() {
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(canvas, worldInitialValues.size, worldObjects));
+        setWorldCanvas(new WorldCanvas(canvas, worldControllerData.size, worldObjects));
         //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
       } else {
         throw new Error("Cannot found canvas");
@@ -54,14 +55,14 @@ export default function SimulationCanvas({ className }: Props) {
       // eslint-disable-next-line react-hooks/exhaustive-deps      
   },[]);
 
-    const handleInitializeWorld = useCallback( () => {
+    const handleInitializeWorldCanvas = useCallback( () => {
       if (worldCanvas) {
-        console.log("SimulationCanvas handleInitializeWorld objects: ", worldInitialValues.worldObjects);
-        worldCanvas.objects = [...worldInitialValues.worldObjects];
+        console.log("SimulationCanvas handleInitializeWorldCanvas objects: ", worldControllerData.worldObjects);
+        worldCanvas.objects = [...worldControllerData.worldObjects];
       } else {
         throw new Error ("worldCanvas not found");
       }
-  }, [worldCanvas, worldInitialValues]);
+  }, [worldCanvas, worldControllerData.worldObjects]);
 
   //TODO - cal afegir resize --> redraw?
   useEffect(
@@ -72,7 +73,7 @@ export default function SimulationCanvas({ className }: Props) {
         
         worldController.events.addEventListener(
           WorldEvents.initializeWorld,
-          handleInitializeWorld
+          handleInitializeWorldCanvas
         );
         
         worldController.events.addEventListener(
@@ -103,7 +104,7 @@ export default function SimulationCanvas({ className }: Props) {
         console.log("SimulationCanvas - couldn't add listeners!! ", worldController, worldCanvas);
       }
 
-  }, [worldController, handleInitializeWorld, worldCanvas]);
+  }, [worldController, handleInitializeWorldCanvas, worldCanvas]);
   
   return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }

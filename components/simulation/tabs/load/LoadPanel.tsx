@@ -1,26 +1,28 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom, worldInitialValuesAtom } from "../../store";
+import { worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom } from "../../store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
-import { loadWorld } from "@/simulation/serialization/loadWorld";
+import { loadSavedWorldAndResumeRun } from "@/simulation/serialization/loadWorld";
 import TextareaInput from "@/components/global/inputs/TextareaInput";
 
 export default function LoadPanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  const setWorldInitialValues = useSetAtom(worldInitialValuesAtom);
+  const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
+  const setWorldControllerData = useSetAtom(worldControllerDataAtom);
   const [data, setData] = useState("");
 
   const handleLoadPasted = () => {
     if (worldController) {
-      const initialValues = loadWorld(worldController, data);
-      setWorldInitialValues(initialValues);
-      worldController.resumeRun(initialValues);
+      const [readWorldControllerData, readWorldGenerationData] = loadSavedWorldAndResumeRun(worldController, data);
+      setWorldGenerationData(readWorldGenerationData);
+      setWorldControllerData(readWorldControllerData);
+    } else {
+      console.warn("LoadPanel worldController not found!");
     }
   };
 
-  //TODO if opening the same file looks as if doesn't load?
   const handleLoadFile = (e : any) => {
     const file = e.target.files[0]; 
     if (!file) {
@@ -31,10 +33,9 @@ export default function LoadPanel() {
     fileReader.onload  = () => {
       setData(fileReader.result as string);
       if (worldController) {
-        const initialValues = loadWorld(worldController, fileReader.result as string);
-        setWorldInitialValues(initialValues);
-        worldController.resumeRun(initialValues);
-        console.log("LoadPanel - worldController.startRun executed!");
+        const [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndResumeRun(worldController, fileReader.result as string);
+        setWorldGenerationData(readWorldGenerationData);
+        setWorldControllerData(readWorldControllerData);
       }
     }
     fileReader.onerror = () => {
