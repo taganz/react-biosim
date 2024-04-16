@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import { worldControllerAtom } from "../../store";
 import {
         mapDesignerFullscreenAtom,
@@ -11,19 +11,17 @@ import {
 import { BsArrowsFullscreen, BsFullscreenExit } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { TfiCheckBox } from "react-icons/tfi";
-import {  worldObjectsAtom,
-          worldGenerationDataAtom,
+import {  worldGenerationDataAtom,
           worldControllerDataAtom
         } from "../../store";
 
 export default function MapDesignerHeader() {
   const worldController = useAtomValue(worldControllerAtom);
 
-  const [worldSize, setWorldSize] = useAtom(mapDesignerWorldSizeAtom);
+  const setWorldSize = useSetAtom(mapDesignerWorldSizeAtom);
   const [mapDesignerObjects, setObjects] = useAtom(mapDesignerObjectsAtom);
   const [isFullscreen, setIsFullscreen] = useAtom(mapDesignerFullscreenAtom);
 
-  const [setWorldObjects, setWorldObjectsAtom] = useAtom(worldObjectsAtom);
   const worldGenerationData = useAtomValue(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   
@@ -43,7 +41,7 @@ export default function MapDesignerHeader() {
     }
   };
 
-  const handleReset = () => {
+  const handleResetToWorldControllerMap = () => {
     if (worldController) {
       setWorldSize(worldController.size);
       setObjects(worldController.objects.map((obj) => obj.clone()));
@@ -59,7 +57,7 @@ export default function MapDesignerHeader() {
       <Button variant="grey" onClick={handleUseMap} icon={<TfiCheckBox />}>
         Use Map
       </Button>
-      <Button onClick={handleReset} icon={<FaTrash />}>
+      <Button onClick={handleResetToWorldControllerMap} icon={<FaTrash />}>
         Reset Designer
       </Button>
 
