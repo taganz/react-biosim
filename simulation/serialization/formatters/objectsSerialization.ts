@@ -163,6 +163,8 @@ export function serializeObjects(objects: WorldObject[]) : SavedWorldObject[]{
         type: className,
       };
       serializedObjects.push(item);
+    } else {
+      console.warn("serializeObjects formatter not found!!")
     }
   }
 
@@ -180,6 +182,8 @@ export function deserializeObjects(objects: SavedWorldObject[]) : WorldObject[] 
     if (formatter) {
       const worldObject: WorldObject = formatter.deserialize(savedObject.data);
       deserializedObjects.push(worldObject);
+    } else {
+      console.warn("deserializeObjects formatter not found!!")
     }
   });
 

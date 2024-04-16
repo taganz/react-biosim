@@ -26,7 +26,6 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
 
 export function loadSavedWorldAndResumeRun(worldController: WorldController, data: string) : [WorldControllerData, WorldGenerationData] {
   
-  
   const parsed = JSON.parse(data) as SavedWorld;
   
   //TODO to be reviewed

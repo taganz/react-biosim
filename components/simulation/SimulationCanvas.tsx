@@ -26,24 +26,36 @@ export default function SimulationCanvas({ className }: Props) {
   const worldGenerationData = useAtomValue(worldGenerationDataAtom);
   
   useEffect(
-    function instantiateWorldController() {
+    function instantiateWorld() {
       console.log("*** worldController instantiated *** ");
       const worldController = new WorldController(worldControllerData, worldGenerationData);
       setWorldController(worldController);
       worldController.startRun(worldControllerData, worldGenerationData );  
+
+      if (canvasRef.current) {
+        const canvas : HTMLCanvasElement = canvasRef.current;
+        setWorldCanvas(new WorldCanvas(worldController, canvas, worldControllerData.size));
+        //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
+      } else {
+        throw new Error("Cannot found canvas");
+      }
+
       return () => {
         console.log("*** worldControlled destroyed ***");
         worldController.pause();
         setWorldController(null);
+        console.log("*** worldCanvas destroyed ***");
+        setWorldCanvas(null);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
+    /*
   useEffect(
     function instantiateWorldCanvas() {
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(canvas, worldControllerData.size, worldObjects));
+        setWorldCanvas(new WorldCanvas(worldController, canvas, worldControllerData.size));
         //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
       } else {
         throw new Error("Cannot found canvas");
@@ -54,7 +66,7 @@ export default function SimulationCanvas({ className }: Props) {
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps      
   },[]);
-
+*/
     const handleInitializeWorldCanvas = useCallback( () => {
       if (worldCanvas) {
         console.log("SimulationCanvas handleInitializeWorldCanvas objects: ", worldControllerData.worldObjects);
@@ -78,25 +90,25 @@ export default function SimulationCanvas({ className }: Props) {
         
         worldController.events.addEventListener(
           WorldEvents.startGeneration,
-          () => {worldCanvas.redraw(worldController.generations.currentCreatures);}
+          () => {worldCanvas.redraw();}
         );
         worldController.events.addEventListener(
           WorldEvents.redraw,
-          () => {worldCanvas.redraw(worldController.generations.currentCreatures);}
+          () => {worldCanvas.redraw();}
         );
-        return () => {/*
+        return () => {
           worldController.events.removeEventListener(
             WorldEvents.initializeWorld,
-            handleInitializeWorld
+            handleInitializeWorldCanvas
           );
-          */
+          
           worldController.events.removeEventListener(
             WorldEvents.startGeneration,
-            () => {worldCanvas.redraw(worldController.generations.currentCreatures);}
+            () => {worldCanvas.redraw();}
           );
-          worldController.events.addEventListener(
+          worldController.events.removeEventListener(
             WorldEvents.redraw,
-            () => {worldCanvas.redraw(worldController.generations.currentCreatures);}
+            () => {worldCanvas.redraw();}
           );
         };
       }

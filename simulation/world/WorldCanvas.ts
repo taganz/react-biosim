@@ -1,18 +1,18 @@
 import Creature from "../creature/Creature";
 import {GridPosition} from "./grid/Grid"
 import WorldObject from "./objects/WorldObject";
+import WorldController from "./WorldController";
 
 
 export default class WorldCanvas {
   
+  worldController : WorldController;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   size: number;  // world size (not canvas size!), used for conversion
-  objects : WorldObject[];
-  lastGenerationDrawn : number = 0;
-  lastCreaturesDrawn : Creature[]  = [];
     
-  constructor(canvas: HTMLCanvasElement, size: number, objects : WorldObject[]) {
+  constructor(worldController: WorldController, canvas: HTMLCanvasElement, size: number)  {
+    this.worldController = worldController;
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -21,11 +21,7 @@ export default class WorldCanvas {
     } else {
       throw new Error("Cannot found canvas");
     }
-    if (objects) {
-      this.objects = objects;
-    } else {
-      throw new Error ("objects not found");
-    }
+    
   }
 
   public mouseEventPosToWorld(e: MouseEvent): GridPosition {
@@ -49,23 +45,19 @@ export default class WorldCanvas {
     this.canvas.height = this.canvas.clientHeight;
   }
 
-  public redraw(creatures?: Creature[], currentGen?: number ): void {
+  public redraw(): void {
+    this.worldController.generations.currentCreatures;
     this.clearCanvas();
     this.resizeCanvas();
     // RD
     this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color with 10% opacity
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
 
-    currentGen = currentGen ? currentGen : this.lastGenerationDrawn;
-    this.lastGenerationDrawn  = currentGen;
-    creatures = creatures ? creatures : this.lastCreaturesDrawn;
-    this.lastCreaturesDrawn = creatures;
-
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
     // Draw creatures 
-    for (let i = 0; i < creatures.length; i++) {
-      const creature = creatures[i];
+    for (let i = 0; i < this.worldController.generations.currentCreatures.length; i++) {
+      const creature = this.worldController.generations.currentCreatures[i];
 
       if (creature.isAlive) {
         const position = creature.position;
@@ -89,15 +81,15 @@ export default class WorldCanvas {
     //this.selectionMethod?.onDrawAfterCreatures?.(this);
 
     // Draw objects
-    for (let i = 0; i < this.objects.length; i++) {
-      this.objects[i].draw(this.ctx, this.size);
+    for (let i = 0; i < this.worldController.objects.length; i++) {
+      this.worldController.objects[i].draw(this.ctx, this.size);
     }
 
     // Draw generation #
     this.ctx.fillStyle = "#000";
     this.ctx.fill();
     this.ctx.font = "18px Courier";
-    this.ctx.fillText("Gen ".concat(currentGen.toString()), 10, 20);
+    this.ctx.fillText("Gen ".concat(this.worldController.currentGen.toString()), 10, 20);
     
 }
 
