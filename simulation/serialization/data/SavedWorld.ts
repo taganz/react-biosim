@@ -6,7 +6,7 @@ import SavedGenerationRegistry from "./SavedGenerationRegistry";
 export default interface SavedWorld {
   worldGenerationData: SavedWorldGenerationData;
   worldControllerData: SavedWorldControllerData;
-  species: SavedSpecies[];
-  stats: SavedGenerationRegistry
+  species?: SavedSpecies[];
+  stats?: SavedGenerationRegistry
 }
 

@@ -9,7 +9,7 @@ import {deserializeSpecies} from "./formatters/speciesSerialitzation";
 import {deserializeWorldGenerationData} from "./formatters/worldGenerationDataSerialization"
 import {deserializeWorldControllerData} from "./formatters/worldControllerDataSerialization"
 
-
+/*
 function loadGenerationRegistry(worldController: WorldController, parsed: SavedWorld) : void {
     // Load generation registry
     if (parsed.stats) {
@@ -22,11 +22,20 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
     }
   
 }
-  
+*/
 
 export function loadSavedWorldAndResumeRun(worldController: WorldController, data: string) : [WorldControllerData, WorldGenerationData] {
   
+  
   const parsed = JSON.parse(data) as SavedWorld;
+  
+  //TODO to be reviewed
+  if (!parsed.species) {
+    throw new Error("must have parsed.species");
+  }
+  if (!parsed.stats) {
+    throw new Error("must have parsed.species");
+  }
   
   worldController.pause();
 
@@ -36,6 +45,20 @@ export function loadSavedWorldAndResumeRun(worldController: WorldController, dat
   const stats = generationRegistryFormatter.deserialize(parsed.stats,worldController);
   
   worldController.resumeRun(worldControllerData, worldGenerationData, species, stats);
+
+  return [worldControllerData, worldGenerationData];
+}
+
+export function loadSavedWorldAndStartRun(worldController: WorldController, data: string) : [WorldControllerData, WorldGenerationData] {
+  
+  const parsed = JSON.parse(data) as SavedWorld;
+  
+  worldController.pause();
+
+  const worldGenerationData = deserializeWorldGenerationData(parsed);
+  const worldControllerData = deserializeWorldControllerData(parsed);
+  
+  worldController.startRun(worldControllerData, worldGenerationData);
 
   return [worldControllerData, worldGenerationData];
 }

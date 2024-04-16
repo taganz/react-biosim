@@ -43,7 +43,8 @@ export default class WorldController {
   _lastPauseDate: Date | undefined = new Date();
   _pauseTime: number = 0;
   _timeoutId?: number;
-
+  _loadedWorldControllerData: WorldControllerData;
+  _loadedWorldGenerationData: WorldGenerationData;
   
   constructor(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData) {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
@@ -53,6 +54,9 @@ export default class WorldController {
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
+    this._loadedWorldControllerData = worldControllerData;
+    this._loadedWorldGenerationData = worldGenerationData;
+  
     console.log("*** worldControlled constructor ***");
   }
 
@@ -68,7 +72,14 @@ export default class WorldController {
     this.currentStep = 0;
     this.lastGenerationDuration = 0;
     this.totalTime = 0;
-    
+  
+    this._loadedWorldControllerData = worldControllerData;
+    this._loadedWorldGenerationData = worldGenerationData;
+  
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
+    );
+
     this.computeStep();
   
   }
@@ -87,6 +98,13 @@ export default class WorldController {
     this.lastGenerationDuration = worldControllerData.lastGenerationDuration;
     this.totalTime = worldControllerData.totalTime;
 
+    this._loadedWorldControllerData = worldControllerData;
+    this._loadedWorldGenerationData = worldGenerationData;
+  
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
+    );
+    
     this.computeStep();
   }
 
@@ -101,7 +119,6 @@ export default class WorldController {
 
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;
-    this.size = worldControllerData.size;
     this.pauseBetweenGenerations = worldControllerData.pauseBetweenGenerations;
   }
 
@@ -127,7 +144,7 @@ export default class WorldController {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
-      this.startRun();
+      this.startRun(this._loadedWorldControllerData, this._loadedWorldGenerationData);
       return;
     }
 
