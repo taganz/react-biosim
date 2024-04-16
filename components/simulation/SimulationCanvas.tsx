@@ -67,15 +67,16 @@ export default function SimulationCanvas({ className }: Props) {
       // eslint-disable-next-line react-hooks/exhaustive-deps      
   },[]);
 */
+/*
     const handleInitializeWorldCanvas = useCallback( () => {
       if (worldCanvas) {
         console.log("SimulationCanvas handleInitializeWorldCanvas objects: ", worldControllerData.worldObjects);
-        worldCanvas.objects = [...worldControllerData.worldObjects];
+        worldCanvas.worldController.objects = [...worldControllerData.worldObjects];
       } else {
         throw new Error ("worldCanvas not found");
       }
   }, [worldCanvas, worldControllerData.worldObjects]);
-
+*/
   //TODO - cal afegir resize --> redraw?
   useEffect(
     function bindWorldControllerEvents() {
@@ -83,11 +84,12 @@ export default function SimulationCanvas({ className }: Props) {
       console.log("sc - add listeners");
       if (worldController && worldCanvas) {
         
+        /*
         worldController.events.addEventListener(
           WorldEvents.initializeWorld,
           handleInitializeWorldCanvas
         );
-        
+        */
         worldController.events.addEventListener(
           WorldEvents.startGeneration,
           () => {worldCanvas.redraw();}
@@ -97,10 +99,12 @@ export default function SimulationCanvas({ className }: Props) {
           () => {worldCanvas.redraw();}
         );
         return () => {
+          /*
           worldController.events.removeEventListener(
             WorldEvents.initializeWorld,
             handleInitializeWorldCanvas
           );
+          */
           
           worldController.events.removeEventListener(
             WorldEvents.startGeneration,
@@ -116,7 +120,7 @@ export default function SimulationCanvas({ className }: Props) {
         console.log("SimulationCanvas - couldn't add listeners!! ", worldController, worldCanvas);
       }
 
-  }, [worldController, handleInitializeWorldCanvas, worldCanvas]);
+  }, [worldController, worldCanvas]);
   
   return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }
