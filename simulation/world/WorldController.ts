@@ -49,7 +49,7 @@ export default class WorldController {
   constructor(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData) {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(worldGenerationData, this.grid);
+    this.generations = new WorldGenerations(this, worldGenerationData, this.grid);
     // request worldCanvas initialization 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -64,7 +64,7 @@ export default class WorldController {
 
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(worldGenerationData, this.grid);
+    this.generations = new WorldGenerations(this, worldGenerationData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     
     // state data
@@ -89,7 +89,7 @@ export default class WorldController {
     
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);  
-    this.generations = new WorldGenerations(worldGenerationData, this.grid, species);
+    this.generations = new WorldGenerations(this, worldGenerationData, this.grid, species);
     this.generationRegistry = stats;
 
     // state data

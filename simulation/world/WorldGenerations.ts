@@ -9,10 +9,12 @@ import CreatureSensors from "../creature/sensors/CreatureSensors";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import Genome from "@/simulation/creature/genome/Genome";
 import worldGenerationData from "./WorldGenerationData";
+import WorldController from "./WorldController";
 
 
 export default class WorldGenerations {
   
+  worldController: WorldController;
   grid: Grid;
   currentCreatures: Creature[] = [];
   
@@ -47,8 +49,9 @@ export default class WorldGenerations {
   currentGen : number = 0;
 
   // if creatures is not null, assume we are loading a saved state
-  constructor(worldGenerationData: worldGenerationData, grid: Grid, creatures?: Creature[]) {
+  constructor(worldController: WorldController, worldGenerationData: worldGenerationData, grid: Grid, creatures?: Creature[]) {
         
+    this.worldController = worldController;
     this.grid = grid;
     
     // initial values

@@ -156,7 +156,7 @@ export default class CreatureSensors {
 
     // Age
     if (this.data.Age.enabled) {
-      values.push(creature.generations.currentStep / creature.generations.stepsPerGen);
+      values.push(creature.generations.currentStep / creature.generations.worldController.stepsPerGen);
     }
 
     // Oscillator
