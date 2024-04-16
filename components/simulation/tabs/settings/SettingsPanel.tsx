@@ -55,15 +55,15 @@ export default function SettingsPanel() {
 
                     
 
-    const handleActionChange = (name: ActionName, checked: boolean) => {
-      if (checked) {
-        setEnabledActions([...enabledActions, name]);
-        setWorldGenerationData(prev => ({ ...prev, enabledActions: [...enabledActions, name] }));
-      } else if (enabledActions.length > 1) {
-        setEnabledActions(enabledActions.filter((item) => item !== name));
-        setWorldGenerationData(prev => ({ ...prev, enabledActions: enabledActions.filter((item) => item !== name) }));
-      }
-    };
+  const handleActionChange = (name: ActionName, checked: boolean) => {
+    if (checked) {
+      setEnabledActions([...enabledActions, name]);
+      setWorldGenerationData(prev => ({ ...prev, enabledActions: [...enabledActions, name] }));
+    } else if (enabledActions.length > 1) {
+      setEnabledActions(enabledActions.filter((item) => item !== name));
+      setWorldGenerationData(prev => ({ ...prev, enabledActions: enabledActions.filter((item) => item !== name) }));
+    }
+  };
 
     const getPrettyName = (name: string) =>
       name.replace(/([A-Z])/g, " $1").trim();
@@ -92,14 +92,15 @@ export default function SettingsPanel() {
       }
       
 
-  /*
+  
     const handleChangePopulation = (e) => {
       //const newValues = {... worldGenerationData};
       //newValues.initialPopulation = e.target.value;
       //setWorldGenerationData(newValues)
       setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
+      setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
     }
-  */
+
       
     return (
       <div>
@@ -118,7 +119,7 @@ export default function SettingsPanel() {
             <input
                 type="number"
                 value={worldControllerData.size.toString()}
-                onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
+                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
                 className="min-w-0 bg-grey-mid p-1"
               >
             </input>
@@ -129,7 +130,7 @@ export default function SettingsPanel() {
             <input
                 type="number"
                 value={worldGenerationData.initialPopulation.toString()}
-                onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: parseInt(e.target.value)}))}} 
+                onChange={handleChangePopulation}
                 className="min-w-0 bg-grey-mid p-1"
               >
             </input>
@@ -140,7 +141,7 @@ export default function SettingsPanel() {
             <input
                 type="number"
                 value={worldControllerData.stepsPerGen.toString()}
-                onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
+                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
                 className="min-w-0 bg-grey-mid p-1"
               >
             </input>
