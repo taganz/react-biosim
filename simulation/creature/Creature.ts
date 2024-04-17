@@ -9,6 +9,7 @@ import CreatureSensors from "./sensors/CreatureSensors";
 import CreatureActions from "./actions/CreatureActions";
 import * as constants from "../simulationConstants"
 import {GridPosition } from "../world/grid/Grid";
+import CreatureMass from "./CreatureMass";
 
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
@@ -53,26 +54,16 @@ export default class Creature {
   stepDirection : direction = null;
 
   // predator prey
-  mass : number = 0;
-  massAtBirth : number = 0;
+  mass : CreatureMass;
   
   private _health: number = maxHealth;
 
-  constructor(generations: WorldGenerations, position: GridPosition, mass?: number, genome?: Genome) {
+  constructor(generations: WorldGenerations, position: GridPosition, massAtBirth?: number, genome?: Genome) {
     this.generations = generations;
 
     this.id = generations.lastCreatureIdCreated;
     this.stepBirth = generations.currentStep;
     
-    if (mass) {
-      this.mass = mass;
-      this.massAtBirth = mass;
-    }
-    else {
-      this.mass = constants.CREATURE_MASS_GENERATION_0;
-      this.massAtBirth = constants.CREATURE_MASS_GENERATION_0;
-    }
-
     // Position
     this.position = position;
     this.lastPosition = [position[0], position[1]];
@@ -90,11 +81,14 @@ export default class Creature {
         [...new Array(this.generations.initialGenomeSize)].map(() =>
           Genome.generateRandomGene()
         )
-      );
-
+      );    
       // console.log(this.genome.toDecimalString());
       // console.log(this.genome.toBitString())
     }
+
+  
+    this.mass = new CreatureMass(this.genome.genes.length, massAtBirth);
+
 
     // Network input and output count
     this.networkInputCount = this.sensors.neuronsCount;
@@ -292,6 +286,7 @@ export default class Creature {
     return this.genome.getColor();
   }
 
+
   private calculateInputs(): number[] {
     return this.sensors.calculateOutputs(this);
   }
@@ -301,6 +296,12 @@ export default class Creature {
   }
 
   computeStep(): void {
+    
+    if (!this.isAlive) return;
+
+    this.mass.step();
+    if (!this.isAlive) return;
+
     this.urgeToMove = [0, 0];
 
     // Calculate outputs of neuronal network
@@ -323,16 +324,13 @@ export default class Creature {
       this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
     }
 
-  this.computeDistanceIndex();
+    this.computeDistanceIndex();
 
-  this.lastDirection = this.stepDirection;
+    this.lastDirection = this.stepDirection;
 
-  // If mass < 0 dies
-  this.mass -= constants.MASS_LOSS_PER_STEP;
-  if (this.mass < 0) {
-    this.die();
-  }
-  //this.log("mass ", this.mass);
+    this.log("mass: ".concat(this.mass.mass.toFixed(1)));
+
+
 } 
 
 private computeDistanceIndex(){
@@ -407,7 +405,7 @@ private computeDistanceIndex(){
   }
 
   get isAlive() {
-    return this._health > 0;
+    return this._health > 0 && this.mass.isAlive;
   }
 
   set health(value: number) {
@@ -427,6 +425,7 @@ private computeDistanceIndex(){
     return this._health;
   }
 
+
   log(msg: string, msg2? : any, msg3? : any, msg4? : any) {
     if (!msg2) msg2 = "";
     if (!msg3) msg3 = "";
@@ -441,6 +440,7 @@ private computeDistanceIndex(){
     }
   }
 
+  //TODO review
   private die () {
     this.log("die");
     this._health = -1;

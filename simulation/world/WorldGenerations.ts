@@ -172,7 +172,7 @@ public endGeneration(): void {
   this.grid.clearCreatures();
   this.currentCreatures = [];
   this.lastCreatureIdCreated = 0;   // resets at generation
-
+  this.currentStep = 0;
 
   
   // Repopulate with survivors

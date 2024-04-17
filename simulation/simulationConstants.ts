@@ -26,7 +26,9 @@ export const WATER_TO_MASS_PER_STEP = 0.5; //0.1;
 export const MASS_LOSS_PER_STEP = 0; // 0.05
 
 
+// mass
 export const CREATURE_MASS_GENERATION_0 = 1;
+export const CREATURE_BASAL_MASS_CONSUMPTION_PER_BRAIN_SIZE = 0.05;
 
 // --> to be calculated from the creature's grid real value
 export const TEMP_ENERGY_CELL_CREATURE = 0.01;

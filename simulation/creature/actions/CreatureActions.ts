@@ -160,7 +160,7 @@ export default class CreatureActions {
     // Photosynthesis
     if (this.data.Photosynthesis.enabled) {
       if (input > 0) {
-        creature.mass += constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE;
+        creature.mass.add(constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE);
         //creature.log("foto", creature.mass);
       }
 
@@ -172,7 +172,7 @@ export default class CreatureActions {
     // Reproduction
     if (this.data.Photosynthesis.enabled) {
       if (input > 0) {
-        creature.mass -= creature.massAtBirth;    // --> ajustar
+        creature.mass.consume(creature.mass._massAtBirth);    //TODO review
 
         // --> revisar amb calma
         //var offspringPosition = this.getNearByAvailablePosic(this.currentCreatures, targetBirthPosition[0], targetBirthPosition[1], 100, 100);
