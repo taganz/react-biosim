@@ -78,17 +78,24 @@ describe('creature test', () => {
             };
         const worldController = new WorldController(worldControllerData, worldGenerationData);
         const generations = new Generations(worldController, worldGenerationData, worldController.grid);
-        const joe = new Creature(generations, [0, 0]);
+        const joe = new Creature(generations, [10, 10]);
         test('create ', () => {
                 expect(joe.mass.mass).toBe(1);
         })
         //TODO depend de si te fotosintesi, si es reprodueix, de les constants.... 
-        test('consume mass ', () => {
+        test.skip('loop 5 steps and print results ', () => {
           for (var s=0; s< 5; s++) {
             joe.computeStep();
-            console.log("step: ", s, "mass: ", joe.mass.mass);
+            console.log("step: ", s, "mass: ", joe.mass.mass, "position: ", joe.position);
           }
-  })
+        });
+        test('genome', ()=> {
+          console.log("genome: ", joe.genome.toHexadecimalString(), " ", joe.genome);
+          console.log("getGeneData 0: ", joe.genome.getGeneData(0));
+          console.log("getGeneData 1: ", joe.genome.getGeneData(1));
+          console.log("getGeneData 2: ", joe.genome.getGeneData(2));
+          console.log("getGeneData 3: ", joe.genome.getGeneData(3));
+        });
 
   }
 ); 
