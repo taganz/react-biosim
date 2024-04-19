@@ -16,15 +16,17 @@ export default class CreatureBrain {
     // Sensors and actions
     sensors: CreatureSensors;
     actions: CreatureActions;
-    onlySensorsWithSingleOutput: boolean = false;
-    singleOutputSensorFunctions: ((creature: Creature) => number)[] = [];
-    singleInputs: number[] = [];
+    //TODO where are those used? RD 19/4/24
+    // onlySensorsWithSingleOutput: boolean = false;
+    // singleOutputSensorFunctions: ((creature: Creature) => number)[] = [];
+    // singleInputs: number[] = [];
 
     // Neuronal network and genome
-    networkInputCount: number;
-    networkOutputCount: number;
     brain!: Network;
     genome: Genome;
+    _networkInputCount: number;
+    _networkOutputCount: number;
+    _maxNumberNeurons: number;
 
     constructor(creature: Creature, genome?: Genome) {
 
@@ -46,8 +48,9 @@ export default class CreatureBrain {
         // console.log(this.genome.toBitString())
 
         // Network input and output count
-        this.networkInputCount = this.sensors.neuronsCount;
-        this.networkOutputCount = this.actions.neuronsCount;
+        this._networkInputCount = this.sensors.neuronsCount;
+        this._networkOutputCount = this.actions.neuronsCount;
+        this._maxNumberNeurons = this.creature.generations.maxNumberNeurons;
         
         this.createBrainFromGenome();
 
@@ -77,16 +80,16 @@ export default class CreatureBrain {
 
         // Renumber sourceId
         if (sourceType === NeuronType.SENSOR) {
-            sourceId %= this.networkInputCount;
+            sourceId %= this._networkInputCount;
         } else {
-            sourceId %= this.creature.generations.maxNumberNeurons;
+            sourceId %= this._maxNumberNeurons;
         }
 
         // Renumber sinkId
         if (sinkType === NeuronType.ACTION) {
-            sinkId %= this.networkOutputCount;
+            sinkId %= this._networkOutputCount;
         } else {
-            sinkId %= this.creature.generations.maxNumberNeurons;
+            sinkId %= this._maxNumberNeurons;
         }
 
         // Renumber weigth to a -4 and 4
@@ -245,8 +248,8 @@ export default class CreatureBrain {
         }
 
         this.brain = new Network(
-            this.networkInputCount,
-            this.networkOutputCount,
+            this._networkInputCount,
+            this._networkOutputCount,
             finalNeurons,
             finalConnections
             );
