@@ -32,11 +32,11 @@ export default function PopulationPanel() {
       creatureIdx++
     ) {
       const creature = worldController.generations.currentCreatures[creatureIdx];
-      const genomeString = creature.genome.toDecimalString(false);
+      const genomeString = creature.brain.genome.toDecimalString(false);
 
       let species: Species | undefined = creatureMap.get(genomeString);
       if (!species) {
-        species = new Species(creature.genome.clone());
+        species = new Species(creature.brain.genome.clone());
         creatureMap.set(genomeString, species);
       }
 
@@ -56,7 +56,7 @@ export default function PopulationPanel() {
       if (creature) {
         const newSelectedSpecies = species.find(
           (species) =>
-            species.genomeKey === creature.genome.toDecimalString(false)
+            species.genomeKey === creature.brain.genome.toDecimalString(false)
         );
 
         setSelectedSpecies(newSelectedSpecies);

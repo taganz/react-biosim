@@ -90,11 +90,11 @@ describe('creature test', () => {
           }
         });
         test('genome', ()=> {
-          console.log("genome: ", joe.genome.toHexadecimalString(), " ", joe.genome);
-          console.log("getGeneData 0: ", joe.genome.getGeneData(0));
-          console.log("getGeneData 1: ", joe.genome.getGeneData(1));
-          console.log("getGeneData 2: ", joe.genome.getGeneData(2));
-          console.log("getGeneData 3: ", joe.genome.getGeneData(3));
+          console.log("genome: ", joe.genome.toHexadecimalString(), " ", joe.brain.genome);
+          console.log("getGeneData 0: ", joe.brain.genome.getGeneData(0));
+          console.log("getGeneData 1: ", joe.brain.genome.getGeneData(1));
+          console.log("getGeneData 2: ", joe.brain.genome.getGeneData(2));
+          console.log("getGeneData 3: ", joe.brain.genome.getGeneData(3));
         });
 
   }

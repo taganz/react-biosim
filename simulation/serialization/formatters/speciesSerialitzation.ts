@@ -14,12 +14,12 @@ export default function serializeSpecies(worldController: WorldController) {
       creatureIdx++
     ) {
       const creature = worldController.generations.currentCreatures[creatureIdx];
-      const genomeString = creature.genome.toDecimalString(false);
+      const genomeString = creature.brain.genome.toDecimalString(false);
   
       let species: SavedSpecies | undefined = creatureMap.get(genomeString);
       if (!species) {
         species = {
-          genes: creature.genome.genes,
+          genes: creature.brain.genome.genes,
           creatures: [],
         };
         creatureMap.set(genomeString, species);

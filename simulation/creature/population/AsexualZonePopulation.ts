@@ -81,7 +81,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
               offspringPosition =  generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, generations.initialPopulation);
             }
             if (offspringPosition != null) {
-              generations.newCreature(offspringPosition, parent.mass.massAtBirth, parent.genome);
+              generations.newCreature(offspringPosition, parent.mass.massAtBirth, parent.brain.genome);
             }
             else {
               console.warn("no position for creature 2");

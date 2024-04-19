@@ -67,10 +67,7 @@ export default class WorldGenerations {
     this.geneInsertionDeletionProbability = worldGenerationData.geneInsertionDeletionProbability;
     this.sensors.loadFromList(worldGenerationData.enabledSensors);
     this.actions.loadFromList(worldGenerationData.enabledActions);
-    //TODO  revisar aixo
-    //this.sensors.updateInternalValues();    
-    //this.actions.updateInternalValues();
-
+   
 
     //TODO should take into account objects size
     if (this.initialPopulation >= this.grid.size * this.grid.size) {

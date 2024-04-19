@@ -22,7 +22,7 @@ export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 300; //500;
+export const RUN_INITIAL_POPULATION = 500; //500;
 export const RUN_STEPS_PER_GENERATION = 300;
 
 

@@ -93,7 +93,7 @@ export default function SettingsPanel() {
       
 
   
-    const handleChangePopulation = (e) => {
+    const handleChangePopulation = (e: { target: { value: any; }; }) => {
       //const newValues = {... worldGenerationData};
       //newValues.initialPopulation = e.target.value;
       //setWorldGenerationData(newValues)

@@ -50,7 +50,7 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
             }
             let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
             if (position != null) {
-              worldGenerations.newCreature(position, parent.mass.massAtBirth, parent.genome);
+              worldGenerations.newCreature(position, parent.mass.massAtBirth, parent.brain.genome);
             }
             else {
               console.warn("no free position found 2");

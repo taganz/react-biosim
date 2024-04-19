@@ -6,7 +6,7 @@ function getLabelForNeuron(creature: Creature, index: number, group: number) {
     // Create a list of names
     const names: string[] = [];
     for (const { enabled, name, neuronCount } of Object.values(
-      creature.sensors.data
+      creature.brain.sensors.data
     )) {
       if (enabled) {
         for (let i = 0; i < neuronCount; i++) {
@@ -25,7 +25,7 @@ function getLabelForNeuron(creature: Creature, index: number, group: number) {
   } else if (group === 2) {
     // Create a list of names
     const names: string[] = [];
-    for (const { enabled, name } of Object.values(creature.actions.data)) {
+    for (const { enabled, name } of Object.values(creature.brain.actions.data)) {
       if (enabled) {
         names.push(name);
       }
@@ -43,7 +43,7 @@ export function drawCreatureNeuronalNetwork(
   canvas: HTMLCanvasElement
 ) {
   return drawNeuronalNetwork(
-    creature.brain,
+    creature.brain.brain,
     canvas,
     (index: number, group: number) => getLabelForNeuron(creature, index, group)
   );

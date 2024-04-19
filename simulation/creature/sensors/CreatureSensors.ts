@@ -130,7 +130,7 @@ export default class CreatureSensors {
     this.updateInternalValues();
   }
 
-  updateInternalValues() {
+  private updateInternalValues() {
     this.neuronsCount = 0;
 
     for (const { enabled, neuronCount } of Object.values(this.data)) {

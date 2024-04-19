@@ -77,7 +77,7 @@ export default class CreatureActions {
     this.updateInternalValues();
   }
 
-  updateInternalValues() {
+  private updateInternalValues() {
     this.neuronsCount = 0;
 
     for (const { enabled } of Object.values(this.data)) {
