@@ -17,10 +17,6 @@ export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
 
 
-
-export const worldObjectsAtom = atom(constants.RUN_WORLD_OBJECTS);
-
-
 const wgd : WorldGenerationData = {
   // initial values
   populationStrategy: constants.RUN_POPULATION_STRATEGY,
@@ -52,9 +48,9 @@ const wcd : WorldControllerData = {
   initialPopulation: constants.RUN_INITIAL_POPULATION,
   worldObjects : constants.RUN_WORLD_OBJECTS,
   // user values
-  pauseBetweenSteps: 0,
-  immediateSteps: 1,
-  pauseBetweenGenerations: 0,
+  pauseBetweenSteps: constants.PAUSE_BETWEEN_STEPS,
+  immediateSteps: constants.IMMEDIATE_STEPS,
+  pauseBetweenGenerations: constants.PAUSE_BETWEEN_GENERATIONS,
   
   // state values
   currentGen: 0,

@@ -17,140 +17,144 @@ export type GridPosition = [number, number];
 
 export class Grid { 
     
-    _grid : Array<Array<GridCell>>;
-    _size : number;
-    _objects : WorldObject[];
+  _grid : Array<Array<GridCell>>;
+  _size : number;
+  _objects : WorldObject[];
 
-    constructor(size: number, objects: WorldObject[]) {
-      this._grid = [];
-      this._size = size;
+  constructor(size: number, objects: WorldObject[]) {
+    this._grid = [];
+    this._size = size;
 
-      // Generate pixels of objects
-      this._objects = objects;
-      for (let i = 0; i < this._objects.length; i++) {
-        this._objects[i].computePixels(this._size);
-      }
+    // Generate pixels of objects
+    this._objects = objects;
+    for (let i = 0; i < this._objects.length; i++) {
+      this._objects[i].computePixels(this._size);
+    }
 
+    // create grid initializing with empty cells
+    for (let y = 0; y < this._size; y++) {
+      const row: Array<GridCell> = [];
       for (let x = 0; x < this._size; x++) {
-        // Create column
-        const col: Array<GridCell> = [];
-        for (let y = 0; y < this._size; y++) {
-          // Create and push row
-          col.push({ creature: null, objects: [], isSolid: false, water: constants.WATER_GRIDPOINT_DEFAULT, energy: constants.ENERGY_GRIDPOINT_DEFAULT });
-        }
-
-        // Push column
-        this._grid.push(col);
+        row.push({ creature: null, objects: [], isSolid: false, water: constants.WATER_GRIDPOINT_DEFAULT, energy: constants.ENERGY_GRIDPOINT_DEFAULT });
       }
+      this.addRow(row);
+    }
 
-      // Check objects
-      for (
-        let objectIndex = 0;
-        objectIndex < this._objects.length;
-        objectIndex++
-      ) {
-        const obj = this._objects[objectIndex];
+    // Check objects
+    for (
+      let objectIndex = 0;
+      objectIndex < this._objects.length;
+      objectIndex++
+    ) {
+      const obj = this._objects[objectIndex];
 
-        for (let pixelIdx = 0; pixelIdx < obj.pixels.length; pixelIdx++) {
-          const [x, y] = obj.pixels[pixelIdx];
-          // Set pixel
-          //this._grid[x][y].objects.push(obj);
-          this._grid[x][y].objects.push(obj);
-          // Is it solid?
-          if (obj.areaType === undefined) {
-            this._grid[x][y].isSolid = true;
-          }
+      for (let pixelIdx = 0; pixelIdx < obj.pixels.length; pixelIdx++) {
+        const [x, y] = obj.pixels[pixelIdx];
+        // Set pixel
+        //this._grid[x][y].objects.push(obj);
+        this._grid[x][y].objects.push(obj);
+        // Is it solid?
+        if (obj.areaType === undefined) {
+          this._grid[x][y].isSolid = true;
         }
       }
     }
-
-    get size() : number {
-      return this._size;
-    }
-    get objects() : WorldObject[] {
-      return this._objects;
-    }
-    public addRow(row: GridCell[]) : void {
-        this._grid.push(row);
-    }
-
-  // add a creature at its position.
-    public addCreature(creature : Creature) : void {
-      if (!this.isTileEmpty(creature.position[0], creature.position[1])) {
-          //throw new Error ("addCreature tile not available ".concat(creature.position.toString()));
-          console.error("addCreature tile not available ".concat(creature.position.toString()), " creature id in cell:", this._grid[creature.position[0]][creature.position[1]].creature?.id);
-        }
-      this._grid[creature.position[0]][creature.position[1]].creature = creature;
   }
 
-    // clear creatures, keep other values
-    public clearCreatures() {
-        for (let y = 0; y < this._size; y++) {
-          for (let x = 0; x < this._size; x++) {
-            const point = this._grid[x][y];
-            point.creature = null;
-            // point.obstacle = null;
-            // point.areas = [];
+  get size() : number {
+    return this._size;
+  }
+  get objects() : WorldObject[] {
+    return this._objects;
+  }
+  public addRow(row: GridCell[]) : void {
+      this._grid.push(row);
+  }
+
+  // add a creature at its position.
+  public addCreature(creature : Creature) : void {
+    if (!this.isTileEmpty(creature.position[0], creature.position[1])) {
+        throw new Error ("addCreature tile not available ".concat(creature.position.toString()));
+        //console.error("addCreature tile not available ".concat(creature.position.toString()), " creature id in cell:", this._grid[creature.position[0]][creature.position[1]].creature?.id);
+      }
+    this._grid[creature.position[0]][creature.position[1]].creature = creature;
+  }
+
+  public removeCreature(creature: Creature) : void {
+    const cell = this._grid[creature.position[0]][creature.position[1]];
+    if (cell.creature == null) {
+      throw new Error("removeCreature position.creature == null");
+    }
+    cell.creature = null;
+  }
+
+  // clear creatures, keep other values
+  public clearCreatures() {
+      for (let y = 0; y < this._size; y++) {
+        for (let x = 0; x < this._size; x++) {
+          const point = this._grid[x][y];
+          point.creature = null;
+          // point.obstacle = null;
+          // point.areas = [];
+        }
+      }
+  }
+
+  public cell(x: number, y: number) : GridCell {
+      return this._grid[x][y];
+  } 
+
+  public cellByPos(pos: GridPosition) : GridCell {
+      return this._grid[pos[0]][pos[1]];
+  } 
+
+  public clamp(x: number, y: number): GridPosition {
+      const clampedX = Math.min(Math.max(x, 0), this._size-1);
+      const clampedY = Math.min(Math.max(y, 0), this._size-1);
+      return [clampedX, clampedY];
+  }
+
+  public isTileInsideWorld(x: number, y: number): boolean {
+      if (x < 0 || y < 0 || x >= this._size || y >= this._size) {
+          return false;
+      }
+      return true;
+  }
+
+  //TODO not testing x, y inside worldController!
+  public isTileEmpty(x: number, y: number): boolean {  
+    const cell = this._grid[x][y];
+    return !this._grid[x][y].creature && !cell.isSolid;
+  }
+
+  public getRandomPosition(): [number, number] {
+      return [
+        Math.floor(Math.random() * this._size),
+        Math.floor(Math.random() * this._size),
+      ];
+    }
+
+  // Generate a position until it corresponds to an empty tile
+  public getRandomAvailablePosition() : GridPosition | null {
+    let position: GridPosition;
+    // Generate a random starting position
+    const startX = Math.floor(Math.random() * this._size);
+    const startY = Math.floor(Math.random() * this._size);
+
+    // Iterate over the array starting from the random position
+    for (let x = startX; x < startX + this._size; x++) {
+        for (let y = startY; y < startY + this._size; y++) {
+          // Adjust x and y to wrap around the array
+          position = [x % this._size, y % this._size];
+          if (this.isTileEmpty(position[0], position[1])) {
+            return position;
           }
         }
-    }
-
-    public cell(x: number, y: number) : GridCell {
-        return this._grid[x][y];
-    } 
-
-    public cellByPos(pos: GridPosition) : GridCell {
-        return this._grid[pos[0]][pos[1]];
-    } 
-
-    public clamp(x: number, y: number): GridPosition {
-        const clampedX = Math.min(Math.max(x, 0), this._size-1);
-        const clampedY = Math.min(Math.max(y, 0), this._size-1);
-        return [clampedX, clampedY];
-    }
-
-    public isTileInsideWorld(x: number, y: number): boolean {
-        if (x < 0 || y < 0 || x >= this._size || y >= this._size) {
-            return false;
-        }
-        return true;
-    }
-
-    // --> not testing x, y inside worldController!
-    public isTileEmpty(x: number, y: number): boolean {
-      // for (let i = 0; i < this.currentCreatures.length; i++) {
-      //   const creature = this.currentCreatures[i];
-      //   if (creature.isAlive && creature.position[0] === x && creature.position[1] === y) {
-      //     return false;
-      //   }
-      // }
-      // return true;
-  
-      const cell = this._grid[x][y];
-      return !this._grid[x][y].creature && !cell.isSolid;
-    }
-  
-    public getRandomPosition(): [number, number] {
-        return [
-          Math.floor(Math.random() * this._size),
-          Math.floor(Math.random() * this._size),
-        ];
       }
+      return null;
+  }
 
-    // Generate a position until it corresponds to an empty tile
-    public getRandomAvailablePosition() : GridPosition | null {
-      // --> improve infinite loop prevention
-      let position: GridPosition;
-      let i = 0;
-      do {
-        position = this.getRandomPosition();
-        if (i++ > this._size * this._size) {
-          console.warn("grid.getRandomAvailablePosition - position not found!!");
-          return null;
-        }
-      } while (!this.isTileEmpty(position[0], position[1]));
-      return position;
-    }
+
 
   public getCenteredAvailablePosition(x: number, y: number, hw: number, hh: number, initialPopulation : number): [number, number] {
     // Generate a position until it corresponds to an empty tile
@@ -182,7 +186,26 @@ export class Grid {
     return position;
   }
 
-  // -->    throw new Error ("-->not implemented");
+
+
+  public getNearByAvailablePosition(x: number, y: number): [number, number] | null {
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Possible directions
+
+    for (const [dx, dy] of directions) {
+        const newX = x + dx;
+        const newY = y + dy;
+
+        // Check if the new position is within the grid bounds
+        if (newX >= 0 && newX < this._grid.length && newY >= 0 && newY < this._grid[0].length) {
+            // Check if the cell is free
+            if (this.isTileEmpty(newX, newY)) {
+                return [newX, newY]; // Return the position of the free cell
+            }
+        }
+    }
+
+    return null; // Return null if no free cell is found nearby
+}
 
   
   /*

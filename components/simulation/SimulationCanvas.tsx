@@ -5,7 +5,7 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldControllerAtom, worldControllerDataAtom, worldObjectsAtom, worldGenerationDataAtom} from "./store";
+import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom} from "./store";
 import {worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
 import WorldGenerationData from "@/simulation/world/WorldGenerationData";
 
@@ -18,7 +18,6 @@ export default function SimulationCanvas({ className }: Props) {
   //const counter = useRef(0);
   //const counterMax = useRef(0);
   //const worldCreatures = useAtomValue(worldCreaturesAtom);
-  const worldObjects = useAtomValue(worldObjectsAtom);
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
