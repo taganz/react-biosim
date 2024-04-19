@@ -10,6 +10,7 @@ import CreatureActions from "./actions/CreatureActions";
 import * as constants from "../simulationConstants"
 import {GridPosition } from "../world/grid/Grid";
 import CreatureMass from "./CreatureMass";
+import CreatureReproduction from "./CreaturerReproduction";
 
 export const initialNeuronOutput = 0.5;
 export const maxHealth = 100;
@@ -55,6 +56,7 @@ export default class Creature {
 
   // predator prey
   mass : CreatureMass;
+  reproduction : CreatureReproduction;
   
   private _health: number = maxHealth;
 
@@ -84,11 +86,12 @@ export default class Creature {
       );    
       // console.log(this.genome.toDecimalString());
       // console.log(this.genome.toBitString())
+    //this.log("constructor");
     }
 
   
     this.mass = new CreatureMass(this.genome.genes.length, massAtBirth);
-
+    this.reproduction = new CreatureReproduction(this);
 
     // Network input and output count
     this.networkInputCount = this.sensors.neuronsCount;
@@ -328,11 +331,19 @@ export default class Creature {
 
     this.lastDirection = this.stepDirection;
 
-    this.log("mass: ".concat(this.mass.mass.toFixed(1)));
+    //this.log("mass: ".concat(this.mass.mass.toFixed(1)));
 
 
 } 
 
+
+  reproduce(input: number) {
+    if (this.reproduction.reproduce(input)) {
+      //this.log("Creature - reproduction!");
+    } else {
+      //this.log("Creature - can not reproduce!");
+    }
+  }
 private computeDistanceIndex(){
     // Increment distance covered
     if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
@@ -434,7 +445,11 @@ private computeDistanceIndex(){
     if (constants.DEBUG_CREATURE_ID == -1) {
       return;
     }
-    if (constants.DEBUG_CREATURE_ID == 0 || constants.DEBUG_CREATURE_ID == this.id)  {
+    if (constants.DEBUG_CREATURE_ID == 0 
+      || constants.DEBUG_CREATURE_ID == this.id 
+      || (constants.DEBUG_CREATURE_ID == -10 && this.id > 0 && this.id < 10)
+      || (constants.DEBUG_CREATURE_ID == -30 && this.id > 0 && this.id < 30)
+      )  {
       const genStepString = this.generations.currentGen.toString().concat(".", this.generations.currentStep.toString());
       console.log(genStepString, " #", this.id, ": ", msg, msg2, msg3, msg4);
     }

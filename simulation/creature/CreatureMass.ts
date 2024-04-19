@@ -1,14 +1,14 @@
 import * as constants from "../simulationConstants"
 
 export default class CreatureMass {
-    _massAtBirth : number;
+    massAtBirth : number;
     _mass : number = 0;
     _basalConsumption : number;
 
     constructor(genomeLength : number, massAtBirth?: number) {
-        this._massAtBirth = massAtBirth ? massAtBirth : constants.CREATURE_MASS_GENERATION_0;
-        this._mass = this._massAtBirth;
-        this._basalConsumption = constants.CREATURE_BASAL_MASS_CONSUMPTION_PER_BRAIN_SIZE * genomeLength;
+        this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
+        this._mass = this.massAtBirth;
+        this._basalConsumption = constants.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * genomeLength;
     }
 
     step() {
@@ -24,6 +24,9 @@ export default class CreatureMass {
         this._mass -= mass;
     }
 
+    consumeMassFraction(massFraction: number) {
+        this._mass -= this._mass * massFraction;
+    }
     get isAlive() {
         return this._mass > 0;
     }

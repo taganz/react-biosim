@@ -29,8 +29,8 @@ export default function serializeSpecies(worldController: WorldController) {
         lastMovement: creature.lastMovement,
         lastPosition: creature.lastPosition,
         position: creature.lastPosition,
-        mass: creature.mass,
-        massAtBirth: creature.massAtBirth
+        mass: creature.mass.mass,
+        massAtBirth: creature.mass.massAtBirth
       });
     }
   
@@ -50,7 +50,7 @@ export default function serializeSpecies(worldController: WorldController) {
         const creature = new Creature(worldController.generations, savedCreature.position, savedCreature.mass, genome);
         creature.lastMovement = savedCreature.lastMovement;
         creature.lastPosition = savedCreature.lastPosition;
-        creature.massAtBirth = savedCreature.massAtBirth;
+        creature.mass.massAtBirth = savedCreature.massAtBirth;
   
         deserializedCreatures.push(creature);
       });

@@ -136,9 +136,11 @@ export default class WorldGenerations {
 public step(): number {
 
     let creaturesStillLive = 0;
-    for (let i = 0; i < this.currentCreatures.length; i++) {
+    for (let i= this.currentCreatures.length -1; i >= 0; i--) {
       const creature = this.currentCreatures[i];
       if (creature.isAlive) {
+
+        /*
         // Effect of the areas the creature is in
         const point = this.grid.cell(creature.position[0], creature.position[1]);
         for (
@@ -149,8 +151,12 @@ public step(): number {
           point.objects[objectIndex].areaEffectOnCreature?.(creature);
           creaturesStillLive++;
         }
-
+        */
         creature.computeStep();
+      } 
+      if (!creature.isAlive) {
+        this.grid.removeCreature(creature);
+        this.currentCreatures.splice(i, 1);
       }
     }
 

@@ -115,7 +115,9 @@ export default class WorldController {
     this.size = worldControllerData.size;
     this.stepsPerGen = worldControllerData.stepsPerGen;
     this.initialPopulation = worldControllerData.initialPopulation;
-    this.objects = [...worldControllerData.worldObjects];   
+    if (worldControllerData.worldObjects) {
+      this.objects = [...worldControllerData.worldObjects];   
+    }
 
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;

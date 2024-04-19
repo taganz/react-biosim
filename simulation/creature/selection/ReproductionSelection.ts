@@ -21,7 +21,7 @@ export default class ReproductionSelection
       }
     }
     const fitMax = 1;   // --> hauria de calcular el numero de fills que ha tingut cada especie?
-    
+    console.log("reproductionSelection survivors: ", parents.length)
 
     return {survivors: parents, fitnessMaxValue: fitMax};
   }
