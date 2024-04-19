@@ -139,7 +139,7 @@ public step(): number {
     for (let i= this.currentCreatures.length -1; i >= 0; i--) {
       const creature = this.currentCreatures[i];
       if (creature.isAlive) {
-
+        creaturesStillLive++;
         /*
         // Effect of the areas the creature is in
         const point = this.grid.cell(creature.position[0], creature.position[1]);
@@ -149,7 +149,6 @@ public step(): number {
           objectIndex++
         ) {
           point.objects[objectIndex].areaEffectOnCreature?.(creature);
-          creaturesStillLive++;
         }
         */
         creature.computeStep();

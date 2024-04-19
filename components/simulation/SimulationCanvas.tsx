@@ -26,7 +26,6 @@ export default function SimulationCanvas({ className }: Props) {
   
   useEffect(
     function instantiateWorld() {
-      console.log("*** worldController instantiated *** ");
       const worldController = new WorldController(worldControllerData, worldGenerationData);
       setWorldController(worldController);
       worldController.startRun(worldControllerData, worldGenerationData );  
@@ -49,75 +48,29 @@ export default function SimulationCanvas({ className }: Props) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
-    /*
-  useEffect(
-    function instantiateWorldCanvas() {
-      if (canvasRef.current) {
-        const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(worldController, canvas, worldControllerData.size));
-        //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
-      } else {
-        throw new Error("Cannot found canvas");
-      }
-      return () => {
-        console.log("*** worldCanvas destroyed ***");
-        setWorldCanvas(null);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps      
-  },[]);
-*/
-/*
-    const handleInitializeWorldCanvas = useCallback( () => {
-      if (worldCanvas) {
-        console.log("SimulationCanvas handleInitializeWorldCanvas objects: ", worldControllerData.worldObjects);
-        worldCanvas.worldController.objects = [...worldControllerData.worldObjects];
-      } else {
-        throw new Error ("worldCanvas not found");
-      }
-  }, [worldCanvas, worldControllerData.worldObjects]);
-*/
   //TODO - cal afegir resize --> redraw?
   useEffect(
     function bindWorldControllerEvents() {
 
-      console.log("sc - add listeners");
-      if (worldController && worldCanvas) {
-        
-        /*
-        worldController.events.addEventListener(
-          WorldEvents.initializeWorld,
-          handleInitializeWorldCanvas
-        );
-        */
-        worldController.events.addEventListener(
-          WorldEvents.startGeneration,
-          () => {worldCanvas.redraw();}
-        );
-        worldController.events.addEventListener(
-          WorldEvents.redraw,
-          () => {worldCanvas.redraw();}
-        );
-        return () => {
-          /*
-          worldController.events.removeEventListener(
-            WorldEvents.initializeWorld,
-            handleInitializeWorldCanvas
-          );
-          */
-          
-          worldController.events.removeEventListener(
-            WorldEvents.startGeneration,
-            () => {worldCanvas.redraw();}
-          );
-          worldController.events.removeEventListener(
-            WorldEvents.redraw,
-            () => {worldCanvas.redraw();}
-          );
+      if (worldController && worldCanvas) {        
+
+        const startGenerationCallback = () => {
+          worldCanvas.redraw();
         };
-      }
-      else {
-        console.log("SimulationCanvas - couldn't add listeners!! ", worldController, worldCanvas);
-      }
+  
+        const redrawCallback = () => {
+          worldCanvas.redraw();
+        };
+  
+  
+        worldController.events.addEventListener(WorldEvents.startGeneration,startGenerationCallback);
+        worldController.events.addEventListener(WorldEvents.redraw,redrawCallback);
+        
+      return () => {
+        worldController.events.removeEventListener(WorldEvents.startGeneration,startGenerationCallback);
+        worldController.events.removeEventListener(WorldEvents.redraw, redrawCallback);
+      };
+    }
 
   }, [worldController, worldCanvas]);
   

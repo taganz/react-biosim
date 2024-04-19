@@ -34,13 +34,13 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const WATER_TO_MASS_PER_STEP = 0.4; //0.1;
+export const WATER_TO_MASS_PER_STEP = 0; //0.1 - 0.4
 //TODO to be calculated from the creature's grid real value
 
 
 // -- mass 
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;
+export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0;   // 0.07
 
 // -- reproduction
 export const REPRODUCTION_COST_PER_MASS_TRY = 0;
@@ -49,13 +49,13 @@ export const REPRODUCTION_COST_PER_MASS_DO = 0.5;
 // -- selection method
 
 export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
-//export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
-export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
+export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
+//export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
 
 // -- population strategy -- 
 
-//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
-export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
+export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
+//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
 
 // -- brain
 export const RUN_MUTATION_MODE : MutationMode = MutationMode.wholeGene;
@@ -71,26 +71,22 @@ export const RUN_ENABLED_SENSORS : SensorName[]= [
     "Age",
     "Oscillator",
     "Random",
-  /*
     "HorizontalSpeed",
     "VerticalSpeed",
-  */
     "HorizontalBorderDistance",
     "VerticalBorderDistance",
     "BorderDistance",
     "Mass"
   ];
 export const RUN_ENABLED_ACTIONS : ActionName[] = [
-  /*
       "MoveNorth",
       "MoveSouth",
       "MoveEast",
       "MoveWest",
       "RandomMove",
       "MoveForward",
-    */
-      "Photosynthesis",
-      "Reproduction"
+      //"Photosynthesis",
+      //"Reproduction"
     ];
 
 

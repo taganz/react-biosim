@@ -27,6 +27,7 @@ export default class CreatureMass {
     consumeMassFraction(massFraction: number) {
         this._mass -= this._mass * massFraction;
     }
+    
     get isAlive() {
         return this._mass > 0;
     }
