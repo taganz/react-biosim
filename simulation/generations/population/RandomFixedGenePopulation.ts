@@ -22,7 +22,10 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
         // Generate the creature
         let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
         if (position != null) {
-          worldGenerations.newCreature(position, constants.MASS_AT_BIRTH_GENERATION_0, new Genome([fixedGene]) );
+          // select a random species from constant files
+          const species = constants.POPULATION_DEFAULT_SPECIES;
+          const randomDefaultSpecie = species[Math.floor(Math.random() * species.length)];
+          worldGenerations.newCreature(position, constants.MASS_AT_BIRTH_GENERATION_0, new Genome(randomDefaultSpecie.genome) );
         }
         else {
           console.warn("no free position found");

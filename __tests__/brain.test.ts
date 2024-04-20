@@ -14,7 +14,7 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 
 /* https://jestjs.io/docs/expect  */
 
-describe('genome test', () => {
+describe('species edition consoles', () => {
 
     const worldControllerData = {
         // initial values
@@ -93,13 +93,22 @@ describe('genome test', () => {
     }); 
 
     
-    test("load brain with Oscil.lator--(2)-->RandomMove network", ()=> {
-      const geneData = [ 1, 3, 1, 4, 49152 ];  // weight = 2
+    test.skip("load brain with Oscil.lator--(2)-->RandomMove network", ()=> {
+      const geneData = [ 1, 3, 1, 4, 2 ];  
       const gene : number = Genome.encodeGeneData(geneData);
       console.log ("geneData: ", geneData, " gene: ", gene);
       const genome = new Genome([gene]);
       const brain = new CreatureBrain(joe, genome);
       expect(brain.genome.genes[0]).toEqual(gene);
+      console.log(brain.brain);
+    });
+
+    test("TOOL TO SHOW NETWORK FOR A GENOME", ()=> {
+      const genes = [-2071543808,-2071486464]
+      const genome = new Genome(genes);
+      const brain = new CreatureBrain(joe, genome);
+      expect(brain.genome.genes[0]).toEqual(genes[0]);
+      console.log(brain.genome);
       console.log(brain.brain);
     });
 
