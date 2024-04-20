@@ -177,13 +177,31 @@ export default class Genome {
   getGeneData(index: number): number[] {
     // sourceType, sourceId, sinkType, sinkId, weigth
     // 1 1110001 0 0110101 0001111111100011
+    return Genome.decodeGeneData(this.genes[0]);
+  }
+
+  static decodeGeneData(gene : number) : number[] {
     return [
-      (this.genes[index] >> 31) & 1,
-      (this.genes[index] >> 24) & 127,
-      (this.genes[index] >> 23) & 1,
-      (this.genes[index] >> 16) & 127,
-      this.genes[index] & 65535,
+      (gene >> 31) & 1,
+      (gene >> 24) & 127,
+      (gene >> 23) & 1,
+      (gene >> 16) & 127,
+      gene & 65535,
     ];
+
+  }
+  static encodeGeneData(data: number[]): number {
+    const [sourceType, sourceId, sinkType, sinkId, weight] = data;
+  
+    // Assuming each field's range is correct
+    const encoded =
+      (sourceType & 1) << 31 |
+      (sourceId & 127) << 24 |
+      (sinkType & 1) << 23 |
+      (sinkId & 127) << 16 |
+      (weight & 65535);
+  
+    return encoded;
   }
 
   getColorNumber() {
