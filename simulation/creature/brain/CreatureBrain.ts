@@ -78,7 +78,7 @@ export default class CreatureBrain {
         let [sourceType, sourceId, sinkType, sinkId, weigth] =
             this.genome.getGeneData(geneIdx);
 
-        // Renumber sourceId
+        // Renumber sourceId: from random number to one of the available options<
         if (sourceType === NeuronType.SENSOR) {
             sourceId %= this._networkInputCount;
         } else {
