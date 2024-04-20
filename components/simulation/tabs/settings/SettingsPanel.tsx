@@ -225,7 +225,7 @@ export default function SettingsPanel() {
               </div>
             {/*  geneInsertionDeletionProbability  */}
             <div className="flex flex-col">
-                <label className="grow">Max neurons</label>
+                <label className="grow">Insertion/Deletion probability (0 - 1)</label>
                 <input
                     type="number"
                     value={worldGenerationsData.geneInsertionDeletionProbability.toString()}
