@@ -14,13 +14,11 @@ export default class ReproductionSelection
     
     for (const creature of generations.currentCreatures) {
       
-      if (
-        creature.isAlive && creature.stepBirth > 1
-      ) {
+      if (creature.isAlive && creature.stepBirth > 1) {
         parents.push(creature);
       }
     }
-    const fitMax = 1;   // --> hauria de calcular el numero de fills que ha tingut cada especie?
+    const fitMax = parents.length;   //TODO hauria de calcular el numero de fills que ha tingut cada especie?
     console.log("reproductionSelection survivors: ", parents.length)
 
     return {survivors: parents, fitnessMaxValue: fitMax};
