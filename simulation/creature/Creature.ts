@@ -111,9 +111,9 @@ export default class Creature {
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
     if (this.reproduction.reproduce(actionInputValue)) {
-      //this.log("Creature - reproduction!");
+      this.log("Creature - reproduction! mass", this.mass.mass.toFixed(1));
     } else {
-      //this.log("Creature - can not reproduce!");
+      //this.log("Creature - can not reproduce! mass", this.mass.mass.toFixed(1));
     }
   }
 
