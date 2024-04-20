@@ -31,6 +31,7 @@ export default class WorldGenerations {
   geneInsertionDeletionProbability: number = 0;
   sensors: CreatureSensors = new CreatureSensors();
   actions: CreatureActions = new CreatureActions();
+  useMetabolism : boolean;
   // state values
   // .. read by creature
   lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?
@@ -67,6 +68,7 @@ export default class WorldGenerations {
     this.geneInsertionDeletionProbability = worldGenerationsData.geneInsertionDeletionProbability;
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
+    this.useMetabolism = worldGenerationsData.useMetabolism;
    
 
     //TODO should take into account objects size

@@ -35,6 +35,7 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
+export const USE_METABOLISM = false;    // if true Creatures will run mass.step to activate metabolism
 export const WATER_TO_MASS_PER_STEP = 0.2; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
 export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
@@ -50,8 +51,8 @@ export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionArea
 
 // -- population strategy -- 
 
-export const RUN_POPULATION_STRATEGY : RandomFixedGenePopulation = new RandomFixedGenePopulation();
-//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
+//export const RUN_POPULATION_STRATEGY : RandomFixedGenePopulation = new RandomFixedGenePopulation();
+export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
 //export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
 
 export const POPULATION_DEFAULT_SPECIES = [

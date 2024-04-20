@@ -73,7 +73,8 @@ describe('species edition consoles', () => {
         lastCreatureCount: 0,
         lastSurvivorsCount: 0,
         lastFitnessMaxValue: 0,
-        lastSurvivalRate: 0
+        lastSurvivalRate: 0,
+        useMetabolism: false, //TODO afegit 20/4 revisar
     };
     const worldController = new WorldController(worldControllerData, worldGenerationsData);
     const generations = new Generations(worldController, worldGenerationsData, worldController.grid);

@@ -43,6 +43,7 @@ export default class Creature {
   mass : CreatureMass;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
+  _useMetabolism: boolean;
   
   private _health: number = maxHealth;
 
@@ -61,6 +62,7 @@ export default class Creature {
     this.brain = new CreatureBrain(this, genome);
   
     this.mass = new CreatureMass(this.brain.genome.genes.length, massAtBirth);
+    this._useMetabolism = generations.useMetabolism;
     this.reproduction = new CreatureReproduction(this);
 
   }
@@ -75,8 +77,10 @@ export default class Creature {
     
     if (!this.isAlive) return;
 
-    this.mass.step();
-    if (!this.isAlive) return;
+    if (this._useMetabolism) {
+      this.mass.step();
+      if (!this.isAlive) return;
+    }
 
     this.urgeToMove = [0, 0];
 
