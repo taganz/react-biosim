@@ -177,7 +177,7 @@ export default class Genome {
   getGeneData(index: number): number[] {
     // sourceType, sourceId, sinkType, sinkId, weigth
     // 1 1110001 0 0110101 0001111111100011
-    return Genome.decodeGeneData(this.genes[0]);
+    return Genome.decodeGeneData(this.genes[index]);
   }
 
   static decodeGeneData(gene : number) : number[] {
@@ -186,7 +186,7 @@ export default class Genome {
       (gene >> 24) & 127,
       (gene >> 23) & 1,
       (gene >> 16) & 127,
-      gene & 65535,
+      (gene & 65535)/8192-4,
     ];
 
   }
@@ -199,7 +199,7 @@ export default class Genome {
       (sourceId & 127) << 24 |
       (sinkType & 1) << 23 |
       (sinkId & 127) << 16 |
-      (weight & 65535);
+      ((weight +4)*8192 & 65535);
   
     return encoded;
   }

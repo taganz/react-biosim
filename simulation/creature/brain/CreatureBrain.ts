@@ -47,7 +47,7 @@ export default class CreatureBrain {
         // console.log(this.genome.toDecimalString());
         // console.log(this.genome.toBitString())
 
-        // Network input and output count
+        // Total number of available sensors and actions in this simulation
         this._networkInputCount = this.sensors.neuronsCount;
         this._networkOutputCount = this.actions.neuronsCount;
         this._maxNumberNeurons = this.creature.generations.maxNumberNeurons;
@@ -93,7 +93,7 @@ export default class CreatureBrain {
         }
 
         // Renumber weigth to a -4 and 4
-        weigth = weigth / 8192 - 4;
+        //weigth = weigth / 8192 - 4;
 
         connections.push(
             new Connection(sourceType, sourceId, sinkType, sinkId, weigth)
