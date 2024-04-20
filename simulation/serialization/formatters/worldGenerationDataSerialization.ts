@@ -59,7 +59,7 @@ export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenera
       geneInsertionDeletionProbability: parsed.worldGenerationsData.geneInsertionDeletionProbability,
       enabledSensors: parsed.worldGenerationsData.enabledSensors,
       enabledActions: parsed.worldGenerationsData.enabledActions,
-      useMetabolism: parsed.worldGenerationsData.useMetabolism,
+      metabolismEnabled: parsed.worldGenerationsData.metabolismEnabled,
       
       //TODO alternativa es carregar-los aqui i despres copiar-los:
 

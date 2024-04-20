@@ -14,7 +14,7 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 
 /* https://jestjs.io/docs/expect  */
 
-describe('species edition consoles', () => {
+describe('brain tests', () => {
 
     const worldControllerData = {
         // initial values
@@ -68,13 +68,13 @@ describe('species edition consoles', () => {
                 "Photosynthesis",
                 "Reproduction"
               ],
+        metabolismEnabled: false,
         // state values 
         lastCreatureIdCreated: 0,
         lastCreatureCount: 0,
         lastSurvivorsCount: 0,
         lastFitnessMaxValue: 0,
         lastSurvivalRate: 0,
-        useMetabolism: false, //TODO afegit 20/4 revisar
     };
     const worldController = new WorldController(worldControllerData, worldGenerationsData);
     const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
@@ -82,7 +82,7 @@ describe('species edition consoles', () => {
     const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
     const genome = new Genome(arrayOfGene);
 
-    test.skip ('show brain', ()=> {
+    test.skip('show brain', ()=> {
       console.log("arrayOfGene: ", arrayOfGene);
       console.log("genome: ", genome);
       const xx = genome.getGeneData(0);
@@ -104,7 +104,7 @@ describe('species edition consoles', () => {
       console.log(brain.brain);
     });
 
-    test("TOOL TO SHOW NETWORK FOR A GENOME", ()=> {
+    test.skip("TOOL TO SHOW NETWORK FOR A GENOME", ()=> {
       const genes = [-2071543808,-2071486464]
       const genome = new Genome(genes);
       const brain = new CreatureBrain(joe, genome);
@@ -112,6 +112,17 @@ describe('species edition consoles', () => {
       console.log(brain.genome);
       console.log(brain.brain);
     });
+    test("DISPLAY create brain with metabolism enabled", ()=> {
+      const worldGenerationsData2 = {...worldGenerationsData, metabolismEnabled: true};
+      const generationsWithMetabolism = new Generations(worldController, worldGenerationsData2, worldController.grid);
+      worldController.grid.cell(1,1).creature = null;
+      worldController.grid.cell(1,1).isSolid = false;
+      const joeWithMeta = new Creature(generationsWithMetabolism, [1, 1]);
+      console.log("joeWithMeta.brain.genome: ", joeWithMeta.brain.genome);
+      const offspringWithMeta = generationsWithMetabolism.newCreature([1, 1], 1, joeWithMeta.brain.genome);
+      console.log("offspringWithMeta.brain.genome: ", offspringWithMeta.brain.genome);
+      
 
+    });
 });
 

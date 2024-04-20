@@ -18,7 +18,7 @@ export default interface WorldGenerationsData {
     geneInsertionDeletionProbability: number;
     enabledSensors: SensorName[];
     enabledActions: ActionName[];
-    useMetabolism: boolean;
+    metabolismEnabled: boolean;
     // state values 
     lastCreatureIdCreated: number;
     lastCreatureCount: number;

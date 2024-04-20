@@ -28,7 +28,7 @@ export default class CreatureBrain {
     _networkOutputCount: number;
     _maxNumberNeurons: number;
 
-    constructor(creature: Creature, genome?: Genome) {
+    constructor(creature: Creature, genome: Genome) {
 
         this.creature = creature;
     
@@ -36,14 +36,8 @@ export default class CreatureBrain {
         this.sensors = this.creature.generations.sensors;
         this.actions = this.creature.generations.actions;
 
-        if (genome) {
-            this.genome = genome;
-        } else {
-        this.genome = new Genome(
-            [...new Array(creature.generations.initialGenomeSize)].map(() =>
-            Genome.generateRandomGene()
-            ));
-        }    
+        this.genome = genome;
+
         // console.log(this.genome.toDecimalString());
         // console.log(this.genome.toBitString())
 

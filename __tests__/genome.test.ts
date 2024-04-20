@@ -64,5 +64,15 @@ describe('genome test', () => {
       expect(Genome.decodeGeneData(geneDecimal)).toEqual(geneData);
       console.log ("geneData: ", geneData, " geneDecimal: ", geneDecimal);
     });
+    test("Genome.addGenes ", ()=> {
+      const genome2 = new Genome([100, 200]);
+      genome2.addGenes([300, 400]);
+      expect(genome2.genes).toEqual([100, 200, 300, 400]);
+    });
+    test("Genome.addGenes - empty input", ()=> {
+      const genome2 = new Genome([100, 200]);
+      genome2.addGenes([]);
+      expect(genome2.genes).toEqual([100, 200]);
+    });
 });
 

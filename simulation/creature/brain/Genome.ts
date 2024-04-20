@@ -135,6 +135,10 @@ export default class Genome {
     return new Genome(newGenes);
   }
 
+  addGenes(newGene: number[]): void {
+    this.genes = this.genes.concat(newGene);
+
+  }
   static generateRandomGene(): number {
     let result = 0;
     for (let i = 1; i <= geneBitSize; i++) {

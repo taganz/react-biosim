@@ -15,7 +15,7 @@ import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 
 // -- log 
-export const DEBUG_CREATURE_ID : number = -1;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const DEBUG_CREATURE_ID : number = 1;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 
 // -- speed controls
 export const PAUSE_BETWEEN_STEPS = 10;  // [0 | 10 | 50 | 200]
@@ -35,7 +35,8 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const USE_METABOLISM = false;    // if true Creatures will run mass.step to activate metabolism
+export const METABOLISM_ENABLED = true;    // if true Creatures will run mass.step to activate metabolism
+export const METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
 export const WATER_TO_MASS_PER_STEP = 0.2; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
 export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
@@ -55,7 +56,7 @@ export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionArea
 export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
 //export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
 
-export const POPULATION_DEFAULT_SPECIES = [
+export const POPULATION_DEFAULT_SPECIES = [     // to be used in RandomFixedGenePopulation
   //{name: "Basic random move", genome: [-2088452096]},
   {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
 ]

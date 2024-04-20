@@ -151,13 +151,15 @@ export default function SettingsPanel() {
           <div>
           {/*  selectionMethod  */}
           <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
+          <p  className="mb-2">Metabolism is {worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}
+          </p>
             <div className="mb-1">
-              <h2>Selection method: <br/>current: {worldController?.generations.selectionMethod.constructor.name} </h2>
+              <p  className="mb-2">Selection method:  {worldController?.generations.selectionMethod.constructor.name} </p>
               <Dropdown options={selectionMethodOptions} 
                         onSelect={handleSelectionMethodOptions}/>
               <br/>
           {/*  populationStrategy  */}
-          <h2>Population strategy: <br/>current: {worldController?.generations.populationStrategy.constructor.name} </h2>
+          <p  className="mb-2">Population strategy: {worldController?.generations.populationStrategy.constructor.name} </p>
               <Dropdown options={populationStrategyOptions}
                         onSelect={handlePopulationStrategy} />
               <br/>

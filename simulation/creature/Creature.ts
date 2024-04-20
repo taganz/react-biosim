@@ -43,7 +43,7 @@ export default class Creature {
   mass : CreatureMass;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
-  _useMetabolism: boolean;
+  _metabolismEnabled: boolean;
   
   private _health: number = maxHealth;
 
@@ -58,11 +58,26 @@ export default class Creature {
     this.lastPosition = [position[0], position[1]];
     this.urgeToMove = [0, 0];
     this.lastMovement = [0, 0];
+    this._metabolismEnabled = generations.metabolismEnabled;
 
-    this.brain = new CreatureBrain(this, genome);
+    if (!genome) {
+      // 1st generation, create genome
+      const randomGenesToAdd = this.generations.initialGenomeSize - (this._metabolismEnabled ? constants.METABOLISM_GENES.length : 0);
+      const newGenome = new Genome(
+        [...new Array(2)].map(() => Genome.generateRandomGene()));
+      if (this._metabolismEnabled) {
+        newGenome.addGenes(constants.METABOLISM_GENES);
+      }
+      this.brain = new CreatureBrain(this, newGenome);
+    }
+    else {
+      // genome from parent
+      this.brain = new CreatureBrain(this, genome);
+    }
+
+
   
     this.mass = new CreatureMass(this.brain.genome.genes.length, massAtBirth);
-    this._useMetabolism = generations.useMetabolism;
     this.reproduction = new CreatureReproduction(this);
 
   }
@@ -77,7 +92,7 @@ export default class Creature {
     
     if (!this.isAlive) return;
 
-    if (this._useMetabolism) {
+    if (this._metabolismEnabled) {
       this.mass.step();
       if (!this.isAlive) return;
     }
