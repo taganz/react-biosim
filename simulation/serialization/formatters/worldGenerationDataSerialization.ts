@@ -1,12 +1,12 @@
-import { ActionName } from '../../creature/actions/CreatureActions';
-import { SensorName } from '../../creature/sensors/CreatureSensors';
+import { ActionName } from '../../creature/brain/CreatureActions';
+import { SensorName } from '../../creature/brain/CreatureSensors';
 import WorldController from '@/simulation/world/WorldController';
-import WorldGenerationData from '@/simulation/world/WorldGenerationData';
-import {selectionMethodFormatter} from "@/simulation/creature/selection/SelectionMethodFormatter";
-import {populationStrategyFormatter} from "@/simulation/creature/population/PopulationStrategyFormatter";
+import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
+import {selectionMethodFormatter} from "@/simulation/generations/selection/SelectionMethodFormatter";
+import {populationStrategyFormatter} from "@/simulation/generations/population/PopulationStrategyFormatter";
 import SavedWorldGenerationData from "../data/SavedWorldGenerationData"
 import SavedWorld from "../data/SavedWorld"
-import {serializeMutationMode, deserializeMutationMode} from "@/simulation/creature/genome/MutationMode"
+import {serializeMutationMode, deserializeMutationMode} from "@/simulation/creature/brain/MutationMode"
 
 export default function serializeWorldGenerationData(worldController: WorldController) : SavedWorldGenerationData {
     const wg = worldController.generations;
@@ -43,36 +43,36 @@ export default function serializeWorldGenerationData(worldController: WorldContr
 }
 
 
-export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenerationData{
+export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenerationsData{
         
-  const worldGenerationData : WorldGenerationData = {
+  const worldGenerationsData : WorldGenerationsData = {
       // initial values
-      populationStrategy: populationStrategyFormatter.deserialize(parsed.worldGenerationData.populationStrategy),
-      selectionMethod: selectionMethodFormatter.deserialize(parsed.worldGenerationData.selectionMethod),
-      initialPopulation: parsed.worldGenerationData.initialPopulation,
-      initialGenomeSize: parsed.worldGenerationData.initialGenomeSize,
-      maxGenomeSize: parsed.worldGenerationData.maxGenomeSize,
-      maxNumberNeurons: parsed.worldGenerationData.maxNumberNeurons,
-      mutationMode: deserializeMutationMode(parsed.worldGenerationData.mutationMode),
-      mutationProbability: parsed.worldGenerationData.mutationProbability,
-      deletionRatio: parsed.worldGenerationData.deletionRatio,
-      geneInsertionDeletionProbability: parsed.worldGenerationData.geneInsertionDeletionProbability,
-      enabledSensors: parsed.worldGenerationData.enabledSensors,
-      enabledActions: parsed.worldGenerationData.enabledActions,
+      populationStrategy: populationStrategyFormatter.deserialize(parsed.worldGenerationsData.populationStrategy),
+      selectionMethod: selectionMethodFormatter.deserialize(parsed.worldGenerationsData.selectionMethod),
+      initialPopulation: parsed.worldGenerationsData.initialPopulation,
+      initialGenomeSize: parsed.worldGenerationsData.initialGenomeSize,
+      maxGenomeSize: parsed.worldGenerationsData.maxGenomeSize,
+      maxNumberNeurons: parsed.worldGenerationsData.maxNumberNeurons,
+      mutationMode: deserializeMutationMode(parsed.worldGenerationsData.mutationMode),
+      mutationProbability: parsed.worldGenerationsData.mutationProbability,
+      deletionRatio: parsed.worldGenerationsData.deletionRatio,
+      geneInsertionDeletionProbability: parsed.worldGenerationsData.geneInsertionDeletionProbability,
+      enabledSensors: parsed.worldGenerationsData.enabledSensors,
+      enabledActions: parsed.worldGenerationsData.enabledActions,
       
       //TODO alternativa es carregar-los aqui i despres copiar-los:
 
-      //worldController.generations.sensors.loadFromList(parsed.worldGenerationData.enabledSensors);
-      //worldController.generations.actions.loadFromList(parsed.worldGenerationData.enabledActions);
+      //worldController.generations.sensors.loadFromList(parsed.worldGenerationsData.enabledSensors);
+      //worldController.generations.actions.loadFromList(parsed.worldGenerationsData.enabledActions);
     
 
       // state values 
-      lastCreatureIdCreated: parsed.worldGenerationData.lastCreatureIdCreated,
-      lastCreatureCount: parsed.worldGenerationData.lastCreatureCount,
-      lastSurvivorsCount: parsed.worldGenerationData.lastSurvivorsCount,
-      lastFitnessMaxValue: parsed.worldGenerationData.lastFitnessMaxValue,
-      lastSurvivalRate: parsed.worldGenerationData.lastSurvivalRate,
+      lastCreatureIdCreated: parsed.worldGenerationsData.lastCreatureIdCreated,
+      lastCreatureCount: parsed.worldGenerationsData.lastCreatureCount,
+      lastSurvivorsCount: parsed.worldGenerationsData.lastSurvivorsCount,
+      lastFitnessMaxValue: parsed.worldGenerationsData.lastFitnessMaxValue,
+      lastSurvivalRate: parsed.worldGenerationsData.lastSurvivalRate,
     }
-  return worldGenerationData;
+  return worldGenerationsData;
 }
 

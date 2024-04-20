@@ -1,6 +1,6 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldCanvas from "@/simulation/world/WorldCanvas";
-import WorldGenerationData from "@/simulation/world/WorldGenerationData";
+import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
@@ -17,7 +17,7 @@ export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
 
 
-const wgd : WorldGenerationData = {
+const wgd : WorldGenerationsData = {
   // initial values
   populationStrategy: constants.RUN_POPULATION_STRATEGY,
   selectionMethod: constants.RUN_SELECTION_METHOD,

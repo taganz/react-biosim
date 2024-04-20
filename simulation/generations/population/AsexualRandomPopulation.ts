@@ -1,19 +1,15 @@
 import shuffle from "lodash.shuffle";
-import WorldGenerations from "../../world/WorldGenerations";
-import {GridPosition} from "../../world/grid/Grid";
-import Creature from "../Creature";
+import WorldGenerations from "../WorldGenerations";
+import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
-import WorldObject from "@/simulation/world/objects/WorldObject";
-import * as constants from "@/simulation/simulationConstants";
-import Genome from "../genome/Genome"
+import {GridPosition} from "../../world/grid/Grid";
 
-const fixedGene = Genome.encodeGeneData([ 1, 3, 1, 4, 49152 ]);  // weight = 2
 
-// if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
-export default class RandomFixedGenePopulation implements PopulationStrategy {
-  name = "RandomFixedGenePopulation";
+export default class AsexualRandomPopulation implements PopulationStrategy {
+
+  name = "AsexualRandomPopulation";
   populate(worldGenerations: WorldGenerations, parents?: Creature[]): void {
-      //const creatures: Creature[] = [];
+    //const creatures: Creature[] = [];
 
     // First generation
     if (worldGenerations.currentGen === 0) {
@@ -22,7 +18,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
         // Generate the creature
         let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
         if (position != null) {
-          worldGenerations.newCreature(position, constants.MASS_AT_BIRTH_GENERATION_0, new Genome([fixedGene]) );
+          worldGenerations.newCreature(position);
         }
         else {
           console.warn("no free position found");

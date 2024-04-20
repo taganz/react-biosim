@@ -1,5 +1,5 @@
 import Creature from "@/simulation/creature/Creature";
-import Genome from "@/simulation/creature/genome/Genome";
+import Genome from "@/simulation/creature/brain/Genome";
 
 export class Species {
   genomeKey: string;

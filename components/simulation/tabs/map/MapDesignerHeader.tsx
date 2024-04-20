@@ -22,7 +22,7 @@ export default function MapDesignerHeader() {
   const [mapDesignerObjects, setObjects] = useAtom(mapDesignerObjectsAtom);
   const [isFullscreen, setIsFullscreen] = useAtom(mapDesignerFullscreenAtom);
 
-  const worldGenerationData = useAtomValue(worldGenerationDataAtom);
+  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   
   // Button "Use Map": set objects in worldController and initialize, store also in atom for further initializations
@@ -31,7 +31,7 @@ export default function MapDesignerHeader() {
       const isPaused = worldController.isPaused;
       worldControllerData.worldObjects = [...mapDesignerObjects.map((obj) => obj.clone())];
       setWorldControllerData(worldControllerData);
-      worldController.startRun(worldControllerData, worldGenerationData);
+      worldController.startRun(worldControllerData, worldGenerationsData);
       if (isPaused) {
         worldController.pause();
       }

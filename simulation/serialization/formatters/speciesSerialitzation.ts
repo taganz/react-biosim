@@ -1,7 +1,7 @@
 import WorldController from '@/simulation/world/WorldController';
 import SavedSpecies from "../data/SavedSpecies";
 import Creature from "@/simulation/creature/Creature";
-import Genome from "@/simulation/creature/genome/Genome";
+import Genome from "@/simulation/creature/brain/Genome";
 
 export default function serializeSpecies(worldController: WorldController) {
     

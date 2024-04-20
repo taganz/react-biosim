@@ -4,7 +4,7 @@ import SavedSpecies from "./SavedSpecies";
 import SavedGenerationRegistry from "./SavedGenerationRegistry";
 
 export default interface SavedWorld {
-  worldGenerationData: SavedWorldGenerationData;
+  worldGenerationsData: SavedWorldGenerationData;
   worldControllerData: SavedWorldControllerData;
   species?: SavedSpecies[];
   stats?: SavedGenerationRegistry

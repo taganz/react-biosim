@@ -1,10 +1,10 @@
-import  {SensorName}  from "@/simulation/creature/sensors/CreatureSensors";
-import  {ActionName} from "@/simulation/creature/actions/CreatureActions";
-import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
-import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
-import { MutationMode } from "@/simulation/creature/genome/MutationMode";
+import  {SensorName}  from "@/simulation/creature/brain/CreatureSensors";
+import  {ActionName} from "@/simulation/creature/brain/CreatureActions";
+import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
+import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
+import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 
-export default interface WorldGenerationData {
+export default interface WorldGenerationsData {
     // initial values
     populationStrategy: PopulationStrategy;
     selectionMethod: SelectionMethod;

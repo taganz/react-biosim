@@ -1,8 +1,8 @@
 import {Option} from "../../../global/inputs/Dropdown";
-import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
-import InsideReproductionAreaSelection from "@/simulation/creature/selection/InsideReproductionAreaSelection";
-import ReproductionSelection from "@/simulation/creature/selection/ReproductionSelection";
-import GreatestDistanceSelection from "@/simulation/creature/selection/GreatestDistanceSelection"
+import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
+import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
+import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
+import GreatestDistanceSelection from "@/simulation/generations/selection/GreatestDistanceSelection"
 
 export const selectionMethodOptions: Option[] = [
   {value: "InsideReproductionAreaSelection", label: "Inside Reproduction Area"},

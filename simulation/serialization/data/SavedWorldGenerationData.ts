@@ -1,8 +1,8 @@
-import { ActionName } from '../../creature/actions/CreatureActions';
-import { SensorName } from '../../creature/sensors/CreatureSensors';
-import {SavedSelectionMethod} from "@/simulation/creature/selection/SelectionMethodFormatter";
-import {SavedPopulationStrategy} from "@/simulation/creature/population/PopulationStrategyFormatter";
-import {SavedMutationMode} from "@/simulation/creature/genome/MutationMode"
+import { ActionName } from '../../creature/brain/CreatureActions';
+import { SensorName } from '../../creature/brain/CreatureSensors';
+import {SavedSelectionMethod} from "@/simulation/generations/selection/SelectionMethodFormatter";
+import {SavedPopulationStrategy} from "@/simulation/generations/population/PopulationStrategyFormatter";
+import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
 
 
 export default interface SavedWorldGenerationData {

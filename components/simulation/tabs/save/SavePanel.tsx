@@ -11,7 +11,7 @@ import CanvasToGIF from "./CanvasToGif";
 
 export default function SavePanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  const worldGenerationData = useAtomValue(worldGenerationDataAtom);
+  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
 
   const handleSave = () => {

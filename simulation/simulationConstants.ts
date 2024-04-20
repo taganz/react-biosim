@@ -1,13 +1,13 @@
 
-import { SensorName } from "@/simulation/creature/sensors/CreatureSensors";
-import { ActionName } from "@/simulation/creature/actions/CreatureActions";
-import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
-import InsideReproductionAreaSelection from "@/simulation/creature/selection/InsideReproductionAreaSelection";
-import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
-import AsexualZonePopulation from "@/simulation/creature/population/AsexualZonePopulation";
-import AsexualRandomPopulation from "@/simulation/creature/population/AsexualRandomPopulation";
-import ReproductionSelection from "@/simulation/creature/selection/ReproductionSelection";
-import { MutationMode } from "@/simulation/creature/genome/MutationMode";
+import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
+import { ActionName } from "@/simulation/creature/brain/CreatureActions";
+import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
+import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
+import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
+import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
+import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
+import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
+import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";

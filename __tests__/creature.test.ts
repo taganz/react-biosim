@@ -2,12 +2,12 @@
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
 import * as constants from "@/simulation/simulationConstants"
 import Creature from "@/simulation/creature/Creature";
-import Generations from "@/simulation/world/WorldGenerations";
+import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
-import { MutationMode } from "@/simulation/creature/genome/MutationMode";
-import ReproductionSelection from "@/simulation/creature/selection/ReproductionSelection";
-import AsexualZonePopulation from "@/simulation/creature/population/AsexualZonePopulation";
-import WorldGenerationData from '@/simulation/world/WorldGenerationData';
+import { MutationMode } from "@/simulation/creature/brain/MutationMode";
+import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
+import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
+import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 
 
 /* https://jestjs.io/docs/expect  */
@@ -31,7 +31,7 @@ describe('creature test', () => {
                 lastGenerationDuration: 0,
                 totalTime: 0
         };
-        const worldGenerationData : WorldGenerationData = {
+        const worldGenerationsData : WorldGenerationsData = {
                 populationStrategy: new AsexualZonePopulation,
                 selectionMethod: new ReproductionSelection,
                 initialPopulation: worldControllerData.initialPopulation,
@@ -76,8 +76,8 @@ describe('creature test', () => {
                 lastFitnessMaxValue: 0,
                 lastSurvivalRate: 0
             };
-        const worldController = new WorldController(worldControllerData, worldGenerationData);
-        const generations = new Generations(worldController, worldGenerationData, worldController.grid);
+        const worldController = new WorldController(worldControllerData, worldGenerationsData);
+        const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
         const joe = new Creature(generations, [10, 10]);
         test('create ', () => {
                 expect(joe.mass.mass).toBe(1);

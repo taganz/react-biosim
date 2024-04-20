@@ -1,8 +1,8 @@
 import {Option} from "../../../global/inputs/Dropdown";
-import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
-import AsexualRandomPopulation from "@/simulation/creature/population/AsexualRandomPopulation";
-import AsexualZonePopulation from "@/simulation/creature/population/AsexualZonePopulation";
-import RandomFixedGenePopulation from "@/simulation/creature/population/RandomFixedGenePopulation";
+import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
+import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
+import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
+import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
 
 export const populationStrategyOptions: Option[] = [
   {value: "1", label: "AsexualRandomPopulation"},

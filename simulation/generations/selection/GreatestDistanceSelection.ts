@@ -1,5 +1,5 @@
-import WorldGenerations from "../../world/WorldGenerations";
-import Creature from "../Creature";
+import WorldGenerations from "../WorldGenerations";
+import Creature from "../../creature/Creature";
 import SelectionMethod from "./SelectionMethod";
 import {GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS} from "../../simulationConstants"
 

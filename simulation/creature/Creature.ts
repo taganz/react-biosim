@@ -1,5 +1,5 @@
-import WorldGenerations from "../world/WorldGenerations";
-import Genome from "./genome/Genome";
+import WorldGenerations from "../generations/WorldGenerations";
+import Genome from "./brain/Genome";
 import { probabilityToBool } from "../helpers/helpers";
 
 

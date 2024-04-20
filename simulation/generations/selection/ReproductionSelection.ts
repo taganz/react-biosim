@@ -1,5 +1,5 @@
-import WorldGenerations from "../../world/WorldGenerations";
-import Creature from "../Creature";
+import WorldGenerations from "../WorldGenerations";
+import Creature from "../../creature/Creature";
 import SelectionMethod from "./SelectionMethod";
 
 export default class ReproductionSelection

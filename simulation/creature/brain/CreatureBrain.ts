@@ -1,12 +1,12 @@
 import * as constants from "../../simulationConstants";
 import Creature from "../Creature";
-import CreatureSensors from "./../sensors/CreatureSensors";
-import CreatureActions from "./../actions/CreatureActions";
-import Genome from "./../genome/Genome";
+import CreatureSensors from "./CreatureSensors";
+import CreatureActions from "./CreatureActions";
+import Genome from "./Genome";
 import { Network } from "./Network";
 import Connection from "./Connection";
 import Neuron, { NeuronType } from "./Neuron";
-import NeuronNode from "./../NeuronNode";
+import NeuronNode from "./NeuronNode";
 
 export const initialNeuronOutput = 0.5;
 

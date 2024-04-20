@@ -1,11 +1,11 @@
-import { MutationMode } from "../creature/genome/MutationMode";
+import { MutationMode } from "../creature/brain/MutationMode";
 import { WorldEvents } from "../events/WorldEvents";
 import { GenerationRegistry } from "./stats/GenerationRegistry";
 import {Grid, GridCell, GridPosition} from "./grid/Grid"
 import WorldObject from "./objects/WorldObject";
 import WorldControllerData from "./WorldControllerData";
-import WorldGenerations from "./WorldGenerations";
-import WorldGenerationData from "./WorldGenerationData";
+import WorldGenerations from "../generations/WorldGenerations";
+import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
 
 // Manages generation-step loop
@@ -44,27 +44,27 @@ export default class WorldController {
   _pauseTime: number = 0;
   _timeoutId?: number;
   _loadedWorldControllerData: WorldControllerData;
-  _loadedWorldGenerationData: WorldGenerationData;
+  _loadedWorldGenerationData: WorldGenerationsData;
   
-  constructor(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData) {
+  constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData) {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(this, worldGenerationData, this.grid);
+    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     // request worldCanvas initialization 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
     this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationData;
+    this._loadedWorldGenerationData = worldGenerationsData;
   
     console.log("*** worldControlled constructor ***");
   }
 
-  public startRun(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData ): void {
+  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): void {
 
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
-    this.generations = new WorldGenerations(this, worldGenerationData, this.grid);
+    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     
     // state data
@@ -74,7 +74,7 @@ export default class WorldController {
     this.totalTime = 0;
   
     this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationData;
+    this._loadedWorldGenerationData = worldGenerationsData;
   
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -85,11 +85,11 @@ export default class WorldController {
   }
 
   // load a previous simulation and run from its state
-  public resumeRun(worldControllerData: WorldControllerData, worldGenerationData: WorldGenerationData, species: Creature[], stats: GenerationRegistry ): void {
+  public resumeRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, species: Creature[], stats: GenerationRegistry ): void {
     
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);  
-    this.generations = new WorldGenerations(this, worldGenerationData, this.grid, species);
+    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, species);
     this.generationRegistry = stats;
 
     // state data
@@ -99,7 +99,7 @@ export default class WorldController {
     this.totalTime = worldControllerData.totalTime;
 
     this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationData;
+    this._loadedWorldGenerationData = worldGenerationsData;
   
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })

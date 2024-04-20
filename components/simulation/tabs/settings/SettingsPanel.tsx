@@ -4,8 +4,8 @@
 import {Dropdown, Option} from "../../../global/inputs/Dropdown"; 
 import {selectionMethodOptions, selectSelectionMethod} from "./selectionMethodOptions";
 import {populationStrategyOptions, selectPopulationStrategy} from "./populationStrategyOptions"
-import PopulationStrategy from "@/simulation/creature/population/PopulationStrategy";
-import SelectionMethod from "@/simulation/creature/selection/SelectionMethod";
+import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
+import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
 import {
   worldControllerAtom,
   //restartCountAtom,
@@ -15,8 +15,8 @@ import {
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
-import {Sensor,SensorName} from "@/simulation/creature/sensors/CreatureSensors";
-import {Action, ActionName} from "@/simulation/creature/actions/CreatureActions";
+import {Sensor,SensorName} from "@/simulation/creature/brain/CreatureSensors";
+import {Action, ActionName} from "@/simulation/creature/brain/CreatureActions";
 //import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 import { ChangeEvent } from "react";
 import * as constants from "@/simulation/simulationConstants"
@@ -35,11 +35,11 @@ export default function SettingsPanel() {
   const actions = Object.values(worldController?.generations.actions.data ?? {});
   const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);   
   const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
-  const [worldGenerationData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
+  const [worldGenerationsData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
     
-  setEnabledSensors(worldGenerationData.enabledSensors);
-  setEnabledActions(worldGenerationData.enabledActions);
+  setEnabledSensors(worldGenerationsData.enabledSensors);
+  setEnabledActions(worldGenerationsData.enabledActions);
 
   const handleSensorChange = (name: SensorName, checked: boolean) => {
 
@@ -94,7 +94,7 @@ export default function SettingsPanel() {
 
   
     const handleChangePopulation = (e: { target: { value: any; }; }) => {
-      //const newValues = {... worldGenerationData};
+      //const newValues = {... worldGenerationsData};
       //newValues.initialPopulation = e.target.value;
       //setWorldGenerationData(newValues)
       setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
@@ -129,7 +129,7 @@ export default function SettingsPanel() {
             <label className="grow">Initial population</label>
             <input
                 type="number"
-                value={worldGenerationData.initialPopulation.toString()}
+                value={worldGenerationsData.initialPopulation.toString()}
                 onChange={handleChangePopulation}
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -172,7 +172,7 @@ export default function SettingsPanel() {
                 <label className="grow">Initial genome size</label>
                 <input
                     type="number"
-                    value={worldGenerationData.initialGenomeSize.toString()}
+                    value={worldGenerationsData.initialGenomeSize.toString()}
                     onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, initialGenomeSize: parseInt(e.target.value)}))}} 
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -183,7 +183,7 @@ export default function SettingsPanel() {
                 <label className="grow">Max genome size</label>
                 <input
                     type="number"
-                    value={worldGenerationData.maxGenomeSize.toString()}
+                    value={worldGenerationsData.maxGenomeSize.toString()}
                     onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, maxGenomeSize: parseInt(e.target.value)}))}} 
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -194,7 +194,7 @@ export default function SettingsPanel() {
                 <label className="grow">Max neurons</label>
                 <input
                     type="number"
-                    value={worldGenerationData.maxNumberNeurons.toString()}
+                    value={worldGenerationsData.maxNumberNeurons.toString()}
                     onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, maxNumberNeurons: parseInt(e.target.value)}))}} 
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -216,7 +216,7 @@ export default function SettingsPanel() {
                 <label className="grow">Mutation probability (0 - 1)</label>
                 <input
                     type="number"
-                    value={worldGenerationData.mutationProbability.toString()}
+                    value={worldGenerationsData.mutationProbability.toString()}
                     onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, mutationProbability: parseFloat(e.target.value)}))}} 
                     step="0.01"
                     className="min-w-0 bg-grey-mid p-1"
@@ -228,7 +228,7 @@ export default function SettingsPanel() {
                 <label className="grow">Max neurons</label>
                 <input
                     type="number"
-                    value={worldGenerationData.geneInsertionDeletionProbability.toString()}
+                    value={worldGenerationsData.geneInsertionDeletionProbability.toString()}
                     onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, geneInsertionDeletionProbability: parseFloat(e.target.value)}))}} 
                     step="0.001"
                     className="min-w-0 bg-grey-mid p-1"

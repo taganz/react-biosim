@@ -1,15 +1,15 @@
-import CreatureActions from "../creature/actions/CreatureActions";
+import CreatureActions from "../creature/brain/CreatureActions";
 import Creature from "../creature/Creature";
-import { MutationMode } from "../creature/genome/MutationMode";
+import { MutationMode } from "../creature/brain/MutationMode";
 //import AsexualZonePopulation from "../creature/population/AsexualZonePopulation";
-import PopulationStrategy from "../creature/population/PopulationStrategy";
+import PopulationStrategy from "./population/PopulationStrategy";
 //import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
-import SelectionMethod from "../creature/selection/SelectionMethod";
-import CreatureSensors from "../creature/sensors/CreatureSensors";
-import {Grid, GridCell, GridPosition} from "./grid/Grid"
-import Genome from "@/simulation/creature/genome/Genome";
-import worldGenerationData from "./WorldGenerationData";
-import WorldController from "./WorldController";
+import SelectionMethod from "./selection/SelectionMethod";
+import CreatureSensors from "../creature/brain/CreatureSensors";
+import {Grid, GridCell, GridPosition} from "../world/grid/Grid"
+import Genome from "@/simulation/creature/brain/Genome";
+import worldGenerationsData from "./WorldGenerationsData";
+import WorldController from "../world/WorldController";
 
 
 export default class WorldGenerations {
@@ -49,24 +49,24 @@ export default class WorldGenerations {
   currentGen : number = 0;
 
   // if creatures is not null, assume we are loading a saved state
-  constructor(worldController: WorldController, worldGenerationData: worldGenerationData, grid: Grid, creatures?: Creature[]) {
+  constructor(worldController: WorldController, worldGenerationsData: worldGenerationsData, grid: Grid, creatures?: Creature[]) {
         
     this.worldController = worldController;
     this.grid = grid;
     
     // initial values
-    this.populationStrategy = worldGenerationData.populationStrategy;;
-    this.selectionMethod = worldGenerationData.selectionMethod;
-    this.initialPopulation = worldGenerationData.initialPopulation;
-    this.initialGenomeSize = worldGenerationData.initialGenomeSize;
-    this.maxGenomeSize = worldGenerationData.maxGenomeSize;
-    this.maxNumberNeurons = worldGenerationData.maxNumberNeurons;
-    this.mutationMode = worldGenerationData.mutationMode;
-    this.mutationProbability = worldGenerationData.mutationProbability;
-    this.deletionRatio = worldGenerationData.deletionRatio;
-    this.geneInsertionDeletionProbability = worldGenerationData.geneInsertionDeletionProbability;
-    this.sensors.loadFromList(worldGenerationData.enabledSensors);
-    this.actions.loadFromList(worldGenerationData.enabledActions);
+    this.populationStrategy = worldGenerationsData.populationStrategy;;
+    this.selectionMethod = worldGenerationsData.selectionMethod;
+    this.initialPopulation = worldGenerationsData.initialPopulation;
+    this.initialGenomeSize = worldGenerationsData.initialGenomeSize;
+    this.maxGenomeSize = worldGenerationsData.maxGenomeSize;
+    this.maxNumberNeurons = worldGenerationsData.maxNumberNeurons;
+    this.mutationMode = worldGenerationsData.mutationMode;
+    this.mutationProbability = worldGenerationsData.mutationProbability;
+    this.deletionRatio = worldGenerationsData.deletionRatio;
+    this.geneInsertionDeletionProbability = worldGenerationsData.geneInsertionDeletionProbability;
+    this.sensors.loadFromList(worldGenerationsData.enabledSensors);
+    this.actions.loadFromList(worldGenerationsData.enabledActions);
    
 
     //TODO should take into account objects size
@@ -88,11 +88,11 @@ export default class WorldGenerations {
     else {
       this.currentCreatures = [...creatures] ;
       // state values
-      this.lastCreatureIdCreated = worldGenerationData.lastCreatureIdCreated;
-      this.lastCreatureCount = worldGenerationData.lastCreatureCount;
-      this.lastSurvivorsCount = worldGenerationData.lastSurvivorsCount;
-      this.lastFitnessMaxValue = worldGenerationData.lastFitnessMaxValue;
-      this.lastSurvivalRate = worldGenerationData.lastSurvivalRate;
+      this.lastCreatureIdCreated = worldGenerationsData.lastCreatureIdCreated;
+      this.lastCreatureCount = worldGenerationsData.lastCreatureCount;
+      this.lastSurvivorsCount = worldGenerationsData.lastSurvivorsCount;
+      this.lastFitnessMaxValue = worldGenerationsData.lastFitnessMaxValue;
+      this.lastSurvivalRate = worldGenerationsData.lastSurvivalRate;
     }
 
     this.startFirstGeneration();

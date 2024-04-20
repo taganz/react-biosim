@@ -10,7 +10,7 @@ import serializeSpecies from "./formatters/speciesSerialitzation";
   export function saveWorld(worldController: WorldController): SavedWorld {
   return {
 
-    worldGenerationData: serializeWorldGenerationData(worldController),
+    worldGenerationsData: serializeWorldGenerationData(worldController),
     worldControllerData: serializeWorldControllerData(worldController),
     species: serializeSpecies(worldController),
     stats: generationRegistryFormatter.serialize(worldController.generationRegistry)
