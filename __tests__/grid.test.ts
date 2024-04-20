@@ -62,10 +62,22 @@ describe('grid basics', () => {
                         expect(grid_near_empty.getRandomAvailablePosition()).not.toBe([0,1]);
                 }                
         })
-        test('getNearByAvailablePosition()', () => {
+        test('getNearByAvailablePosition() - find only available', () => {
+                const grid = create_grid_all_isSolid(5);
+                grid._grid[2][2].isSolid = false;
+                expect(grid.getNearByAvailablePosition(1, 1)).toEqual([2,2]);
+
+        })
+        test('getNearByAvailablePosition() - find different ones', () => {
                 const grid = create_grid_all_isSolid(5);
                 grid._grid[1][0].isSolid = false;
-                expect(grid.getNearByAvailablePosition(1, 1)).toEqual([1,0]);
+                grid._grid[0][1].isSolid = false;
+                grid._grid[0][0].isSolid = false;
+                grid._grid[1][2].isSolid = false;
+                console.log(grid.getNearByAvailablePosition(1, 1));
+                console.log(grid.getNearByAvailablePosition(1, 1));
+                console.log(grid.getNearByAvailablePosition(1, 1));
+                console.log(grid.getNearByAvailablePosition(1, 1));
 
         })
 

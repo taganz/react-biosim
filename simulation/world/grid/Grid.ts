@@ -189,7 +189,7 @@ export class Grid {
 
 
   public getNearByAvailablePosition(x: number, y: number): [number, number] | null {
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Possible directions
+    const directions = [[-1, 0], [-1, 1],[1, -1],[1, 1],[-1, -1], [1, 0], [0, -1], [0, 1]].sort(() => Math.random() - 0.5);; // Possible directions
 
     for (const [dx, dy] of directions) {
         const newX = x + dx;
