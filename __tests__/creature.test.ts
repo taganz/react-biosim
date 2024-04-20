@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+//import {describe, expect, test} from '@jest/globals';
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
 import * as constants from "@/simulation/simulationConstants"
 import Creature from "@/simulation/creature/Creature";
