@@ -5,6 +5,7 @@ import SelectionMethod from "@/simulation/generations/selection/SelectionMethod"
 import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
+import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
@@ -14,7 +15,7 @@ import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 
 // -- log 
-export const DEBUG_CREATURE_ID : number = 0;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const DEBUG_CREATURE_ID : number = -1;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 
 // -- speed controls
 export const PAUSE_BETWEEN_STEPS = 10;  // [0 | 10 | 50 | 200]
@@ -34,17 +35,11 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const WATER_TO_MASS_PER_STEP = 0; //0.1 - 0.4
-//TODO to be calculated from the creature's grid real value
-
-
-// -- mass 
+export const WATER_TO_MASS_PER_STEP = 0.2; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0;   // 0.07
-
-// -- reproduction
+export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
 export const REPRODUCTION_COST_PER_MASS_TRY = 0;
-export const REPRODUCTION_COST_PER_MASS_DO = 0.5;
+export const REPRODUCTION_COST_PER_MASS_DO = 0.85;
 
 // -- selection method
 
@@ -52,10 +47,18 @@ export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05;
 export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
 //export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
 
+
 // -- population strategy -- 
 
-export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
+export const RUN_POPULATION_STRATEGY : RandomFixedGenePopulation = new RandomFixedGenePopulation();
+//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
 //export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
+
+export const POPULATION_DEFAULT_SPECIES = [
+  //{name: "Basic random move", genome: [-2088452096]},
+  {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
+]
+ 
 
 // -- brain
 export const RUN_MUTATION_MODE : MutationMode = MutationMode.wholeGene;
@@ -66,28 +69,29 @@ export const RUN_MUTATION_PROBABILITY = 0.05;
 export const RUN_DELETION_RATIO = 0.5;
 export const RUN_GENE_INSERTION_DELETION_PROBABILITY = 0.015;
 export const RUN_ENABLED_SENSORS : SensorName[]= [
-    "HorizontalPosition",
-    "VerticalPosition",
-    "Age",
-    "Oscillator",
-    "Random",
-    "HorizontalSpeed",
-    "VerticalSpeed",
-    "HorizontalBorderDistance",
-    "VerticalBorderDistance",
-    "BorderDistance",
-    "Mass"
+    "HorizontalPosition",       // 0
+    "VerticalPosition",         // 1
+    "Age",                      // 2
+    "Oscillator",               // 3
+    "Random",                   // 4
+    "HorizontalSpeed",          // 5
+    "VerticalSpeed",            // 6
+    "HorizontalBorderDistance", // 7
+    "VerticalBorderDistance",   // 8
+    "BorderDistance",           // 9
+    "Mass",                     // 10
   ];
 export const RUN_ENABLED_ACTIONS : ActionName[] = [
-      "MoveNorth",
-      "MoveSouth",
-      "MoveEast",
-      "MoveWest",
-      "RandomMove",
-      "MoveForward",
-      //"Photosynthesis",
-      //"Reproduction"
+      "MoveNorth",        // 0
+      "MoveSouth",        // 1
+      "MoveEast",         // 2
+      "MoveWest",         // 3
+      "RandomMove",       // 4
+      "MoveForward",      // 5
+      "Photosynthesis",   // 6 
+      "Reproduction"      // 7
     ];
+
 
 
 // -- objects
