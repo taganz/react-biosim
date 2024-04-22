@@ -96,14 +96,14 @@ export default class WorldGenerations {
       this.lastFitnessMaxValue = worldGenerationsData.lastFitnessMaxValue;
       this.lastSurvivalRate = worldGenerationsData.lastSurvivalRate;
     }
-
-    this.startFirstGeneration();
-
+    console.log("worldGenerations initialized");
   }
 
-  private startFirstGeneration() {
+  
+  public startFirstGeneration() {
       this.populationStrategy.populate(this);
       this.lastCreatureCount = this.currentCreatures.length;
+      console.log("worldGenerations first generation started")
   }
 
 

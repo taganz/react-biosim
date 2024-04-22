@@ -16,7 +16,9 @@ import RectangleObject from "@/simulation/world/objects/RectangleObject";
 
 // -- log 
 export const DEBUG_CREATURE_ID : number = 1;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-
+export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
+export const EVENTLOGGER_LOG_MAX_EVENTS = 10000; // will stop logging at this point
+export const LOCALE_STRING = 'es-ES';
 // -- speed controls
 export const PAUSE_BETWEEN_STEPS = 10;  // [0 | 10 | 50 | 200]
 export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
@@ -37,7 +39,7 @@ export const TEMP_WATER_CELL_CREATURE = 1;
 // -- metabolism 
 export const METABOLISM_ENABLED = true;    // if true Creatures will run mass.step to activate metabolism
 export const METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
-export const WATER_TO_MASS_PER_STEP = 0.2; //0.1 - 0.4
+export const WATER_TO_MASS_PER_STEP = 0.35; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
 export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
 export const REPRODUCTION_COST_PER_MASS_TRY = 0;

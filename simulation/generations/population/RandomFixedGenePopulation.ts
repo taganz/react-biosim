@@ -57,7 +57,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
             }
             let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
             if (position != null) {
-              worldGenerations.newCreature(position, parent.mass.massAtBirth, parent.brain.genome);
+              worldGenerations.newCreature(position, parent.massAtBirth, parent.brain.genome);
             }
             else {
               console.warn("no free position found 2");

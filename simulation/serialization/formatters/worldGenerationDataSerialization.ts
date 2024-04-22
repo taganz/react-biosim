@@ -33,6 +33,7 @@ export default function serializeWorldGenerationData(worldController: WorldContr
     geneInsertionDeletionProbability: wg.geneInsertionDeletionProbability,
     enabledSensors: sensors,
     enabledActions: actions,
+    metabolismEnabled: wg.metabolismEnabled,
     // state values 
     lastCreatureIdCreated: wg.lastCreatureIdCreated,
     lastCreatureCount: wg.lastCreatureCount,

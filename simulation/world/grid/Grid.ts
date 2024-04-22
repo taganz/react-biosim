@@ -59,6 +59,7 @@ export class Grid {
         }
       }
     }
+    console.log("grid initialized");
   }
 
   get size() : number {

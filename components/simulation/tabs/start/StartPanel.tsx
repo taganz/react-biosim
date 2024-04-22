@@ -2,6 +2,8 @@
 
 import React, { useEffect } from "react";
 import ScenariosSelection from "./ScenarioSelection";
+import LoggerStatus from "./LoggerStatus";
+
 
 export default function StartPanel() {
   return (
@@ -12,6 +14,7 @@ export default function StartPanel() {
       <div className="text-lg">
       <ScenariosSelection></ScenariosSelection>
       </div>
+     <LoggerStatus/>
     </div>
   );
 }

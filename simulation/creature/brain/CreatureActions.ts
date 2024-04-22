@@ -160,7 +160,7 @@ export default class CreatureActions {
     // Photosynthesis
     if (this.data.Photosynthesis.enabled) {
       if (input > 0) {
-        creature.mass.add(constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE);
+        creature.photosynthesis(input);
         //creature.log("foto", creature.mass);
       }
 

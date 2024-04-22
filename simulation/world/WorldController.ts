@@ -7,17 +7,20 @@ import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "../generations/WorldGenerations";
 import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
+import EventLogger from '@/simulation/logger/EventLogger';
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
 // Extintion detection and restart
 // Pause/resume
+// Logger
 export default class WorldController {
   static instance?: WorldController ;
 
   generations : WorldGenerations;
   grid: Grid;
   generationRegistry: GenerationRegistry = new GenerationRegistry(this);
+  eventLogger : EventLogger;
 
   // initial values
   size: number = 10;
@@ -50,6 +53,8 @@ export default class WorldController {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
+    this.eventLogger = new EventLogger(this);
+    
     // request worldCanvas initialization 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -57,7 +62,7 @@ export default class WorldController {
     this._loadedWorldControllerData = worldControllerData;
     this._loadedWorldGenerationData = worldGenerationsData;
   
-    console.log("*** worldControlled constructor ***");
+    console.log("*** worldController initialized ***");
   }
 
   public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): void {
@@ -66,6 +71,7 @@ export default class WorldController {
     this.grid = new Grid(this.size, this.objects);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
+    this.eventLogger.reset();
     
     // state data
     this.currentGen = 0;
@@ -80,6 +86,7 @@ export default class WorldController {
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
 
+    this.generations.startFirstGeneration();
     this.computeStep();
   
   }
@@ -91,6 +98,7 @@ export default class WorldController {
     this.grid = new Grid(this.size, this.objects);  
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, species);
     this.generationRegistry = stats;
+    this.eventLogger.reset();
 
     // state data
     this.currentGen = worldControllerData.currentGen;

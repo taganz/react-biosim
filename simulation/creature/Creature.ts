@@ -8,6 +8,7 @@ import {GridPosition } from "../world/grid/Grid";
 import CreatureMass from "./CreatureMass";
 import CreatureReproduction from "./CreaturerReproduction";
 import CreatureBrain from "./brain/CreatureBrain";
+import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 
 
 export const maxHealth = 100;
@@ -21,9 +22,11 @@ type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
 
 export default class Creature {
   generations: WorldGenerations;
+  eventLogger: EventLogger;
 
   id : number;
   stepBirth : number;  
+  massAtBirth : number;
   
   // Position
   position: GridPosition;
@@ -40,11 +43,12 @@ export default class Creature {
   stepDirection : direction = null;
 
   // body and brain
-  mass : CreatureMass;
+  _mass : CreatureMass;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
   _metabolismEnabled: boolean;
   
+
   private _health: number = maxHealth;
 
   constructor(generations: WorldGenerations, position: GridPosition, massAtBirth?: number, genome?: Genome) {
@@ -52,6 +56,7 @@ export default class Creature {
 
     this.id = generations.lastCreatureIdCreated;
     this.stepBirth = generations.currentStep;
+    this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
     // Position
     this.position = position;
@@ -77,10 +82,14 @@ export default class Creature {
 
 
   
-    this.mass = new CreatureMass(this.brain.genome.genes.length, massAtBirth);
+    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth);
     this.reproduction = new CreatureReproduction(this);
+    this.eventLogger = generations.worldController.eventLogger;
+    this.log("born", "massAtBirth", this.massAtBirth);
 
   }
+
+
 
   getColor(): string {
     return this.brain.genome.getColor();
@@ -93,7 +102,8 @@ export default class Creature {
     if (!this.isAlive) return;
 
     if (this._metabolismEnabled) {
-      this.mass.step();
+      this._mass.step();
+      this.log("metabolism", "mass", this.mass);
       if (!this.isAlive) return;
     }
 
@@ -121,7 +131,7 @@ export default class Creature {
 
     this.lastDirection = this.stepDirection;
 
-    //this.log("mass: ".concat(this.mass.mass.toFixed(1)));
+    //this.log("mass: ".concat(this._mass.toFixed(1)));
 
 
 } 
@@ -129,10 +139,12 @@ export default class Creature {
 
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
+    this.log("reproduce", "actionInputValue", actionInputValue);
     if (this.reproduction.reproduce(actionInputValue)) {
-      this.log("Creature - reproduction! mass", this.mass.mass.toFixed(1));
+      this.log("reproduce", "result", "OK");
     } else {
-      //this.log("Creature - can not reproduce! mass", this.mass.mass.toFixed(1));
+      this.log("reproduce", "result", "KO");
+
     }
   }
 
@@ -202,13 +214,30 @@ private computeDistanceIndex(){
     }
   }
 
+  // called by Actions
   addUrgeToMove(x: number, y: number) {
     this.urgeToMove[0] = this.urgeToMove[0] + x;
     this.urgeToMove[1] = this.urgeToMove[1] + y;
   }
 
+  get mass(): number {
+    return this._mass.mass;
+  }
+  
+  /*
+  set Mass(mass: number) {
+    this._mass.mass = mass;
+  }
+*/
+ photosynthesis(actionInputValue: number) : void {
+    const massToAdd = constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE; 
+    this._mass.add(massToAdd);
+    this.log("photosynthesis", "actionInputValue", actionInputValue);
+    this.log("photosynthesis", "massToAdd", massToAdd);
+
+ }
   get isAlive() {
-    return this._health > 0 && this.mass.isAlive;
+    return this._health > 0 && this._mass.isAlive;
   }
 
   set health(value: number) {
@@ -229,27 +258,24 @@ private computeDistanceIndex(){
   }
 
 
-  log(msg: string, msg2? : any, msg3? : any, msg4? : any) {
-    if (!msg2) msg2 = "";
-    if (!msg3) msg3 = "";
-    if (!msg4) msg4 = "";
-    
-    if (constants.DEBUG_CREATURE_ID == -1) {
-      return;
+  log(eventType: string, paramName : string, paramValue : number | string) { 
+      if (!this.eventLogger) {
+        console.error("this.eventLogger not found");
+        return;
+      }
+      const event : SimulationCallEvent = {
+        callerClassName: "Creature",
+        creatureId: this.id,
+        eventType: eventType,
+        paramName: paramName,
+        paramValue: paramValue,
+      }
+      this.eventLogger.logEvent(event);
     }
-    if (constants.DEBUG_CREATURE_ID == 0 
-      || constants.DEBUG_CREATURE_ID == this.id 
-      || (constants.DEBUG_CREATURE_ID == -10 && this.id > 0 && this.id < 10)
-      || (constants.DEBUG_CREATURE_ID == -30 && this.id > 0 && this.id < 30)
-      )  {
-      const genStepString = this.generations.currentGen.toString().concat(".", this.generations.currentStep.toString());
-      console.log(genStepString, " #", this.id, ": ", msg, msg2, msg3, msg4);
-    }
-  }
 
   //TODO review
   private die () {
-    this.log("die");
+    this.log("die", "mass", this.mass);
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?
     this.generations.grid.cell(this.position[0], this.position[1]).creature = null;

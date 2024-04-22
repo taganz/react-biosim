@@ -5,9 +5,10 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom} from "./store";
-import {worldCanvasAtom, currentGenAtom} from "@/components/simulation/store/worldAtoms";
-import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
+import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, eventLoggerAtom} from "./store";
+import {worldCanvasAtom} from "@/components/simulation/store/worldAtoms";
+//import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
+//import EventLogger from "@/simulation/logger/EventLogger";
 
 interface Props {
   className?: string;
@@ -23,6 +24,7 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
   const worldControllerData = useAtomValue(worldControllerDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
+  const setEventLogger = useSetAtom(eventLoggerAtom);
   
   useEffect(
     function instantiateWorld() {
@@ -37,6 +39,8 @@ export default function SimulationCanvas({ className }: Props) {
       } else {
         throw new Error("Cannot found canvas");
       }
+
+      //setEventLoggerAtom(worldController.eventLogger);
 
       return () => {
         console.log("*** worldControlled destroyed ***");
@@ -54,6 +58,10 @@ export default function SimulationCanvas({ className }: Props) {
 
       if (worldController && worldCanvas) {        
 
+        const initializeWorldCallback = () => {
+          setEventLogger(worldController.eventLogger);
+        };
+  
         const startGenerationCallback = () => {
           worldCanvas.redraw();
         };
@@ -63,16 +71,19 @@ export default function SimulationCanvas({ className }: Props) {
         };
   
   
+        worldController.events.addEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
         worldController.events.addEventListener(WorldEvents.startGeneration,startGenerationCallback);
         worldController.events.addEventListener(WorldEvents.redraw,redrawCallback);
+        console.log("SimulationCanvas addEventListeners");
         
       return () => {
+        worldController.events.removeEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
         worldController.events.removeEventListener(WorldEvents.startGeneration,startGenerationCallback);
         worldController.events.removeEventListener(WorldEvents.redraw, redrawCallback);
       };
     }
 
-  }, [worldController, worldCanvas]);
+  }, [worldController, worldCanvas, setEventLogger]);
   
   return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }

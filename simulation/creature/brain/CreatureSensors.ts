@@ -276,7 +276,7 @@ export default class CreatureSensors {
 
     // Mass
     if (this.data.Mass.enabled) {
-      values.push(creature.mass.mass);
+      values.push(creature.mass);
     }
 
     return values;

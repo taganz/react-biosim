@@ -1,13 +1,13 @@
 import * as constants from "../simulationConstants"
 
 export default class CreatureMass {
-    massAtBirth : number;
+    //_massAtBirth : number;
     _mass : number = 0;
     _basalConsumption : number;
 
-    constructor(genomeLength : number, massAtBirth?: number) {
-        this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
-        this._mass = this.massAtBirth;
+    constructor(genomeLength : number, massAtBirth: number) {
+        //this._massAtBirth = massAtBirth
+        this._mass = massAtBirth;
         this._basalConsumption = constants.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * genomeLength;
     }
 
@@ -16,10 +16,11 @@ export default class CreatureMass {
         this._mass = this._mass > 0 ? this._mass : 0;
     }
 
+    
     add(mass: number) {
         this._mass += mass;
     }
-
+    
     consume(mass: number) {
         this._mass -= mass;
     }
@@ -34,5 +35,9 @@ export default class CreatureMass {
 
     get mass() {
         return this._mass;
+    }
+
+    set mass(m: number) {
+        this._mass = m;
     }
 }

@@ -1,0 +1,8 @@
+CallerClassName,Timestamp,CurrentGen,CurrentStep,SpeciesId,CreatureId,EventType,ParamName,ParamValue
+CLASS,1,2,species123,456,Event type,Parameter name,Parameter value
+CLASS,1,2,species456,789,Another event type,Another parameter name,Another parameter value
+CLASS,1,2,species78911,101112,Third event type,Third parameter name,Third parameter value
+CallerClassName,Timestamp,CurrentGen,CurrentStep,SpeciesId,CreatureId,EventType,ParamName,ParamValue
+CLASS,1,2,species123,456,Event type,Parameter name,Parameter value
+CLASS,1,2,species456,789,Another event type,Another parameter name,Another parameter value
+CLASS,1,2,species78911,101112,Third event type,Third parameter name,Third parameter value

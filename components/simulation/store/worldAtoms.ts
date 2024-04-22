@@ -5,6 +5,8 @@ import WorldControllerData from "@/simulation/world/WorldControllerData";
 import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
 import * as constants from "@/simulation/simulationConstants"
+import EventLogger from "@/simulation/logger/EventLogger";
+
 
 
 // Controller
@@ -15,6 +17,19 @@ export const worldCanvasAtom = atom<WorldCanvas | null>(null);
 //export const restartCountAtom = atom(0);  // to refresh tabs on restart
 export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
+export const eventLoggerAtom = atom<EventLogger | null>(null);
+export const eventLoggerCountAtom = atom( (get) => {
+    const eventLogger = get(eventLoggerAtom);
+    if (eventLogger == null) {
+      console.log("----logCounterAtom null");
+      return null;
+    }
+    else {
+      const n = eventLogger.logCount2;
+      console.log("----logCounterAtom n: ", n);
+      return n
+    }
+});
 
 
 const wgd : WorldGenerationsData = {

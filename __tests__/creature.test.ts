@@ -81,13 +81,13 @@ describe('creature test', () => {
         const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
         const joe = new Creature(generations, [10, 10]);
         test('create ', () => {
-                expect(joe.mass.mass).toBe(1);
+                expect(joe.mass).toBe(1);
         })
         //TODO depend de si te fotosintesi, si es reprodueix, de les constants.... 
         test.skip('loop 5 steps and print results ', () => {
           for (var s=0; s< 5; s++) {
             joe.computeStep();
-            console.log("step: ", s, "mass: ", joe.mass.mass, "position: ", joe.position);
+            console.log("step: ", s, "mass: ", joe.mass, "position: ", joe.position);
           }
         });
         test('genome', ()=> {
