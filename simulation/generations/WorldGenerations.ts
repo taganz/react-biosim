@@ -10,13 +10,15 @@ import {Grid, GridCell, GridPosition} from "../world/grid/Grid"
 import Genome from "@/simulation/creature/brain/Genome";
 import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
-
+import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
+import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
 
 export default class WorldGenerations {
   
   worldController: WorldController;
   grid: Grid;
   currentCreatures: Creature[] = [];
+  eventLogger : EventLogger;
   
   // initial values
   populationStrategy:   PopulationStrategy; 
@@ -69,7 +71,7 @@ export default class WorldGenerations {
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;
-   
+    this.eventLogger = worldController.eventLogger;
 
     //TODO should take into account objects size
     if (this.initialPopulation >= this.grid.size * this.grid.size) {
@@ -194,7 +196,22 @@ public endGeneration(): void {
 
 
 get isFirstGeneration() {
-return this.currentGen == 0;
+  return this.currentGen == 0;
+}
+
+private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
+  if (!this.eventLogger) {
+    console.error("this.eventLogger not found");
+    return;
+  }
+  const event : SimulationCallEvent = {
+    callerClassName: LogClasses.GENERATIONS,
+    creatureId: 0,
+    eventType: eventType,
+    paramName: paramName ?? "",
+    paramValue: paramValue ?? "",
+  }
+  this.eventLogger.logEvent(event);
 }
 
 }

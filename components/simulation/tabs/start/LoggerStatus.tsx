@@ -1,24 +1,41 @@
 "use client";
 
 import React, { useEffect } from "react";
-import {worldControllerAtom, eventLoggerCountAtom} from "../../store";
+import {worldControllerAtom} from "../../store";
 import {atom, useAtom, useAtomValue } from "jotai";
-import {DEBUG_CREATURE_ID} from "@/simulation/simulationConstants"
+import {DEBUG_CREATURE_ID, LOG_ENABLED} from "@/simulation/simulationConstants"
 import Button from "@/components/global/Button";
 import { saveAs } from "file-saver";
 import useEventLoggerPropertyValue from "@/hooks/useEventLoggerPropertyValue";
+import useWorldProperty from "@/hooks/useWorldProperty";
 
 
 
 //TODO refresh log count
 export default function LoggerStatus() {
   const worldController = useAtomValue(worldControllerAtom);
-  const logCount = useEventLoggerPropertyValue((eventLogger) => eventLogger.logCount, 0);
+  const logCount = useEventLoggerPropertyValue((eventLogger) => eventLogger.logCount2, 0);
+  const [eventLoggerIsPaused, setEventLoggerIsPaused] = useWorldProperty(
+    (world) => world.eventLoggerIsPaused,
+    (world) => {
+      if (world.eventLoggerIsPaused) {
+        world.resumeLog();
+      } else {
+        world.pauseLog();
+      }
+    },
+    false
+  );
+
+  const handleClick = () => {
+    setEventLoggerIsPaused(!eventLoggerIsPaused);
+  };
 
   function logStatus(): string {
+    if (!LOG_ENABLED) {
+      return "off"
+    }
     switch (DEBUG_CREATURE_ID) {
-      case -1:
-        return "off";
       case 0:
         return "enabled for all creatures";
       case -10:
@@ -39,25 +56,28 @@ export default function LoggerStatus() {
       console.error("worldController not found");
     }
   }
+  /*
   function handleToggleLog() {
     if (worldController) {
         worldController.eventLogger.togglePause();
     }
   }
+  */
   function handleDeleteLog() {
     if (worldController) {
         worldController.eventLogger.reset();
     }
   }
+  
   return (
     <div>
       <p className="mb-2 text-lg">Log is: {logStatus()}</p>
-      <p className="mb-2 text-lg">{(DEBUG_CREATURE_ID==-1 || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
+      <p className="mb-2 text-lg">{(!LOG_ENABLED || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
       <div>
         {
-        DEBUG_CREATURE_ID!=-1 ? (
+        LOG_ENABLED ? (
             <div>
-              <div className="my-3"><Button onClick={handleToggleLog}>{worldController?.eventLogger.isPaused ? "Resume log" : "Pause log"}</Button></div>
+              <div className="my-3"><Button onClick={handleClick}>{eventLoggerIsPaused ? "Resume log" : "Pause log"}</Button></div>
               <div className="my-3"><Button onClick={handleSaveLog}>Save log</Button></div>
               <div className="my-3"><Button onClick={handleDeleteLog}>Delete log</Button></div>
             </div>

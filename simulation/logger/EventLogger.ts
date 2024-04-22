@@ -1,11 +1,19 @@
 import WorldController from '../world/WorldController';
-import {EVENTLOGGER_LOG_THRESHOLD_DEFAULT, DEBUG_CREATURE_ID, LOCALE_STRING, EVENTLOGGER_LOG_MAX_EVENTS}
+import {
+      LOG_ENABLED,
+      EVENTLOGGER_LOG_THRESHOLD_DEFAULT, 
+      DEBUG_CREATURE_ID,
+      LOCALE_STRING,
+      ALLOWED_LOG_EVENTS,
+      EVENTLOGGER_LOG_MAX_EVENTS,
+      ALLOWED_LOG_CLASSES}
        from "@/simulation/simulationConstants"
+import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simulation/logger/LogEvent"
 
 export interface SimulationCallEvent {
-  callerClassName: string;
+  callerClassName: LogClasses;
   creatureId: number;
-  eventType: string;
+  eventType: LogEvent;
   paramName: string;
   paramValue: number | string;
 }
@@ -40,42 +48,53 @@ export default class EventLogger {
 
 
   public logEvent(eventValues: SimulationCallEvent) : void {
-    
+
     if (this.logCount > EVENTLOGGER_LOG_MAX_EVENTS) {
       this.paused = true;
       return;
     }
-    if (this.paused) {
+    if (this.isPaused) {
       return;
     }
 
-    if (DEBUG_CREATURE_ID == -1) {
+    if (!this.shouldLogBasedOnSimulationConstants(eventValues)) {
       return;
     }
-    
-    if (DEBUG_CREATURE_ID == 0 
-      || DEBUG_CREATURE_ID == eventValues.creatureId 
-      || (DEBUG_CREATURE_ID == -10 && eventValues.creatureId > 0 && eventValues.creatureId < 10)
-      || (DEBUG_CREATURE_ID == -30 && eventValues.creatureId > 0 && eventValues.creatureId < 30)
-      )  {
  
-          const simulationEvent : SimulationEvent = {
-            callerClassName : eventValues.callerClassName,
-            currentGen : this.worldController.generations.currentGen.toString(),
-            currentStep : this.worldController.generations.currentStep.toString(),
-            speciesId : "speciesId_PENDING",
-            creatureId : eventValues.creatureId.toString(),
-            eventType : eventValues.eventType,
-            paramName : eventValues.paramName,
-            paramValue : typeof(eventValues.paramValue)=="string" ? eventValues.paramValue : eventValues.paramValue.toLocaleString(LOCALE_STRING, {maximumFractionDigits : 2}),
-          }
-          //const timestamp: string = new Date().toISOString();
+    const simulationEvent : SimulationEvent = {
+      callerClassName : eventValues.callerClassName,
+      currentGen : this.worldController.generations.currentGen.toString(),
+      currentStep : this.worldController.generations.currentStep.toString(),
+      speciesId : eventValues.callerClassName==LogClasses.CREATURE ? "speciesId_PENDING" : "",
+      creatureId : eventValues.creatureId.toString(),
+      eventType : eventValues.eventType,
+      paramName : eventValues.paramName,
+      paramValue : typeof(eventValues.paramValue)=="string" ? eventValues.paramValue : eventValues.paramValue.toLocaleString(LOCALE_STRING, {maximumFractionDigits : 2}),
+    }
+    //const timestamp: string = new Date().toISOString();
 
-          this.log.push(simulationEvent);
-          //console.log(`SimulationEvent '${event.eventType}' logged at ${timestamp} by ${callerClassName}`);
-          this.logCount2+=1;
-        }   
+    this.log.push(simulationEvent);
+    this.logCount2+=1;
+    //console.log(`SimulationEvent '${event.eventType}' logged at ${timestamp} by ${callerClassName}`);
 
+  }
+
+  private shouldLogBasedOnSimulationConstants(eventValues: SimulationCallEvent) : boolean {
+    // general conditions
+    if (   !LOG_ENABLED
+        || !ALLOWED_LOG_EVENTS[eventValues.eventType]
+        || !ALLOWED_LOG_CLASSES[eventValues.callerClassName]) {
+          return false;
+        }
+    // if logging creature log, check id range
+    if (eventValues.callerClassName == LogClasses.CREATURE) {
+      return (DEBUG_CREATURE_ID == 0 
+        || DEBUG_CREATURE_ID == eventValues.creatureId 
+        || (DEBUG_CREATURE_ID == -10 && eventValues.creatureId > 0 && eventValues.creatureId < 10)
+        || (DEBUG_CREATURE_ID == -30 && eventValues.creatureId > 0 && eventValues.creatureId < 30)
+        );
+    }
+    return true;
   }
 
   // Method to write logged events to file in CSV format
@@ -83,7 +102,7 @@ export default class EventLogger {
     let csvData: string;
 
     if (!this.headerWritten) {
-      csvData = 'CallerClassName,CurrentGen,CurrentStep,SpeciesId,CreatureId,EventType,ParamName,ParamValue\n';
+      csvData = 'CallerClassName;CurrentGen;CurrentStep;SpeciesId;CreatureId;EventType;ParamName;ParamValue\n';
       this.headerWritten = true;
     } else {
       csvData = "";
@@ -110,16 +129,20 @@ export default class EventLogger {
 
   public reset() {
     this.log = [];
+    this.logCount2 = 0;
+
   }
   public pause() {
     this.paused = true;
   }
 
   public resume() {
-    this.paused = false;
+    if (this.logCount > EVENTLOGGER_LOG_MAX_EVENTS) {
+      console.warn("EventLogger, can't resume max logCount attained: ", EVENTLOGGER_LOG_MAX_EVENTS);
+    } 
+    else {
+      this.paused = false;
+    }
   }
-  public togglePause() {
-    this.paused = !this.paused;
-  }
-    
+
 }

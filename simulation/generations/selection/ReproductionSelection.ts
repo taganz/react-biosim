@@ -19,7 +19,7 @@ export default class ReproductionSelection
       }
     }
     const fitMax = parents.length;   //TODO hauria de calcular el numero de fills que ha tingut cada especie?
-    console.log("reproductionSelection survivors: ", parents.length)
+    //console.log("reproductionSelection survivors: ", parents.length)
 
     return {survivors: parents, fitnessMaxValue: fitMax};
   }

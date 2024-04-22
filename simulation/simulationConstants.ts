@@ -13,20 +13,38 @@ import RectangleReproductionArea from "@/simulation/world/areas/reproduction/Rec
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
+import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simulation/logger/LogEvent"
 
 // -- log 
-export const DEBUG_CREATURE_ID : number = 1;   // if -1, no debug, if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_ENABLED : boolean = true;  // main switch for logging
+export const DEBUG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
 export const EVENTLOGGER_LOG_MAX_EVENTS = 10000; // will stop logging at this point
 export const LOCALE_STRING = 'es-ES';
+export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
+  [LogEvent.REPRODUCE]: false,
+  [LogEvent.REPRODUCE_KO]: false,
+  [LogEvent.PHOTOSYNTHESIS]: false,
+  [LogEvent.BIRTH]: true,
+  [LogEvent.DEAD]: true,
+  [LogEvent.METABOLISM]: false,
+  [LogEvent.GENERATION_START]: true,
+  [LogEvent.GENERATION_END]: true,
+  [LogEvent.STEP_END]: true,
+}
+export const ALLOWED_LOG_CLASSES: AllowedLogClasses = {
+  [LogClasses.CREATURE]: false,
+  [LogClasses.GENERATIONS]: true,
+  [LogClasses.WORLD_CONTROLLER]: true,
+}
 // -- speed controls
 export const PAUSE_BETWEEN_STEPS = 10;  // [0 | 10 | 50 | 200]
 export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 500; //500;
-export const RUN_STEPS_PER_GENERATION = 300;
+export const RUN_INITIAL_POPULATION = 50; //500;
+export const RUN_STEPS_PER_GENERATION = 100;
 
 
 // -- environment parameters  
@@ -48,15 +66,15 @@ export const REPRODUCTION_COST_PER_MASS_DO = 0.85;
 // -- selection method
 
 export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
-export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
-//export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
+//export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
+export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
 
 
 // -- population strategy -- 
 
 //export const RUN_POPULATION_STRATEGY : RandomFixedGenePopulation = new RandomFixedGenePopulation();
-export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
-//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
+//export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
+export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
 
 export const POPULATION_DEFAULT_SPECIES = [     // to be used in RandomFixedGenePopulation
   //{name: "Basic random move", genome: [-2088452096]},

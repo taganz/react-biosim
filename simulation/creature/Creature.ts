@@ -9,7 +9,7 @@ import CreatureMass from "./CreatureMass";
 import CreatureReproduction from "./CreaturerReproduction";
 import CreatureBrain from "./brain/CreatureBrain";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-
+import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
 
 export const maxHealth = 100;
 
@@ -85,7 +85,7 @@ export default class Creature {
     this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
-    this.log("born", "massAtBirth", this.massAtBirth);
+    this.log(LogEvent.BIRTH, "massAtBirth", this.massAtBirth);
 
   }
 
@@ -103,7 +103,7 @@ export default class Creature {
 
     if (this._metabolismEnabled) {
       this._mass.step();
-      this.log("metabolism", "mass", this.mass);
+      this.log(LogEvent.METABOLISM, "mass", this.mass);
       if (!this.isAlive) return;
     }
 
@@ -139,11 +139,10 @@ export default class Creature {
 
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
-    this.log("reproduce", "actionInputValue", actionInputValue);
     if (this.reproduction.reproduce(actionInputValue)) {
-      this.log("reproduce", "result", "OK");
+      this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
     } else {
-      this.log("reproduce", "result", "KO");
+      this.log(LogEvent.REPRODUCE_KO, "result", "KO");
 
     }
   }
@@ -232,8 +231,8 @@ private computeDistanceIndex(){
  photosynthesis(actionInputValue: number) : void {
     const massToAdd = constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE; 
     this._mass.add(massToAdd);
-    this.log("photosynthesis", "actionInputValue", actionInputValue);
-    this.log("photosynthesis", "massToAdd", massToAdd);
+    this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
+    this.log(LogEvent.PHOTOSYNTHESIS, "massToAdd", massToAdd);
 
  }
   get isAlive() {
@@ -258,24 +257,24 @@ private computeDistanceIndex(){
   }
 
 
-  log(eventType: string, paramName : string, paramValue : number | string) { 
+  private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
       if (!this.eventLogger) {
         console.error("this.eventLogger not found");
         return;
       }
       const event : SimulationCallEvent = {
-        callerClassName: "Creature",
+        callerClassName: LogClasses.CREATURE,
         creatureId: this.id,
         eventType: eventType,
-        paramName: paramName,
-        paramValue: paramValue,
+        paramName: paramName ?? "",
+        paramValue: paramValue ?? "",
       }
       this.eventLogger.logEvent(event);
     }
 
   //TODO review
   private die () {
-    this.log("die", "mass", this.mass);
+    this.log(LogEvent.DEAD, "mass", this.mass);
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?
     this.generations.grid.cell(this.position[0], this.position[1]).creature = null;

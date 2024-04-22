@@ -18,18 +18,6 @@ export const worldCanvasAtom = atom<WorldCanvas | null>(null);
 export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
 export const eventLoggerAtom = atom<EventLogger | null>(null);
-export const eventLoggerCountAtom = atom( (get) => {
-    const eventLogger = get(eventLoggerAtom);
-    if (eventLogger == null) {
-      console.log("----logCounterAtom null");
-      return null;
-    }
-    else {
-      const n = eventLogger.logCount2;
-      console.log("----logCounterAtom n: ", n);
-      return n
-    }
-});
 
 
 const wgd : WorldGenerationsData = {

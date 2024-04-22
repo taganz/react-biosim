@@ -7,7 +7,8 @@ import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "../generations/WorldGenerations";
 import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
-import EventLogger from '@/simulation/logger/EventLogger';
+import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
+import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
@@ -147,6 +148,8 @@ export default class WorldController {
       new CustomEvent(WorldEvents.endStep, { detail: { worldController: this } })
     );
 
+    this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
+    
     this.sendRedrawEventEveryImmediateSteps();
     
     // RD if everybody is dead, wait and restart
@@ -175,22 +178,11 @@ export default class WorldController {
       
   }
 
-  private async endGeneration(): Promise<void> {
-    // Small pause
-    if (this.pauseBetweenGenerations > 0) {
-      await new Promise((resolve) =>
-        setTimeout(() => resolve(true), this.pauseBetweenGenerations)
-      );
-    }
-    //this._immediateStepsCounter = this.immediateSteps;
-    this.generations.endGeneration();
-    this.generationRegistry.startGeneration();
-
-  }
 
   //private async startGeneration(): Promise<void> {
   private startGeneration() : void {
     this.currentGen++;
+    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
     this.lastGenerationDuration =
       new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
     this._lastGenerationDate = new Date();
@@ -202,6 +194,21 @@ export default class WorldController {
       new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
     );
 
+
+  }
+
+  
+  private async endGeneration(): Promise<void> {
+    this.log(LogEvent.GENERATION_END, "population", this.generations.currentCreatures.length);
+    // Small pause
+    if (this.pauseBetweenGenerations > 0) {
+      await new Promise((resolve) =>
+        setTimeout(() => resolve(true), this.pauseBetweenGenerations)
+      );
+    }
+    //this._immediateStepsCounter = this.immediateSteps;
+    this.generations.endGeneration();
+    this.generationRegistry.startGeneration();
 
   }
 
@@ -244,11 +251,33 @@ export default class WorldController {
     }
   }
 
+  get eventLoggerIsPaused() : boolean {
+    return this.eventLogger.isPaused;
+  }
+  pauseLog() : void {
+    this.eventLogger.pause();
+  }
+  resumeLog() : void {
+    this.eventLogger.resume();
+  }
 
   get isPaused(): boolean {
     return !this._timeoutId;
   }
 
 
-
+  private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
+    if (!this.eventLogger) {
+      console.error("this.eventLogger not found");
+      return;
+    }
+    const event : SimulationCallEvent = {
+      callerClassName: LogClasses.WORLD_CONTROLLER,
+      creatureId: 0,
+      eventType: eventType,
+      paramName: paramName ?? "",
+      paramValue: paramValue ?? "",
+    }
+    this.eventLogger.logEvent(event);
+  }
 }

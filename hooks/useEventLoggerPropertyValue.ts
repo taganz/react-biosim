@@ -4,6 +4,12 @@ import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { useInterval } from "react-use";
 
+/*
+"this hook is designed to fetch a property value from an EventLogger instance 
+at regular intervals, updating the state and returning the latest value. 
+The optional compare function allows for more fine-grained control over 
+when to update the state based on changes in the property value"
+*/
 export default function useEventLoggerPropertyValue<T>(
   getter: (eventLogger: EventLogger) => T,
   defaultValue: T,

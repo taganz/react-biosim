@@ -31,6 +31,7 @@ export default function SimulationCanvas({ className }: Props) {
       const worldController = new WorldController(worldControllerData, worldGenerationsData);
       setWorldController(worldController);
       worldController.startRun(worldControllerData, worldGenerationsData );  
+      setEventLogger(worldController.eventLogger);
 
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
@@ -48,6 +49,7 @@ export default function SimulationCanvas({ className }: Props) {
         setWorldController(null);
         console.log("*** worldCanvas destroyed ***");
         setWorldCanvas(null);
+        setEventLogger(null);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
@@ -58,9 +60,9 @@ export default function SimulationCanvas({ className }: Props) {
 
       if (worldController && worldCanvas) {        
 
-        const initializeWorldCallback = () => {
-          setEventLogger(worldController.eventLogger);
-        };
+   //     const initializeWorldCallback = () => {
+   //       setEventLogger(worldController.eventLogger);
+   //     };
   
         const startGenerationCallback = () => {
           worldCanvas.redraw();
@@ -71,13 +73,13 @@ export default function SimulationCanvas({ className }: Props) {
         };
   
   
-        worldController.events.addEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
+    //    worldController.events.addEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
         worldController.events.addEventListener(WorldEvents.startGeneration,startGenerationCallback);
         worldController.events.addEventListener(WorldEvents.redraw,redrawCallback);
         console.log("SimulationCanvas addEventListeners");
         
       return () => {
-        worldController.events.removeEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
+    //    worldController.events.removeEventListener(WorldEvents.initializeWorld,initializeWorldCallback);
         worldController.events.removeEventListener(WorldEvents.startGeneration,startGenerationCallback);
         worldController.events.removeEventListener(WorldEvents.redraw, redrawCallback);
       };
