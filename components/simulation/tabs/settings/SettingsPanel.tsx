@@ -79,24 +79,15 @@ export default function SettingsPanel() {
 
 
       const handleSelectionMethodOptions = (value: string) => {
-        //const sp : SelectionMethod = selectSelectionMethod(value); 
-        //setSelectionMethod(sp);
         setWorldGenerationData(prev => ({ ...prev, selectionMethod: selectSelectionMethod(value) }));
       }
 
-      
+    
       const handlePopulationStrategy = (value: string) => {
-        //const ps : PopulationStrategy = selectPopulationStrategy(value); 
-        //setPopulationStrategy(ps);
         setWorldGenerationData(prev => ({ ...prev, populationStrategy: selectPopulationStrategy(value) }));
       }
-      
-
-  
+        
     const handleChangePopulation = (e: { target: { value: any; }; }) => {
-      //const newValues = {... worldGenerationsData};
-      //newValues.initialPopulation = e.target.value;
-      //setWorldGenerationData(newValues)
       setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
       setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
     }

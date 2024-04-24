@@ -9,6 +9,7 @@ export const populationStrategyFormatter = {
   serialize: function (sm: PopulationStrategy ): SavedPopulationStrategy {
       return sm.name;
   }, 
+  
   deserialize: function (parsed: string) : PopulationStrategy {
     switch(parsed) {
       case "AsexualZonePopulation":
@@ -21,4 +22,5 @@ export const populationStrategyFormatter = {
     console.error("populationStrategyFormatter unknown PopulationStrategy. Defaulting to AsexualRandomPopulation");
     return new AsexualRandomPopulation; 
   }
+  
 };

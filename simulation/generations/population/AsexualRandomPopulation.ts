@@ -37,10 +37,30 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
         1
       );
       let totalNeededCreatures = worldGenerations.initialPopulation - parents.length;
-
+      
       // Add extra creatures to achieve the target population, but
       // we want all survivors to have at least one children
       let shuffledParents = shuffle(parents);
+
+      //===================================================
+      //TODO RD 23/4/25 - PROVES LIMITAR A INITIAL POPULATION
+      if (totalNeededCreatures < 0 ) {
+        for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation; parentIdx++) {
+          const parent = shuffledParents[parentIdx];
+          let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
+          if (position != null) {
+            worldGenerations.newCreature(position, parent.massAtBirth, parent.brain.genome);
+          }
+          else {
+            console.warn("no free position found 2");
+          }
+        }
+        return;
+      }
+      //===================================================
+
+
+
       for (let parentIdx = 0; parentIdx < shuffledParents.length; parentIdx++) {
         const parent = shuffledParents[parentIdx];
         for (let childIdx = 0; childIdx < childrenPerParent; childIdx++) {
