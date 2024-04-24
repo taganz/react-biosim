@@ -36,7 +36,7 @@ export class Grid {
     for (let y = 0; y < this._size; y++) {
       const row: Array<GridCell> = [];
       for (let x = 0; x < this._size; x++) {
-        row.push({ creature: null, objects: [], isSolid: false, water: constants.WATER_GRIDPOINT_DEFAULT, energy: constants.ENERGY_GRIDPOINT_DEFAULT });
+        row.push({ creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, energy: constants.GRIDPOINT_ENERGY_DEFAULT });
       }
       this.addRow(row);
     }
@@ -63,6 +63,9 @@ export class Grid {
     console.log("grid initialized");
   }
 
+  set waterDefault(waterDefault: number) {
+    this._grid.forEach(row => row.forEach(cell => cell.water = waterDefault));
+  }
   get size() : number {
     return this._size;
   }
@@ -217,6 +220,21 @@ public debugPrint(maxColumns = 10) {
     for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
       const cell = this.cell(x,y);
       row += cell.creature ? "o" : (cell.isSolid ? "x" : ".");
+    } 
+    grid += row.concat("\n") ;
+  }
+  console.log(grid);
+
+}
+
+public debugPrintWater(maxColumns=10) {
+  let grid : string = "";
+  for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
+    let row : string = "";
+    for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
+      const cell = this.cell(x,y);
+      row += cell.water.toFixed(1);
+      row += " ";
     } 
     grid += row.concat("\n") ;
   }

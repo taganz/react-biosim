@@ -63,8 +63,8 @@ export default class EventLogger {
  
     const simulationEvent : SimulationEvent = {
       callerClassName : eventValues.callerClassName,
-      currentGen : this.worldController.generations.currentGen.toString(),
-      currentStep : this.worldController.generations.currentStep.toString(),
+      currentGen : this.worldController.currentGen.toString(),
+      currentStep : this.worldController.currentStep.toString(),
       speciesId : eventValues.callerClassName==LogClasses.CREATURE ? "speciesId_PENDING" : "",
       creatureId : eventValues.creatureId.toString(),
       eventType : eventValues.eventType,

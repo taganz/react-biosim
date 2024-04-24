@@ -51,6 +51,7 @@ const wcd : WorldControllerData = {
   stepsPerGen: constants.RUN_STEPS_PER_GENERATION,
   initialPopulation: constants.RUN_INITIAL_POPULATION,
   worldObjects : constants.RUN_WORLD_OBJECTS,
+  gridPointWaterDefault : constants.GRIDPOINT_WATER_DEFAULT,
   // user values
   pauseBetweenSteps: constants.PAUSE_BETWEEN_STEPS,
   immediateSteps: constants.IMMEDIATE_STEPS,

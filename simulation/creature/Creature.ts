@@ -55,7 +55,7 @@ export default class Creature {
     this.generations = generations;
 
     this.id = generations.lastCreatureIdCreated;
-    this.stepBirth = generations.currentStep;
+    this.stepBirth = generations.worldController.currentStep;
     this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
     // Position
@@ -229,7 +229,8 @@ private computeDistanceIndex(){
   }
 */
  photosynthesis(actionInputValue: number) : void {
-    const massToAdd = constants.WATER_TO_MASS_PER_STEP * constants.TEMP_WATER_CELL_CREATURE; 
+    const cell = this.generations.grid.cell(this.position[0], this.position[1]);
+    const massToAdd = cell.water  * constants.TEMP_WATER_CELL_CREATURE; 
     this._mass.add(massToAdd);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "massToAdd", massToAdd);

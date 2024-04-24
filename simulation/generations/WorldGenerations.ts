@@ -108,7 +108,7 @@ export default class WorldGenerations {
   public startFirstGeneration() {
       this.populationStrategy.populate(this);
       this.lastCreatureCount = this.currentCreatures.length;
-      console.log("worldGenerations first generation started")
+      //console.log("worldGenerations first generation started")
   }
 
 

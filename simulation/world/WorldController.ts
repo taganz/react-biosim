@@ -28,6 +28,7 @@ export default class WorldController {
   stepsPerGen: number = 0;
   initialPopulation: number = 0;
   objects: WorldObject[] = [];   // to be set externally
+  gridPointWaterDefault: number = 0;
   
   // user values 
   pauseBetweenSteps: number = 0;
@@ -97,6 +98,7 @@ export default class WorldController {
     
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);  
+    this.grid.waterDefault = this.gridPointWaterDefault;
     // some creatures could be now at an occupied position in the new map
     const reviewedSpecies : Creature[] = [];
     for (let i = 0; i < species.length; i++) {
@@ -135,6 +137,7 @@ export default class WorldController {
     if (worldControllerData.worldObjects) {
       this.objects = [...worldControllerData.worldObjects];   
     }
+    this.gridPointWaterDefault = worldControllerData.gridPointWaterDefault;
 
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;

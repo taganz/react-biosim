@@ -6,6 +6,8 @@ export default interface WorldControllerData {
     stepsPerGen: number;
     initialPopulation: number;
     worldObjects : WorldObject[];
+    gridPointWaterDefault: number;
+    
 
     // user values
     pauseBetweenSteps: number;

@@ -142,6 +142,18 @@ export default function SettingsPanel() {
               >
             </input>
           </div>
+           {/*  waterDefault  */}
+           <div className="flex flex-col">
+            <label className="grow">Grid cells water default</label>
+            <input
+                type="number"
+                value={worldControllerData.gridPointWaterDefault.toString()}
+                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, gridPointWaterDefault: parseFloat(e.target.value)}))}} 
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
             </div>
           </div>
           <div>

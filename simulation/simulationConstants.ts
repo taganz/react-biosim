@@ -16,7 +16,7 @@ import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simulation/logger/LogEvent"
 
 // -- log 
-export const LOG_ENABLED : boolean = false;  // main switch for logging
+export const LOG_ENABLED : boolean = true;  // main switch for logging
 export const DEBUG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
 export const EVENTLOGGER_LOG_MAX_EVENTS = 10000; // will stop logging at this point
@@ -24,7 +24,7 @@ export const LOCALE_STRING = 'es-ES';
 export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
   [LogEvent.REPRODUCE]: false,
   [LogEvent.REPRODUCE_KO]: false,
-  [LogEvent.PHOTOSYNTHESIS]: false,
+  [LogEvent.PHOTOSYNTHESIS]: true,
   [LogEvent.BIRTH]: true,
   [LogEvent.DEAD]: true,
   [LogEvent.METABOLISM]: false,
@@ -33,7 +33,7 @@ export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
   [LogEvent.STEP_END]: true,
 }
 export const ALLOWED_LOG_CLASSES: AllowedLogClasses = {
-  [LogClasses.CREATURE]: false,
+  [LogClasses.CREATURE]: true,
   [LogClasses.GENERATIONS]: true,
   [LogClasses.WORLD_CONTROLLER]: true,
 }
@@ -49,9 +49,9 @@ export const RUN_STEPS_PER_GENERATION = 500;
 
 // -- environment parameters  
 export const RUN_WORLD_SIZE = 100;
-export const WATER_GRIDPOINT_DEFAULT = 1;
-export const ENERGY_GRIDPOINT_DEFAULT = 0.01;
-export const TEMP_ENERGY_CELL_CREATURE = 0.01;
+export const GRIDPOINT_WATER_DEFAULT = 1;
+export const GRIDPOINT_ENERGY_DEFAULT = 0.01;   
+export const TEMP_ENERGY_CELL_CREATURE = 0.01;  
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
