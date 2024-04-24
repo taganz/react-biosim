@@ -35,7 +35,7 @@ export default class EventLogger {
   private readonly logThreshold: number;
   private log: SimulationEvent[];
   private headerWritten = false;
-  private paused = false;
+  private paused = true;
   public logCount2 = 0;
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
