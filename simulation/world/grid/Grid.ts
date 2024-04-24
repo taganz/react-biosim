@@ -1,3 +1,4 @@
+//import { max } from "d3";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
 import * as constants from "@/simulation/simulationConstants"
@@ -208,7 +209,19 @@ export class Grid {
     return null; // Return null if no free cell is found nearby
 }
 
-  
+public debugPrint(maxColumns = 10) {
+  let grid : string = "";
+  for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
+    let row : string = "";
+    for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
+      const cell = this.cell(x,y);
+      row += cell.creature ? "o" : (cell.isSolid ? "x" : ".");
+    } 
+    grid += row.concat("\n") ;
+  }
+  console.log(grid);
+
+}
   /*
   public getRandomAvailablePositionDeepCheck(
     creatures: Creature[]): [number, number] {
