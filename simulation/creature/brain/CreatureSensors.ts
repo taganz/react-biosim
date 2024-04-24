@@ -156,12 +156,12 @@ export default class CreatureSensors {
 
     // Age
     if (this.data.Age.enabled) {
-      values.push(creature.generations.currentStep / creature.generations.worldController.stepsPerGen);
+      values.push(creature.generations.worldController.currentStep / creature.generations.worldController.stepsPerGen);
     }
 
     // Oscillator
     if (this.data.Oscillator.enabled) {
-      values.push((Math.sin(creature.generations.currentStep / 10) + 1) / 2);
+      values.push((Math.sin(creature.generations.worldController.currentStep / 10) + 1) / 2);
     }
 
     // Random
