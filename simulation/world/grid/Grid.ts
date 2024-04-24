@@ -74,12 +74,13 @@ export class Grid {
   }
 
   // add a creature at its position.
-  public addCreature(creature : Creature) : void {
+  public addCreature(creature : Creature) : boolean {
     if (!this.isTileEmpty(creature.position[0], creature.position[1])) {
-        throw new Error ("addCreature tile not available ".concat(creature.position.toString()));
-        //console.error("addCreature tile not available ".concat(creature.position.toString()), " creature id in cell:", this._grid[creature.position[0]][creature.position[1]].creature?.id);
+        // when doing map hot change the position could be no longuer available
+        return false;
       }
     this._grid[creature.position[0]][creature.position[1]].creature = creature;
+    return true;
   }
 
   public removeCreature(creature: Creature) : void {

@@ -21,12 +21,16 @@ import {Action, ActionName} from "@/simulation/creature/brain/CreatureActions";
 import { ChangeEvent } from "react";
 import * as constants from "@/simulation/simulationConstants"
 
+import UpdateParametersButton from "../../UpdateParametersButton";
 
 const enabledSensorsAtom = atom(constants.RUN_ENABLED_SENSORS);
 const enabledActionsAtom = atom(constants.RUN_ENABLED_ACTIONS);
 const mutationModeAtom = atom(constants.RUN_MUTATION_MODE);
 
 
+// This should update only
+//  - worldControllerDataAtom 
+//  - worldGenerationDataAtom
 
 export default function SettingsPanel() {
 
@@ -96,7 +100,8 @@ export default function SettingsPanel() {
     return (
       <div>
         <p className="mb-2">
-          You need to restart the simulation for these settings to work:
+          You can restart the simulation for these settings to work or you can update current simulation:
+          <UpdateParametersButton/>
         </p>
 
         <div className="flex flex-col gap-8">

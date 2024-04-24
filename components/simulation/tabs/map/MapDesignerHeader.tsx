@@ -14,6 +14,8 @@ import { TfiCheckBox } from "react-icons/tfi";
 import {  worldGenerationDataAtom,
           worldControllerDataAtom
         } from "../../store";
+import worldControllerInitialValuesHotChange from "@/simulation/world/worldControllerInitialValuesHotChange";
+
 
 export default function MapDesignerHeader() {
   const worldController = useAtomValue(worldControllerAtom);
@@ -25,16 +27,12 @@ export default function MapDesignerHeader() {
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   
-  // Button "Use Map": set objects in worldController and initialize, store also in atom for further initializations
+  // Button "Use Map": set objects in worldController and resume, store also in atom for further initializations
   const handleUseMap = () => {
     if (worldController) {
-      const isPaused = worldController.isPaused;
       worldControllerData.worldObjects = [...mapDesignerObjects.map((obj) => obj.clone())];
       setWorldControllerData(worldControllerData);
-      worldController.startRun(worldControllerData, worldGenerationsData);
-      if (isPaused) {
-        worldController.pause();
-      }
+      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData );
     }
     else {
       throw new Error ("worldController not found");

@@ -97,7 +97,15 @@ export default class WorldController {
     
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);  
-    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, species);
+    // some creatures could be now at an occupied position in the new map
+    const reviewedSpecies : Creature[] = [];
+    for (let i = 0; i < species.length; i++) {
+      const added = this.grid.addCreature(species[i]);
+      if (added) {
+        reviewedSpecies.push(species[i]);
+      }
+    }
+    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, reviewedSpecies);
     this.generationRegistry = stats;
     this.eventLogger.reset();
 
@@ -135,8 +143,6 @@ export default class WorldController {
 
   private async computeStep(): Promise<void> {
           
-    //console.log("gen.step: ", this.currentGen, ".", this.currentStep);
-
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startStep, { detail: { worldController: this } })
     );
@@ -166,7 +172,6 @@ export default class WorldController {
 
     if (this.currentStep > this.stepsPerGen) {
       await this.endGeneration();
-      this.currentStep = 0;
       this.startGeneration();
     }
 
@@ -181,7 +186,6 @@ export default class WorldController {
 
   //private async startGeneration(): Promise<void> {
   private startGeneration() : void {
-    this.currentGen++;
     this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
     this.lastGenerationDuration =
       new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
@@ -189,7 +193,8 @@ export default class WorldController {
     this._pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
     this._lastPauseDate = undefined;
-    
+    this.currentStep = 0;
+
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
     );
@@ -207,6 +212,7 @@ export default class WorldController {
       );
     }
     //this._immediateStepsCounter = this.immediateSteps;
+    this.currentGen++;
     this.generations.endGeneration();
     this.generationRegistry.startGeneration();
 
@@ -221,7 +227,6 @@ export default class WorldController {
     if (this._immediateStepsCounter > 0) {
       this._immediateStepsCounter--;
       if (this._immediateStepsCounter == 0) {
-        //console.log("redraw!", this.currentStep, "this.immediateSteps: ", this.immediateSteps);
         this.events.dispatchEvent(
           new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
         );

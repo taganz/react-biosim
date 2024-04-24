@@ -55,7 +55,6 @@ const wcd : WorldControllerData = {
   pauseBetweenSteps: constants.PAUSE_BETWEEN_STEPS,
   immediateSteps: constants.IMMEDIATE_STEPS,
   pauseBetweenGenerations: constants.PAUSE_BETWEEN_GENERATIONS,
-  
   // state values
   currentGen: 0,
   currentStep: 0,

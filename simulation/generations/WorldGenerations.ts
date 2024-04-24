@@ -13,6 +13,9 @@ import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
 
+
+// doesn't know currentStep nor currentGeneration, uses worldController
+
 export default class WorldGenerations {
   
   worldController: WorldController;
@@ -46,10 +49,10 @@ export default class WorldGenerations {
 
 
   // internal use
-  _lastGenerationSurvivors : Creature[] = [];
+  //_lastGenerationSurvivors : Creature[] = [];
   // need this for creature logging
-  currentStep : number = 0;
-  currentGen : number = 0;
+  //currentStep : number = 0;
+  //currentGen : number = 0;
 
   // if creatures is not null, assume we are loading a saved state
   constructor(worldController: WorldController, worldGenerationsData: worldGenerationsData, grid: Grid, creatures?: Creature[]) {
@@ -160,7 +163,7 @@ public step(): number {
       }
     }
 
-  this.currentStep++;
+  //this.currentStep++;
   return creaturesStillLive;
   
   }
@@ -168,7 +171,7 @@ public step(): number {
 
 public endGeneration(): void {
 
-  this.currentGen++;
+  //this.currentGen++;
 
   // Get survivors and calculate maximum fitness for this generation
   const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
@@ -178,7 +181,7 @@ public endGeneration(): void {
   this.grid.clearCreatures();
   this.currentCreatures = [];
   this.lastCreatureIdCreated = 0;   // resets at generation
-  this.currentStep = 0;
+  //this.currentStep = 0;
 
   
   // Repopulate with survivors
@@ -188,7 +191,7 @@ public endGeneration(): void {
   this.lastFitnessMaxValue = fitnessMaxValue;
 
 
-  this._lastGenerationSurvivors = survivors;
+  //this._lastGenerationSurvivors = survivors;
 
 }
 
@@ -196,9 +199,11 @@ public endGeneration(): void {
 
 
 get isFirstGeneration() {
-  return this.currentGen == 0;
+  return this.worldController.currentGen == 0;
 }
-
+get currentGen() {
+  return this.worldController.currentGen;
+}
 private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
   if (!this.eventLogger) {
     console.error("this.eventLogger not found");
