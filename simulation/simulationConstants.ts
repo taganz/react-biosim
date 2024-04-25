@@ -17,7 +17,7 @@ import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simul
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
-export const LOG_PAUSED_AT_START : boolean = false;   // true
+export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
 //TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to start running simulation when app loads
 export const DEBUG_CREATURE_ID : number = 1;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
