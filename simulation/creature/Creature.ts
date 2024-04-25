@@ -46,7 +46,6 @@ export default class Creature {
   _mass : CreatureMass;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
-  _metabolismEnabled: boolean;
   
 
   private _health: number = maxHealth;
@@ -63,14 +62,14 @@ export default class Creature {
     this.lastPosition = [position[0], position[1]];
     this.urgeToMove = [0, 0];
     this.lastMovement = [0, 0];
-    this._metabolismEnabled = generations.metabolismEnabled;
+    //this._metabolismEnabled = generations.metabolismEnabled;
 
     if (!genome) {
       // 1st generation, create genome
-      const randomGenesToAdd = this.generations.initialGenomeSize - (this._metabolismEnabled ? constants.METABOLISM_GENES.length : 0);
+      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? constants.METABOLISM_GENES.length : 0);
       const newGenome = new Genome(
         [...new Array(2)].map(() => Genome.generateRandomGene()));
-      if (this._metabolismEnabled) {
+      if (this.generations.metabolismEnabled) {
         newGenome.addGenes(constants.METABOLISM_GENES);
       }
       this.brain = new CreatureBrain(this, newGenome);
@@ -82,7 +81,7 @@ export default class Creature {
 
 
   
-    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth);
+    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
     this.log(LogEvent.BIRTH, "massAtBirth", this.massAtBirth);
@@ -101,11 +100,8 @@ export default class Creature {
     
     if (!this.isAlive) return;
 
-    if (this._metabolismEnabled) {
-      this._mass.step();
-      this.log(LogEvent.METABOLISM, "mass", this.mass);
-      if (!this.isAlive) return;
-    }
+    this._mass.basalMetabolism();
+    this.log(LogEvent.METABOLISM, "mass", this.mass);
 
     this.urgeToMove = [0, 0];
 
