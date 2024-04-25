@@ -54,6 +54,7 @@ export default class WorldController {
   constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData) {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
+    this.grid.waterDefault = this.gridPointWaterDefault;
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.eventLogger = new EventLogger(this);
     
@@ -71,6 +72,7 @@ export default class WorldController {
 
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.grid = new Grid(this.size, this.objects);
+    this.grid.waterDefault = this.gridPointWaterDefault;
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     this.eventLogger.reset();
