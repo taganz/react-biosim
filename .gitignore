@@ -3,6 +3,9 @@
 #demos
 _simulation_examples_/
 
+#log files
+_scenarios/*.csv
+
 # dependencies
 /node_modules
 /.pnp
