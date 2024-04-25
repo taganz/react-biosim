@@ -9,6 +9,7 @@ import {
       ALLOWED_LOG_CLASSES}
        from "@/simulation/simulationConstants"
 import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simulation/logger/LogEvent"
+import {LOG_PAUSED_AT_START} from "@/simulation/simulationConstants"
 
 export interface SimulationCallEvent {
   callerClassName: LogClasses;
@@ -35,7 +36,7 @@ export default class EventLogger {
   private readonly logThreshold: number;
   private log: SimulationEvent[];
   private headerWritten = false;
-  private paused = true;
+  private paused = LOG_PAUSED_AT_START;
   public logCount2 = 0;
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
@@ -101,12 +102,15 @@ export default class EventLogger {
   public getLogBlob(): Blob {
     let csvData: string;
 
+    /*
     if (!this.headerWritten) {
       csvData = 'CallerClassName;CurrentGen;CurrentStep;SpeciesId;CreatureId;EventType;ParamName;ParamValue\n';
       this.headerWritten = true;
     } else {
       csvData = "";
     }
+    */
+    csvData = 'CallerClassName;CurrentGen;CurrentStep;SpeciesId;CreatureId;EventType;ParamName;ParamValue\n';
     
     for (const event of this.log) {
       csvData += `${event.callerClassName};${event.currentGen};${event.currentStep};${event.speciesId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;

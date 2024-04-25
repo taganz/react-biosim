@@ -17,19 +17,24 @@ import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simul
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
-export const DEBUG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_PAUSED_AT_START : boolean = false;   // true
+//TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to start running simulation when app loads
+export const DEBUG_CREATURE_ID : number = 1;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
 export const EVENTLOGGER_LOG_MAX_EVENTS = 10000; // will stop logging at this point
 export const LOCALE_STRING = 'es-ES';
 export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
-  [LogEvent.REPRODUCE]: false,
-  [LogEvent.REPRODUCE_KO]: false,
+  // creature
+  [LogEvent.REPRODUCE]: true,
+  [LogEvent.REPRODUCE_KO]: true,
   [LogEvent.PHOTOSYNTHESIS]: true,
   [LogEvent.BIRTH]: true,
   [LogEvent.DEAD]: true,
-  [LogEvent.METABOLISM]: false,
+  [LogEvent.METABOLISM]: true,
+  // generation
   [LogEvent.GENERATION_START]: true,
   [LogEvent.GENERATION_END]: true,
+  // controller
   [LogEvent.STEP_END]: true,
 }
 export const ALLOWED_LOG_CLASSES: AllowedLogClasses = {
@@ -43,8 +48,8 @@ export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 50; //500;
-export const RUN_STEPS_PER_GENERATION = 500;
+export const RUN_INITIAL_POPULATION = 15; //500;
+export const RUN_STEPS_PER_GENERATION = 300;
 
 
 // -- environment parameters  
@@ -55,13 +60,13 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const METABOLISM_ENABLED = true;    // if true Creatures will run mass.step to activate metabolism
+export const METABOLISM_ENABLED = true;    // if false creature mass won't change
 export const METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
 export const WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
 export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
-export const REPRODUCTION_COST_PER_MASS_TRY = 0;
-export const REPRODUCTION_COST_PER_MASS_DO = 0.85;
+export const REPRODUCTION_COST_PER_MASS_TRY = 0.05;    
+export const REPRODUCTION_COST_PER_MASS_DO = 0.9;
 
 // -- selection method
 
