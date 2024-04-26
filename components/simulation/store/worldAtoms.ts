@@ -6,6 +6,7 @@ import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
 import * as constants from "@/simulation/simulationConstants"
 import EventLogger from "@/simulation/logger/EventLogger";
+import generateRandomString from "@/helpers/generateRandomString";
 
 
 
@@ -57,6 +58,7 @@ const wcd : WorldControllerData = {
   immediateSteps: constants.IMMEDIATE_STEPS,
   pauseBetweenGenerations: constants.PAUSE_BETWEEN_GENERATIONS,
   // state values
+  simCode: "XXX",
   currentGen: 0,
   currentStep: 0,
   lastGenerationDuration: 0,

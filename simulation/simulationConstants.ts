@@ -144,3 +144,5 @@ export const RUN_WORLD_OBJECTS : WorldObject[] = [
   new RectangleObject(0.7, 0.6, 0.04, 0.4),
   new RectangleObject(0.9, 0.6, 0.04, 0.4),
 ];
+
+export const SIM_CODE_LENGTH = 3;

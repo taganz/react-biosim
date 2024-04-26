@@ -10,6 +10,7 @@ export default function serializeWorldControllerData(worldController: WorldContr
 
     return {
          // initial values
+        simCode: worldController.simCode,
         size: worldController.size, 
         stepsPerGen: worldController.stepsPerGen,
         initialPopulation: worldController.initialPopulation,
@@ -45,6 +46,7 @@ export function deserializeWorldControllerData (parsed: SavedWorld) : WorldContr
         pauseBetweenGenerations: parsed.worldControllerData.pauseBetweenGenerations,
         
         // state values
+        simCode: parsed.simCode,
         currentGen: parsed.worldControllerData.currentGen,
         currentStep: parsed.worldControllerData.currentStep,
         lastGenerationDuration: parsed.worldControllerData.lastGenerationDuration,

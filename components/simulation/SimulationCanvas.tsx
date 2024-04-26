@@ -22,7 +22,7 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
-  const worldControllerData = useAtomValue(worldControllerDataAtom);
+  const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const setEventLogger = useSetAtom(eventLoggerAtom);
   
@@ -30,7 +30,8 @@ export default function SimulationCanvas({ className }: Props) {
     function instantiateWorld() {
       const worldController = new WorldController(worldControllerData, worldGenerationsData);
       setWorldController(worldController);
-      worldController.startRun(worldControllerData, worldGenerationsData );  
+      const simCode = worldController.startRun(worldControllerData, worldGenerationsData );  
+      setWorldControllerData({...worldControllerData, simCode : simCode});
       setEventLogger(worldController.eventLogger);
 
       if (canvasRef.current) {

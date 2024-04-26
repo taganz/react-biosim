@@ -30,7 +30,7 @@ export default function SavePanel() {
       setDataSavedWorld(jsonSavedWorld);
 
       const blob = new Blob ([jsonSavedWorld]  , { type: 'text/plain;charset=utf-8'})
-      saveAs( blob, 'sim_generation '.concat(worldController.currentGen.toString()) ); 
+      saveAs( blob, `sim ${worldController.simCode} generation ${worldController.currentGen.toString()}.sim` ); 
     }
   };
 

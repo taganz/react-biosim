@@ -80,7 +80,7 @@ const CanvasToGIF: React.FC = () => {
       (gif as GIF).on('finished', (blob: any) => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'sim'.concat(worldController==null ? "" : worldController.currentGen.toString(), '.gif');
+        a.download = `sim ${worldController!.simCode} generation ${worldController!.currentGen.toString()}.gif`;
         document.body.appendChild(a);
         a.click();
       });

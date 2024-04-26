@@ -57,7 +57,8 @@ export function loadSavedWorldAndStartRun(worldController: WorldController, data
   const worldGenerationsData = deserializeWorldGenerationData(parsed);
   const worldControllerData = deserializeWorldControllerData(parsed);
   
-  worldController.startRun(worldControllerData, worldGenerationsData);
-
+  const simCode = worldController.startRun(worldControllerData, worldGenerationsData);
+  worldControllerData.simCode = simCode;
+  
   return [worldControllerData, worldGenerationsData];
 }

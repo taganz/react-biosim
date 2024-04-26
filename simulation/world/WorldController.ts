@@ -9,6 +9,8 @@ import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
+import generateRandomString from "@/helpers/generateRandomString";
+import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
@@ -24,6 +26,7 @@ export default class WorldController {
   eventLogger : EventLogger;
 
   // initial values
+  simCode: string = "XXX";
   size: number = 10;
   stepsPerGen: number = 0;
   initialPopulation: number = 0;
@@ -68,9 +71,10 @@ export default class WorldController {
     console.log("*** worldController initialized ***");
   }
 
-  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): void {
+  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): string {
 
     this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.simCode = generateRandomString(SIM_CODE_LENGTH),
     this.grid = new Grid(this.size, this.objects);
     this.grid.waterDefault = this.gridPointWaterDefault;
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
@@ -92,6 +96,8 @@ export default class WorldController {
 
     this.generations.startFirstGeneration();
     this.computeStep();
+
+    return this.simCode;
   
   }
 
@@ -114,6 +120,7 @@ export default class WorldController {
     this.eventLogger.reset();
 
     // state data
+    this.simCode = worldControllerData.simCode;
     this.currentGen = worldControllerData.currentGen;
     this.currentStep = worldControllerData.currentStep;
     this.lastGenerationDuration = worldControllerData.lastGenerationDuration;

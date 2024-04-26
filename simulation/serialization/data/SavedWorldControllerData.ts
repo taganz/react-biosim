@@ -15,6 +15,7 @@ export default interface SavedWorldControllerData {
   pauseBetweenGenerations: number;
   
   // state values
+  simCode: string;
   currentGen: number;
   currentStep: number;
   lastGenerationDuration: number;
