@@ -3,7 +3,7 @@ import {useSetAtom, useAtom, useAtomValue} from 'jotai';
 import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
-import {scenarioObjects} from "./scenarioObjects";
+import {scenarioObjects, ScenarioObjects} from "./scenarioObjects";
 import {loadSavedWorldAndStartRun } from "@/simulation/serialization/loadWorld";
 import SavedWorld from '@/simulation/serialization/data/SavedWorld';
 
@@ -16,7 +16,7 @@ export default function ScenariosSelection () {
 
   const scenariosOptions: Option[] = Array.from({ length: scenarioObjects.length }, (_, i) => ({ value: i.toString(), label: scenarioObjects[i].name }));
 
-
+/*
   const handleSelection = (value: string) => {
     if (worldController) {
       const parsedScenario = scenarioObjects[parseInt(value)].data;
@@ -32,14 +32,34 @@ export default function ScenariosSelection () {
       console.warn("ScenariosSelection worldController not found!");
     }
   }
-    
+*/
+  // functionloadScenario
+  const handleSelection2 = async (value: string) => {
+    if (worldController) {
+        try {
+          const filename = scenarioObjects[parseInt(value)].filename;
+          const response = await fetch(filename!);
+          const parsedScenario = await response.text();          
+          const [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndStartRun(worldController, parsedScenario as string);
+          setWorldGenerationData(readWorldGenerationData);
+          setWorldControllerData(readWorldControllerData);
+        } catch (error) {
+          console.error('Error reading file:', error);
+      }
+    }    
+    else {
+      console.warn("ScenariosSelection worldController not found!");
+    }
+  }
+
+
+  
   
 return (
   <div className="mb-1">
-    <h2>Scenario for next simulation: </h2>
-    <Dropdown options={scenariosOptions} onSelect={handleSelection} />
+    <h2>Select simulation scenario: </h2>
+    <Dropdown options={scenariosOptions} onSelect={handleSelection2} />
     <br/>
-    <p>You need to restart the simulation for these scenario to work. </p>
   </div>
 );
 };
