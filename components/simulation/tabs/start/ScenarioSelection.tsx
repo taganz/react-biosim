@@ -1,5 +1,5 @@
 import React from 'react';
-import {useSetAtom, useAtom, useAtomValue} from 'jotai';
+import {atom, useSetAtom, useAtom, useAtomValue} from 'jotai';
 import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
@@ -10,6 +10,7 @@ import SavedWorld from '@/simulation/serialization/data/SavedWorld';
 export default function ScenariosSelection () {
     
   const worldController = useAtomValue(worldControllerAtom);
+  const worldControllerSimCode = atom(worldController?.simCode);
   const setWorldControllerData = useSetAtom(worldControllerDataAtom);
   const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
   
@@ -59,6 +60,7 @@ return (
   <div className="mb-1">
     <h2>Select simulation scenario: </h2>
     <Dropdown options={scenariosOptions} onSelect={handleSelection2} />
+    Current simulation: {worldController?.simCode}
     <br/>
   </div>
 );
