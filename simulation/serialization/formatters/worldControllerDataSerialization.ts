@@ -46,7 +46,7 @@ export function deserializeWorldControllerData (parsed: SavedWorld) : WorldContr
         pauseBetweenGenerations: parsed.worldControllerData.pauseBetweenGenerations,
         
         // state values
-        simCode: parsed.simCode,
+        simCode: parsed.worldControllerData.simCode,
         currentGen: parsed.worldControllerData.currentGen,
         currentStep: parsed.worldControllerData.currentStep,
         lastGenerationDuration: parsed.worldControllerData.lastGenerationDuration,
