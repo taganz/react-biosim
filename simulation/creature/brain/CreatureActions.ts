@@ -1,5 +1,8 @@
 import Creature from "../Creature";
 import * as constants from "../../simulationConstants"
+import {Direction, Direction4} from '@/simulation/world/direction';
+import { GridPosition } from "@/simulation/world/grid/Grid";
+
 
 // --> revisar. per evitar tenir-ho repetit a worldAtoms
 export type ActionName =
@@ -10,7 +13,8 @@ export type ActionName =
   | "RandomMove"
   | "MoveForward"
   | "Photosynthesis"
-  | "Reproduction";
+  | "Reproduction"
+  | "Attack";
 
 export type Action = {
   name: ActionName;
@@ -22,6 +26,10 @@ export type Actions = Record<ActionName, Action>;
 
 export default class CreatureActions {
   data: Actions = {
+    Attack: {
+      name: "Attack",
+      enabled: true,
+    },
     MoveNorth: {
       name: "MoveNorth",
       enabled: false,
@@ -54,6 +62,7 @@ export default class CreatureActions {
       name: "Reproduction",
       enabled: true,
     },
+
   };
 
   neuronsCount: number = 0;
@@ -179,5 +188,20 @@ export default class CreatureActions {
       input = values[currentIndex];
     }
 
+    // Attack
+    if (this.data.Attack.enabled) {
+      if (input > 0) {
+
+        const targetDirection : Direction4 = creature.generations.grid.getNeighbour4Creature(creature.position);
+        if (targetDirection!=null) {
+          creature.attack(input, targetDirection);
+        }
+      }
+
+      currentIndex++;
+      input = values[currentIndex];
+    }
+    
   }
 }
+

@@ -2,6 +2,9 @@
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
 import * as constants from "@/simulation/simulationConstants"
+import {Direction, Direction4} from '@/simulation/world/direction';
+import shuffle from "lodash.shuffle";
+
 
 export type GridCell = {
     creature: Creature | null;
@@ -109,6 +112,20 @@ export class Grid {
   public cell(x: number, y: number) : GridCell {
       return this._grid[x][y];
   } 
+  public cellOffsetDirection4(position: GridPosition, offset: Direction4) : GridPosition | null{
+    const cells : [number, number, Direction4][]
+    = ([[0, 1, "S"], [1, 0, "E"], [-1, 0, "W"], [0, -1, "N"]]);
+
+    for (let i = 0; i < cells.length; i++) {
+      if (cells[i][2] === offset) {
+          const [x1, y1] = [position[0]+cells[i][0], position[1]+cells[i][1]];
+          if (this.isTileInsideWorld(x1, y1)) {   
+            return [x1, y1];
+          }
+      }
+    }
+    return null;
+  }
 
   public cellByPos(pos: GridPosition) : GridCell {
       return this._grid[pos[0]][pos[1]];
@@ -125,6 +142,22 @@ export class Grid {
           return false;
       }
       return true;
+  }
+
+  public getNeighbour4Creature(position: GridPosition) : Direction4 {
+      const cells : [number, number, Direction4][]
+        = shuffle([[0, 1, "S"], [1, 0, "E"], [-1, 0, "W"], [0, -1, "N"]]);
+      
+      for (let i = 0; i<4; i++) {
+        const c : [number, number]= [cells[i][0], cells[i][1]];
+        const [x, y] = [position[0]+c[0], position[1]+c[1]]; 
+        if (this.isTileInsideWorld(x,y)) {
+          if (this.cell(x, y).creature!=null) {
+            return cells[i][2];
+          }
+        }
+      }
+      return null;
   }
 
   //TODO not testing x, y inside worldController!
@@ -213,11 +246,12 @@ export class Grid {
     return null; // Return null if no free cell is found nearby
 }
 
-public debugPrint(maxColumns = 10) {
+ 
+public debugPrintGridCreatures(maxColumns = 10) {
   let grid : string = "";
-  for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
+  for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
     let row : string = "";
-    for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
+    for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
       const cell = this.cell(x,y);
       row += cell.creature ? "o" : (cell.isSolid ? "x" : ".");
     } 
@@ -229,9 +263,9 @@ public debugPrint(maxColumns = 10) {
 
 public debugPrintWater(maxColumns=10) {
   let grid : string = "";
-  for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
+  for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
     let row : string = "";
-    for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
+    for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
       const cell = this.cell(x,y);
       row += cell.water.toFixed(1);
       row += " ";
@@ -239,81 +273,5 @@ public debugPrintWater(maxColumns=10) {
     grid += row.concat("\n") ;
   }
   console.log(grid);
-
 }
-  /*
-  public getRandomAvailablePositionDeepCheck(
-    creatures: Creature[]): [number, number] {
-
-    // Generate a position until it corresponds to an empty tile
-    let position: [number, number];
-    do {
-      position = this.getRandomPosition();
-    } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
-
-    return position;
-  }
-  */
-   
-  /*
-
-  // RD  
-  // --> initialPopulation aqui?
-  public getCenteredAvailablePositionDeepCheck(creatures: Creature[], x: number, y: number, hw: number, hh: number, initialPopulation : number): [number, number] {
-    // Generate a position until it corresponds to an empty tile
-    let position: [number, number];
-    let hw2 : number = hw;
-    let hh2 : number = hh;
-    // if population doesn't fit inside the spawn area, make area bigger
-    // note: won't work well if rectangle is partially outside the canvas?
-    if (hw2 * hh2 * 4 < initialPopulation * 1.3) {
-        hw2 = Math.sqrt(initialPopulation * hw2 / hh2);
-        hh2 = Math.sqrt(initialPopulation * hh2 / hw2);
-    }
-    let warning = initialPopulation * 1.5; // basic infinite loop prevention
-    do {
-      if (warning-- == 0) {
-        console.warn("getCenteredAvailablePositionDeepCheck -- warning == 0", hw2, hh2, initialPopulation);
-        hw2 *= 1.3;
-        hh2 *= 1.3;
-        warning = initialPopulation * 1.5;
-      }
-      position = [
-        Math.floor(x + (Math.random() * 2 - 1) * hw2),
-        Math.floor(y + (Math.random() * 2 - 1) * hh2),
-      ];
-      position = this.clamp(position[0], position[1]);
-      //console.log("warning: ", warning, "position ", position);
-    } while (!this.isTileEmptyDeepCheck(creatures, position[0], position[1]));
-
-    return position;
-  }
-
-  */
-  // RD --> podria fer check de solid al principi i retornar false!
-  /*
-  public isTileEmptyDeepCheck(
-    creatures: Creature[],
-    x: number,
-    y: number
-  ): boolean {
-    let hasCreature = false;
-
-    for (let i = 0; i < creatures.length; i++) {
-      const creature = creatures[i];
-      if (
-        creature.isAlive &&
-        creature.position[0] === x &&
-        creature.position[1] === y
-      ) {
-        hasCreature = true;
-        break;
-      }
-    }
-
-    const gridPoint = this._grid[x][y];
-    return !hasCreature && !gridPoint.isSolid;
-  }
-*/
-
 }

@@ -40,7 +40,7 @@ export default class CreatureMass {
         return this._mass > 0;
     }
 
-    get mass() {
+    get mass() : number {
         return this._mass;
     }
 

@@ -31,6 +31,7 @@ export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
   [LogEvent.BIRTH]: true,
   [LogEvent.DEAD]: true,
   [LogEvent.METABOLISM]: true,
+  [LogEvent.ATTACK]: true,
   // generation
   [LogEvent.GENERATION_START]: true,
   [LogEvent.GENERATION_END]: true,
@@ -107,6 +108,7 @@ export const RUN_ENABLED_SENSORS : SensorName[]= [
     "VerticalBorderDistance",   // 8
     "BorderDistance",           // 9
     "Mass",                     // 10
+ //   "Touch",                  // 11
   ];
 export const RUN_ENABLED_ACTIONS : ActionName[] = [
       "MoveNorth",        // 0
@@ -116,7 +118,8 @@ export const RUN_ENABLED_ACTIONS : ActionName[] = [
       "RandomMove",       // 4
       "MoveForward",      // 5
       "Photosynthesis",   // 6 
-      "Reproduction"      // 7
+      "Reproduction",     // 7
+      "Attack",           // 8
     ];
 
 

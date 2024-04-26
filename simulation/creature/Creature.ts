@@ -6,10 +6,12 @@ import { probabilityToBool } from "../helpers/helpers";
 import * as constants from "../simulationConstants"
 import {GridPosition } from "../world/grid/Grid";
 import CreatureMass from "./CreatureMass";
+import CreatureAttack from "./CreatureAttack";
 import CreatureReproduction from "./CreaturerReproduction";
 import CreatureBrain from "./brain/CreatureBrain";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
+import {Direction, Direction4} from '@/simulation/world/direction';
 
 export const maxHealth = 100;
 
@@ -18,7 +20,6 @@ const distanceStraightMax = 120;   // <--- ajustar, passar a parametres de la si
 const stepsStoppedPenalization = 100;
 
   
-type direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW"| null;
 
 export default class Creature {
   generations: WorldGenerations;
@@ -39,11 +40,12 @@ export default class Creature {
   distancePartial : number = 0;
   distanceCovered : number = 0;
   stepsStopped : number = 0;
-  lastDirection : direction = null;
-  stepDirection : direction = null;
+  lastDirection : Direction = null;
+  stepDirection : Direction = null;
 
   // body and brain
   _mass : CreatureMass;
+  _attack : CreatureAttack;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
   
@@ -82,6 +84,7 @@ export default class Creature {
 
   
     this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
+    this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
     this.log(LogEvent.BIRTH, "massAtBirth", this.massAtBirth);
@@ -142,6 +145,15 @@ export default class Creature {
 
     }
   }
+
+//TODO actionInputValue es sempre 1?
+attack(actionInputValue: number, targetDirection: Direction4) {
+  const preyMass = this._attack.attack(actionInputValue, targetDirection);
+  if (preyMass > 0) {
+    this._mass.add(preyMass);
+    this.log(LogEvent.ATTACK, "preyMass", preyMass);
+  }
+}
 
 private computeDistanceIndex(){
     // Increment distance covered
@@ -231,6 +243,10 @@ private computeDistanceIndex(){
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "massToAdd", massToAdd);
 
+ }
+
+ kill(){
+  this._health = 0;
  }
   get isAlive() {
     return this._health > 0 && this._mass.isAlive;
