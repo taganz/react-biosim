@@ -17,6 +17,7 @@ export default function StatsPanel() {
   const [data, setData] = useState<SingleGeneration[]>([]);
   const [updates, setUpdates] = useState(0);
   //const restartCount = useAtom(restartCountAtom);
+ // const currentGen = useAtomValue(currentGenAtom);
 
   const maxFitnessFormatter = useCallback(
     (value: number) => {

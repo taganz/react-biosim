@@ -1,5 +1,4 @@
 //import {METABOLISM_ENABLED, MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE} from "../simulationConstants"
-import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
 import {Grid} from "@/simulation/world/grid/Grid";
 import Creature from "@/simulation/creature/Creature";
@@ -19,7 +18,7 @@ export default class CreatureAttack {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
         if (prey != null) {
             const preyMass = prey.mass;
-            prey.kill();
+            prey.killedByAttack(this.creature.specie);
             return preyMass;
         } else {
             console.error("prey is null");

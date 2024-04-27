@@ -8,7 +8,7 @@ import WorldGenerations from "../generations/WorldGenerations";
 import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
+import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
 
@@ -180,11 +180,12 @@ export default class WorldController {
     }
 
     
-    this.currentStep++;
-
+    
     if (this.currentStep > this.stepsPerGen) {
       await this.endGeneration();
       this.startGeneration();
+    } else {
+      this.currentStep++;
     }
 
     // loop after pause
@@ -198,15 +199,13 @@ export default class WorldController {
 
   //private async startGeneration(): Promise<void> {
   private startGeneration() : void {
-    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
-    this.lastGenerationDuration =
-      new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
+    this.lastGenerationDuration = new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
     this._lastGenerationDate = new Date();
     this._pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
     this._lastPauseDate = undefined;
     this.currentStep = 0;
-
+    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
     );
@@ -289,8 +288,9 @@ export default class WorldController {
       return;
     }
     const event : SimulationCallEvent = {
-      callerClassName: LogClasses.WORLD_CONTROLLER,
+      logLevel: LogLevel.WORLD,      
       creatureId: 0,
+      speciesId: "",
       eventType: eventType,
       paramName: paramName ?? "",
       paramValue: paramValue ?? "",

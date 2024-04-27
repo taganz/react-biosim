@@ -11,7 +11,7 @@ import Genome from "@/simulation/creature/brain/Genome";
 import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
+import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -210,8 +210,9 @@ private log(eventType: LogEvent, paramName? : string, paramValue? : number | str
     return;
   }
   const event : SimulationCallEvent = {
-    callerClassName: LogClasses.GENERATIONS,
+    logLevel: LogLevel.GENERATION,
     creatureId: 0,
+    speciesId: "", 
     eventType: eventType,
     paramName: paramName ?? "",
     paramValue: paramValue ?? "",

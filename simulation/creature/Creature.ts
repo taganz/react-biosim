@@ -10,7 +10,7 @@ import CreatureAttack from "./CreatureAttack";
 import CreatureReproduction from "./CreaturerReproduction";
 import CreatureBrain from "./brain/CreatureBrain";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogClasses} from '@/simulation/logger/LogEvent';
+import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
 
 export const maxHealth = 100;
@@ -231,6 +231,9 @@ private computeDistanceIndex(){
     return this._mass.mass;
   }
   
+  get specie(): string {
+    return "SPECIE_TODO";
+  }
   /*
   set Mass(mass: number) {
     this._mass.mass = mass;
@@ -245,9 +248,11 @@ private computeDistanceIndex(){
 
  }
 
- kill(){
+ killedByAttack(killerSpecie: string) {
+  this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", killerSpecie);
   this._health = 0;
  }
+
   get isAlive() {
     return this._health > 0 && this._mass.isAlive;
   }
@@ -276,8 +281,9 @@ private computeDistanceIndex(){
         return;
       }
       const event : SimulationCallEvent = {
-        callerClassName: LogClasses.CREATURE,
+        logLevel: LogLevel.CREATURE,
         creatureId: this.id,
+        speciesId: this.specie,
         eventType: eventType,
         paramName: paramName ?? "",
         paramValue: paramValue ?? "",

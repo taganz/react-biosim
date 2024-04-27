@@ -1,11 +1,14 @@
 export enum LogEvent {
+    // creature
     REPRODUCE = "REPRODUCE",
     REPRODUCE_KO = "REPRODUCE_KO",
     PHOTOSYNTHESIS = "PHOTOSYNTHESIS",
     BIRTH = "BIRTH",
     DEAD = "DEAD",
+    DEAD_ATTACKED = "DEAD_ATTACKED",
     ATTACK = "ATTACK",
     METABOLISM = "METABOLISM",
+    // controller
     GENERATION_START = "GENERATION_START",
     GENERATION_END = "GENERATION_END",
     STEP_END = "STEP_END"
@@ -16,13 +19,12 @@ export type AllowedLogEvents = {
     [key in LogEvent]: boolean;
 };
 
-export enum LogClasses {
+export enum LogLevel {
   CREATURE = "CREATURE",
-  GENERATIONS = "GENERATIONS",
-  WORLD_CONTROLLER = "WORLD"
+  STEP = "STEP TOTALS",
+  GENERATION = "GENERATION TOTALS",
+  WORLD = "WORLD EVENTS",
 }
 
-export type AllowedLogClasses = {
-  [key in LogClasses]: boolean;
-};
+
 

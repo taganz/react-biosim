@@ -1,4 +1,11 @@
-import {EventLogger, Event} from '@/simulation/logger/EventLogger'; // Assuming your EventLogger class is in EventLogger.ts
+import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger'; 
+import { LogEvent, LogLevel } from '@/simulation/logger/LogEvent';
+import WorldController from '@/simulation/world/WorldController';
+import WorldControllerData from '@/simulation/world/WorldControllerData';
+import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
+import { testWorldControllerData } from "./testWorldControllerData";
+import { testWorldGenerationsData } from "./testWorldGenerationsData";
+
 import * as fs from 'fs';
 
 /*
@@ -9,74 +16,63 @@ jest.mock('fs', () => ({
     }),
   }));
 */
+
+//jest.mock('@/simulation/world/WorldController', () => ({ currentGen: 0, currentStep: 0 }))
+
 describe('EventLogger', () => {
   let logger: EventLogger;
   const TEST_FILENAME = 'test2.csv';
+  const worldControllerData = testWorldControllerData;
+  const worldGenerationsData = testWorldGenerationsData;
+  const worldController = new WorldController(worldControllerData, worldGenerationsData);
+  var event1 : SimulationCallEvent = 
+  {
+    logLevel: LogLevel.CREATURE,
+    creatureId: 456,
+    speciesId: 'species123',
+    eventType: LogEvent.ATTACK,
+    paramName: 'Parameter name',
+    paramValue: 'Parameter value',
+  };
+
   beforeEach(() => {
-    logger = new EventLogger(TEST_FILENAME, 3); // Create a new logger instance before each test
+    logger = new EventLogger(worldController, 3); // Create a new logger instance before each test
   });
 
   afterEach(() => {
     // Clear the log and perform any cleanup after each test
-    logger.clearLog();
+    logger.reset();
   });
 
-  it('should log an event', () => {
-    logger.logEvent({
-        callerClassName: "CLASS",
-      currentGen: 1,
-      currentStep: 2,
-      speciesId: 'species123',
-      creatureId: 456,
-      eventType: 'Event type',
-      paramName: 'Parameter name',
-      paramValue: 'Parameter value',
-    });
-    const loggedEvents = logger.getLoggedEvents();
-    expect(loggedEvents.length).toBe(1); // Check if the event is logged
+  test('should log an event', () => {
+    logger.start();
+    logger.logEvent(event1);
+    expect(logger.logCount).toBe(1); // Check if the event is logged
   });
 
-  it('should write events to file every N events', async () => {
-    logger.logEvent({
-        callerClassName: "CLASS",
-      currentGen: 1,
-      currentStep: 2,
-      speciesId: 'species123',
-      creatureId: 456,
-      eventType: 'Event type',
-      paramName: 'Parameter name',
-      paramValue: 'Parameter value',
-    });
-    logger.logEvent({
-        callerClassName: "CLASS",
-      currentGen: 1,
-      currentStep: 2,
-      speciesId: 'species456',
-      creatureId: 789,
-      eventType: 'Another event type',
-      paramName: 'Another parameter name',
-      paramValue: 'Another parameter value',
-    });
-    // At this point, the log should not have been written to file yet
-    const loggedEvents = logger.getLoggedEvents();
-    expect(loggedEvents.length).toBe(2); // Check if both events are logged
-
-    // Log one more event to trigger writing to file
-    logger.logEvent({
-        callerClassName: "CLASS",
-      currentGen: 1,
-      currentStep: 2,
-      speciesId: 'species78911',
-      creatureId: 101112,
-      eventType: 'Third event type',
-      paramName: 'Third parameter name',
-      paramValue: 'Third parameter value',
-    });
-    // After logging the third event, the log should have been written to file
-        const fileExists = fs.existsSync(TEST_FILENAME);
-        expect(fileExists).toBe(true);
-        // After logging the third event, the log should have been written to file
-   //     expect(fs.appendFile).toHaveBeenCalled();
-        logger.clearLog();
+  test('should stop logging after limit', async () => {
+    const logger3 = new EventLogger(worldController, 3); // Create a new logger instance before each test
+    logger3.start();
+    logger3.logEvent(event1);
+    logger3.logEvent(event1);
+    logger3.logEvent(event1);
+    logger3.logEvent(event1);
+    console.log(logger3.getLog());
+    expect(logger3.logCount).toBe(3); // Check if the event is logged
   });
+
+  /*
+  test('should aggregate at step level ', async () => {
+    worldControllerData.stepsPerGen = 3;
+    worldControllerData.initialPopulation = 1;
+    logger.start();
+    worldController.startRun(worldControllerData, worldGenerationsData)
+    
+    console.log(logger3.getLog());
+    //expect(logger3.logCount).toBe(3); // Check if the event is logged
+  });
+
+*/
+
+
 });

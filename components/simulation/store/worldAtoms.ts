@@ -6,7 +6,6 @@ import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
 import * as constants from "@/simulation/simulationConstants"
 import EventLogger from "@/simulation/logger/EventLogger";
-import generateRandomString from "@/helpers/generateRandomString";
 
 
 
@@ -16,7 +15,6 @@ export const worldControllerAtom = atom<WorldController | null>(null);
 export const worldCanvasAtom = atom<WorldCanvas | null>(null);
 //export const restartAtom = atom(false);
 //export const restartCountAtom = atom(0);  // to refresh tabs on restart
-export const currentGenAtom = atom(0);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
 export const eventLoggerAtom = atom<EventLogger | null>(null);
 
@@ -65,8 +63,17 @@ const wcd : WorldControllerData = {
   totalTime: 0
 }
 export const worldControllerDataAtom = atom(wcd);
-
-
+/*
+export const currentGenAtom = atom( (get) => {
+  const w = get(worldControllerAtom); 
+  if (w) {
+    return w.currentGen as unknown as number;
+  }
+  else {
+    return 0;
+  }
+});
+*/
 
 
 

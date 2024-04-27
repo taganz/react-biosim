@@ -13,44 +13,42 @@ import RectangleReproductionArea from "@/simulation/world/areas/reproduction/Rec
 import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
-import {LogEvent, AllowedLogEvents, LogClasses, AllowedLogClasses} from "@/simulation/logger/LogEvent"
+import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent"
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
 export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
-//TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to start running simulation when app loads
-export const DEBUG_CREATURE_ID : number = 1;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-export const EVENTLOGGER_LOG_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
-export const EVENTLOGGER_LOG_MAX_EVENTS = 10000; // will stop logging at this point
-export const LOCALE_STRING = 'es-ES';
-export const ALLOWED_LOG_EVENTS: AllowedLogEvents = {
+export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
+export const LOG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_EVENTLOGGER_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
+export const LOG_EVENTLOGGER_MAX_EVENTS = 10000; // will stop logging at this point
+export const LOG_LOCALE_STRING = 'es-ES';
+export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   // creature
   [LogEvent.REPRODUCE]: true,
   [LogEvent.REPRODUCE_KO]: true,
   [LogEvent.PHOTOSYNTHESIS]: true,
   [LogEvent.BIRTH]: true,
   [LogEvent.DEAD]: true,
+  [LogEvent.DEAD_ATTACKED]: true,
   [LogEvent.METABOLISM]: true,
   [LogEvent.ATTACK]: true,
-  // generation
+  // controller
   [LogEvent.GENERATION_START]: true,
   [LogEvent.GENERATION_END]: true,
-  // controller
   [LogEvent.STEP_END]: true,
 }
-export const ALLOWED_LOG_CLASSES: AllowedLogClasses = {
-  [LogClasses.CREATURE]: true,
-  [LogClasses.GENERATIONS]: true,
-  [LogClasses.WORLD_CONTROLLER]: true,
-}
+//TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to start running simulation when app loads
+
+
 // -- speed controls
 export const PAUSE_BETWEEN_STEPS = 10;  // [0 | 10 | 50 | 200]
 export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 15; //500;
-export const RUN_STEPS_PER_GENERATION = 300;
+export const RUN_INITIAL_POPULATION = 5; //500;
+export const RUN_STEPS_PER_GENERATION = 3; // 300;
 
 
 // -- environment parameters  
@@ -72,8 +70,8 @@ export const REPRODUCTION_COST_PER_MASS_DO = 0.9;
 // -- selection method
 
 export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
-//export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
-export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
+export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionAreaSelection();
+//export const RUN_SELECTION_METHOD : SelectionMethod = new ReproductionSelection();
 
 
 // -- population strategy -- 

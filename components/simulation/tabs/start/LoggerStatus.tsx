@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import {worldControllerAtom} from "../../store";
 import {atom, useAtom, useAtomValue } from "jotai";
-import {DEBUG_CREATURE_ID, LOG_ENABLED} from "@/simulation/simulationConstants"
+import {LOG_CREATURE_ID, LOG_ENABLED} from "@/simulation/simulationConstants"
 import Button from "@/components/global/Button";
 import { saveAs } from "file-saver";
 import useEventLoggerPropertyValue from "@/hooks/useEventLoggerPropertyValue";
@@ -14,7 +14,7 @@ import useWorldProperty from "@/hooks/useWorldProperty";
 //TODO refresh log count
 export default function LoggerStatus() {
   const worldController = useAtomValue(worldControllerAtom);
-  const logCount = useEventLoggerPropertyValue((eventLogger) => eventLogger.logCount2, 0);
+  const logCount = useEventLoggerPropertyValue((eventLogger) => eventLogger.logCount, 0);
   const [eventLoggerIsPaused, setEventLoggerIsPaused] = useWorldProperty(
     (world) => world.eventLoggerIsPaused,
     (world) => {
@@ -35,7 +35,7 @@ export default function LoggerStatus() {
     if (!LOG_ENABLED) {
       return "off"
     }
-    switch (DEBUG_CREATURE_ID) {
+    switch (LOG_CREATURE_ID) {
       case 0:
         return "enabled for all creatures";
       case -10:
@@ -43,7 +43,7 @@ export default function LoggerStatus() {
       case -30:
         return "enabled for creatures 0 to 29";
       default:
-        return "enabled for creature id ".concat(DEBUG_CREATURE_ID.toString());
+        return "enabled for creature id ".concat(LOG_CREATURE_ID.toString());
     }
   }
 
