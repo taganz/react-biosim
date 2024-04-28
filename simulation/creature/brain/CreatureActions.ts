@@ -26,10 +26,6 @@ export type Actions = Record<ActionName, Action>;
 
 export default class CreatureActions {
   data: Actions = {
-    Attack: {
-      name: "Attack",
-      enabled: true,
-    },
     MoveNorth: {
       name: "MoveNorth",
       enabled: false,
@@ -60,6 +56,10 @@ export default class CreatureActions {
     },
     Reproduction: {
       name: "Reproduction",
+      enabled: true,
+    },
+    Attack: {
+      name: "Attack",
       enabled: true,
     },
 

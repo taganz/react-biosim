@@ -22,23 +22,53 @@ describe('brain tests', () => {
     const worldGenerationsData : WorldGenerationsData = testWorldGenerationsData;
     const worldController = new WorldController(worldControllerData, worldGenerationsData);
     const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
+    const grid = new Grid(worldControllerData.size, []); 
+    generations.grid = grid;
     const joe = new Creature(generations, [10, 10]);
     const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
+    const METABOLISM_GENES = [-2071543808,-2071486464]
     const genome = new Genome(arrayOfGene);
 
-    test.skip('show brain', ()=> {
+
+    test.skip('mostra el genome', ()=> {
+      // l'array que hem passat quan hem creat el genoma
+      console.log("111111111111111111111111111111111111111111");
       console.log("arrayOfGene: ", arrayOfGene);
+      // com queda el genoma
       console.log("genome: ", genome);
+      // el genoma son gens que es poden descomposar en 
+      // sourceType, sourceId, sinkType, sinkId, weigth
       const xx = genome.getGeneData(0);
+      // mirem el gene 0 com es descomposa
       console.log("gene 0: ", genome.genes[0], "geneData: ", genome.getGeneData(0));
-      //console.log("encoded gene0 data ", genome.encodeGeneData(xx))
-      console.log("brain: ", joe.brain.brain);
-      console.log("brain.neurons: ", joe.brain.brain.neurons);
-      console.log("brain.neuronAccumulators: ", joe.brain.brain.neuronAccumulators);
+    });
+
+    test('show brain', ()=> {
+      const planGenome = new Genome(METABOLISM_GENES);
+      const joeBrain = new CreatureBrain ( joe, planGenome);
+      console.log("2222222222222222222222222222222222222222");
+      console.log("brain: ", joeBrain.brain);
+      console.log("brain.genome: ", joeBrain.genome);
+      console.log("brain.actions: ", joeBrain._actions);
+      console.log("brain.sensors: ", joeBrain._sensors);
+      console.log("brain.neurons: ", joeBrain.brain.neurons);
+      console.log("brain.neuronAccumulators: ", joeBrain.brain.neuronAccumulators);
+      console.log("brain.connections.sinkId: ", joeBrain.brain.connections.map(connection => connection.sinkId));
+      /*
+      joeBrain.step();
+      console.log("2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.");
+      console.log("brain: ", joeBrain.brain);
+      console.log("brain.genome: ", joeBrain.genome);
+      console.log("brain.actions: ", joeBrain._actions);
+      console.log("brain.sensors: ", joeBrain._sensors);
+      console.log("brain.neurons: ", joeBrain.brain.neurons);
+      console.log("brain.neuronAccumulators: ", joeBrain.brain.neuronAccumulators);
+      */
     }); 
 
     
-    test.skip("load brain with Oscil.lator--(2)-->RandomMove network", ()=> {
+    test("load brain with Oscil.lator--(2)-->RandomMove network", ()=> {
+      console.log("3333333333333333333333333333333333333333333");
       const geneData = [ 1, 3, 1, 4, 2 ];  
       const gene : number = Genome.encodeGeneData(geneData);
       console.log ("geneData: ", geneData, " gene: ", gene);
@@ -48,7 +78,8 @@ describe('brain tests', () => {
       console.log(brain.brain);
     });
 
-    test.skip("TOOL TO SHOW NETWORK FOR A GENOME", ()=> {
+    test("TOOL TO SHOW NETWORK FOR A GENOME", ()=> {
+      console.log("4444444444444444444444444444444444444444");
       const genes = [-2071543808,-2071486464]
       const genome = new Genome(genes);
       const brain = new CreatureBrain(joe, genome);
@@ -57,6 +88,7 @@ describe('brain tests', () => {
       console.log(brain.brain);
     });
     test("DISPLAY create brain with metabolism enabled", ()=> {
+      console.log("55555555555555555555555555555555555555555");
       const worldGenerationsData2 = {...worldGenerationsData, metabolismEnabled: true};
       const generationsWithMetabolism = new Generations(worldController, worldGenerationsData2, worldController.grid);
       worldController.grid.cell(1,1).creature = null;

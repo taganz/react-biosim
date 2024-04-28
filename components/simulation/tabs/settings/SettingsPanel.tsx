@@ -108,6 +108,7 @@ export default function SettingsPanel() {
           <div>
             <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
             <p>Simulation code: {worldControllerData.simCode}</p>
+            <p>Phenotype mode: {constants.PHENOTYPE_COLOR_MODE}</p>
             <div className="grid grid-cols-2 gap-4">
 
           {/*  size  */}

@@ -20,6 +20,7 @@ export default function PopulationPanel() {
   const [selectedCreature, setSelectedCreature] = useState<Creature | undefined>();
   const renderedSpecies = species.slice(0, 42);
 
+  // create species[], order by population and set to atom
   const onStartGeneration = useCallback(() => {
     if (!worldController) return;
 

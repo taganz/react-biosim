@@ -120,6 +120,8 @@ export const RUN_ENABLED_ACTIONS : ActionName[] = [
     ];
 
 
+// -- phenotype
+export const PHENOTYPE_COLOR_MODE : "genome" | "trophicLevel" = "trophicLevel";
 
 // -- objects
 

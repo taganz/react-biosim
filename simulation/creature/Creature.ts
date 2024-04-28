@@ -12,6 +12,7 @@ import CreatureBrain from "./brain/CreatureBrain";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
+import CreaturePhenothype from "./CreaturePhenothype";
 
 export const maxHealth = 100;
 
@@ -94,7 +95,7 @@ export default class Creature {
 
 
   getColor(): string {
-    return this.brain.genome.getColor();
+    return CreaturePhenothype.getColor(this.brain);
   }
 
 

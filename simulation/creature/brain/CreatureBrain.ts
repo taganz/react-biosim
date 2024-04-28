@@ -12,21 +12,18 @@ export const initialNeuronOutput = 0.5;
 
 export default class CreatureBrain {
     creature : Creature;
-
-    // Sensors and actions
     sensors: CreatureSensors;
     actions: CreatureActions;
-    //TODO where are those used? RD 19/4/24
-    // onlySensorsWithSingleOutput: boolean = false;
-    // singleOutputSensorFunctions: ((creature: Creature) => number)[] = [];
-    // singleInputs: number[] = [];
-
-    // Neuronal network and genome
     brain!: Network;
     genome: Genome;
     _networkInputCount: number;
     _networkOutputCount: number;
     _maxNumberNeurons: number;
+
+    //TODO where are those used? RD 19/4/24
+    // onlySensorsWithSingleOutput: boolean = false;
+    // singleOutputSensorFunctions: ((creature: Creature) => number)[] = [];
+    // singleInputs: number[] = [];
 
     constructor(creature: Creature, genome: Genome) {
 
@@ -60,10 +57,11 @@ export default class CreatureBrain {
 
     }
 
+    /*
     getColor(): string {
         return this.genome.getColor();
       }
-    
+    */
     
     private createBrainFromGenome() {
         // Create connections from genes
@@ -256,5 +254,6 @@ export default class CreatureBrain {
     private calculateOutputs(inputs: number[]): number[] {
         return this.brain.feedForward(inputs);
     }
+
 
 }
