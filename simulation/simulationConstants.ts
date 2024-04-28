@@ -17,10 +17,9 @@ import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
-export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
-export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
+export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed
+export const LOG_LEVEL : LogLevel = LogLevel.STEP; 
 export const LOG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-export const LOG_EVENTLOGGER_THRESHOLD_DEFAULT = 1000; // lines to store before saving to disk
 export const LOG_EVENTLOGGER_MAX_EVENTS = 10000; // will stop logging at this point
 export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {

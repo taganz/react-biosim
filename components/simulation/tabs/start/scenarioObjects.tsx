@@ -19,5 +19,6 @@ scenarioObjects.push({name: "vertical boxes", filename: "vertical boxes.sim"});
 scenarioObjects.push({name: "turn right", filename: "turn right.sim"});
 scenarioObjects.push({name: "Carlos' original", filename: "Carlos.sim"});
 scenarioObjects.push({name: "HET", filename: "sim HET generation 26.sim"});
+scenarioObjects.push({name: "debug", filename: "sim H8U generation 176_small_for_test.sim"});
 
 
