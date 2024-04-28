@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { worldControllerAtom } from "../../store";
 import { useEffect, useRef } from "react";
-import { Species } from "./Species";
+import { Species } from "../../../../simulation/creature/Species";
 import { useWindowSize } from "react-use";
 import { drawCreatureNeuronalNetwork } from "@/simulation/creature/brain/Helpers/drawCreatureNeuronalNetwork";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";

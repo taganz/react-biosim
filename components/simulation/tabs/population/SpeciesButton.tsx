@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Species } from "./Species";
+import { Species } from "../../../../simulation/creature/Species";
 
 interface Props {
   species: Species;

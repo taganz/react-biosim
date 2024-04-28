@@ -5,7 +5,7 @@ import { worldControllerAtom, worldCanvasAtom } from "../../store";
 import { useCallback, useEffect, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
-import { Species } from "./Species";
+import { Species } from "../../../../simulation/creature/Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import Creature from "@/simulation/creature/Creature";
