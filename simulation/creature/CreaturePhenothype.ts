@@ -1,5 +1,6 @@
 import {PHENOTYPE_COLOR_MODE} from "../simulationConstants"
 import CreatureBrain from "./brain/CreatureBrain";
+import {Genus} from "./CreatureGenus";
 
 export default class CreaturePhenothype {
     
@@ -7,29 +8,20 @@ export default class CreaturePhenothype {
     }
 
 
-    static getColor(brain: CreatureBrain): string {
-        let isPlant = false;
-        let isAnimal = false;
-        const colorPlant = "#008000";
-        const colorAnimal = "#0000FF";
-        const colorUnknown = "#808080";
+    static getColor(genus: Genus, brain: CreatureBrain): string {
         switch(PHENOTYPE_COLOR_MODE) {
             case "genome":
                 return brain.genome.getColor();
             case "trophicLevel":
-                brain.brain.connections.map(connection => {
-                    if (connection.sinkId == 6) {    // photosyntesis
-                        isPlant = true;
-                    }
-                    if (connection.sinkId == 8) {      // attack
-                        isAnimal = true;
-                    }
-                });
+                if (genus == "plant") return "#008000";
+                if (genus == "attack") return "#0000FF";
+                if (genus == "move") return "#CCCC00";
+                if (genus == "attack&move") return "#FF0000";
                 break;
             default:
                 throw new Error("error PHENOTYPE_COLOR_MODE")
         }
-    return (isAnimal ? colorAnimal : (isPlant ? colorPlant : colorUnknown));
+    return "#808080";
 
 
     }

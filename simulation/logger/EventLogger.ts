@@ -14,6 +14,7 @@ export interface SimulationCallEvent {
   logLevel: LogLevel;
   creatureId: number;
   speciesId: string;
+  genusId: string;
   eventType: LogEvent;
   paramName: string;
   paramValue: number | string;
@@ -24,6 +25,7 @@ interface SimulationEvent {
   currentGen: string;
   currentStep: string;
   speciesId: string;
+  genusId: string;
   creatureId: string;
   eventType: string;
   paramName: string;
@@ -31,7 +33,7 @@ interface SimulationEvent {
 }
 
 export default class EventLogger {
-  private csvHeaders = 'LogLevel;CurrentGen;CurrentStep;SpeciesId;CreatureId;EventType;ParamName;ParamValue\n';
+  private csvHeaders = 'LogLevel;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
   private worldController : WorldController;
   private readonly logThreshold: number;
   // should be reset at reset()
@@ -98,6 +100,7 @@ export default class EventLogger {
       currentGen : this.worldController.currentGen.toString(),
       currentStep : this.worldController.currentStep.toString(),
       speciesId : eventValues.speciesId,
+      genusId : eventValues.genusId,
       creatureId : eventValues.creatureId.toString(),
       eventType : eventValues.eventType,
       paramName : eventValues.paramName,
@@ -192,7 +195,7 @@ export default class EventLogger {
     csvData = this.csvHeaders;
     
     for (const event of this.log) {
-      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
+      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
     }
 
     const blob = new Blob([csvData], { type: 'text/plain;charset=utf-8' });

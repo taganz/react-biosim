@@ -213,6 +213,7 @@ private log(eventType: LogEvent, paramName? : string, paramValue? : number | str
     logLevel: LogLevel.GENERATION,
     creatureId: 0,
     speciesId: "", 
+    genusId: "",
     eventType: eventType,
     paramName: paramName ?? "",
     paramValue: paramValue ?? "",

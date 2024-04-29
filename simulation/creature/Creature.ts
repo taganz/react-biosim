@@ -13,6 +13,7 @@ import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger'
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
+import CreatureGenus, {Genus} from "./CreatureGenus";
 
 export const maxHealth = 100;
 
@@ -49,6 +50,7 @@ export default class Creature {
   _attack : CreatureAttack;
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
+  _genus : Genus;
   
 
   private _health: number = maxHealth;
@@ -58,7 +60,7 @@ export default class Creature {
 
     this.id = generations.lastCreatureIdCreated;
     this.stepBirth = generations.worldController.currentStep;
-    this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
+   // this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
     // Position
     this.position = position;
@@ -81,8 +83,12 @@ export default class Creature {
       // genome from parent
       this.brain = new CreatureBrain(this, genome);
     }
-
-
+    this._genus = CreatureGenus.getGenus(this.brain);
+    this.massAtBirth = 0;
+    this.massAtBirth += this._genus == "plant" ? constants.MASS_AT_BIRTH_PLANTS : 0;
+    this.massAtBirth += this._genus == "attack" ? constants.MASS_AT_BIRTH_ATTACK : 0;
+    this.massAtBirth += this._genus == "move" ? constants.MASS_AT_BIRTH_MOVE : 0;
+    
   
     this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
     this._attack = new CreatureAttack(this);
@@ -95,7 +101,7 @@ export default class Creature {
 
 
   getColor(): string {
-    return CreaturePhenothype.getColor(this.brain);
+    return CreaturePhenothype.getColor(this._genus, this.brain);
   }
 
 
@@ -141,8 +147,9 @@ export default class Creature {
   reproduce(actionInputValue: number) {
     if (this.reproduction.reproduce(actionInputValue)) {
       this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
+      this.log(LogEvent.REPRODUCE, "mass", this.mass);
     } else {
-      this.log(LogEvent.REPRODUCE_KO, "result", "KO");
+      this.log(LogEvent.REPRODUCE_KO, "mass", this.mass);
 
     }
   }
@@ -185,6 +192,15 @@ private computeDistanceIndex(){
 }
 
   private move(x: number, y: number) {
+
+
+    this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
+    if (!this.hasEnoughMassToMove()) {
+      return false;
+  }
+    this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
+    this.log(LogEvent.MOVE, "mass", this._mass.mass);
+
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
 
@@ -228,12 +244,18 @@ private computeDistanceIndex(){
     this.urgeToMove[1] = this.urgeToMove[1] + y;
   }
 
+  // consume 
+  private hasEnoughMassToMove() : boolean {
+    return this._mass.mass > this.massAtBirth *
+     (constants.MOVE_MULTIPLE_MASS_AT_BIRTH + constants.MOVE_COST_PER_MASS_DO);
+  }
+
   get mass(): number {
     return this._mass.mass;
   }
   
   get specie(): string {
-    return "SPECIE_TODO";
+    return this.brain.genome.getHexColor();
   }
   /*
   set Mass(mass: number) {
@@ -242,7 +264,9 @@ private computeDistanceIndex(){
 */
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
-    const massToAdd = cell.water  * constants.TEMP_WATER_CELL_CREATURE; 
+    const massToAdd = cell.water  
+          * constants.WATER_TO_MASS_PER_STEP 
+          * constants.TEMP_WATER_CELL_CREATURE; 
     this._mass.add(massToAdd);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "massToAdd", massToAdd);
@@ -285,6 +309,7 @@ private computeDistanceIndex(){
         logLevel: LogLevel.CREATURE,
         creatureId: this.id,
         speciesId: this.specie,
+        genusId: this._genus,
         eventType: eventType,
         paramName: paramName ?? "",
         paramValue: paramValue ?? "",
