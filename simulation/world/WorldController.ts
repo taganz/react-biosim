@@ -204,7 +204,13 @@ export default class WorldController {
     this._pauseTime = 0;
     this.totalTime += this.lastGenerationDuration;
     this._lastPauseDate = undefined;
+
     this.currentStep = 0;
+    this.currentGen++;
+    
+    this.generations.endGeneration();
+    this.generationRegistry.startGeneration();
+
     this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
@@ -223,9 +229,6 @@ export default class WorldController {
       );
     }
     //this._immediateStepsCounter = this.immediateSteps;
-    this.currentGen++;
-    this.generations.endGeneration();
-    this.generationRegistry.startGeneration();
 
   }
 
