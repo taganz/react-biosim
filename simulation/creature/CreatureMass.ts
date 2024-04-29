@@ -5,10 +5,12 @@ export default class CreatureMass {
     _mass : number = 0;
     _basalConsumption : number;
     _metabolismEnabled : boolean;
+    _massAtBirth : number; 
 
     constructor(genomeLength : number, massAtBirth: number, _metabolismEnabled = METABOLISM_ENABLED) {
         //this._massAtBirth = massAtBirth
         this._mass = massAtBirth;
+        this._massAtBirth = massAtBirth;
         this._basalConsumption = MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * genomeLength;
         this._metabolismEnabled = _metabolismEnabled;
     }
@@ -31,9 +33,10 @@ export default class CreatureMass {
         this._mass -= mass;
     }
 
+    // fraction of massAtBirth!
     consumeMassFraction(massFraction: number) {
         if (!this._metabolismEnabled) {return}
-        this._mass -= this._mass * massFraction;
+        this._mass -= this._massAtBirth * massFraction;
     }
     
     get isAlive() {

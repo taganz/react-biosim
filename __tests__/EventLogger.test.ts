@@ -30,6 +30,7 @@ describe('EventLogger', () => {
     logLevel: LogLevel.CREATURE,
     creatureId: 456,
     speciesId: 'species123',
+    genusId: "genus123",
     eventType: LogEvent.ATTACK,
     paramName: 'Parameter name',
     paramValue: 'Parameter value',

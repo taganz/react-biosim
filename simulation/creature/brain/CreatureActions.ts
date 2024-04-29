@@ -27,39 +27,39 @@ export type Actions = Record<ActionName, Action>;
 export default class CreatureActions {
   data: Actions = {
     MoveNorth: {
-      name: "MoveNorth",
+      name: "MoveNorth",    // 0
       enabled: false,
     },
     MoveSouth: {
-      name: "MoveSouth",
+      name: "MoveSouth",  // 1
       enabled: false,
     },
     MoveEast: {
-      name: "MoveEast",
+      name: "MoveEast", // 2
       enabled: true,
     },
     MoveWest: {
-      name: "MoveWest",
+      name: "MoveWest", // 3
       enabled: false,
     },
     RandomMove: {
-      name: "RandomMove",
+      name: "RandomMove", // 4
       enabled: false,
     },
     MoveForward: {
-      name: "MoveForward",
+      name: "MoveForward",  // 5
       enabled: false,
     },
     Photosynthesis: {
-      name: "Photosynthesis",
+      name: "Photosynthesis", // 6
       enabled: true,
     },
     Reproduction: {
-      name: "Reproduction",
+      name: "Reproduction", // 7
       enabled: true,
     },
     Attack: {
-      name: "Attack",
+      name: "Attack", // 8
       enabled: true,
     },
 

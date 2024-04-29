@@ -8,6 +8,7 @@ export enum LogEvent {
     DEAD_ATTACKED = "DEAD_ATTACKED",
     ATTACK = "ATTACK",
     METABOLISM = "METABOLISM",
+    MOVE = "MOVE",
     // controller
     GENERATION_START = "GENERATION_START",
     GENERATION_END = "GENERATION_END",

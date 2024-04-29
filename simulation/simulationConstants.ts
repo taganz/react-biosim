@@ -18,9 +18,9 @@ import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
 export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed
-export const LOG_LEVEL : LogLevel = LogLevel.STEP; 
-export const LOG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-export const LOG_EVENTLOGGER_MAX_EVENTS = 10000; // will stop logging at this point
+export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
+export const LOG_CREATURE_ID : number = -10;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_EVENTLOGGER_MAX_EVENTS = 100000; // will stop logging at this point
 export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   // creature
@@ -32,12 +32,13 @@ export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   [LogEvent.DEAD_ATTACKED]: true,
   [LogEvent.METABOLISM]: true,
   [LogEvent.ATTACK]: true,
+  [LogEvent.MOVE]: true, 
   // controller
   [LogEvent.GENERATION_START]: true,
   [LogEvent.GENERATION_END]: true,
   [LogEvent.STEP_END]: true,
 }
-//TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to start running simulation when app loads
+//TODO falta implementar aixo --> export const WORLDCONTROLLER_PAUSED_AT_START : boolean = true;  // false to sstart running simulation when app loads
 
 
 // -- speed controls
@@ -62,9 +63,24 @@ export const METABOLISM_ENABLED = true;    // if false creature mass won't chang
 export const METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
 export const WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
 export const MASS_AT_BIRTH_GENERATION_0 = 1;
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.07;   // 0.07
-export const REPRODUCTION_COST_PER_MASS_TRY = 0.05;    
-export const REPRODUCTION_COST_PER_MASS_DO = 0.9;
+export const MASS_AT_BIRTH_PLANTS = 1;
+export const MASS_AT_BIRTH_MOVE = 1;
+export const MASS_AT_BIRTH_ATTACK = 1;
+
+export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.0;   // 0.07
+
+export const REPRODUCTION_COST_PER_MASS_TRY = 0.1;    
+export const REPRODUCTION_COST_PER_MASS_DO = 0;
+export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 2;    
+
+export const MOVE_COST_PER_MASS_TRY = 0.2;
+export const MOVE_COST_PER_MASS_DO = 0.2;
+export const MOVE_MULTIPLE_MASS_AT_BIRTH = 2;
+
+export const ATTACK_COST_PER_MASS_TRY = 0.1;
+export const ATTACK_COST_PER_MASS_DO = 0;
+export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 0;
+export const ATTACK_MIN_PREY_MASS_FACTOR = 0;
 
 // -- selection method
 

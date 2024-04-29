@@ -11,7 +11,8 @@ export default class CreatureReproduction {
 
     //TODO revisar factor multiplicador segons sortida de l'actuador
     get hasEnoughtMassToReproduce() {
-        return this._creature.mass * 2 > this._creature.massAtBirth + this._creature.mass* (1+constants.REPRODUCTION_COST_PER_MASS_DO);
+        return this._creature.mass  > this._creature.massAtBirth 
+        * (constants.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH + constants.REPRODUCTION_COST_PER_MASS_DO);
     }
   
     //TODO implement input factor ... 
