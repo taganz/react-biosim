@@ -25,7 +25,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
           // select a random species from constant files
           const species = constants.POPULATION_DEFAULT_SPECIES;
           const randomDefaultSpecie = species[Math.floor(Math.random() * species.length)];
-          worldGenerations.newCreature(position, constants.MASS_AT_BIRTH_GENERATION_0, new Genome(randomDefaultSpecie.genome) );
+          worldGenerations.newCreature(position, new Genome(randomDefaultSpecie.genome) );
         }
         else {
           console.warn("no free position found");
@@ -56,7 +56,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
           const parent = shuffledParents[parentIdx];
           let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
           if (position != null) {
-            worldGenerations.newCreature(position, parent.massAtBirth, parent.brain.genome);
+            worldGenerations.newCreature(position, parent.brain.genome);
           }
           else {
             console.warn("no free position found 2");
@@ -75,7 +75,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
             }
             let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
             if (position != null) {
-              worldGenerations.newCreature(position, parent.massAtBirth, parent.brain.genome);
+              worldGenerations.newCreature(position, parent.brain.genome);
             }
             else {
               console.warn("no free position found 2");

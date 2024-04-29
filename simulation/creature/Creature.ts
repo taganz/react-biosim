@@ -55,7 +55,7 @@ export default class Creature {
 
   private _health: number = maxHealth;
 
-  constructor(generations: WorldGenerations, position: GridPosition, massAtBirth?: number, genome?: Genome) {
+  constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
     this.generations = generations;
 
     this.id = generations.lastCreatureIdCreated;

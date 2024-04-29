@@ -113,7 +113,7 @@ export default class WorldGenerations {
 
 
   // creates a new creature, add to currentCreatures, add to grid, mutate genome
-  public newCreature(position : GridPosition, massAtBirth?: number, genome?: Genome) : Creature {
+  public newCreature(position : GridPosition, genome?: Genome) : Creature {
     if (genome) {
       let genomeOffspring = genome.clone(
         true,
@@ -123,7 +123,7 @@ export default class WorldGenerations {
         this.geneInsertionDeletionProbability,
         this.deletionRatio
       )
-      var creature = new Creature(this, position, massAtBirth, genomeOffspring);
+      var creature = new Creature(this, position, genomeOffspring);
     }
     else {
       var creature = new Creature(this, position);

@@ -95,7 +95,7 @@ describe('brain tests', () => {
       worldController.grid.cell(1,1).isSolid = false;
       const joeWithMeta = new Creature(generationsWithMetabolism, [1, 1]);
       console.log("joeWithMeta.brain.genome: ", joeWithMeta.brain.genome);
-      const offspringWithMeta = generationsWithMetabolism.newCreature([1, 1], 1, joeWithMeta.brain.genome);
+      const offspringWithMeta = generationsWithMetabolism.newCreature([1, 1], joeWithMeta.brain.genome);
       console.log("offspringWithMeta.brain.genome: ", offspringWithMeta.brain.genome);
       
 

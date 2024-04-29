@@ -24,7 +24,7 @@ export default class CreatureReproduction {
       }
       const offspringPosition = this._creature.generations.grid.getNearByAvailablePosition(this._creature.position[0], this._creature.position[1]);
       if (offspringPosition) {
-        this._creature.generations.newCreature(offspringPosition, this._creature.massAtBirth, this._creature.brain.genome);
+        this._creature.generations.newCreature(offspringPosition, this._creature.brain.genome);
         this._creature._mass.consumeMassFraction(constants.REPRODUCTION_COST_PER_MASS_DO);    
         return true;
       }
