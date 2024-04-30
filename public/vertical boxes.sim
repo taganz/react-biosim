@@ -33,7 +33,7 @@
             "Photosynthesis"
         ],
         "metabolismEnabled": false,
-        "phenotypeColorMode": genome,
+        "phenotypeColorMode": "genome",
         "lastCreatureIdCreated": 500,
         "lastCreatureCount": 500,
         "lastSurvivorsCount": 67,
@@ -125,6 +125,7 @@
         "pauseBetweenSteps": 0,
         "immediateSteps": 1,
         "pauseBetweenGenerations": 0,
+        "simCode": "VER",
         "currentGen": 4,
         "currentStep": 138,
         "lastGenerationDuration": 1761,

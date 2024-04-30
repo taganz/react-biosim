@@ -35,7 +35,7 @@
             "Reproduction"
         ],
         "metabolismEnabled": true,
-        "phenotypeColorMode": genome,
+        "phenotypeColorMode": "genome",
         "lastCreatureIdCreated": 5,
         "lastCreatureCount": 5,
         "lastSurvivorsCount": 4,

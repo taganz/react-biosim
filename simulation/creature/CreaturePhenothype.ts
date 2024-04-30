@@ -1,4 +1,4 @@
-import {PHENOTYPE_COLOR_MODE} from "../simulationConstants"
+//import {PHENOTYPE_COLOR_MODE} from "../simulationConstants"
 import CreatureBrain from "./brain/CreatureBrain";
 import {Genus} from "./CreatureGenus";
 import { PhenoTypeColorMode } from "../SimulationTypes";

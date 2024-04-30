@@ -87,6 +87,7 @@ export default class Creature {
 
     switch(this._genus)   {
       case "plant":
+      case "unknown":
         this.massAtBirth = constants.MASS_AT_BIRTH_PLANT;
         break;
       case "attack" :
@@ -213,7 +214,7 @@ private computeDistanceIndex(){
     this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
     if (!this.hasEnoughMassToMove()) {
       return false;
-  }
+    }
     this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
     this.log(LogEvent.MOVE, "mass", this._mass.mass);
 
@@ -262,8 +263,11 @@ private computeDistanceIndex(){
 
   // consume 
   private hasEnoughMassToMove() : boolean {
+    if (!this._mass._metabolismEnabled) {
+      return true;
+    }
     return this._mass.mass > this.massAtBirth *
-     (constants.MOVE_MULTIPLE_MASS_AT_BIRTH + constants.MOVE_COST_PER_MASS_DO);
+      (constants.MOVE_MULTIPLE_MASS_AT_BIRTH + constants.MOVE_COST_PER_MASS_DO);
   }
 
   get mass(): number {

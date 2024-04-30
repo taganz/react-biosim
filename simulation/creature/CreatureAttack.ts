@@ -15,6 +15,9 @@ export default class CreatureAttack {
 
     //TODO revisar factor multiplicador segons sortida de l'actuador
     get hasEnoughtMassToAttack() {
+        if (!this.creature._mass._metabolismEnabled) {   //TODO 
+            return true;
+          }
         return this.creature.mass  > this.creature.massAtBirth 
         * (ATTACK_MULTIPLE_MASS_AT_BIRTH + ATTACK_COST_PER_MASS_DO);
     }
