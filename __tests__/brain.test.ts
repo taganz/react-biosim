@@ -26,7 +26,7 @@ describe('brain tests', () => {
     generations.grid = grid;
     const joe = new Creature(generations, [10, 10]);
     const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
-    const METABOLISM_GENES = [-2071543808,-2071486464]
+    const MASS_METABOLISM_GENES = [-2071543808,-2071486464]
     const genome = new Genome(arrayOfGene);
 
 
@@ -44,7 +44,7 @@ describe('brain tests', () => {
     });
 
     test('show brain', ()=> {
-      const planGenome = new Genome(METABOLISM_GENES);
+      const planGenome = new Genome(MASS_METABOLISM_GENES);
       const joeBrain = new CreatureBrain ( joe, planGenome);
       console.log("2222222222222222222222222222222222222222");
       console.log("brain: ", joeBrain.brain);

@@ -1,4 +1,4 @@
-import {METABOLISM_ENABLED, MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE} from "../simulationConstants"
+import {MASS_METABOLISM_ENABLED, MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE} from "../simulationConstants"
 
 export default class CreatureMass {
     //_massAtBirth : number;
@@ -7,7 +7,7 @@ export default class CreatureMass {
     _metabolismEnabled : boolean;
     _massAtBirth : number; 
 
-    constructor(genomeLength : number, massAtBirth: number, _metabolismEnabled = METABOLISM_ENABLED) {
+    constructor(genomeLength : number, massAtBirth: number, _metabolismEnabled: boolean) {
         //this._massAtBirth = massAtBirth
         this._mass = massAtBirth;
         this._massAtBirth = massAtBirth;

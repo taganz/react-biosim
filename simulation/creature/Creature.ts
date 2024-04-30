@@ -71,11 +71,11 @@ export default class Creature {
 
     if (!genome) {
       // 1st generation, create genome
-      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? constants.METABOLISM_GENES.length : 0);
+      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? constants.MASS_METABOLISM_GENES.length : 0);
       const newGenome = new Genome(
         [...new Array(2)].map(() => Genome.generateRandomGene()));
       if (this.generations.metabolismEnabled) {
-        newGenome.addGenes(constants.METABOLISM_GENES);
+        newGenome.addGenes(constants.MASS_METABOLISM_GENES);
       }
       this.brain = new CreatureBrain(this, newGenome);
     }
@@ -84,10 +84,24 @@ export default class Creature {
       this.brain = new CreatureBrain(this, genome);
     }
     this._genus = CreatureGenus.getGenus(this.brain);
-    this.massAtBirth = 0;
-    this.massAtBirth += this._genus == "plant" ? constants.MASS_AT_BIRTH_PLANTS : 0;
-    this.massAtBirth += this._genus == "attack" ? constants.MASS_AT_BIRTH_ATTACK : 0;
-    this.massAtBirth += this._genus == "move" ? constants.MASS_AT_BIRTH_MOVE : 0;
+
+    switch(this._genus)   {
+      case "plant":
+        this.massAtBirth = constants.MASS_AT_BIRTH_PLANT;
+        break;
+      case "attack" :
+        this.massAtBirth = constants.MASS_AT_BIRTH_ATTACK;
+        break;
+      case "move":
+        this.massAtBirth = constants.MASS_AT_BIRTH_MOVE;
+        break;
+      case "attack_move":
+        this.massAtBirth = constants.MASS_AT_BIRTH_ATTACK_AND_MOVE;
+        break;
+      default:
+        console.error("genus unknown ", this._genus);
+        this.massAtBirth = 1;
+    }
     
   
     this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
@@ -101,7 +115,7 @@ export default class Creature {
 
 
   getColor(): string {
-    return CreaturePhenothype.getColor(this._genus, this.brain);
+    return CreaturePhenothype.getColor(this.generations.phenotypeColorMode, this._genus, this.brain);
   }
 
 
@@ -145,17 +159,18 @@ export default class Creature {
 
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
+    this.log(LogEvent.REPRODUCE_TRY, "mass", this.mass);
     if (this.reproduction.reproduce(actionInputValue)) {
       this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
       this.log(LogEvent.REPRODUCE, "mass", this.mass);
     } else {
-      this.log(LogEvent.REPRODUCE_KO, "mass", this.mass);
 
     }
   }
 
 //TODO actionInputValue es sempre 1?
 attack(actionInputValue: number, targetDirection: Direction4) {
+  this.log(LogEvent.ATTACK_TRY, "mass", this.mass);
   const preyMass = this._attack.attack(actionInputValue, targetDirection);
   if (preyMass > 0) {
     this._mass.add(preyMass);
@@ -194,6 +209,7 @@ private computeDistanceIndex(){
   private move(x: number, y: number) {
 
 
+    this.log(LogEvent.MOVE_TRY, "mass", this._mass.mass);
     this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
     if (!this.hasEnoughMassToMove()) {
       return false;
@@ -265,7 +281,7 @@ private computeDistanceIndex(){
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
     const massToAdd = cell.water  
-          * constants.WATER_TO_MASS_PER_STEP 
+          * constants.MASS_WATER_TO_MASS_PER_STEP 
           * constants.TEMP_WATER_CELL_CREATURE; 
     this._mass.add(massToAdd);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);

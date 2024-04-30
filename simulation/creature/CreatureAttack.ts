@@ -29,6 +29,9 @@ export default class CreatureAttack {
             if (prey.mass * ATTACK_MIN_PREY_MASS_FACTOR > this.creature.mass) {
                 return 0;
             }
+            if (prey._genus == this.creature._genus) {
+                return 0;
+            }
             const preyMass = prey.mass;
             prey.killedByAttack(this.creature.specie);
             this.creature._mass.consumeMassFraction(ATTACK_COST_PER_MASS_DO);    

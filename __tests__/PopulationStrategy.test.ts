@@ -32,6 +32,7 @@ describe('populationStrategy', () => {
                 stepsPerGen: 10,
                 initialPopulation: 5,
                 worldObjects : [],
+                gridPointWaterDefault: 1,
 
                 // user values
                 pauseBetweenSteps: 0,
@@ -39,6 +40,7 @@ describe('populationStrategy', () => {
                 pauseBetweenGenerations: 0,
                 
                 // state values
+                simCode: "xxx",
                 currentGen: 0,
                 currentStep: 0,
                 lastGenerationDuration: 0,
@@ -79,6 +81,7 @@ describe('populationStrategy', () => {
                 "Reproduction"
                 ],
         metabolismEnabled: false,
+        phenotypeColorMode: "genome",
         // state values 
         lastCreatureIdCreated: 0,
         lastCreatureCount: 0,

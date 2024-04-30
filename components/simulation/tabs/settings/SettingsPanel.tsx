@@ -90,13 +90,18 @@ export default function SettingsPanel() {
       const handlePopulationStrategy = (value: string) => {
         setWorldGenerationData(prev => ({ ...prev, populationStrategy: selectPopulationStrategy(value) }));
       }
+
         
     const handleChangePopulation = (e: { target: { value: any; }; }) => {
       setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
       setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
     }
 
-      
+    //TODO - select combo
+    //const handlePhenotypeColorMode = (e: { target: { value: any; }; }) => {
+    //  setWorldGenerationData(prevState => ({ ...prevState, phenotypeColorMode: e.target.value }))
+    //}
+  
     return (
       <div>
         <p className="mb-2">

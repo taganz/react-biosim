@@ -33,7 +33,8 @@ const wgd : WorldGenerationsData = {
   geneInsertionDeletionProbability: constants.RUN_GENE_INSERTION_DELETION_PROBABILITY,
   enabledSensors: constants.RUN_ENABLED_SENSORS,
   enabledActions: constants.RUN_ENABLED_ACTIONS,
-  metabolismEnabled: constants.METABOLISM_ENABLED,
+  metabolismEnabled: constants.MASS_METABOLISM_ENABLED,
+  phenotypeColorMode: constants.PHENOTYPE_COLOR_MODE,
   // state values 
   lastCreatureIdCreated: 0,
   lastCreatureCount: 0,

@@ -156,7 +156,8 @@ describe('grid basics', () => {
                 lastSurvivorsCount: 0,
                 lastFitnessMaxValue: 0,
                 lastSurvivalRate: 0,
-                metabolismEnabled: false    //TODO afegit 20/4/24 - revisar
+                metabolismEnabled: false,    //TODO afegit 20/4/24 - revisar
+                phenotypeColorMode: "genome",
             };
         const worldController = new WorldController(worldControllerData, worldGenerationsData);
         const generations = new Generations(worldController, worldGenerationsData, worldController.grid);

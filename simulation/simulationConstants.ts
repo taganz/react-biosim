@@ -14,10 +14,12 @@ import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnAre
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent"
+import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
+
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
-export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed
+export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
 export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
 export const LOG_CREATURE_ID : number = -10;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const LOG_EVENTLOGGER_MAX_EVENTS = 100000; // will stop logging at this point
@@ -25,14 +27,16 @@ export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   // creature
   [LogEvent.REPRODUCE]: true,
-  [LogEvent.REPRODUCE_KO]: true,
+  [LogEvent.REPRODUCE_TRY]: true,
   [LogEvent.PHOTOSYNTHESIS]: true,
   [LogEvent.BIRTH]: true,
   [LogEvent.DEAD]: true,
   [LogEvent.DEAD_ATTACKED]: true,
   [LogEvent.METABOLISM]: true,
   [LogEvent.ATTACK]: true,
+  [LogEvent.ATTACK_TRY]: true,
   [LogEvent.MOVE]: true, 
+  [LogEvent.MOVE_TRY]: true, 
   // controller
   [LogEvent.GENERATION_START]: true,
   [LogEvent.GENERATION_END]: true,
@@ -59,19 +63,19 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const METABOLISM_ENABLED = true;    // if false creature mass won't change
-export const METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
-export const WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
-export const MASS_AT_BIRTH_GENERATION_0 = 1;
-export const MASS_AT_BIRTH_PLANTS = 1;
-export const MASS_AT_BIRTH_MOVE = 1;
-export const MASS_AT_BIRTH_ATTACK = 1;
+export const MASS_METABOLISM_ENABLED = true;    // if false creature mass won't change
+export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
+export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
+export const MASS_AT_BIRTH_PLANT = 1;
+export const MASS_AT_BIRTH_MOVE = 2;
+export const MASS_AT_BIRTH_ATTACK = 2;
+export const MASS_AT_BIRTH_ATTACK_AND_MOVE = 3;
 
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.0;   // 0.07
+export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.05;   // 0.07
 
 export const REPRODUCTION_COST_PER_MASS_TRY = 0.1;    
 export const REPRODUCTION_COST_PER_MASS_DO = 0;
-export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 2;    
+export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;    
 
 export const MOVE_COST_PER_MASS_TRY = 0.2;
 export const MOVE_COST_PER_MASS_DO = 0.2;
@@ -95,7 +99,7 @@ export const RUN_SELECTION_METHOD : SelectionMethod = new InsideReproductionArea
 //export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualZonePopulation();
 export const RUN_POPULATION_STRATEGY : PopulationStrategy = new AsexualRandomPopulation();
 
-export const POPULATION_DEFAULT_SPECIES = [     // to be used in RandomFixedGenePopulation
+export const POPULATION_DEFAULT_SPECIES = [     // used in RandomFixedGenePopulation
   //{name: "Basic random move", genome: [-2088452096]},
   {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
 ]
@@ -137,7 +141,7 @@ export const RUN_ENABLED_ACTIONS : ActionName[] = [
 
 
 // -- phenotype
-export const PHENOTYPE_COLOR_MODE : "genome" | "trophicLevel" = "trophicLevel";
+export const PHENOTYPE_COLOR_MODE : PhenoTypeColorMode  = "trophicLevel";
 
 // -- objects
 

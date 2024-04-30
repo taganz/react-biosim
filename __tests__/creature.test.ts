@@ -69,6 +69,8 @@ describe('creature test', () => {
                             "Photosynthesis",
                             "Reproduction"
                           ],
+                //TODO falta metabolisme aqui...
+                phenotypeColorMode: "genome",
                 // state values 
                 lastCreatureIdCreated: 0,
                 lastCreatureCount: 0,

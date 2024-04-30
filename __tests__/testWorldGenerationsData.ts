@@ -39,6 +39,7 @@ export const testWorldGenerationsData : WorldGenerationsData = {
             "Reproduction"
           ],
     metabolismEnabled: false,
+    phenotypeColorMode: "genome",
     // state values 
     lastCreatureIdCreated: 0,
     lastCreatureCount: 0,

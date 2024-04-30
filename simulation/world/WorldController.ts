@@ -294,6 +294,7 @@ export default class WorldController {
       logLevel: LogLevel.WORLD,      
       creatureId: 0,
       speciesId: "",
+      genusId : "",
       eventType: eventType,
       paramName: paramName ?? "",
       paramValue: paramValue ?? "",

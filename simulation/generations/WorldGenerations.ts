@@ -12,6 +12,7 @@ import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
+import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -37,6 +38,7 @@ export default class WorldGenerations {
   sensors: CreatureSensors = new CreatureSensors();
   actions: CreatureActions = new CreatureActions();
   metabolismEnabled : boolean;
+  phenotypeColorMode : PhenoTypeColorMode;
   // state values
   // .. read by creature
   lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?
@@ -74,6 +76,7 @@ export default class WorldGenerations {
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;
+    this.phenotypeColorMode = worldGenerationsData.phenotypeColorMode;
     this.eventLogger = worldController.eventLogger;
 
     //TODO should take into account objects size

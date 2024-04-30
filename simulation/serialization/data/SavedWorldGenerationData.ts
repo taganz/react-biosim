@@ -3,6 +3,7 @@ import { SensorName } from '../../creature/brain/CreatureSensors';
 import {SavedSelectionMethod} from "@/simulation/generations/selection/SelectionMethodFormatter";
 import {SavedPopulationStrategy} from "@/simulation/generations/population/PopulationStrategyFormatter";
 import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
+import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
 
 
 export default interface SavedWorldGenerationData {
@@ -19,7 +20,8 @@ export default interface SavedWorldGenerationData {
   geneInsertionDeletionProbability: number;
   enabledSensors: SensorName[];
   enabledActions: ActionName[];
-  metabolismEnabled: boolean,
+  metabolismEnabled: boolean;
+  phenotypeColorMode: PhenoTypeColorMode;
   // state values 
   lastCreatureIdCreated: number;
   lastCreatureCount: number;

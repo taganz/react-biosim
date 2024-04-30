@@ -34,6 +34,7 @@ export default function serializeWorldGenerationData(worldController: WorldContr
     enabledSensors: sensors,
     enabledActions: actions,
     metabolismEnabled: wg.metabolismEnabled,
+    phenotypeColorMode: wg.phenotypeColorMode,
     // state values 
     lastCreatureIdCreated: wg.lastCreatureIdCreated,
     lastCreatureCount: wg.lastCreatureCount,
@@ -61,6 +62,7 @@ export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenera
       enabledSensors: parsed.worldGenerationsData.enabledSensors,
       enabledActions: parsed.worldGenerationsData.enabledActions,
       metabolismEnabled: parsed.worldGenerationsData.metabolismEnabled,
+      phenotypeColorMode: parsed.worldGenerationsData.phenotypeColorMode,
       
       //TODO alternativa es carregar-los aqui i despres copiar-los:
 

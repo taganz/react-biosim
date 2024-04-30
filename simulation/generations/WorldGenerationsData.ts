@@ -3,6 +3,7 @@ import  {ActionName} from "@/simulation/creature/brain/CreatureActions";
 import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
+import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
 
 export default interface WorldGenerationsData {
     // initial values
@@ -19,6 +20,7 @@ export default interface WorldGenerationsData {
     enabledSensors: SensorName[];
     enabledActions: ActionName[];
     metabolismEnabled: boolean;
+    phenotypeColorMode: PhenoTypeColorMode;    //TODO aixo hauria d'estar en controller
     // state values 
     lastCreatureIdCreated: number;
     lastCreatureCount: number;

@@ -26,6 +26,7 @@ export default class CreatureReproduction {
       if (offspringPosition) {
         this._creature.generations.newCreature(offspringPosition, this._creature.brain.genome);
         this._creature._mass.consumeMassFraction(constants.REPRODUCTION_COST_PER_MASS_DO);    
+        this._creature._mass.consume(this._creature.massAtBirth);
         return true;
       }
       this._creature._mass.consumeMassFraction(constants.REPRODUCTION_COST_PER_MASS_TRY);    

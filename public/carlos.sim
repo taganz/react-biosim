@@ -33,6 +33,7 @@
             "Photosynthesis"
         ],
         "metabolismEnabled": false,
+        "phenotypeColorMode": genome,
         "lastCreatureIdCreated": 500,
         "lastCreatureCount": 500,
         "lastSurvivorsCount": 31,
