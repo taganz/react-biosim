@@ -6,6 +6,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
+import { TestStats } from "./TestStats";
 //import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 
 function getter(data: SingleGeneration): [number, number] {
@@ -34,7 +35,7 @@ export default function StatsPanel() {
     setUpdates((value) => value + 1);
   }, []);
 
-  // Bind worldController events
+  // Bind worldController events - startGeneration
   useEffect(() => {
     if (worldController) {
       setData(worldController.generationRegistry.generations);
@@ -69,6 +70,7 @@ export default function StatsPanel() {
         yLabelFormatter={maxFitnessFormatter}
         className="aspect-[2/1] w-full bg-white"
       />
+      <TestStats></TestStats>
     </div>
   );
 }
