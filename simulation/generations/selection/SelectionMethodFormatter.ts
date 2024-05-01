@@ -2,6 +2,7 @@ import SelectionMethod from "./SelectionMethod";
 import GreatestDistanceSelection from "./GreatestDistanceSelection";
 import ReproductionSelection from "./ReproductionSelection";
 import InsideReproductionAreaSelection from "./InsideReproductionAreaSelection";
+import ContinuousSelection from "./ContinuousSelection";
 
 export type SavedSelectionMethod = string;
 
@@ -18,7 +19,9 @@ export const selectionMethodFormatter = {
         return new InsideReproductionAreaSelection();
       case "GreatestDistanceSelection":
         return new GreatestDistanceSelection();
-    }
+      case "ContinuousSelection":
+        return new ContinuousSelection();
+          }
     console.error("selectionMethodFormatter unknown SelectionMethod: ", parsed, " Defaulting to InsideReproductionAreaSelection");
     return new InsideReproductionAreaSelection; 
   }

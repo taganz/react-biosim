@@ -73,7 +73,7 @@ export default class Creature {
       // 1st generation, create genome
       const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? constants.MASS_METABOLISM_GENES.length : 0);
       const newGenome = new Genome(
-        [...new Array(2)].map(() => Genome.generateRandomGene()));
+        [...new Array(randomGenesToAdd)].map(() => Genome.generateRandomGene()));
       if (this.generations.metabolismEnabled) {
         newGenome.addGenes(constants.MASS_METABOLISM_GENES);
       }

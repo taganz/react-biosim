@@ -21,4 +21,4 @@ scenarioObjects.push({name: "Carlos' original", filename: "Carlos.sim"});
 scenarioObjects.push({name: "HET", filename: "sim HET generation 26.sim"});
 scenarioObjects.push({name: "debug", filename: "sim H8U generation 176_small_for_test.sim"});
 scenarioObjects.push({name: "test herbivores", filename: "sim W19 generation 16_herbivores.sim"});
-
+scenarioObjects.push({name: "herbivores, continuous", filename: "sim W20 herbivores continuous.sim"});

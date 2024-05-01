@@ -2,6 +2,7 @@ import PopulationStrategy from "./PopulationStrategy";
 import AsexualZonePopulation from "./AsexualZonePopulation";
 import AsexualRandomPopulation from "./AsexualRandomPopulation";
 import RandomFixedGenePopulation from "./RandomFixedGenePopulation";
+import ContinuousPopulation from "./ContinuousPopulation";
 export type SavedPopulationStrategy = string;
 
 export const populationStrategyFormatter = {
@@ -18,7 +19,9 @@ export const populationStrategyFormatter = {
         return new AsexualRandomPopulation();
       case "RandomFixedGenePopulation":
         return new RandomFixedGenePopulation();
-          }
+      case "ContinuousPopulation":
+        return new ContinuousPopulation();
+      }
     console.error("populationStrategyFormatter unknown PopulationStrategy. Defaulting to AsexualRandomPopulation");
     return new AsexualRandomPopulation; 
   }

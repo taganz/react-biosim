@@ -25,7 +25,7 @@ export default function useWorldPropertyValue<T>(
         setValue(newValue);
       }
     }
-  }, 20);
+  }, 100);
 
   return value;
 }

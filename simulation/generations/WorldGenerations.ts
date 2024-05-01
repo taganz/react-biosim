@@ -137,6 +137,16 @@ export default class WorldGenerations {
     return creature;
   }
 
+  // copy all creatures without mutations for continuous simulation
+  public copyCreatures(creatures: Creature[]) {
+    for (let i=0; i<creatures.length; i++) {
+      this.grid.addCreature(creatures[i]);
+    }
+    this.currentCreatures = [];
+    this.currentCreatures = creatures;
+    this.lastCreatureIdCreated = creatures.length;
+  }
+
   
   
 
