@@ -70,6 +70,7 @@ export const MASS_AT_BIRTH_PLANT = 1;
 export const MASS_AT_BIRTH_MOVE = 2;
 export const MASS_AT_BIRTH_ATTACK = 2;
 export const MASS_AT_BIRTH_ATTACK_AND_MOVE = 3;
+export const MASS_MAX_MULTIPLE_MASS_AT_BIRT = 10;
 
 export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.05;   // 0.07
 
@@ -78,10 +79,10 @@ export const REPRODUCTION_COST_PER_MASS_DO = 0;
 export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;    
 
 export const MOVE_COST_PER_MASS_TRY = 0.2;
-export const MOVE_COST_PER_MASS_DO = 0.2;
+export const MOVE_COST_PER_MASS_DO = 0.3;
 export const MOVE_MULTIPLE_MASS_AT_BIRTH = 2;
 
-export const ATTACK_COST_PER_MASS_TRY = 0.1;
+export const ATTACK_COST_PER_MASS_TRY = 0.3;
 export const ATTACK_COST_PER_MASS_DO = 0;
 export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 0;
 export const ATTACK_MIN_PREY_MASS_FACTOR = 0;
