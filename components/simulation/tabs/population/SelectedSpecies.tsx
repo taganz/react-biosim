@@ -5,6 +5,7 @@ import { Species } from "../../../../simulation/creature/Species";
 import { useWindowSize } from "react-use";
 import { drawCreatureNeuronalNetwork } from "@/simulation/creature/brain/Helpers/drawCreatureNeuronalNetwork";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
+import SelectedCreaturedInfo from "./SelectedCreatureInfo";
 
 interface Props {
   species: Species[];
@@ -117,6 +118,9 @@ export default function SelectedSpeciesPanel({
           </p>
         </div>
       )}
+      <div>
+        <SelectedCreaturedInfo creature={worldController!.generations.currentCreatures[0]}></SelectedCreaturedInfo>
+      </div>
     </>
   );
 }

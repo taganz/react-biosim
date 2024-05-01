@@ -1,7 +1,7 @@
 "use client";
 
-import { useAtomValue } from "jotai";
-import { worldControllerAtom, worldCanvasAtom } from "../../store";
+import { useAtomValue, useAtom } from "jotai";
+import { worldControllerAtom, worldCanvasAtom, selectedCreatureAtom } from "../../store";
 import { useCallback, useEffect, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
@@ -17,7 +17,8 @@ export default function PopulationPanel() {
 
   const [species, setSpecies] = useState<Species[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<Species | undefined>();
-  const [selectedCreature, setSelectedCreature] = useState<Creature | undefined>();
+  //const [selectedCreature, setSelectedCreature] = useState<Creature | undefined>();
+  const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const renderedSpecies = species.slice(0, 42);
 
   // create species[], order by population and set to atom
@@ -78,8 +79,10 @@ export default function PopulationPanel() {
         const creature = worldController.grid.cell(worldX, worldY).creature;
 
         if (creature) {
+          setSelectedCreature(creature);
           selectCreature(creature);
         } else {
+          setSelectedCreature(null);
           selectCreature(undefined);
         }
       } else {

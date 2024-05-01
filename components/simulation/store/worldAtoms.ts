@@ -18,6 +18,7 @@ export const worldCanvasAtom = atom<WorldCanvas | null>(null);
 export const worldCreaturesAtom = atom(<Creature[]>[]);
 export const eventLoggerAtom = atom<EventLogger | null>(null);
 
+export const selectedCreatureAtom = atom (<Creature | null>(null));
 
 const wgd : WorldGenerationsData = {
   // initial values
