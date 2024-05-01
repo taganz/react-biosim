@@ -65,10 +65,10 @@ export default function PopulationPanel() {
         setSelectedCreature(creature);
       } else {
         setSelectedSpecies(undefined);
-        setSelectedCreature(undefined);
+        setSelectedCreature(null);
       }
     },
-    [species]
+    [species, setSelectedCreature]
   );
 
   const onClickCanvas = useCallback(
@@ -89,7 +89,7 @@ export default function PopulationPanel() {
           throw new Error ("something missing here...")
       }
     },
-    [worldController, worldCanvas, selectCreature]
+    [worldController, worldCanvas, selectCreature, setSelectedCreature]
   );
 
   const onMouseEnterCanvas = useCallback(() => {
