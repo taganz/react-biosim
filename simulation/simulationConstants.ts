@@ -63,7 +63,7 @@ export const TEMP_ENERGY_CELL_CREATURE = 0.01;
 export const TEMP_WATER_CELL_CREATURE = 1;
 
 // -- metabolism 
-export const MASS_METABOLISM_ENABLED = true;    // if false creature mass won't change
+export const MASS_METABOLISM_ENABLED = false;    // if false creature mass won't change
 export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
 export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
 export const MASS_AT_BIRTH_PLANT = 1;
@@ -141,7 +141,7 @@ export const RUN_ENABLED_ACTIONS : ActionName[] = [
 
 
 // -- phenotype
-export const PHENOTYPE_COLOR_MODE : PhenoTypeColorMode  = "trophicLevel";
+export const PHENOTYPE_COLOR_MODE : PhenoTypeColorMode  = "genome";    // "genome", "trophicLevel"
 
 // -- objects
 
