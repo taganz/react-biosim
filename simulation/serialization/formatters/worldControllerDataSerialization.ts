@@ -41,7 +41,7 @@ export function deserializeWorldControllerData (parsed: SavedWorld) : WorldContr
         initialPopulation: parsed.worldControllerData.initialPopulation,
         worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
         gridPointWaterDefault: parsed.worldControllerData.gridPointWaterDefault,
-        gridPointWaterCapacityDefault: parsed.worldControllerCapacityDefault,
+        gridPointWaterCapacityDefault: parsed.worldControllerData.gridPointWaterCapacityDefault,
         // user values
         pauseBetweenSteps: parsed.worldControllerData.pauseBetweenSteps,
         immediateSteps: parsed.worldControllerData.immediateSteps,
