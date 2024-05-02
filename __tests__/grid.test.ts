@@ -1,5 +1,6 @@
 //import {describe, expect, test} from '@jest/globals';
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
+import gridRain from '../simulation/world/grid/gridRain';
 import Creature from "@/simulation/creature/Creature";
 import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
@@ -8,6 +9,9 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import * as constants from "@/simulation/simulationConstants"
+import { testWorldControllerData } from './testWorldControllerData';
+import { testWorldGenerationsData } from './testWorldGenerationsData';
+
 
 /* https://jestjs.io/docs/expect  */
 
@@ -22,60 +26,60 @@ describe('grid basics', () => {
                 }
                 return grid;
         }
-        test.skip('clamp negative values ', () => {
+        test('clamp negative values ', () => {
                 expect(grid.clamp(-1, -1)).toStrictEqual([0, 0]);
         })
-        test.skip('clamp greater values ', () => {
+        test('clamp greater values ', () => {
                 expect(grid.clamp(111, 33)).toStrictEqual([99, 33]);
         })
 
 
         // cell with isSolid == false
-        const g0 : GridCell =  {creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, energy: constants.GRIDPOINT_ENERGY_DEFAULT};
+        const g0 : GridCell =  {creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT};
         // cell with isSolid == true
-        const g1 : GridCell =  {creature: null, objects: [], isSolid: true, water: constants.GRIDPOINT_WATER_DEFAULT, energy: constants.GRIDPOINT_ENERGY_DEFAULT};
+        const g1 : GridCell =  {creature: null, objects: [], isSolid: true, water: constants.GRIDPOINT_WATER_DEFAULT, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT};
     
-        test.skip('cell() ', () => {
+        test('cell() ', () => {
                 const grid5 = new Grid(5, []);
                 grid5._grid[2][2].isSolid = true;
                 expect(grid5.cell(2,2)).toEqual(g1);
         })
-        test.skip('isTileInsideWorld() ', () => {
+        test('isTileInsideWorld() ', () => {
                 const grid5 = new Grid(5, []);        
                 expect(grid5.isTileInsideWorld(-1,0)).toEqual(false);
                 expect(grid5.isTileInsideWorld(0,0)).toEqual(true);
                 expect(grid5.isTileInsideWorld(4,4)).toEqual(true);
                 expect(grid5.isTileInsideWorld(5,5)).toEqual(false);
         })
-        test.skip('isTileEmpty() ', () => {
+        test('isTileEmpty() ', () => {
                 const grid5 = new Grid(5, []);
                 grid5._grid[2][2].isSolid = true;
                 expect(grid5.isTileEmpty(0,0)).toEqual(true);
                 expect(grid5.isTileEmpty(2,2)).toEqual(false);
         })
-        test.skip('getRandomAvailablePosition() - near full', () => {
+        test('getRandomAvailablePosition() - near full', () => {
                 const grid_near_full = create_grid_all_isSolid(5);
                 grid_near_full._grid[0][1].isSolid = false;
                 expect(grid_near_full.getRandomAvailablePosition()).toStrictEqual([0,1]);
         })
-        test.skip('getRandomAvailablePosition() - full ', () => {
+        test('getRandomAvailablePosition() - full ', () => {
                 const grid_all_isSolid = create_grid_all_isSolid(5);
                 expect(grid_all_isSolid.getRandomAvailablePosition()).toBeNull();
         })
-        test.skip('getRandomAvailablePosition() - near empty', () => {
+        test('getRandomAvailablePosition() - near empty', () => {
                 const grid_near_empty = new Grid(5, []);
                 grid_near_empty._grid[0][1].isSolid = true;
                 for(let i = 0; i < 100; i++) {
                         expect(grid_near_empty.getRandomAvailablePosition()).not.toBe([0,1]);
                 }                
         })
-        test.skip('getNearByAvailablePosition() - find only available', () => {
+        test('getNearByAvailablePosition() - find only available', () => {
                 const grid = create_grid_all_isSolid(5);
                 grid._grid[2][2].isSolid = false;
                 expect(grid.getNearByAvailablePosition(1, 1)).toEqual([2,2]);
 
         })
-        test.skip('getNearByAvailablePosition() - find different ones', () => {
+        test('getNearByAvailablePosition() - find different ones', () => {
                 const grid = create_grid_all_isSolid(5);
                 grid._grid[1][0].isSolid = false;
                 grid._grid[0][1].isSolid = false;
@@ -92,75 +96,26 @@ describe('grid basics', () => {
                 grid.waterDefault = 0.123;
                 expect(grid.cell(2,2).water).toBe(0.123);
         });
-        const worldControllerData = {
-                // initial values
-                size: 5, 
-                stepsPerGen: 10,
-                initialPopulation: 1,
-                worldObjects : [],
-                gridPointWaterDefault: 1,
+        test('add water limited by waterdefault', () => {
+                const grid = new Grid(5, []); 
+                grid.waterDefault = 3;
+                grid.cell(2,2).waterCapacity = 6;
+                grid.addWater([2, 2], 2);
+                expect(grid.cell(2,2).water).toBe(5);
+                grid.addWater([2, 2], 10);
+                expect(grid.cell(2,2).water).toBe(6);
 
-                // user values
-                pauseBetweenSteps: 0,
-                immediateSteps: 1,
-                pauseBetweenGenerations: 0,
-                
-                // state values
-                simCode: "XXX",
-                currentGen: 0,
-                currentStep: 0,
-                lastGenerationDuration: 0,
-                totalTime: 0
-        };
-        const worldGenerationsData : WorldGenerationsData = {
-                populationStrategy: new AsexualZonePopulation,
-                selectionMethod: new ReproductionSelection,
-                initialPopulation: worldControllerData.initialPopulation,
-                initialGenomeSize: 4,
-                maxGenomeSize: 10,
-                maxNumberNeurons: 3,
-                mutationMode: MutationMode.wholeGene,
-                mutationProbability: 0.05,
-                deletionRatio: 0.5,
-                geneInsertionDeletionProbability: 0.015,
-                enabledSensors: [
-                        "HorizontalPosition",
-                        "VerticalPosition",
-                        "Age",
-                        "Oscillator",
-                        "Random",
-                      /*
-                        "HorizontalSpeed",
-                        "VerticalSpeed",
-                      */
-                        "HorizontalBorderDistance",
-                        "VerticalBorderDistance",
-                        "BorderDistance",
-                        "Mass"
-                      ],
-                enabledActions: [
-                        /*
-                            "MoveNorth",
-                            "MoveSouth",
-                            "MoveEast",
-                            "MoveWest",
-                            "RandomMove",
-                            "MoveForward",
-                          */
-                            "Photosynthesis",
-                            "Reproduction"
-                          ],
-                // state values 
-                lastCreatureIdCreated: 0,
-                lastCreatureCount: 0,
-                lastSurvivorsCount: 0,
-                lastFitnessMaxValue: 0,
-                lastSurvivalRate: 0,
-                metabolismEnabled: false,    //TODO afegit 20/4/24 - revisar
-                phenotypeColorMode: "genome",
-            };
-        const worldController = new WorldController(worldControllerData, worldGenerationsData);
-        const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
+        });
+        test('rain function', () => {
+                const grid = new Grid(10, []); 
+                grid.waterDefault = 2;
+                gridRain(grid);
+                console.log("--rain function--");
+                grid.debugPrintWater();
+        });
+        
+        const worldController = new WorldController(testWorldControllerData, testWorldGenerationsData);
+        const generations = new Generations(worldController, testWorldGenerationsData, worldController.grid);
         const joe = new Creature(generations, [10, 10]);
  
         test('getNeighbour4Creature', () => {
@@ -183,5 +138,6 @@ describe('grid basics', () => {
                 expect(grid.cellOffsetDirection4([3, 2], "E")).toEqual([4,2]);
                 expect(grid.cellOffsetDirection4([5, 5], "E")).toEqual(null);
         });
+
 });
 

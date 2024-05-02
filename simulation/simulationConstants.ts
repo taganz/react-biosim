@@ -57,10 +57,9 @@ export const RUN_STEPS_PER_GENERATION = 3; // 300;
 
 // -- environment parameters  
 export const RUN_WORLD_SIZE = 100;
-export const GRIDPOINT_WATER_DEFAULT = 1;
-export const GRIDPOINT_ENERGY_DEFAULT = 0.01;   
-export const TEMP_ENERGY_CELL_CREATURE = 0.01;  
-export const TEMP_WATER_CELL_CREATURE = 1;
+export const GRIDPOINT_WATER_DEFAULT = 10;
+export const GRIDPOINT_WATER_CAPACITY_DEFAULT = 20;
+export const RAIN_MAX_VALUE = 2;
 
 // -- metabolism 
 export const MASS_METABOLISM_ENABLED = false;    // if false creature mass won't change

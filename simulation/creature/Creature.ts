@@ -277,19 +277,16 @@ private computeDistanceIndex(){
   get specie(): string {
     return this.brain.genome.getHexColor();
   }
-  /*
-  set Mass(mass: number) {
-    this._mass.mass = mass;
-  }
-*/
+  
+//TODO wanted water depends on actionInputValue
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
-    const massToAdd = cell.water  
-          * constants.MASS_WATER_TO_MASS_PER_STEP 
-          * constants.TEMP_WATER_CELL_CREATURE; 
-    this._mass.add(massToAdd);
+    const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP; 
+    const waterGotFromCell = waterWanted < cell.water ? waterWanted : cell.water;
+    cell.water -= waterGotFromCell;
+    this._mass.add(waterGotFromCell);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
-    this.log(LogEvent.PHOTOSYNTHESIS, "massToAdd", massToAdd);
+    this.log(LogEvent.PHOTOSYNTHESIS, "waterGotFromCell", waterGotFromCell);
 
  }
 

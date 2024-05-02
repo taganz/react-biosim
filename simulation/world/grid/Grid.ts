@@ -10,8 +10,8 @@ export type GridCell = {
     creature: Creature | null;
     objects: WorldObject[];
     isSolid: boolean;
-    water: number;
-    energy: number;
+    water: number;   // the amount of water the cell holds
+    waterCapacity : number;  // the amount of water the cell can hold
   };
 
  
@@ -39,7 +39,7 @@ export class Grid {
     for (let y = 0; y < this._size; y++) {
       const row: Array<GridCell> = [];
       for (let x = 0; x < this._size; x++) {
-        row.push({ creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, energy: constants.GRIDPOINT_ENERGY_DEFAULT });
+        row.push({ creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT});
       }
       this.addRow(row);
     }
@@ -69,6 +69,17 @@ export class Grid {
   set waterDefault(waterDefault: number) {
     this._grid.forEach(row => row.forEach(cell => cell.water = waterDefault));
   }
+
+  public addWater(position: GridPosition, water: number) {
+    const cell = this.cell(position[0], position[1]);
+    if (cell.water + water < cell.waterCapacity) {
+      cell.water+= water;
+    }
+    else {
+      cell.water = cell.waterCapacity;
+    }
+  }
+  
   get size() : number {
     return this._size;
   }

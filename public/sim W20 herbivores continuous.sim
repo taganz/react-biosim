@@ -110,7 +110,8 @@
                 "type": "RectangleObject"
             }
         ],
-        "gridPointWaterDefault": 1,
+        "gridPointWaterDefault": 10,
+        "gridPointWaterCapacityDefault": 20,
         "pauseBetweenSteps": 50,
         "immediateSteps": 1,
         "pauseBetweenGenerations": 0,

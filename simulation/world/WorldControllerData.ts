@@ -7,6 +7,7 @@ export default interface WorldControllerData {
     initialPopulation: number;
     worldObjects : WorldObject[];
     gridPointWaterDefault: number;
+    gridPointWaterCapacityDefault: number;
     
 
     // user values

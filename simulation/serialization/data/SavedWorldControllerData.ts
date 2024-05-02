@@ -8,6 +8,7 @@ export default interface SavedWorldControllerData {
   initialPopulation: number;
   worldObjects : SavedWorldObject[];
   gridPointWaterDefault : number;
+  gridPointWaterCapacityDefault: number;
 
   // user values
   pauseBetweenSteps: number;

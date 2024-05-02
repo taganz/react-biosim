@@ -11,6 +11,8 @@ import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger'
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
+import gridRain from '@/simulation/world/grid/gridRain';
+
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
@@ -32,6 +34,7 @@ export default class WorldController {
   initialPopulation: number = 0;
   objects: WorldObject[] = [];   // to be set externally
   gridPointWaterDefault: number = 0;
+  gridPointWaterCapacityDefault: number = 0;
   
   // user values 
   pauseBetweenSteps: number = 0;
@@ -147,6 +150,7 @@ export default class WorldController {
       this.objects = [...worldControllerData.worldObjects];   
     }
     this.gridPointWaterDefault = worldControllerData.gridPointWaterDefault;
+    this.gridPointWaterCapacityDefault = worldControllerData.gridPointWaterCapacityDefault;
 
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;
@@ -209,6 +213,7 @@ export default class WorldController {
     this.currentGen++;
     
     this.generations.endGeneration();
+    gridRain(this.grid);
     this.generationRegistry.startGeneration();
 
     this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);

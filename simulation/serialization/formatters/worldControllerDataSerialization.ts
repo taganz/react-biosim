@@ -16,6 +16,7 @@ export default function serializeWorldControllerData(worldController: WorldContr
         initialPopulation: worldController.initialPopulation,
         worldObjects : objects,
         gridPointWaterDefault: worldController.gridPointWaterDefault,
+        gridPointWaterCapacityDefault: worldController.gridPointWaterCapacityDefault,
 
         // user values
         pauseBetweenSteps: worldController.pauseBetweenSteps,
@@ -40,6 +41,7 @@ export function deserializeWorldControllerData (parsed: SavedWorld) : WorldContr
         initialPopulation: parsed.worldControllerData.initialPopulation,
         worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
         gridPointWaterDefault: parsed.worldControllerData.gridPointWaterDefault,
+        gridPointWaterCapacityDefault: parsed.worldControllerCapacityDefault,
         // user values
         pauseBetweenSteps: parsed.worldControllerData.pauseBetweenSteps,
         immediateSteps: parsed.worldControllerData.immediateSteps,

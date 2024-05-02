@@ -6,7 +6,8 @@ export const testWorldControllerData : WorldControllerData = {
     stepsPerGen: 10,
     initialPopulation: 1,
     worldObjects : [],
-    gridPointWaterDefault: 1,
+    gridPointWaterDefault: 10,
+    gridPointWaterCapacityDefault: 20,
 
     // user values
     pauseBetweenSteps: 0,
