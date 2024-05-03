@@ -1,13 +1,37 @@
 
 
+## What is this?
+
+This is an environment to create evolutionary simulations inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
+
+In this app you can define the simulation initial values and see creatures evolution in real time. 
+
+The app offers the following tools to analyze the simulation
+- A map editor
+- Creatures brain visualization
+- Fitness evolution graph
+- Save and load scenarios. Gif generation
+
+This repo is a fork from [this original project](https://github.com/carlo697/react-biosim) by [Carlos Peña](https://github.com/carlo697) that created a Typescript/React version of Miller simulation and designed the GUI.
+
+Original David R.Miller respository is [here](https://github.com/davidrmiller/biosim4).
+
+
 ## Live Demo
 
 >  You can test this app [here](https://react-biosim.vercel.app/).
 
+In this demo you will find predefined simulation examples:
 
-## What is this?
+- Examples 1 to 3 are based on the demos shown in David's video
+- Vertical boxes: observe how creatures to learn to go the right box
+- Left turn: observe how creatures get to learn how to get to the bottom left of the screen
+- Carlos' original: creatures learn to stay at the center
+- Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
 
-This repo is a fork from [this original project](https://github.com/carlo697/react-biosim). 
+
+## The simulation
+
 
 This is a web app (build with TypeScript and React) that runs an evolution and natural selection simulation. This app is inspired on the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)) whose repo is [here](https://github.com/davidrmiller/biosim4).
 
@@ -63,20 +87,8 @@ In order to run this project locally, clone the repo and:
 
 ## Built With
 
-- HTML
-- CSS
-- Tailwind
 - TypeScript
 - React
 - Next.js
-
-
-## Images
-![brave_eVW6W9BO9q](https://github.com/carlo697/react-biosim/assets/16585568/d269be70-aa7c-4649-83b2-ddf3676e7732)
-![brave_IOgch5MsFr](https://github.com/carlo697/react-biosim/assets/16585568/e930f46a-fd8f-4845-b946-23ed03c2df04)
-![brave_5zRDKlfAeE](https://github.com/carlo697/react-biosim/assets/16585568/e3d12b92-62cd-4c09-a0cc-77b450189658)
-![brave_cuteuJ9JfQ](https://github.com/carlo697/react-biosim/assets/16585568/1fe7e0e4-eb6d-4157-8d1e-912a3547d7d1)
-![brave_sev9cuvCXq](https://github.com/carlo697/react-biosim/assets/16585568/3f01012e-02c4-49da-9cec-c4c9af1fef14)
-![brave_72lWWdV2fE](https://github.com/carlo697/react-biosim/assets/16585568/2edbda70-04a3-4ef3-a823-ff487c3d96a1)
-![brave_Y9EpGiBREn](https://github.com/carlo697/react-biosim/assets/16585568/de24e8b0-052b-4c16-ad31-a77110df3b05)
-
+- Jotai
+- Tailwind
