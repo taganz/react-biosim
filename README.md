@@ -2,17 +2,19 @@
 
 ## What is this?
 
-This is an environment to **create evolutionary** simulations inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
+This is an environment to create **evolutionary simulations** inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
 
-Define a simulation scenario and observe the evolution of creatures in real time.
+This video is one of the best ways I've seen to understand evolution basics.
 
-Use those tools to create and analyze the simulation:
-- Simulation settings definition
+In the app you can play with this model. You can define a simulation scenario and observe the evolution of creatures in real-time. 
+
+These tools are available to create and analyze the simulation:
+- Simulation settings configuration
 - Map editor
-- Creatures brain visualization
+- Creature's brain visualization
 - Fitness evolution graph
-- Save and load scenarios.
-- Gif generation
+- Save and load scenarios
+- GIF generation
 - Log stats
 - Simulation speed
 
@@ -20,24 +22,34 @@ This repo is a fork from [this original project](https://github.com/carlo697/rea
 
 This is a hobby project under development. See [To do and know issues](https://github.com/taganz/react-biosim/blob/main/docs/To%20do%20and%20know%20issues)
 
+
 ## Live Demo
 
 >  You can test this app [here](https://react-biosim.vercel.app/).
 
-In this demo you will find predefined simulation examples:
+Quick start
+- Select a predefined scenario.
+- Look how the survival % increases in the graph.
+- Look how the creature's brain complexity increases
+- And then, change settings and restart, change the map...
 
-- Examples 1 to 3 are based on the demos shown in David's video
+
+**Predefined scenarios:**
+
+- Examples 1 to 3 are based on the demos shown in David's video. [Example 1 gif](https://github.com/taganz/react-biosim/blob/main/docs/Example%201%20generation%208.gif)
 - Vertical boxes: observe how creatures learn to go the right box
 - Left turn: observe how creatures find a way to learn how to get to the bottom left of the screen
 - Carlos' original: creatures learn to stay at the center
 - Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
 
 
+
+
 ## The simulation
 
 The simulation consists of a **map** of 100x100 (by default) squares. Scattered over the map we can find **creatures**. A creature is a colored square that represents an organism in the simulation. Each creature has an int array that is used as its **genome**. Each int in that array is a **gene**. A creature could have a genome of size 4 (meaning it has 4 genes) while other creature in the same simulation could have one of size 16. The genome of a creature gives shape to a simple neural network which dictates how the creature will behave and react.
 
-![image](https://github.com/carlo697/react-biosim/assets/16585568/1841c911-cace-4cef-854c-c56f5ba8498b)
+![image](docs/images/tab_population.png)
 
 The simulation runs through **generations**. When a generation finishes, the next one will start executing, and so on. In the map there's a semi transparent blue square, that's a **reproduction zone**. If a creature is inside a reproduction zone by the end of a generation, it will **survive**. If a creature survives, it will have offspring, in other words, there will be creatures in the next generation that will share the genome of its parent.
 
