@@ -18,7 +18,7 @@ Use those tools to create and analyze the simulation:
 
 This repo is a fork from [this original project](https://github.com/carlo697/react-biosim) by [Carlos Peña](https://github.com/carlo697) that created a Typescript/React version of Miller simulation and designed the GUI. Original David R.Miller respository is [here](https://github.com/davidrmiller/biosim4).
 
-This is a hobby project under development. See [To do and know issues](https://github.com/taganz/react-biosim/blob/main/docs/To do and know issues.md)
+This is a hobby project under development. See [To do and know issues](https://github.com/taganz/react-biosim/blob/main/docs/To%20do%20and%20know%20issues)
 
 ## Live Demo
 
