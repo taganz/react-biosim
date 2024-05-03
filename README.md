@@ -2,20 +2,23 @@
 
 ## What is this?
 
-This is an environment to create evolutionary simulations inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
+This is an environment to **create evolutionary** simulations inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
 
-In this app you can define the simulation initial values and see creatures evolution in real time. 
+Define a simulation scenario and observe the evolution of creatures in real time.
 
-The app offers the following tools to analyze the simulation
-- A map editor
+Use those tools to create and analyze the simulation:
+- Simulation settings definition
+- Map editor
 - Creatures brain visualization
 - Fitness evolution graph
-- Save and load scenarios. Gif generation
+- Save and load scenarios.
+- Gif generation
+- Log stats
+- Simulation speed
 
-This repo is a fork from [this original project](https://github.com/carlo697/react-biosim) by [Carlos Peña](https://github.com/carlo697) that created a Typescript/React version of Miller simulation and designed the GUI.
+This repo is a fork from [this original project](https://github.com/carlo697/react-biosim) by [Carlos Peña](https://github.com/carlo697) that created a Typescript/React version of Miller simulation and designed the GUI. Original David R.Miller respository is [here](https://github.com/davidrmiller/biosim4).
 
-Original David R.Miller respository is [here](https://github.com/davidrmiller/biosim4).
-
+This is a hobby project under development. See [To do and know issues](https://github.com/taganz/react-biosim/blob/main/docs/To do and know issues.md)
 
 ## Live Demo
 
@@ -24,16 +27,13 @@ Original David R.Miller respository is [here](https://github.com/davidrmiller/bi
 In this demo you will find predefined simulation examples:
 
 - Examples 1 to 3 are based on the demos shown in David's video
-- Vertical boxes: observe how creatures to learn to go the right box
-- Left turn: observe how creatures get to learn how to get to the bottom left of the screen
+- Vertical boxes: observe how creatures learn to go the right box
+- Left turn: observe how creatures find a way to learn how to get to the bottom left of the screen
 - Carlos' original: creatures learn to stay at the center
 - Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
 
 
 ## The simulation
-
-
-This is a web app (build with TypeScript and React) that runs an evolution and natural selection simulation. This app is inspired on the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)) whose repo is [here](https://github.com/davidrmiller/biosim4).
 
 The simulation consists of a **map** of 100x100 (by default) squares. Scattered over the map we can find **creatures**. A creature is a colored square that represents an organism in the simulation. Each creature has an int array that is used as its **genome**. Each int in that array is a **gene**. A creature could have a genome of size 4 (meaning it has 4 genes) while other creature in the same simulation could have one of size 16. The genome of a creature gives shape to a simple neural network which dictates how the creature will behave and react.
 
