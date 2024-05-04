@@ -20,8 +20,7 @@
             "VerticalSpeed",
             "HorizontalBorderDistance",
             "VerticalBorderDistance",
-            "BorderDistance",
-            "Mass"
+            "BorderDistance"
         ],
         "enabledActions": [
             "MoveNorth",
@@ -29,11 +28,10 @@
             "MoveEast",
             "MoveWest",
             "RandomMove",
-            "MoveForward",
-            "Photosynthesis"
+            "MoveForward"
         ],
         "metabolismEnabled": false,
-        "phenotypeColorMode": genome,
+        "phenotypeColorMode": "genome",
         "lastCreatureIdCreated": 500,
         "lastCreatureCount": 500,
         "lastSurvivorsCount": 31,
@@ -41,6 +39,7 @@
         "lastSurvivalRate": 0.062
     },
     "worldControllerData": {
+        "simCode": "CAR",
         "size": 100,
         "stepsPerGen": 300,
         "initialPopulation": 500,

@@ -70,7 +70,8 @@ export default function StatsPanel() {
         yLabelFormatter={maxFitnessFormatter}
         className="aspect-[2/1] w-full bg-white"
       />
-      <TestStats></TestStats>
-    </div>
+     {/* TODO genus graph.... */ }
+     {/* <TestStats></TestStats>   */}
+     </div>
   );
 }

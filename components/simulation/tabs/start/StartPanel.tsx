@@ -9,7 +9,7 @@ export default function StartPanel() {
   return (
     <div>
       <p className="mb-2 text-lg">
-        This is a simulation...:
+        This is a evolution simulator. Define a simulation scenario and observe the evolution of creatures in real-time. 
       </p>
       <div className="text-lg">
       <ScenariosSelection></ScenariosSelection>
