@@ -26,16 +26,6 @@
     - Rain
 
 
-## map editor
-- Object types
-    - Spawn zone: only one should be created
-    - Reproduction zones
-    - Obstacles
-    - Health zones have no current use
-- At start map editor loads cached map
-- "use map" to load current map in the simulation
-- Known issue: last object in the list will have color black. Better put an obstacle at the last position
-
 
 
 

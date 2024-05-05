@@ -1,12 +1,14 @@
 # Running a simulation
 
 - Select a scenario template in **Start** panel
-- Modify initial settings in **Settings** panel and pres **Restart** button
+- Setup the environment selecting initial settings in **Settings** panel. You can also create a new map in the **Map** panel
+- Run de simulation pressing **Restart** button. Adjust simulation speed
 - Visualize creature brain evolution at **Population** panel
 - Visualize fitness evolution in tab **Stats**
-- Create a map in the **Map** panel and press **Use Map** button to change the simulation
-- Save current simulation or generate a gif in the **Save** panel. Restore in **Load** panel.
-- A csv log can be generated from **Start** panel
+- Share your results saving current simulation or generating a gif in the **Save** panel. 
+- Rerun a saved simulation in **Load** panel.
+- A csv log can be generated from **Start** panel (work in progress)
+
 
 # Settings
 
@@ -37,3 +39,15 @@
 ## Sensors
 
 ## Actions
+
+
+# Map editor
+- Create a map in the **Map** panel 
+- Object types
+    - Spawn zone: only one should be created
+    - Reproduction zones
+    - Obstacles
+    - Health zones have no current use
+- At start map editor loads cached map
+- Press **Use Map** button to change the simulation
+- Known issue: last object in the list will have color black. Better put an obstacle at the last position
