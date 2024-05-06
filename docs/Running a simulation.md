@@ -2,7 +2,7 @@
 
 - Select a scenario template in **Start** panel
 - Setup the environment selecting initial settings in **Settings** panel. You can also create a new map in the **Map** panel
-- Run de simulation pressing **Restart** button. Adjust simulation speed
+- Run the simulation pressing **Restart** button. Adjust simulation speed
 - Visualize creature brain evolution at **Population** panel
 - Visualize fitness evolution in tab **Stats**
 - Share your results saving current simulation or generating a gif in the **Save** panel. 

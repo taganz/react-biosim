@@ -38,7 +38,7 @@ Quick start
 
 - Examples 1 to 3 are based on the demos shown in David's video. [Example 1 gif](https://github.com/taganz/react-biosim/blob/main/docs/Example%201%20generation%208.gif)
 - Vertical boxes: observe how creatures learn to go the right box
-- Left turn: observe how creatures find a way to learn how to get to the bottom left of the screen
+- Turn right and Turn right generation 5574: observe how creatures find a way to learn how to get to the bottom left of the screen at generation 0 and after 5574 creatures.  [Example turn right generation 5574](https://github.com/tagans/react-biosim/blob/main/docs/turn%20right%20generation%205583.gif)
 - Carlos' original: creatures learn to stay at the center
 - Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
 
