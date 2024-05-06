@@ -4,7 +4,7 @@ import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom} f
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
 import {scenarioObjects, ScenarioObjects} from "./scenarioObjects";
-import {loadSavedWorldAndStartRun } from "@/simulation/serialization/loadWorld";
+import {loadSavedWorldAndStartRun, loadSavedWorldAndResumeRun } from "@/simulation/serialization/loadWorld";
 import SavedWorld from '@/simulation/serialization/data/SavedWorld';
 
   
@@ -21,10 +21,16 @@ export default function ScenariosSelection () {
   const handleSelection = async (value: string) => {
     if (worldController) {
         try {
-          const filename = scenarioObjects[parseInt(value)].filename;
+          const scenario = scenarioObjects[parseInt(value)];
+          const filename = scenario.filename;
           const response = await fetch(filename!);
           const parsedScenario = await response.text();          
-          const [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndStartRun(worldController, parsedScenario as string);
+          if (scenario.action == "startRun") {
+            var [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndStartRun(worldController, parsedScenario as string);
+          }
+          else {
+            var [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndResumeRun(worldController, parsedScenario as string);
+          }
           setWorldGenerationData(readWorldGenerationData);
           setWorldControllerData(readWorldControllerData);
         } catch (error) {
