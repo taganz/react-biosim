@@ -20,11 +20,6 @@ export default class CreatureBrain {
     _networkOutputCount: number;
     _maxNumberNeurons: number;
 
-    //TODO where are those used? RD 19/4/24
-    // onlySensorsWithSingleOutput: boolean = false;
-    // singleOutputSensorFunctions: ((creature: Creature) => number)[] = [];
-    // singleInputs: number[] = [];
-
     constructor(creature: Creature, genome: Genome) {
 
         this.creature = creature;
@@ -49,10 +44,8 @@ export default class CreatureBrain {
 
     step() {
 
-        // Calculate outputs of neuronal network
-        const outputs = this.calculateOutputs(this.calculateInputs());
-
-        // Execute actions with outputs
+        const calculateSensorOutputs = this.sensors.calculateOutputs(this.creature);
+        const outputs = this.brain.feedForward(calculateSensorOutputs);
         this.actions.executeActions(this.creature, outputs);
 
     }
@@ -247,13 +240,13 @@ export default class CreatureBrain {
             );
     }
 
-    private calculateInputs(): number[] {
-        return this.sensors.calculateOutputs(this.creature);
-    }
+    //private calculateInputs(): number[] {
+    //    return this.sensors.calculateOutputs(this.creature);
+    //}
 
-    private calculateOutputs(inputs: number[]): number[] {
-        return this.brain.feedForward(inputs);
-    }
+    //private calculateOutputs(inputs: number[]): number[] {
+    //    return this.brain.feedForward(inputs);
+    //}
 
 
 }
