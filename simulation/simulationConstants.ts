@@ -20,15 +20,23 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
 
 
 
-// -- start  --> use startupScenario for production deployment
+// ----- production setup -----
+
 export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "startupScenario";
+export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
+
+// ----- dev setup -----
+
+//export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";
+//export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
+
+
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
-export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
 export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
-export const LOG_CREATURE_ID : number = -10;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-export const LOG_EVENTLOGGER_MAX_EVENTS = 100000; // will stop logging at this point
+export const LOG_CREATURE_ID : number = -30;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_EVENTLOGGER_MAX_EVENTS = 1000000; // will stop logging at this point
 export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   // creature
@@ -56,7 +64,7 @@ export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 150; //500;
+export const RUN_INITIAL_POPULATION = 30; //500;
 export const RUN_STEPS_PER_GENERATION = 300; // 300;
 
 
@@ -69,7 +77,7 @@ export const RAIN_MAX_VALUE = 200; // 2
 // -- metabolism 
 export const MASS_METABOLISM_ENABLED = true;    // if false creature mass won't change
 export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
-export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
+export const MASS_WATER_TO_MASS_PER_STEP = 0.50; //0.1 - 0.4
 export const MASS_AT_BIRTH_PLANT = 1;
 export const MASS_AT_BIRTH_MOVE = 2;
 export const MASS_AT_BIRTH_ATTACK = 2;
@@ -117,9 +125,9 @@ export const RUN_MUTATION_MODE : MutationMode = MutationMode.wholeGene;
 export const RUN_INITIAL_GENOME_SIZE = 4;
 export const RUN_MAX_GENOME_SIZE = 30;
 export const RUN_MAX_NUMBER_NEURONS = 15;
-export const RUN_MUTATION_PROBABILITY = 0.05;
-export const RUN_DELETION_RATIO = 0.5;
-export const RUN_GENE_INSERTION_DELETION_PROBABILITY = 0.015;
+export const RUN_MUTATION_PROBABILITY = 0.25; //0.05;
+export const RUN_DELETION_RATIO = 0.5; //0.5;
+export const RUN_GENE_INSERTION_DELETION_PROBABILITY = 0.1; //0.015;
 export const RUN_ENABLED_SENSORS : SensorName[]= [
     "HorizontalPosition",       // 0
     "VerticalPosition",         // 1

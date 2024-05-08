@@ -49,12 +49,6 @@ export default class CreatureBrain {
         this.actions.executeActions(this.creature, outputs);
 
     }
-
-    /*
-    getColor(): string {
-        return this.genome.getColor();
-      }
-    */
     
     private createBrainFromGenome() {
         // Create connections from genes
@@ -239,14 +233,5 @@ export default class CreatureBrain {
             finalConnections
             );
     }
-
-    //private calculateInputs(): number[] {
-    //    return this.sensors.calculateOutputs(this.creature);
-    //}
-
-    //private calculateOutputs(inputs: number[]): number[] {
-    //    return this.brain.feedForward(inputs);
-    //}
-
 
 }

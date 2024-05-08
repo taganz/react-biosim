@@ -127,6 +127,7 @@ export default class Creature {
 
     this._mass.basalMetabolism();
     this.log(LogEvent.METABOLISM, "mass", this.mass);
+    this.log(LogEvent.METABOLISM, "basalConsumption", this._mass._basalConsumption);
 
     this.urgeToMove = [0, 0];
 
@@ -146,11 +147,13 @@ export default class Creature {
     // Move
     if (probX !== 0 || probY !== 0) {
       this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
+      this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
     }
 
     this.computeDistanceIndex();
 
     this.lastDirection = this.stepDirection;
+    this.log(LogEvent.MOVE, "lastDirection",  <string>this.lastDirection);
 
     //this.log("mass: ".concat(this._mass.toFixed(1)));
 
@@ -281,7 +284,7 @@ private computeDistanceIndex(){
 //TODO wanted water depends on actionInputValue
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
-    const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP; 
+    const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
     const waterGotFromCell = waterWanted < cell.water ? waterWanted : cell.water;
     cell.water -= waterGotFromCell;
     this._mass.add(waterGotFromCell);
@@ -317,7 +320,8 @@ private computeDistanceIndex(){
   }
 
 
-  private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
+  
+  log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
       if (!this.eventLogger) {
         console.error("this.eventLogger not found");
         return;

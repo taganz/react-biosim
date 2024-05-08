@@ -12,7 +12,7 @@ import {LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
 
 export interface SimulationCallEvent {
   logLevel: LogLevel;
-  creatureId: number;
+  creatureId: number | string;
   speciesId: string;
   genusId: string;
   eventType: LogEvent;
@@ -87,8 +87,8 @@ export default class EventLogger {
       if (eventValues.logLevel == LogLevel.CREATURE) {
         if (!(LOG_CREATURE_ID == 0 
           || LOG_CREATURE_ID == eventValues.creatureId 
-          || (LOG_CREATURE_ID == -10 && eventValues.creatureId > 0 && eventValues.creatureId < 10)
-          || (LOG_CREATURE_ID == -30 && eventValues.creatureId > 0 && eventValues.creatureId < 30)
+          || (LOG_CREATURE_ID == -10 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 10)
+          || (LOG_CREATURE_ID == -30 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 30)
           )) {
         return;
         }

@@ -16,7 +16,7 @@ import { testWorldGenerationsData } from "./testWorldGenerationsData";
 
 /* https://jestjs.io/docs/expect  */
 
-describe('brain tests', () => {
+describe('brain basic tests', () => {
 
     const worldControllerData : WorldControllerData =  testWorldControllerData;
     const worldGenerationsData : WorldGenerationsData = testWorldGenerationsData;
@@ -27,43 +27,21 @@ describe('brain tests', () => {
     const joe = new Creature(generations, [10, 10]);
     const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
     const MASS_METABOLISM_GENES = [-2071543808,-2071486464]
-    const genome = new Genome(arrayOfGene);
-
-
-    test.skip('mostra el genome', ()=> {
-      // l'array que hem passat quan hem creat el genoma
-      console.log("111111111111111111111111111111111111111111");
-      console.log("arrayOfGene: ", arrayOfGene);
-      // com queda el genoma
-      console.log("genome: ", genome);
-      // el genoma son gens que es poden descomposar en 
+    // el genoma son gens que es poden descomposar en 
       // sourceType, sourceId, sinkType, sinkId, weigth
-      const xx = genome.getGeneData(0);
-      // mirem el gene 0 com es descomposa
-      console.log("gene 0: ", genome.genes[0], "geneData: ", genome.getGeneData(0));
-    });
+      const genome = new Genome(arrayOfGene);
 
-    test('show brain', ()=> {
-      const planGenome = new Genome(MASS_METABOLISM_GENES);
-      const joeBrain = new CreatureBrain ( joe, planGenome);
-      console.log("2222222222222222222222222222222222222222");
+    test('DISPLAY BRAIN INFORMATION', ()=> {
+      const plantGenome = new Genome(MASS_METABOLISM_GENES);
+      const joeBrain = new CreatureBrain ( joe, plantGenome);
+      console.log("=====================================");
       console.log("brain: ", joeBrain.brain);
       console.log("brain.genome: ", joeBrain.genome);
-      console.log("brain.actions: ", joeBrain._actions);
-      console.log("brain.sensors: ", joeBrain._sensors);
+      console.log("brain.actions: ", joeBrain.actions);
+      console.log("brain.sensors: ", joeBrain.sensors);
       console.log("brain.neurons: ", joeBrain.brain.neurons);
       console.log("brain.neuronAccumulators: ", joeBrain.brain.neuronAccumulators);
       console.log("brain.connections.sinkId: ", joeBrain.brain.connections.map(connection => connection.sinkId));
-      /*
-      joeBrain.step();
-      console.log("2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.2B.");
-      console.log("brain: ", joeBrain.brain);
-      console.log("brain.genome: ", joeBrain.genome);
-      console.log("brain.actions: ", joeBrain._actions);
-      console.log("brain.sensors: ", joeBrain._sensors);
-      console.log("brain.neurons: ", joeBrain.brain.neurons);
-      console.log("brain.neuronAccumulators: ", joeBrain.brain.neuronAccumulators);
-      */
     }); 
 
     

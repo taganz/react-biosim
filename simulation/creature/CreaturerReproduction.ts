@@ -1,5 +1,6 @@
 import * as constants from "../simulationConstants"
 import Creature from "./Creature";
+import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 
 export default class CreatureReproduction {
 
@@ -24,6 +25,7 @@ export default class CreatureReproduction {
 
       if (!this.hasEnoughtMassToReproduce) {
           this._creature._mass.consumeMassFraction(constants.REPRODUCTION_COST_PER_MASS_TRY);    
+          this._creature.log(LogEvent.REPRODUCE_TRY, "mass consumed", this._creature.mass*constants.REPRODUCTION_COST_PER_MASS_TRY);
           return false;
       }
       const offspringPosition = this._creature.generations.grid.getNearByAvailablePosition(this._creature.position[0], this._creature.position[1]);

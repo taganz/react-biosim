@@ -297,7 +297,7 @@ export default class WorldController {
     }
     const event : SimulationCallEvent = {
       logLevel: LogLevel.WORLD,      
-      creatureId: 0,
+      creatureId: "",
       speciesId: "",
       genusId : "",
       eventType: eventType,
