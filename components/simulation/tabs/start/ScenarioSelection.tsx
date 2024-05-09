@@ -1,6 +1,6 @@
 import React from 'react';
 import {atom, useSetAtom, useAtom, useAtomValue} from 'jotai';
-import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom} from "../../store/worldAtoms";
+import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCreaturesAtom, worldCanvasAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
 import {scenarioObjects, ScenarioObjects} from "./scenarioObjects";
@@ -11,6 +11,7 @@ import SavedWorld from '@/simulation/serialization/data/SavedWorld';
 export default function ScenariosSelection () {
     
   const worldController = useAtomValue(worldControllerAtom);
+  const worldCanvas = useAtomValue(worldCanvasAtom);
   const setWorldControllerData = useSetAtom(worldControllerDataAtom);
   const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
   
@@ -19,7 +20,7 @@ export default function ScenariosSelection () {
 
   // functionloadScenario
   const handleSelection = async (value: string) => {
-    if (worldController) {
+    if (worldController && worldCanvas) {
         try {
           const scenario = scenarioObjects[parseInt(value)];
           const filename = scenario.filename;
@@ -31,6 +32,7 @@ export default function ScenariosSelection () {
           else {
             var [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndResumeRun(worldController, parsedScenario as string);
           }
+          worldCanvas.size = readWorldControllerData.size;
           setWorldGenerationData(readWorldGenerationData);
           setWorldControllerData(readWorldControllerData);
         } catch (error) {
@@ -38,7 +40,7 @@ export default function ScenariosSelection () {
       }
     }    
     else {
-      console.warn("ScenariosSelection worldController not found!");
+      console.warn("ScenariosSelection worldController or worldCanvas not found!");
     }
   }
 

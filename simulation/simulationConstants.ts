@@ -19,16 +19,13 @@ import ContinuousPopulation from "./generations/population/ContinuousPopulation"
 import ContinuousSelection from "./generations/selection/ContinuousSelection";
 
 
+/*  ----- production setup -----
+ STARTUP_MODE = "startupScenario";
+ LOG_PAUSED_AT_START = true;   
+*/
 
-// ----- production setup -----
-
-export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "startupScenario";
-export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
-
-// ----- dev setup -----
-
-//export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";
-//export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed
+export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";
+export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed
 
 
 
@@ -69,7 +66,7 @@ export const RUN_STEPS_PER_GENERATION = 300; // 300;
 
 
 // -- environment parameters  
-export const RUN_WORLD_SIZE = 100;
+export const RUN_WORLD_SIZE = 100;   // 100
 export const GRIDPOINT_WATER_DEFAULT = 200;  // 10
 export const GRIDPOINT_WATER_CAPACITY_DEFAULT = 400;  // 20
 export const RAIN_MAX_VALUE = 200; // 2

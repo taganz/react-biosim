@@ -18,3 +18,4 @@ scenarioObjects.push({name: "Turn right generation 5574", filename: "turn right 
                       action: "resumeRun"});
 scenarioObjects.push({name: "Carlos' original", filename: "Carlos.sim", action: "startRun"});
 scenarioObjects.push({name: "Plants and animals", filename: "sim W20 herbivores continuous.sim", action: "startRun"});
+scenarioObjects.push({name: "test resume", filename: "test.sim", action: "resumeRun"});
