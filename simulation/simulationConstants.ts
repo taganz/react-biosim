@@ -24,8 +24,8 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
  LOG_PAUSED_AT_START = true;   
 */
 
-export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";
-export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed
+export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";  
+export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed, recommended for production
 
 
 
