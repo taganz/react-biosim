@@ -21,7 +21,7 @@
 
 
 
-## energy (water, mass)
+## energy, metabolism (water, mass)
 
 - If scenario is "metabolism enabled" creatures need energy to execute actions
 - Creatures get energy from water in the cell through photosynthesis action
@@ -29,7 +29,14 @@
 - Creatures give mass to offspring at birth
 - Creatures will die if mass is zero
 
+## brain
+
+- Creature's brain consist of a neural network with sensors, neurons and actions
+- Brain consumes a energy proportional to the number of neurons and actions
+
 ## actions
+
+- Creatures spend some energy every step for every action available in its brain.
 
 ### movement
 

@@ -43,8 +43,6 @@ Quick start
 - Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
 
 
-
-
 ## The simulation
 
 The simulation consists of a **map** of 100x100 (by default) squares. Scattered over the map we can find **creatures**. A creature is a colored square that represents an organism in the simulation. Each creature has an int array that is used as its **genome**. Each int in that array is a **gene**. A creature could have a genome of size 4 (meaning it has 4 genes) while other creature in the same simulation could have one of size 16. The genome of a creature gives shape to a simple neural network which dictates how the creature will behave and react.
@@ -83,6 +81,15 @@ The app has a full UI to change the settings for the simulation, you can edit th
 - **Creatures:** you can enable and disable the sensors and actions.
 - **Save a JSON:** save a JSON containing the creatures, the settings, and the map of the current simulation.
 - **Load a JSON:** load a previously saved JSON to resume that simulation.
+
+
+# Doc - work in progress
+
+- [World](https://github.com/taganz/react-biosim/blob/main/docs/World.md)
+- [Generations](https://github.com/taganz/react-biosim/blob/main/docs/Generations.md)
+- [Creatures](https://github.com/taganz/react-biosim/blob/main/docs/Creatures.md)
+- [To do and known issues](https://github.com/taganz/react-biosim/blob/main/docs/To%20do%20and%20known%20issues.md)
+
 
 # Running
 
