@@ -41,7 +41,7 @@ export default class WorldGenerations {
   phenotypeColorMode : PhenoTypeColorMode;
   // state values
   // .. read by creature
-  lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?
+  lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?   // deprecated
   // .. read by GenerationRegistry      //TODO passar com a parametre?
   lastCreatureCount: number = 0;      
   lastSurvivorsCount: number = 0;
@@ -89,7 +89,7 @@ export default class WorldGenerations {
     if (!creatures) {
       this.currentCreatures = [];
       // state values
-      this.lastCreatureIdCreated = 0;
+      //this.lastCreatureIdCreated = 0;  // deprecated
       this.lastCreatureCount = 0;
       this.lastSurvivorsCount = 0;
       this.lastFitnessMaxValue = 0;
@@ -98,7 +98,7 @@ export default class WorldGenerations {
     else {
       this.currentCreatures = [...creatures] ;
       // state values
-      this.lastCreatureIdCreated = worldGenerationsData.lastCreatureIdCreated;
+      //this.lastCreatureIdCreated = worldGenerationsData.lastCreatureIdCreated;    // deprecated
       this.lastCreatureCount = worldGenerationsData.lastCreatureCount;
       this.lastSurvivorsCount = worldGenerationsData.lastSurvivorsCount;
       this.lastFitnessMaxValue = worldGenerationsData.lastFitnessMaxValue;
@@ -133,18 +133,16 @@ export default class WorldGenerations {
     }
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
-    this.lastCreatureIdCreated += 1;
+    //this.lastCreatureIdCreated += 1;  // deprecated
     return creature;
   }
 
   // copy all creatures without mutations for continuous simulation
-  public copyCreatures(creatures: Creature[]) {
-    for (let i=0; i<creatures.length; i++) {
-      this.grid.addCreature(creatures[i]);
-    }
+  // should keep same array order == creature id
+  public updateCreatures(creatures: Creature[]) {
+    this.grid.updateCreatures(creatures);
     this.currentCreatures = [];
     this.currentCreatures = creatures;
-    this.lastCreatureIdCreated = creatures.length;
   }
 
   
@@ -193,7 +191,7 @@ public endGeneration(): void {
   // Reset creatures
   this.grid.clearCreatures();
   this.currentCreatures = [];
-  this.lastCreatureIdCreated = 0;   // resets at generation
+  //this.lastCreatureIdCreated = 0;   // resets at generation   // deprecated
   //this.currentStep = 0;
 
   
@@ -216,6 +214,16 @@ get isFirstGeneration() {
 }
 get currentGen() {
   return this.worldController.currentGen;
+}
+
+public creatureById(id: number) : Creature {
+
+  for (let i = 0; i< this.currentCreatures.length; i++) {
+    if (this.currentCreatures[i].id == id) {
+      return this.currentCreatures[i];
+    }
+  }
+  throw new Error ("Creature id not found");
 }
 private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
   if (!this.eventLogger) {

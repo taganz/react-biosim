@@ -25,7 +25,7 @@ export default class ContinuousPopulation implements PopulationStrategy {
       if (!parents) {
           throw new Error ("generations > 0 should have parents");
       }
-      worldGenerations.copyCreatures(parents);
+      worldGenerations.updateCreatures(parents);
     }
   }
 }

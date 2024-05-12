@@ -36,7 +36,7 @@ export default function serializeWorldGenerationData(worldController: WorldContr
     metabolismEnabled: wg.metabolismEnabled,
     phenotypeColorMode: wg.phenotypeColorMode,
     // state values 
-    lastCreatureIdCreated: wg.lastCreatureIdCreated,
+    lastCreatureIdCreated: wg.lastCreatureIdCreated,  // deprecated
     lastCreatureCount: wg.lastCreatureCount,
     lastSurvivorsCount: wg.lastSurvivorsCount,
     lastFitnessMaxValue: wg.lastFitnessMaxValue,

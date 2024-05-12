@@ -120,6 +120,15 @@ export class Grid {
       }
   }
 
+  public updateCreatures(creatures : Creature[]) {
+    this.clearCreatures();
+    for (let i=0; i<creatures.length; i++) {
+      this.addCreature(creatures[i]);
+    }
+
+
+  }
+
   public cell(x: number, y: number) : GridCell {
       return this._grid[x][y];
   } 
