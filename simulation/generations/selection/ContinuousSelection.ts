@@ -10,6 +10,7 @@ export default class ContinuousSelection
 {
   name = "ContinuousSelection";
   fitnessValueName = "ContinuousSelection Fitness Value TBD";
+  shouldResetLastCreatureIdCreatedEveryGeneration = false;
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     const parents = generations.currentCreatures;

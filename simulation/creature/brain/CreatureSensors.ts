@@ -33,7 +33,8 @@ export type Sensor = {
   neuronCount: number;
 };
 
-export type Sensors = Record<SensorName, Sensor>;
+//export type Sensors = Record<SensorName, Sensor>;
+type Sensors = Record<SensorName, Sensor>;
 
 export default class CreatureSensors {
   data: Sensors = {

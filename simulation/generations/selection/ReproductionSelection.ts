@@ -7,6 +7,7 @@ export default class ReproductionSelection
 {
   name = "ReproductionSelection";
   fitnessValueName = "Reproduction";
+  shouldResetLastCreatureIdCreatedEveryGeneration = true;
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     

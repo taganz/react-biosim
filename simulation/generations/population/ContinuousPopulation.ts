@@ -25,7 +25,9 @@ export default class ContinuousPopulation implements PopulationStrategy {
       if (!parents) {
           throw new Error ("generations > 0 should have parents");
       }
-      worldGenerations.updateCreatures(parents);
+
+      const newParents: Creature[] = parents.filter(creature => creature.stepBirth > 1);
+      worldGenerations.updateCreatures(newParents);
     }
   }
 }

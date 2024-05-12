@@ -22,10 +22,13 @@ export default class CreatureAttack {
         * (ATTACK_MULTIPLE_MASS_AT_BIRTH + ATTACK_COST_PER_MASS_DO);
     }
 
+    // returns preyMass or 0 if prey not killed
    attack(actionInputValue: number, targetDirection: Direction4) : number {
-    const preyPosition = this.grid.cellOffsetDirection4(this.creature.position, targetDirection);
+    if (!this.hasEnoughtMassToAttack) {
+        return 0;
+    }
     this.creature._mass.consumeMassFraction(ATTACK_COST_PER_MASS_TRY);    
-
+    const preyPosition = this.grid.cellOffsetDirection4(this.creature.position, targetDirection);
     if (preyPosition != null) {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
         if (prey != null) {

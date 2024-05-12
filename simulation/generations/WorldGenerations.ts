@@ -41,7 +41,7 @@ export default class WorldGenerations {
   phenotypeColorMode : PhenoTypeColorMode;
   // state values
   // .. read by creature
-  lastCreatureIdCreated : number = 0;   //TODO aprofitar posicio en array per id de creatures?   // deprecated
+  lastCreatureIdCreated : number = 0;   
   // .. read by GenerationRegistry      //TODO passar com a parametre?
   lastCreatureCount: number = 0;      
   lastSurvivorsCount: number = 0;
@@ -89,7 +89,7 @@ export default class WorldGenerations {
     if (!creatures) {
       this.currentCreatures = [];
       // state values
-      //this.lastCreatureIdCreated = 0;  // deprecated
+      this.lastCreatureIdCreated = 0;  
       this.lastCreatureCount = 0;
       this.lastSurvivorsCount = 0;
       this.lastFitnessMaxValue = 0;
@@ -98,7 +98,7 @@ export default class WorldGenerations {
     else {
       this.currentCreatures = [...creatures] ;
       // state values
-      //this.lastCreatureIdCreated = worldGenerationsData.lastCreatureIdCreated;    // deprecated
+      this.lastCreatureIdCreated = worldGenerationsData.lastCreatureIdCreated; 
       this.lastCreatureCount = worldGenerationsData.lastCreatureCount;
       this.lastSurvivorsCount = worldGenerationsData.lastSurvivorsCount;
       this.lastFitnessMaxValue = worldGenerationsData.lastFitnessMaxValue;
@@ -133,12 +133,11 @@ export default class WorldGenerations {
     }
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
-    //this.lastCreatureIdCreated += 1;  // deprecated
+    this.lastCreatureIdCreated += 1;  
     return creature;
   }
 
   // copy all creatures without mutations for continuous simulation
-  // should keep same array order == creature id
   public updateCreatures(creatures: Creature[]) {
     this.grid.updateCreatures(creatures);
     this.currentCreatures = [];
@@ -191,7 +190,9 @@ public endGeneration(): void {
   // Reset creatures
   this.grid.clearCreatures();
   this.currentCreatures = [];
-  //this.lastCreatureIdCreated = 0;   // resets at generation   // deprecated
+  if (this.selectionMethod.shouldResetLastCreatureIdCreatedEveryGeneration) {
+    this.lastCreatureIdCreated = 0;   
+  }
   //this.currentStep = 0;
 
   

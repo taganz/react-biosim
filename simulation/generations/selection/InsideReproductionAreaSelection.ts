@@ -8,7 +8,8 @@ export default class InsideReproductionAreaSelection
 {
   name = "InsideReproductionAreaSelection";
   fitnessValueName = "Survival rate (%)";
-
+  shouldResetLastCreatureIdCreatedEveryGeneration = true;
+  
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     const parents = [];
 

@@ -10,6 +10,7 @@ export default class GreatestDistanceSelection
 {
   name = "GreatestDistanceSelection";
   fitnessValueName = "Distance index";
+  shouldResetLastCreatureIdCreatedEveryGeneration = true;
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
     const distanceValuesSorted : Creature [] = generations.currentCreatures.sort((a, b) =>{ return b.distanceCovered - a.distanceCovered});
