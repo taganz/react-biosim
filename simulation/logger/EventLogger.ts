@@ -44,6 +44,8 @@ export default class EventLogger {
   private lastGenerationTotals : number = 0;
   private generationTotalsHaveSeenStepZero : boolean = false;
   private paused = LOG_PAUSED_AT_START;
+  private logCreatureId : number = LOG_CREATURE_ID;
+  private currentLogLevel : LogLevel = LOG_LEVEL;
   
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
@@ -52,7 +54,6 @@ export default class EventLogger {
     this.logThreshold = logThreshold;
     console.log("eventLogger initialized");
   }
-
 
   public logEvent(eventValues: SimulationCallEvent) : void {
 
@@ -64,6 +65,7 @@ export default class EventLogger {
     if (!LOG_ENABLED) return ;
     if (!LOG_ALLOWED_EVENTS[eventValues.eventType]) return;
 
+
     this.logReceivedEvent(eventValues);
     
     if (eventValues.logLevel == LogLevel.CREATURE) {
@@ -74,21 +76,32 @@ export default class EventLogger {
    
   }
 
+  public startLoggingCreatureId(id: number) {
+    this.paused = false;
+    this.currentLogLevel = LogLevel.CREATURE;
+    this.logCreatureId = id;
+    this.worldController.generations.creatureById(this.logCreatureId).logBasicData();  
+  }
+
+  get creatureId() : number {
+    return this.logCreatureId;
+  }
+
   private logReceivedEvent(eventValues:SimulationCallEvent) {
     
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (LOG_LEVEL == LogLevel.STEP)) return ;
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (LOG_LEVEL == LogLevel.GENERATION)) return;
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (LOG_LEVEL == LogLevel.WORLD)) return ;
-      if ((eventValues.logLevel == LogLevel.STEP) && (LOG_LEVEL == LogLevel.GENERATION)) return;
-      if ((eventValues.logLevel == LogLevel.STEP) && (LOG_LEVEL == LogLevel.WORLD)) return ;
-      if ((eventValues.logLevel == LogLevel.GENERATION) && (LOG_LEVEL == LogLevel.WORLD)) return;
+      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.STEP)) return ;
+      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.GENERATION)) return;
+      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.WORLD)) return ;
+      if ((eventValues.logLevel == LogLevel.STEP) && (this.currentLogLevel == LogLevel.GENERATION)) return;
+      if ((eventValues.logLevel == LogLevel.STEP) && (this.currentLogLevel == LogLevel.WORLD)) return ;
+      if ((eventValues.logLevel == LogLevel.GENERATION) && (this.currentLogLevel == LogLevel.WORLD)) return;
   
       // if logging creature log, check id range
       if (eventValues.logLevel == LogLevel.CREATURE) {
-        if (!(LOG_CREATURE_ID == 0 
-          || LOG_CREATURE_ID == eventValues.creatureId 
-          || (LOG_CREATURE_ID == -10 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 10)
-          || (LOG_CREATURE_ID == -30 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 30)
+        if (!(this.logCreatureId == 0 
+          || this.logCreatureId == eventValues.creatureId 
+          || (this.logCreatureId == -10 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 10)
+          || (this.logCreatureId == -30 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 30)
           )) {
         return;
         }
