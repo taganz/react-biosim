@@ -42,11 +42,12 @@ export default class CreatureBrain {
 
     }
 
-    step() {
+    step() : number  {
 
         const calculateSensorOutputs = this.sensors.calculateOutputs(this.creature);
         const outputs = this.brain.feedForward(calculateSensorOutputs);
-        this.actions.executeActions(this.creature, outputs);
+        const energyConsumedByActionsExecution = this.actions.executeActions(this.creature, outputs);
+        return energyConsumedByActionsExecution;
 
     }
     

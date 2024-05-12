@@ -51,13 +51,14 @@ export default class Creature {
   reproduction : CreatureReproduction;
   brain : CreatureBrain;
   _genus : Genus;
+  _age : number = 0;
   
   private _health: number = maxHealth;
 
   constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
     this.generations = generations;
 
-    this.id = generations.currentCreatures.length - 1;
+    this.id = generations.lastCreatureIdCreated + 1;
     this.stepBirth = generations.worldController.currentStep;
    // this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
@@ -123,16 +124,24 @@ export default class Creature {
     
     if (!this.isAlive) return;
 
+    this._age++;
+    if (this._age > this.generations.worldController.stepsPerGen) {
+      this.die("old");
+      return;
+    }
+
     this._mass.basalMetabolism();
     this.log(LogEvent.METABOLISM, "mass", this.mass);
     this.log(LogEvent.METABOLISM, "basalConsumption", this._mass._basalConsumption);
-
-    this.urgeToMove = [0, 0];
+    if (!this.isAlive) return;
 
     // read sensors and activate actions that will update urgeToMove and call other creature functions
-    this.brain.step();
+    this.urgeToMove = [0, 0];
+    const energyConsumedByActionsExecution = this.brain.step();
+    this._mass.consume(energyConsumedByActionsExecution);
+    this.log(LogEvent.METABOLISM, "actionsExecutionConsumption", energyConsumedByActionsExecution);
+    if (!this.isAlive) return;
 
-    
     // Calculate probability of movement
     const moveX = Math.tanh(this.urgeToMove[0]);
     const moveY = Math.tanh(this.urgeToMove[1]);
@@ -165,13 +174,14 @@ export default class Creature {
       this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
       this.log(LogEvent.REPRODUCE, "mass", this.mass);
     } else {
-
+        //TODO ??
     }
   }
 
   //TODO actionInputValue es sempre 1?
   attack(actionInputValue: number, targetDirection: Direction4) {
-    this.log(LogEvent.ATTACK_TRY, "mass", this.mass);
+    this.log(LogEvent.ATTACK_TRY, "actionInputValue", actionInputValue.toFixed(2));
+    this.log(LogEvent.ATTACK_TRY, "targetDirection", <string>targetDirection);
     const preyMass = this._attack.attack(actionInputValue, targetDirection);
     if (preyMass > 0) {
       this._mass.add(preyMass);
@@ -292,7 +302,7 @@ export default class Creature {
 
  killedByAttack(killerSpecie: string) {
   this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", killerSpecie);
-  this.die();
+  this.die("attacked");
  }
 
   get isAlive() {
@@ -305,7 +315,7 @@ export default class Creature {
     if (result <= 0 && result !== this._health) {
       // Free grid point
       //this.generations.grid[this.position[0]][this.position[1]].creature = null;
-      this.die();
+      this.die("health");
       // console.log("free!!!")
     }
 
@@ -320,12 +330,15 @@ export default class Creature {
   logBasicData(when: string = "") {
     this.log(LogEvent.INFO, when + " " +"mass", this.mass);
     this.log(LogEvent.INFO, when + " " +"gen", this.generations.worldController.currentGen);
+    this.log(LogEvent.INFO, when + " " +"neuronsCount", this.brain.actions.neuronsCount);
+    this.log(LogEvent.INFO, when + " " +"_energyConsumedByActionsExecution", this.brain.actions._energyConsumedByActionsExecution);
     this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
     this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
     this.log(LogEvent.INFO, when + " " +"position", '${this.position[0]},${this.position[0]}');
     this.log(LogEvent.INFO, when + " " +"lastPosition", '${this.lastPosition[0]},${this.lastPosition[0]}');
     this.log(LogEvent.INFO, when + " " +"lastMovement", '${this.lastMovement[0]},${this.lastMovement[0]}');
   }
+
   
   log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
       if (!this.eventLogger) {
@@ -345,8 +358,8 @@ export default class Creature {
     }
 
   //TODO review
-  private die () {
-    this.log(LogEvent.DEAD, "mass", this.mass);
+  private die (cause: string = "unknown") {
+    this.log(LogEvent.DEAD, "cause", cause);
     this.logBasicData("dead");
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?

@@ -22,7 +22,8 @@ export type Action = {
 };
 
 
-export type Actions = Record<ActionName, Action>;
+//export type Actions = Record<ActionName, Action>;
+type Actions = Record<ActionName, Action>;
 
 export default class CreatureActions {
   data: Actions = {
@@ -66,6 +67,7 @@ export default class CreatureActions {
   };
 
   neuronsCount: number = 0;
+  _energyConsumedByActionsExecution : number = 0;
 
   getList() {
     const list: ActionName[] = [];
@@ -94,11 +96,13 @@ export default class CreatureActions {
         this.neuronsCount++;
       }
     }
+    this._energyConsumedByActionsExecution = this.neuronsCount * constants.MASS_COST_PER_EXECUTE_ACTION;
   }
 
   executeActions(creature: Creature, values: number[]) {
     let currentIndex = 0;
     let input = values[0];
+    let energyConsumedByActionsExecution = 0;
 
     // MoveNorth
     if (this.data.MoveNorth.enabled) {
@@ -201,7 +205,10 @@ export default class CreatureActions {
       currentIndex++;
       input = values[currentIndex];
     }
-    
+   
+    return this._energyConsumedByActionsExecution;
+
+
   }
 }
 
