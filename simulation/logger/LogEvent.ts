@@ -1,5 +1,6 @@
 export enum LogEvent {
     // creature
+    INFO = "INFO",
     REPRODUCE = "REPRODUCE",
     REPRODUCE_TRY = "REPRODUCE_TRY",
     PHOTOSYNTHESIS = "PHOTOSYNTHESIS",

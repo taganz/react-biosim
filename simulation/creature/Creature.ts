@@ -52,13 +52,12 @@ export default class Creature {
   brain : CreatureBrain;
   _genus : Genus;
   
-
   private _health: number = maxHealth;
 
   constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
     this.generations = generations;
 
-    this.id = generations.lastCreatureIdCreated;
+    this.id = generations.currentCreatures.length - 1;
     this.stepBirth = generations.worldController.currentStep;
    // this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
@@ -109,8 +108,7 @@ export default class Creature {
     this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
-    this.log(LogEvent.BIRTH, "massAtBirth", this.massAtBirth);
-
+    this.logBasicData("birth");
   }
 
 
@@ -153,7 +151,6 @@ export default class Creature {
     this.computeDistanceIndex();
 
     this.lastDirection = this.stepDirection;
-    this.log(LogEvent.MOVE, "lastDirection",  <string>this.lastDirection);
 
     //this.log("mass: ".concat(this._mass.toFixed(1)));
 
@@ -172,54 +169,53 @@ export default class Creature {
     }
   }
 
-//TODO actionInputValue es sempre 1?
-attack(actionInputValue: number, targetDirection: Direction4) {
-  this.log(LogEvent.ATTACK_TRY, "mass", this.mass);
-  const preyMass = this._attack.attack(actionInputValue, targetDirection);
-  if (preyMass > 0) {
-    this._mass.add(preyMass);
-    this.log(LogEvent.ATTACK, "preyMass", preyMass);
-  }
-}
-
-private computeDistanceIndex(){
-    // Increment distance covered
-    if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
-    {
-      // has not moved
-      this.stepsStopped+= 1;
-      if (this.stepsStopped > stepsStoppedPenalization) {
-        this.distanceCovered-= 1;
-        this.distanceCovered = this.distanceCovered < 0 ? 0 : this.distanceCovered;
-      }
+  //TODO actionInputValue es sempre 1?
+  attack(actionInputValue: number, targetDirection: Direction4) {
+    this.log(LogEvent.ATTACK_TRY, "mass", this.mass);
+    const preyMass = this._attack.attack(actionInputValue, targetDirection);
+    if (preyMass > 0) {
+      this._mass.add(preyMass);
+      this.log(LogEvent.ATTACK, "preyMass", preyMass);
     }
-    else {
-      // has moved
-      this.stepsStopped = 0;
-      // If keeping same direction for some time, increase distance moved
-      if (this.stepDirection != null && this.lastDirection == this.stepDirection  && this.distancePartial < distanceStraightMax) {
-        this.distancePartial += 1;
-        if (this.distancePartial > distanceStraightMin ) {
-          this.distanceCovered += 1;
+  }
+
+  private computeDistanceIndex(){
+      // Increment distance covered
+      if (this.lastPosition[0] == this.position[0] && this.lastPosition[1] == this.position[1]) 
+      {
+        // has not moved
+        this.stepsStopped+= 1;
+        if (this.stepsStopped > stepsStoppedPenalization) {
+          this.distanceCovered-= 1;
+          this.distanceCovered = this.distanceCovered < 0 ? 0 : this.distanceCovered;
         }
       }
       else {
-        // has changed direction 
-        this.distancePartial = 0;
-      }
+        // has moved
+        this.stepsStopped = 0;
+        // If keeping same direction for some time, increase distance moved
+        if (this.stepDirection != null && this.lastDirection == this.stepDirection  && this.distancePartial < distanceStraightMax) {
+          this.distancePartial += 1;
+          if (this.distancePartial > distanceStraightMin ) {
+            this.distanceCovered += 1;
+          }
+        }
+        else {
+          // has changed direction 
+          this.distancePartial = 0;
+        }
+    }
   }
-}
 
   private move(x: number, y: number) {
 
 
-    this.log(LogEvent.MOVE_TRY, "mass", this._mass.mass);
+    this.log(LogEvent.MOVE_TRY, "x,y", x.toFixed(1).concat(",", y.toFixed(1)));
     this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
     this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
-    this.log(LogEvent.MOVE, "mass", this._mass.mass);
 
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
@@ -254,7 +250,8 @@ private computeDistanceIndex(){
       else if (x==-1 && y==0) this.stepDirection = "W";
       else if (x==-1 && y==1) this.stepDirection = "NW";
       else console.log("move error", x, y);
-      
+      this.log(LogEvent.MOVE, "direction", <string>this.stepDirection);
+
     }
   }
 
@@ -295,7 +292,7 @@ private computeDistanceIndex(){
 
  killedByAttack(killerSpecie: string) {
   this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", killerSpecie);
-  this._health = 0;
+  this.die();
  }
 
   get isAlive() {
@@ -320,6 +317,15 @@ private computeDistanceIndex(){
   }
 
 
+  logBasicData(when: string = "") {
+    this.log(LogEvent.INFO, when + " " +"mass", this.mass);
+    this.log(LogEvent.INFO, when + " " +"gen", this.generations.worldController.currentGen);
+    this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
+    this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
+    this.log(LogEvent.INFO, when + " " +"position", '${this.position[0]},${this.position[0]}');
+    this.log(LogEvent.INFO, when + " " +"lastPosition", '${this.lastPosition[0]},${this.lastPosition[0]}');
+    this.log(LogEvent.INFO, when + " " +"lastMovement", '${this.lastMovement[0]},${this.lastMovement[0]}');
+  }
   
   log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
       if (!this.eventLogger) {
@@ -341,9 +347,10 @@ private computeDistanceIndex(){
   //TODO review
   private die () {
     this.log(LogEvent.DEAD, "mass", this.mass);
+    this.logBasicData("dead");
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?
-    this.generations.grid.cell(this.position[0], this.position[1]).creature = null;
+    //this.generations.grid.cell(this.position[0], this.position[1]).creature = null;
       
   }
 }

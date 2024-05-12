@@ -25,7 +25,7 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
 */
 
 export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";  
-export const LOG_PAUSED_AT_START : boolean = true;   // true to reduce load if not needed, recommended for production
+export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed, recommended for production
 
 
 
@@ -37,6 +37,7 @@ export const LOG_EVENTLOGGER_MAX_EVENTS = 1000000; // will stop logging at this 
 export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
   // creature
+  [LogEvent.INFO]: true,
   [LogEvent.REPRODUCE]: true,
   [LogEvent.REPRODUCE_TRY]: true,
   [LogEvent.PHOTOSYNTHESIS]: true,
