@@ -183,7 +183,7 @@ export default class CreatureActions {
 
 
     // Reproduction
-    if (this.data.Photosynthesis.enabled) {
+    if (this.data.Reproduction.enabled) {
       if (input > 0) { 
         creature.reproduce(input);
       }
