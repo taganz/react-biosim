@@ -249,6 +249,7 @@ export default class CreatureSensors {
       values.push((100 - creature.health) / 100);
     }
 
+    // Population Density
     if (this.data.PopulationDensity.enabled) {
       let populationCount = 0;
 

@@ -1,6 +1,5 @@
 //import {describe, expect, test} from '@jest/globals';
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
-import gridRain from '../simulation/world/grid/gridRain';
 import Creature from "@/simulation/creature/Creature";
 import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
@@ -11,7 +10,7 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import * as constants from "@/simulation/simulationConstants"
 import { testWorldControllerData } from './testWorldControllerData';
 import { testWorldGenerationsData } from './testWorldGenerationsData';
-
+import WorldWater from '@/simulation/world/WorldWater';
 
 /* https://jestjs.io/docs/expect  */
 
@@ -108,8 +107,9 @@ describe('grid basics', () => {
         });
         test('rain function', () => {
                 const grid = new Grid(10, []); 
+                const worldWater = new WorldWater(999999999);
                 grid.waterDefault = 2;
-                gridRain(grid);
+                worldWater.rain(grid);
                 console.log("--rain function--");
                 grid.debugPrintWater();
         });

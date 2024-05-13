@@ -67,11 +67,12 @@ export const RUN_STEPS_PER_GENERATION = 300; // 300;
 
 
 // -- environment parameters  
-export const RUN_WORLD_SIZE = 100;   // 100
+export const RUN_WORLD_SIZE = 25;   // 100
 export const GRIDPOINT_WATER_DEFAULT = 200;  // 10
 export const GRIDPOINT_WATER_CAPACITY_DEFAULT = 400;  // 20
-export const RAIN_MAX_VALUE = 200; // 2
-
+export const WORLD_WATER_RAIN_MAX_VALUE = 2000; // 2
+export const WORLD_WATER_TOTAL_WATER_PER_CELL = 1000;
+export const WORLD_WATER_EVAPORATION_PER_GENERATION = 1; 
 
 // -- metabolism 
 export const MASS_METABOLISM_ENABLED = true;    // if false creature mass won't change
@@ -81,7 +82,7 @@ export const MASS_AT_BIRTH_PLANT = 1;
 export const MASS_AT_BIRTH_MOVE = 2;
 export const MASS_AT_BIRTH_ATTACK = 2;
 export const MASS_AT_BIRTH_ATTACK_AND_MOVE = 3;
-export const MASS_MAX_MULTIPLE_MASS_AT_BIRT = 10;
+export const MASS_MAX_MULTIPLE_MASS_AT_BIRT = 5;
 
 export const MASS_COST_PER_EXECUTE_ACTION = 0.01; //  a plant has a minimum of 2 actions and gets energy from photosynthesis
 
@@ -140,8 +141,11 @@ export const RUN_ENABLED_SENSORS : SensorName[]= [
     "HorizontalBorderDistance", // 7
     "VerticalBorderDistance",   // 8
     "BorderDistance",           // 9
-    "Mass",                     // 10
- //   "Touch",                  // 11
+    "Touch",                    // 10
+    "Pain",                     // 11
+    "PopulationDensity",        // 12
+    "Mass"                     // 13
+    
   ];
 export const RUN_ENABLED_ACTIONS : ActionName[] = [
       "MoveNorth",        // 0

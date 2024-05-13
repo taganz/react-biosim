@@ -139,6 +139,10 @@ export default class WorldGenerations {
 
   // copy all creatures without mutations for continuous simulation
   public updateCreatures(creatures: Creature[]) {
+    for (let i = 0; i < creatures.length;i++) {
+      const creature = creatures[i];
+      creature.resetAge();
+    }
     this.grid.updateCreatures(creatures);
     this.currentCreatures = [];
     this.currentCreatures = creatures;
