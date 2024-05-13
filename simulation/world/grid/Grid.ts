@@ -281,6 +281,17 @@ public debugPrintGridCreatures(maxColumns = 10) {
 
 }
 
+public debugGetGridWater() : number {
+  let accumWater = 0;
+  for (let y=0; y < this._grid.length; y++) {
+    let row : string = "";
+    for (let x=0; x < this._grid.length; x++) {
+      accumWater += this.cell(x,y).water;
+    } 
+  }
+  return accumWater;
+}
+
 public debugPrintWater(maxColumns=10) {
   let grid : string = "";
   for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
