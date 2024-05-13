@@ -118,29 +118,39 @@ export default class Creature {
     return CreaturePhenothype.getColor(this.generations.phenotypeColorMode, this._genus, this.brain);
   }
 
-
+  // generations need to reset this for continuous population
+  resetAge() {
+    this._age = 0;
+    this.stepBirth = 0;
+  }
 
   computeStep(): void {
     
     if (!this.isAlive) return;
 
-    this._age++;
-    if (this._age > this.generations.worldController.stepsPerGen) {
+    if (this._age > this.generations.worldController.stepsPerGen + 1) {
       this.die("old");
       return;
     }
+    this._age++;
 
     this._mass.basalMetabolism();
     this.log(LogEvent.METABOLISM, "mass", this.mass);
     this.log(LogEvent.METABOLISM, "basalConsumption", this._mass._basalConsumption);
-    if (!this.isAlive) return;
+    if (!this.isAlive) {
+      this.die("basalConsumption");
+      return;
+    }
 
     // read sensors and activate actions that will update urgeToMove and call other creature functions
     this.urgeToMove = [0, 0];
     const energyConsumedByActionsExecution = this.brain.step();
     this._mass.consume(energyConsumedByActionsExecution);
     this.log(LogEvent.METABOLISM, "actionsExecutionConsumption", energyConsumedByActionsExecution);
-    if (!this.isAlive) return;
+    if (!this.isAlive) {
+      this.die("actionsExecutionConsumption");
+      return;
+    }
 
     // Calculate probability of movement
     const moveX = Math.tanh(this.urgeToMove[0]);
@@ -292,8 +302,7 @@ export default class Creature {
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
     const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
-    const waterGotFromCell = waterWanted < cell.water ? waterWanted : cell.water;
-    cell.water -= waterGotFromCell;
+    const waterGotFromCell = this.generations.worldController.worldWater.getWaterFromCell(cell, waterWanted);
     this._mass.add(waterGotFromCell);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "waterGotFromCell", waterGotFromCell);
@@ -359,8 +368,13 @@ export default class Creature {
 
   //TODO review
   private die (cause: string = "unknown") {
+    this.generations.worldController.worldWater.returnWaterToCell(
+      this.generations.worldController.grid.cell(this.position[0], this.position[1]),
+      this.mass
+    )
     this.log(LogEvent.DEAD, "cause", cause);
     this.logBasicData("dead");
+    console.log(this.id, cause, this._age, this.generations.worldController.currentStep);
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?
     //this.generations.grid.cell(this.position[0], this.position[1]).creature = null;
