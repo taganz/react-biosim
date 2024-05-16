@@ -6,7 +6,7 @@ import {
       LOG_ALLOWED_EVENTS,
       LOG_EVENTLOGGER_MAX_EVENTS,
       LOG_LEVEL,
-      LOG_PAUSED_AT_START,
+ //     LOG_RESET_AT_RESTART
     } from "@/simulation/simulationConstants"
 import {LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
 
@@ -33,7 +33,7 @@ interface SimulationEvent {
 }
 
 export default class EventLogger {
-  private csvHeaders = 'LogLevel;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
+  _csvHeaders = 'LogLevel;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
   private worldController : WorldController;
   private readonly logThreshold: number;
   // should be reset at reset()
@@ -43,9 +43,13 @@ export default class EventLogger {
   private lastStepTotals : number = 0;
   private lastGenerationTotals : number = 0;
   private generationTotalsHaveSeenStepZero : boolean = false;
-  private paused = LOG_PAUSED_AT_START;
+  private paused = true; 
   private logCreatureId : number = LOG_CREATURE_ID;
   private currentLogLevel : LogLevel = LOG_LEVEL;
+  private singleGenerationRecording = false;
+  private firstGenerationRecording = false;
+  private firstGenerationRecordingStarted = false;
+  private generationToRecord = 0;
   
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
@@ -55,6 +59,88 @@ export default class EventLogger {
     console.log("eventLogger initialized");
   }
 
+
+  get isPaused() : boolean {
+    return this.paused == true;
+  }
+  get isWaitingForRestart() : boolean {
+    return this.firstGenerationRecording && !this.firstGenerationRecordingStarted;
+  }
+  get logCount() : number {
+    return this.log.length;
+  }
+  get thresholdReached(): boolean {
+    return  this.log.length >= this.logThreshold;
+  }
+  get creatureId() : number {
+    return this.logCreatureId;
+  }
+
+  public reset() {
+   // per fer aixo caldria diferenciar quan ve de restart i quan estic netejant per altre raons
+   // if (LOG_RESET_AT_RESTART) {
+   //   return;
+   // }
+    this.log = [];
+    this.stepTotals = [];
+    this.generationTotals =[];
+    this.lastStepTotals = 0;
+    this.lastGenerationTotals = 0;
+    this.generationTotalsHaveSeenStepZero = false;
+    this.paused = true;
+    
+
+  }
+  public pause() {
+    this.paused = true;
+    this.generationTotalsHaveSeenStepZero = false;
+  }
+
+  //public start() {
+  //  this.reset();
+  //  this.paused = false;
+  //}
+  public resume() {
+    if (this.logCount > this.logThreshold) {
+      console.warn("EventLogger, can't resume max logCount attained: ", this.logThreshold);
+    } 
+    else {
+      this.paused = false;
+    }
+  }
+
+  public startLoggingCreatureId(id: number) {
+    this.paused = false;
+    this.currentLogLevel = LogLevel.CREATURE;
+    this.logCreatureId = id;
+    this.worldController.generations.creatureById(this.logCreatureId).logBasicData();  
+  }
+
+  public recordNextGeneration() {
+    this.singleGenerationRecording = true;
+    this.generationToRecord = this.worldController.currentGen + 1;
+    this.firstGenerationRecording = false;
+    this.reset();
+    this.resume();
+  }
+  private recordNextGenerationFinished() {
+    this.singleGenerationRecording = false;
+    this.pause();
+  }
+  public recordFirstGeneration() {
+    this.firstGenerationRecording = true;
+    this.firstGenerationRecordingStarted = false;
+    this.singleGenerationRecording = false;
+    this.reset();
+    this.resume();
+  }
+  private recordFirstGenerationFinished() {
+    this.firstGenerationRecording = false;
+    this.firstGenerationRecordingStarted = false;
+    this.pause();
+  }
+
+  
   public logEvent(eventValues: SimulationCallEvent) : void {
 
     if (this.logCount >= this.logThreshold) {
@@ -65,6 +151,30 @@ export default class EventLogger {
     if (!LOG_ENABLED) return ;
     if (!LOG_ALLOWED_EVENTS[eventValues.eventType]) return;
 
+    // checks for single generation recording
+    if (this.singleGenerationRecording && this.worldController.currentGen < this.generationToRecord) {
+      return;
+    }
+    if (this.singleGenerationRecording && this.worldController.currentGen > this.generationToRecord) {
+      this.recordNextGenerationFinished();
+      return;
+    }
+
+    // checks for first generation recording
+    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted 
+          && (this.worldController.currentGen > 0 || (this.worldController.currentGen == 0 && this.worldController.currentStep > 0))) {
+      // not restarted yet
+      return;
+    }
+    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted && this.worldController.currentGen == 0 && this.worldController.currentStep == 0) {
+      // started
+      this.firstGenerationRecordingStarted = true;
+    }
+    if (this.firstGenerationRecording && this.firstGenerationRecordingStarted && this.worldController.currentGen > 0) {
+      this.recordFirstGenerationFinished();
+      return;
+    }
+    
 
     this.logReceivedEvent(eventValues);
     
@@ -76,17 +186,36 @@ export default class EventLogger {
    
   }
 
-  public startLoggingCreatureId(id: number) {
-    this.paused = false;
-    this.currentLogLevel = LogLevel.CREATURE;
-    this.logCreatureId = id;
-    this.worldController.generations.creatureById(this.logCreatureId).logBasicData();  
+ 
+
+  // get events data in blog format to write to file 
+  public getLogBlob(): Blob {
+    let csvData: string;
+
+    csvData = this._csvHeaders;
+    
+    for (const event of this.log) {
+      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
+    }
+
+    const blob = new Blob([csvData], { type: 'text/plain;charset=utf-8' });
+    return blob;
+    
   }
 
-  get creatureId() : number {
-    return this.logCreatureId;
-  }
+  public getLog(): string {
+    let csvData: string;
 
+    csvData = this._csvHeaders;
+    
+    for (const event of this.log) {
+      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
+    }
+
+    return csvData;
+    
+  }
+  
   private logReceivedEvent(eventValues:SimulationCallEvent) {
     
       if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.STEP)) return ;
@@ -203,71 +332,5 @@ export default class EventLogger {
     return array2;
   }
 
-  // get events data in blog format to write to file 
-  public getLogBlob(): Blob {
-    let csvData: string;
-
-    csvData = this.csvHeaders;
-    
-    for (const event of this.log) {
-      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
-    }
-
-    const blob = new Blob([csvData], { type: 'text/plain;charset=utf-8' });
-    return blob;
-    
-  }
-
-  public getLog(): string {
-    let csvData: string;
-
-    csvData = this.csvHeaders;
-    
-    for (const event of this.log) {
-      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
-    }
-
-    return csvData;
-    
-  }
-
-  get isPaused() : boolean {
-    return this.paused == true;
-  }
-  get logCount() : number {
-    return this.log.length;
-  }
-  get thresholdReached(): boolean {
-    return  this.log.length >= this.logThreshold;
-  }
-
-  public reset() {
-    this.log = [];
-    this.stepTotals = [];
-    this.generationTotals =[];
-    this.lastStepTotals = 0;
-    this.lastGenerationTotals = 0;
-    this.generationTotalsHaveSeenStepZero = false;
-    this.paused = LOG_PAUSED_AT_START;
-    
-
-  }
-  public pause() {
-    this.paused = true;
-    this.generationTotalsHaveSeenStepZero = false;
-  }
-
-  public start() {
-    this.reset();
-    this.paused = false;
-  }
-  public resume() {
-    if (this.logCount > this.logThreshold) {
-      console.warn("EventLogger, can't resume max logCount attained: ", this.logThreshold);
-    } 
-    else {
-      this.paused = false;
-    }
-  }
 
 }

@@ -76,7 +76,7 @@ export default class WorldController {
     this._loadedWorldControllerData = worldControllerData;
     this._loadedWorldGenerationData = worldGenerationsData;
   
-    console.log("*** worldController initialized ***");
+    //console.log("*** worldController initialized ***");
   }
 
   public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): string {
@@ -182,6 +182,13 @@ export default class WorldController {
     );
 
     this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
+    this.log(LogEvent.STEP_END, "waterInCells", this.worldWater.waterInCells);
+    this.log(LogEvent.STEP_END, "waterInCloud", this.worldWater.waterInCloud);
+    this.log(LogEvent.STEP_END, "waterInCreatures", this.worldWater.waterInCreatures);
+    this.log(LogEvent.STEP_END, "waterTotal", 
+            this.worldWater.waterInCells 
+            + this.worldWater.waterInCloud 
+            + this.worldWater.waterInCreatures);
     
     this.sendRedrawEventEveryImmediateSteps();
     

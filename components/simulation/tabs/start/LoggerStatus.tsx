@@ -74,7 +74,16 @@ export default function LoggerStatus() {
         worldController.eventLogger.reset();
     }
   }
-  
+  function handleRecordNextGenerationLog() {
+    if (worldController) {
+        worldController.eventLogger.recordNextGeneration();
+    }
+  }
+  function handleRecordFirstGenerationLog() {
+    if (worldController) {
+        worldController.eventLogger.recordFirstGeneration();
+    }
+  }
   function handleLogCreatureId(e : any) {
     if (worldController) {
       const creatureId = parseInt(e.target.value);
@@ -96,7 +105,10 @@ export default function LoggerStatus() {
         {
         LOG_ENABLED ? (
             <div>
+              Log status: {eventLoggerIsPaused ? "Paused" : "Active"}
               <div className="my-3"><Button onClick={handleClick}>{eventLoggerIsPaused ? "Resume log" : "Pause log"}</Button></div>
+              <div className="my-3"><Button onClick={handleRecordFirstGenerationLog}>Record first generation</Button></div>
+              <div className="my-3"><Button onClick={handleRecordNextGenerationLog}>Record next generation</Button></div>
               <div className="my-3"><Button onClick={handleSaveLog}>Save log</Button></div>
               <div className="my-3"><Button onClick={handleDeleteLog}>Delete log</Button></div>
             </div>

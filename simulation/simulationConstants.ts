@@ -21,18 +21,17 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
 
 /*  ----- production setup -----
  STARTUP_MODE = "startupScenario";
- LOG_PAUSED_AT_START = true;   
 */
 
 export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";  
-export const LOG_PAUSED_AT_START : boolean = false;   // true to reduce load if not needed, recommended for production
 
 
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging
+//export const LOG_RESET_AT_RESTART = true;    // will reset automatically on every restart
 export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
-export const LOG_CREATURE_ID : number = -30;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+export const LOG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
 export const LOG_EVENTLOGGER_MAX_EVENTS = 1000000; // will stop logging at this point
 export const LOG_LOCALE_STRING = 'es-ES';
 export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
@@ -62,17 +61,17 @@ export const IMMEDIATE_STEPS = 1;       // [0 | 20 | 200]
 export const PAUSE_BETWEEN_GENERATIONS = 0; // [0 | 1000 | 4000]
 
 // -- generations
-export const RUN_INITIAL_POPULATION = 30; //500;
-export const RUN_STEPS_PER_GENERATION = 300; // 300;
+export const RUN_INITIAL_POPULATION = 200; //500;
+export const RUN_STEPS_PER_GENERATION = 50; // 300;
 
 
 // -- environment parameters  
 export const RUN_WORLD_SIZE = 25;   // 100
-export const GRIDPOINT_WATER_DEFAULT = 200;  // 10
+export const GRIDPOINT_WATER_DEFAULT = 50;  // 10
 export const GRIDPOINT_WATER_CAPACITY_DEFAULT = 400;  // 20
-export const WORLD_WATER_RAIN_MAX_VALUE = 2000; // 2
-export const WORLD_WATER_TOTAL_WATER_PER_CELL = 1000;
-export const WORLD_WATER_EVAPORATION_PER_GENERATION = 1; 
+export const WORLD_WATER_RAIN_MAX_VALUE = 0; // 2
+export const WORLD_WATER_TOTAL_WATER_PER_CELL = 130;
+export const WORLD_WATER_EVAPORATION_PER_GENERATION = 0; 
 
 // -- metabolism 
 export const MASS_METABOLISM_ENABLED = true;    // if false creature mass won't change
@@ -148,15 +147,15 @@ export const RUN_ENABLED_SENSORS : SensorName[]= [
     
   ];
 export const RUN_ENABLED_ACTIONS : ActionName[] = [
-      "MoveNorth",        // 0
-      "MoveSouth",        // 1
-      "MoveEast",         // 2
-      "MoveWest",         // 3
-      "RandomMove",       // 4
-      "MoveForward",      // 5
+   //   "MoveNorth",        // 0
+   //   "MoveSouth",        // 1
+   //   "MoveEast",         // 2
+   //   "MoveWest",         // 3
+   //   "RandomMove",       // 4
+   //   "MoveForward",      // 5
       "Photosynthesis",   // 6 
       "Reproduction",     // 7
-      "Attack",           // 8
+   //   "Attack",           // 8
     ];
 
 

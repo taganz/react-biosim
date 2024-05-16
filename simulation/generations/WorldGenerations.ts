@@ -104,7 +104,7 @@ export default class WorldGenerations {
       this.lastFitnessMaxValue = worldGenerationsData.lastFitnessMaxValue;
       this.lastSurvivalRate = worldGenerationsData.lastSurvivalRate;
     }
-    console.log("worldGenerations initialized");
+    //console.log("worldGenerations initialized");
   }
 
   

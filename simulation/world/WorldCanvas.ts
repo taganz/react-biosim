@@ -17,7 +17,7 @@ export default class WorldCanvas {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
       this.size = size;    
-      console.log("WorldCanvas started. Size: ", this.size);
+      //console.log("WorldCanvas started. Size: ", this.size);
     } else {
       throw new Error("Cannot found canvas");
     }
@@ -52,6 +52,7 @@ export default class WorldCanvas {
     // RD
     this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color with 10% opacity
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
+    //this.generateWaterImage();
 
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
@@ -93,6 +94,36 @@ export default class WorldCanvas {
     
 }
 
+
+private generateWaterImage() {
+  const grid = this.worldController.grid;
+  const WATER_MAX = 400;   //TODO put constant value
+  //const canvas = document.getElementById('waterCanvas');
+  const context = this.ctx;
+
+  const rows = this.worldController.size;
+  const cols = this.worldController.size;
+
+  this.canvas.width = cols;
+  this.canvas.height = rows;
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const cell = grid.cell(col,row);
+      //const brightness = 0.8 + 0.2*Math.min(cell.water / WATER_MAX, 1); // Ensure brightness is within [0, 1]
+      const brightness = row / rows;
+      const color = `rgb(0, ${brightness * 255}, ${brightness * 255}, 1)`; // Cyan color with brightness
+      
+      context.fillStyle = color;
+      const x = col * this.size/rows;
+      const y = row * this.size/cols;
+      context.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+
+  // used to draw a small rectangle around selected creatures
   public drawRectStroke(
     x: number,
     y: number,
@@ -113,6 +144,8 @@ export default class WorldCanvas {
     this.ctx.stroke();
   }
 
+  /*  NOT USED 15/5/24
+
   public drawRect(
     x: number,
     y: number,
@@ -131,6 +164,11 @@ export default class WorldCanvas {
     );
     this.ctx.fill();
   }
+  */
+
+  
+  /*  NOT USED 15/5/24
+
 
   public drawEllipse(
     x: number,
@@ -156,6 +194,10 @@ export default class WorldCanvas {
     this.ctx.fill();
   }
 
+  */
+
+  /*  NOT USED 15/5/24
+
   public drawRelativeRect(
     x: number,
     y: number,
@@ -175,6 +217,9 @@ export default class WorldCanvas {
     this.ctx.fill();
   }
 
+  */
+
+    /*  NOT USED 15/5/24
   public isInsideRelativeRect(
     x: number,
     y: number,
@@ -195,4 +240,5 @@ export default class WorldCanvas {
       y < absoluteY + absoluteHeight
     );
   }
+  */
 }
