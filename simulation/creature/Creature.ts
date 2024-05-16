@@ -14,6 +14,7 @@ import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
 import CreatureGenus, {Genus} from "./CreatureGenus";
+import WorldWater from "../world/WorldWater";
 
 export const maxHealth = 100;
 
@@ -52,6 +53,7 @@ export default class Creature {
   brain : CreatureBrain;
   _genus : Genus;
   _age : number = 0;
+  _worldWater : WorldWater;
   
   private _health: number = maxHealth;
 
@@ -106,6 +108,7 @@ export default class Creature {
     
   
     this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
+    this._worldWater = this.generations.worldController.worldWater;
     this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
@@ -134,9 +137,10 @@ export default class Creature {
     }
     this._age++;
 
-    this._mass.basalMetabolism();
+    const basalMetabolismConsumed = this._mass.basalMetabolism();
+    this._worldWater.dissipateWater(basalMetabolismConsumed);
     this.log(LogEvent.METABOLISM, "mass", this.mass);
-    this.log(LogEvent.METABOLISM, "basalConsumption", this._mass._basalConsumption);
+    this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
     if (!this.isAlive) {
       this.die("basalConsumption");
       return;
@@ -145,8 +149,9 @@ export default class Creature {
     // read sensors and activate actions that will update urgeToMove and call other creature functions
     this.urgeToMove = [0, 0];
     const energyConsumedByActionsExecution = this.brain.step();
-    this._mass.consume(energyConsumedByActionsExecution);
-    this.log(LogEvent.METABOLISM, "actionsExecutionConsumption", energyConsumedByActionsExecution);
+    const consumed = this._mass.consume(energyConsumedByActionsExecution);
+    this._worldWater.dissipateWater(consumed);
+    this.log(LogEvent.METABOLISM, "actionsExecutionConsumption", consumed);
     if (!this.isAlive) {
       this.die("actionsExecutionConsumption");
       return;
@@ -231,12 +236,14 @@ export default class Creature {
 
 
     this.log(LogEvent.MOVE_TRY, "x,y", x.toFixed(1).concat(",", y.toFixed(1)));
-    this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
+    const consumed = this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
+    this._worldWater.dissipateWater(consumed);
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
-    this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
-
+    const consumedDo = this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
+    this._worldWater.dissipateWater(consumedDo);
+    
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
 
@@ -302,7 +309,7 @@ export default class Creature {
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
     const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
-    const waterGotFromCell = this.generations.worldController.worldWater.getWaterFromCell(cell, waterWanted);
+    const waterGotFromCell = this._worldWater.getWaterFromCell(cell, waterWanted);
     this._mass.add(waterGotFromCell);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "waterGotFromCell", waterGotFromCell);
@@ -368,13 +375,13 @@ export default class Creature {
 
   //TODO review
   private die (cause: string = "unknown") {
-    this.generations.worldController.worldWater.returnWaterToCell(
+    this._worldWater.returnWaterToCell(
       this.generations.worldController.grid.cell(this.position[0], this.position[1]),
       this.mass
     )
     this.log(LogEvent.DEAD, "cause", cause);
     this.logBasicData("dead");
-    console.log(this.id, cause, this._age, this.generations.worldController.currentStep);
+    //console.log(this.id, cause, this._age, this.generations.worldController.currentStep);
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?
     //this.generations.grid.cell(this.position[0], this.position[1]).creature = null;

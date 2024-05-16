@@ -19,11 +19,12 @@ export default class CreatureMass {
         this._maxMass = this._massAtBirth * MASS_MAX_MULTIPLE_MASS_AT_BIRT;
     }
 
-    basalMetabolism() {
-        if (!this._metabolismEnabled) {return}
-        
-        this._mass -= this._basalConsumption;
+    basalMetabolism() : number {
+        if (!this._metabolismEnabled) {return 0}
+        const basalConsumed = Math.min(this._mass, this._basalConsumption);
+        this._mass -= basalConsumed;
         this._mass = this._mass > 0 ? this._mass : 0;
+        return basalConsumed;
     }
 
     
@@ -35,9 +36,12 @@ export default class CreatureMass {
                     : this._maxMass;
     }
     
-    consume(mass: number) {
-        if (!this._metabolismEnabled) {return}
-        this._mass -= mass;
+    consume(mass: number) : number {
+        if (!this._metabolismEnabled) {return 0}
+        const massConsumed = Math.min(mass, this._mass);
+        this._mass -= massConsumed;
+        this._mass = this._mass > 0 ? this._mass : 0;
+        return massConsumed;
     }
 
     // fraction of massAtBirth!
