@@ -66,7 +66,7 @@
                 "type": "RectangleObject"
             }
         ],
-        "gridPointWaterDefault": 1,
+        "waterFirstRainPerCell": 1,
         "pauseBetweenSteps": 10,
         "immediateSteps": 1,
         "pauseBetweenGenerations": 0,

@@ -19,8 +19,8 @@ describe('creature test', () => {
                 stepsPerGen: 10,
                 initialPopulation: 1,
                 worldObjects : [],
-                gridPointWaterDefault: 1,
-                gridPointWaterCapacityDefault: 10,
+                waterFirstRainPerCell: 1,
+                waterCellCapacity: 10,
                 // user values
                 pauseBetweenSteps: 0,
                 immediateSteps: 1,

@@ -10,9 +10,7 @@ import Creature from "../creature/Creature"
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
-import {SIM_CODE_LENGTH,
-        WORLD_WATER_TOTAL_WATER_PER_CELL
-        } from "@/simulation/simulationConstants"
+import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
 import WorldWater from "./WorldWater";
 
 
@@ -36,8 +34,8 @@ export default class WorldController {
   stepsPerGen: number = 0;
   initialPopulation: number = 0;
   objects: WorldObject[] = [];   // to be set externally
-  gridPointWaterDefault: number = 0;
-  gridPointWaterCapacityDefault: number = 0;
+  //waterFirstRainPerCell: number = 0;
+  //waterCellCapacity: number = 0;
   
   // user values 
   pauseBetweenSteps: number = 0;
@@ -62,13 +60,11 @@ export default class WorldController {
   
   constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData) {
     this.loadWorldControllerInitialAndUserData(worldControllerData);
-    this.grid = new Grid(this.size, this.objects);
+    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.eventLogger = new EventLogger(this);
-    this.worldWater = new WorldWater(
-      WORLD_WATER_TOTAL_WATER_PER_CELL * this.size * this.size
-      );   // TO DO should deal with this in startRun and resumeRun
-    this.worldWater.firstRain(this.grid, this.gridPointWaterDefault)
+    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.worldWater.firstRain(this.grid);
     // request worldCanvas initialization 
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -83,15 +79,14 @@ export default class WorldController {
 
     this.loadWorldControllerInitialAndUserData(worldControllerData);
     this.simCode = generateRandomString(SIM_CODE_LENGTH),
-    this.grid = new Grid(this.size, this.objects);
-    this.worldWater = new WorldWater(
-      WORLD_WATER_TOTAL_WATER_PER_CELL * this.size * this.size
-      );   // TO DO should deal with this in startRun and resumeRun
-    this.worldWater.firstRain(this.grid, this.gridPointWaterDefault)
+    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
+    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.worldWater.firstRain(this.grid);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     this.eventLogger.reset();
-    
+    this.initialPopulation = worldGenerationsData.initialPopulation;
+     
     // state data
     this.currentGen = 0;
     this.currentStep = 0;
@@ -116,11 +111,9 @@ export default class WorldController {
   public resumeRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, species: Creature[], stats: GenerationRegistry ): void {
     
     this.loadWorldControllerInitialAndUserData(worldControllerData);
-    this.grid = new Grid(this.size, this.objects);  
-    this.worldWater = new WorldWater(
-      WORLD_WATER_TOTAL_WATER_PER_CELL * this.size * this.size
-      );   // TO DO should deal with this in startRun and resumeRun
-    this.worldWater.firstRain(this.grid, this.gridPointWaterDefault)
+    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);  
+    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.worldWater.firstRain(this.grid);
     // some creatures could be now at an occupied position in the new map
     const reviewedSpecies : Creature[] = [];
     for (let i = 0; i < species.length; i++) {
@@ -132,6 +125,8 @@ export default class WorldController {
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, reviewedSpecies);
     this.generationRegistry = stats;
     this.eventLogger.reset();
+    this.initialPopulation = worldGenerationsData.initialPopulation;
+
 
     // state data
     this.simCode = worldControllerData.simCode;
@@ -156,16 +151,16 @@ export default class WorldController {
     // initial values
     this.size = worldControllerData.size;
     this.stepsPerGen = worldControllerData.stepsPerGen;
-    this.initialPopulation = worldControllerData.initialPopulation;
     if (worldControllerData.worldObjects) {
       this.objects = [...worldControllerData.worldObjects];   
     }
-    this.gridPointWaterDefault = worldControllerData.gridPointWaterDefault;
-    this.gridPointWaterCapacityDefault = worldControllerData.gridPointWaterCapacityDefault;
+    //this.waterFirstRainPerCell = worldControllerData.waterFirstRainPerCell;
+    //this.waterCellCapacity = worldControllerData.waterCellCapacity;
 
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;
     this.pauseBetweenGenerations = worldControllerData.pauseBetweenGenerations;
+
   }
 
   private async computeStep(): Promise<void> {

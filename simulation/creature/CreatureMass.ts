@@ -1,5 +1,4 @@
-import {MASS_METABOLISM_ENABLED
-        , MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
+import {MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
         , MASS_MAX_MULTIPLE_MASS_AT_BIRT} from "../simulationConstants"
 
 export default class CreatureMass {

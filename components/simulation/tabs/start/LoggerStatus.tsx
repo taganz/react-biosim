@@ -71,7 +71,7 @@ export default function LoggerStatus() {
   */
   function handleDeleteLog() {
     if (worldController) {
-        worldController.eventLogger.reset();
+        worldController.eventLogger.deleteLog();
     }
   }
   function handleRecordNextGenerationLog() {

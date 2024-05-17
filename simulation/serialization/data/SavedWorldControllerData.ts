@@ -1,5 +1,5 @@
 import SavedWorldObject from "@/simulation/serialization/data/SavedWorldObject";
-
+import { WaterData } from "@/simulation/world/WorldControllerData";
 
 export default interface SavedWorldControllerData {
   // initial values
@@ -7,8 +7,9 @@ export default interface SavedWorldControllerData {
   stepsPerGen: number;
   initialPopulation: number;
   worldObjects : SavedWorldObject[];
-  gridPointWaterDefault : number;
-  gridPointWaterCapacityDefault: number;
+  waterFirstRainPerCell : number;
+  waterCellCapacity: number;
+  waterData : WaterData;
 
   // user values
   pauseBetweenSteps: number;

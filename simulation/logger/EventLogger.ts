@@ -77,19 +77,20 @@ export default class EventLogger {
   }
 
   public reset() {
-   // per fer aixo caldria diferenciar quan ve de restart i quan estic netejant per altre raons
-   // if (LOG_RESET_AT_RESTART) {
-   //   return;
-   // }
+    // if (LOG_RESET_AT_RESTART) {
+    //   deleteLog()
+    // }
+    this.pause();
+ 
+   }
+ 
+  public deleteLog() {
     this.log = [];
     this.stepTotals = [];
     this.generationTotals =[];
     this.lastStepTotals = 0;
     this.lastGenerationTotals = 0;
     this.generationTotalsHaveSeenStepZero = false;
-    this.paused = true;
-    
-
   }
   public pause() {
     this.paused = true;
@@ -120,7 +121,7 @@ export default class EventLogger {
     this.singleGenerationRecording = true;
     this.generationToRecord = this.worldController.currentGen + 1;
     this.firstGenerationRecording = false;
-    this.reset();
+    this.deleteLog();
     this.resume();
   }
   private recordNextGenerationFinished() {
@@ -131,7 +132,7 @@ export default class EventLogger {
     this.firstGenerationRecording = true;
     this.firstGenerationRecordingStarted = false;
     this.singleGenerationRecording = false;
-    this.reset();
+    this.deleteLog();
     this.resume();
   }
   private recordFirstGenerationFinished() {

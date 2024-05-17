@@ -1,14 +1,22 @@
 import WorldObject from "@/simulation/world/objects/WorldObject";
 
+
+export type WaterData = {
+    waterFirstRainPerCell: number;
+    waterCellCapacity: number;
+    waterRainMaxPerCell: number,
+    waterTotalPerCell: number,
+    waterEvaporationPerCellPerGeneration: number,
+  };
+
+
 export default interface WorldControllerData {
     // initial values
     size: number; 
     stepsPerGen: number;
-    initialPopulation: number;
+    //initialPopulation: number;
     worldObjects : WorldObject[];
-    gridPointWaterDefault: number;
-    gridPointWaterCapacityDefault: number;
-    
+    waterData : WaterData;
 
     // user values
     pauseBetweenSteps: number;

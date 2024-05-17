@@ -25,8 +25,9 @@ import ContinuousPopulation from "@/simulation/generations/population/Continuous
 describe('CreaturePhenotype', () => {
     
     beforeEach(() => {
-    });
-  
+        const setCount = jest.fn();
+      });
+
     afterEach(() => {
     });
   

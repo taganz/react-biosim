@@ -11,6 +11,7 @@ import {
   //restartCountAtom,
   worldGenerationDataAtom,
   worldControllerDataAtom,
+  waterDataAtom,
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
@@ -23,9 +24,9 @@ import * as constants from "@/simulation/simulationConstants"
 
 import UpdateParametersButton from "../../UpdateParametersButton";
 
-const enabledSensorsAtom = atom(constants.RUN_ENABLED_SENSORS);
-const enabledActionsAtom = atom(constants.RUN_ENABLED_ACTIONS);
-const mutationModeAtom = atom(constants.RUN_MUTATION_MODE);
+const enabledSensorsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledSensors);
+const enabledActionsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledActions);
+const mutationModeAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.mutationMode);
 
 
 // This should update only
@@ -41,6 +42,7 @@ export default function SettingsPanel() {
   const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
   const [worldGenerationsData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
+  const [waterData, setWaterData] = useAtom(waterDataAtom);
     
   setEnabledSensors(worldGenerationsData.enabledSensors);
   setEnabledActions(worldGenerationsData.enabledActions);
@@ -94,7 +96,7 @@ export default function SettingsPanel() {
         
     const handleChangePopulation = (e: { target: { value: any; }; }) => {
       setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
-      setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
+      //setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
     }
 
     //TODO - select combo
@@ -154,8 +156,8 @@ export default function SettingsPanel() {
             <label className="grow">Grid cells water default</label>
             <input
                 type="number"
-                value={worldControllerData.gridPointWaterDefault.toString()}
-                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, gridPointWaterDefault: parseFloat(e.target.value)}))}} 
+                value={waterData.waterFirstRainPerCell.toString()}
+                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterFirstRainPerCell: parseFloat(e.target.value)}))}} 
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >

@@ -53,13 +53,20 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
         // initial values
         size: 100, 
         stepsPerGen: 300,
-        initialPopulation: 1000,   //         "initialPopulation": "1000",
+        //initialPopulation: 1000,   //         "initialPopulation": "1000",
         worldObjects: [
             new RectangleReproductionArea(0.47, 0.01, 0.53, 1, true),
             new RectangleObject(0, 0.9, 0.01, 0.01),
         ],
-        gridPointWaterDefault: 1,
-        gridPointWaterCapacityDefault: 20,
+        //waterFirstRainPerCell: 1,
+        //waterCellCapacity: 20,
+        waterData : {
+            waterFirstRainPerCell: 50,              // 10
+            waterCellCapacity: 400,     // 20
+            waterRainMaxPerCell:  0,             // 2
+            waterTotalPerCell: 130,       // 
+            waterEvaporationPerCellPerGeneration: 0,  // 0
+          },
     
         // user values
         pauseBetweenSteps: 10,

@@ -1,14 +1,14 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
-
+import { WaterData } from "@/simulation/world/WorldControllerData";
 
 // Updates worldGenerationsData and worldControllerData with current run status vars 
 // and resume worldController execution. This is intended to change initial values without 
 // restarting the simulation.
 
 export default function worldControllerInitialValuesHotChange(worldController: WorldController, 
-      worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData) : void {
+      worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, waterData: WaterData) : void {
 
       if (worldController ) {
         const isPaused = worldController.isPaused;
@@ -28,7 +28,7 @@ export default function worldControllerInitialValuesHotChange(worldController: W
         worldControllerData.currentStep = worldController.currentStep;
         worldControllerData.lastGenerationDuration = worldController.lastGenerationDuration;
         worldControllerData.totalTime = worldController.totalTime;
-        
+        worldControllerData.waterData = waterData;
         const creatures = worldController.generations.currentCreatures;
         const stats = worldController.generationRegistry;
 

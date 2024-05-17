@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom } from "../../store";
+import { worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, waterDataAtom } from "../../store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
 import { loadSavedWorldAndResumeRun } from "@/simulation/serialization/loadWorld";
@@ -11,6 +11,8 @@ export default function LoadPanel() {
   const worldController = useAtomValue(worldControllerAtom);
   const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
   const setWorldControllerData = useSetAtom(worldControllerDataAtom);
+  const setWaterData = useSetAtom(waterDataAtom);
+
   const [data, setData] = useState("");
 
   const handleLoadPasted = () => {
@@ -18,6 +20,7 @@ export default function LoadPanel() {
       const [readWorldControllerData, readWorldGenerationData] = loadSavedWorldAndResumeRun(worldController, data);
       setWorldGenerationData(readWorldGenerationData);
       setWorldControllerData(readWorldControllerData);
+      setWaterData(readWorldControllerData.waterData)
     } else {
       console.warn("LoadPanel worldController not found!");
     }

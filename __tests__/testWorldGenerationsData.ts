@@ -7,7 +7,7 @@ import { testWorldControllerData } from "./testWorldControllerData";
 export const testWorldGenerationsData : WorldGenerationsData = {
     populationStrategy: new AsexualZonePopulation,
     selectionMethod: new ReproductionSelection,
-    initialPopulation: testWorldControllerData.initialPopulation,
+    initialPopulation: 100,
     initialGenomeSize: 4,
     maxGenomeSize: 10,
     maxNumberNeurons: 3,

@@ -361,6 +361,14 @@ export default class Creature {
         console.error("this.eventLogger not found");
         return;
       }
+      // discard trivial logs
+      if ( eventType == LogEvent.PHOTOSYNTHESIS 
+        || eventType == LogEvent.METABOLISM) {
+          if (this.generations.worldController.currentStep % 10 != 0) {
+            return;
+          }
+        }
+
       const event : SimulationCallEvent = {
         logLevel: LogLevel.CREATURE,
         creatureId: this.id,

@@ -1,8 +1,5 @@
 import { Grid, GridPosition, GridCell } from "./grid/Grid";
-import { WORLD_WATER_RAIN_MAX_VALUE,
-         WORLD_WATER_EVAPORATION_PER_GENERATION
-        } from "@/simulation/simulationConstants";
-
+import { WaterData } from "./WorldControllerData";
 
 /* 
     manages the water amount in the world (should be constant)
@@ -13,15 +10,19 @@ export type RainType = "rainTypeSinSin" | "rainTypeUniform";
 
 export default class WorldWater {
 
+    waterData : WaterData;
     waterInCells : number = 0;
     waterInCloud : number;
     waterInCreatures : number = 0;
     maxRainWaterPerCell : number;
+    _worldSize : number;
 
     //TODO revisar els casos on es demana mes aigua de la que hi ha...
-    constructor (initialTotalWater: number, maxRainWaterPerCell: number = WORLD_WATER_RAIN_MAX_VALUE) {
-        this.waterInCloud = initialTotalWater;
-        this.maxRainWaterPerCell = maxRainWaterPerCell;
+    constructor (worldSize: number, waterData : WaterData) {
+        this.waterInCloud = worldSize * worldSize * waterData.waterTotalPerCell;
+        this.maxRainWaterPerCell = waterData.waterRainMaxPerCell;
+        this.waterData = waterData;
+        this._worldSize = worldSize;
     }
 
     get totalWater() : number {
@@ -30,7 +31,7 @@ export default class WorldWater {
 
     // gets water from cell and gives it to creature
     getWaterFromCell (cell: GridCell, waterWanted: number): number {
-        const waterGotFromCell = waterWanted < cell.water ? waterWanted : cell.water;
+        const waterGotFromCell = Math.min(waterWanted, cell.water);
         cell.water-=waterGotFromCell;
         this.waterInCells-= waterGotFromCell;
         this.waterInCreatures+=waterGotFromCell;
@@ -38,10 +39,11 @@ export default class WorldWater {
     }
 
     // when a creatures dies
-    returnWaterToCell (cell: GridCell, waterAddToCell: number) {
-        cell.water += waterAddToCell;
-        this.waterInCells += waterAddToCell;
-        this.waterInCreatures -= waterAddToCell;
+    returnWaterToCell (cell: GridCell, waterToReturn: number) {
+        const waterReturnedToCell = Math.min(waterToReturn, cell.waterCapacity - cell.water);
+        cell.water += waterReturnedToCell;
+        this.waterInCells += waterReturnedToCell;
+        this.waterInCreatures -= waterReturnedToCell;
     }
 
     // creatures dissipate energy every step
@@ -51,31 +53,36 @@ export default class WorldWater {
 
     }
     // initialize grid water 
-    firstRain(grid: Grid, waterDefaultPerCell: number) {
-        let waterToAddPerCell = waterDefaultPerCell;
+    firstRain(grid: Grid) {
+        let waterToAddPerCell = this.waterData.waterFirstRainPerCell;
         let waterToAddTotal = waterToAddPerCell * grid.size * grid.size;
+        let waterAdded = 0;
 
         if (waterToAddTotal > this.waterInCloud ) {
             waterToAddPerCell = this.waterInCloud / grid.size / grid.size;
             waterToAddTotal = this.waterInCloud; 
-            console.warn("WorldWater not enought water for firsRain. Adjusting waterDefaultPerCell ",waterToAddPerCell.toFixed(2));
+            console.warn("WorldWater not enought water for firsRain. Adjusting waterDefaultPerCell from ", this.waterData.waterFirstRainPerCell.toFixed(2), " to ", waterToAddPerCell.toFixed(2));
         }
-        grid.waterDefault = waterToAddPerCell;
-        this.waterInCloud -= waterToAddTotal;
-        this.waterInCells += waterToAddTotal;
+        for (let y = 0; y < grid._size; y++) {
+            for (let x = 0; x < grid._size; x++) {
+                waterAdded += grid.addWater([x, y], waterToAddPerCell); 
+            }
+        }
+        this.waterInCloud -= waterAdded;
+        this.waterInCells += waterAdded;
     }
 
     // water from cloud go to cells
     //TODO functions....
-    rain(grid: Grid, rainFunction : RainType = "rainTypeUniform") {
+    rain(grid: Grid, rainFunction : RainType = "rainTypeUniform", rainValue = this.maxRainWaterPerCell) {
         let rf;
         switch(rainFunction) {
             case "rainTypeSinSin":
                 rf = ((x: number, y: number) => 
-                    this.maxRainWaterPerCell * Math.sin(Math.PI * x/grid._size) * Math.sin(Math.PI * y/grid._size));
+                    rainValue * Math.sin(Math.PI * x/grid._size) * Math.sin(Math.PI * y/grid._size));
                 break;
             case "rainTypeUniform":
-                 rf = ( (x: number, y: number) => this.maxRainWaterPerCell);
+                 rf = ( (x: number, y: number) => rainValue);
                  break;
             default:
                 throw new Error ("unknown rainType");
@@ -100,8 +107,8 @@ export default class WorldWater {
         for (let y = 0; y < grid._size; y++) {
             for (let x = 0; x < grid._size; x++) {
                 const cell = grid.cell(x,y);
-                let waterToEvaporateCell = WORLD_WATER_EVAPORATION_PER_GENERATION < cell.water 
-                            ? WORLD_WATER_EVAPORATION_PER_GENERATION 
+                let waterToEvaporateCell = this.waterData.waterEvaporationPerCellPerGeneration < cell.water 
+                            ? this.waterData.waterEvaporationPerCellPerGeneration
                             : cell.water;
                 cell.water -= waterToEvaporateCell;
                 accumWaterToEvaporate += waterToEvaporateCell;

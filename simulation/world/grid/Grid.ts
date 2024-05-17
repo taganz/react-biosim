@@ -25,7 +25,7 @@ export class Grid {
   _size : number;
   _objects : WorldObject[];
 
-  constructor(size: number, objects: WorldObject[]) {
+  constructor(size: number, objects: WorldObject[], cellWaterCapacityDefault: number) {
     this._grid = [];
     this._size = size;
 
@@ -39,7 +39,7 @@ export class Grid {
     for (let y = 0; y < this._size; y++) {
       const row: Array<GridCell> = [];
       for (let x = 0; x < this._size; x++) {
-        row.push({ creature: null, objects: [], isSolid: false, water: 0, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT});
+        row.push({ creature: null, objects: [], isSolid: false, water: 0, waterCapacity: cellWaterCapacityDefault});
       }
       this.addRow(row);
     }
@@ -66,16 +66,25 @@ export class Grid {
     //console.log("grid initialized");
   }
 
+  /*
   set waterDefault(waterDefault: number) {
     this._grid.forEach(row => row.forEach(cell => cell.water = waterDefault));
   }
-
+  */
   public addWater(position: GridPosition, water: number) : number {
     const cell = this.cell(position[0], position[1]);
     let waterToAdd = Math.min(water, cell.waterCapacity-cell.water);
     cell.water+= waterToAdd;
     return waterToAdd;
   }
+  /*
+  public getWater(position: GridPosition, water: number) : number {
+    const cell = this.cell(position[0], position[1]);
+    let waterToGet = Math.max(water, cell.water);
+    cell.water-= waterToGet;
+    return waterToGet;
+  }
+  */
   
   get size() : number {
     return this._size;
