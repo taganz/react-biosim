@@ -15,9 +15,8 @@ export default class WorldWater {
     waterInCloud : number;
     waterInCreatures : number = 0;
     maxRainWaterPerCell : number;
-    _worldSize : number;
+    _worldSize : number;    //TODO should use grid size?
 
-    //TODO revisar els casos on es demana mes aigua de la que hi ha...
     constructor (worldSize: number, waterData : WaterData) {
         this.waterInCloud = worldSize * worldSize * waterData.waterTotalPerCell;
         this.maxRainWaterPerCell = waterData.waterRainMaxPerCell;
@@ -46,11 +45,22 @@ export default class WorldWater {
         this.waterInCreatures -= waterReturnedToCell;
     }
 
+    // first generation creatures should get water from the environment
+    getWaterFromCloud(waterWanted: number) {
+        this.waterInCloud -= waterWanted;
+        this.waterInCreatures += waterWanted;
+        if (this.waterInCloud < 0 ) {
+            throw new Error (`getWaterFromCloud - not enough waterInCloud for first generation creature ${waterWanted.toFixed(2)}`)
+        }
+    }
+
     // creatures dissipate energy every step
     dissipateWater(water: number) {
-        this.waterInCells -= water;
+        this.waterInCreatures -= water;
         this.waterInCloud += water;
-
+        if (this.waterInCreatures < 0) {
+            throw new Error (`dissipateWater - waterInCreatures < 0: ${water.toFixed(2)}`);
+        }
     }
     // initialize grid water 
     firstRain(grid: Grid) {

@@ -106,9 +106,12 @@ export default class Creature {
         this.massAtBirth = 1;
     }
     
-  
-    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
     this._worldWater = this.generations.worldController.worldWater;
+    if (!genome) {
+          // if first generation, water should be obtained from cloud
+          this._worldWater.getWaterFromCloud(this.massAtBirth);
+    }
+    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
     this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
