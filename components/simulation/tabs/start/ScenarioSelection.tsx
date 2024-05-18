@@ -1,6 +1,6 @@
 import React from 'react';
 import {atom, useSetAtom, useAtom, useAtomValue} from 'jotai';
-import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCreaturesAtom, worldCanvasAtom} from "../../store/worldAtoms";
+import {worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCreaturesAtom, worldCanvasAtom, waterDataAtom} from "../../store/worldAtoms";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
 import {scenarioObjects, ScenarioObjects} from "./scenarioObjects";
@@ -14,6 +14,7 @@ export default function ScenariosSelection () {
   const worldCanvas = useAtomValue(worldCanvasAtom);
   const setWorldControllerData = useSetAtom(worldControllerDataAtom);
   const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
+  const setWaterData = useSetAtom(waterDataAtom);
   
 
   const scenariosOptions: Option[] = Array.from({ length: scenarioObjects.length }, (_, i) => ({ value: i.toString(), label: scenarioObjects[i].name }));
@@ -35,6 +36,7 @@ export default function ScenariosSelection () {
           worldCanvas.size = readWorldControllerData.size;
           setWorldGenerationData(readWorldGenerationData);
           setWorldControllerData(readWorldControllerData);
+          setWaterData(readWorldControllerData.waterData);
         } catch (error) {
           console.error('Error reading file:', error);
       }

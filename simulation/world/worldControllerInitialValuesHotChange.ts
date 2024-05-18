@@ -28,6 +28,7 @@ export default function worldControllerInitialValuesHotChange(worldController: W
         worldControllerData.currentStep = worldController.currentStep;
         worldControllerData.lastGenerationDuration = worldController.lastGenerationDuration;
         worldControllerData.totalTime = worldController.totalTime;
+        // water data
         worldControllerData.waterData = waterData;
         const creatures = worldController.generations.currentCreatures;
         const stats = worldController.generationRegistry;

@@ -11,7 +11,7 @@ export default function RestartButton() {
   //const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  const waterData = useAtom(waterDataAtom);
+  const waterData = useAtomValue(waterDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const worldCanvas = useAtomValue(worldCanvasAtom);
 
