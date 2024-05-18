@@ -21,11 +21,14 @@ import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 
 /* https://jestjs.io/docs/expect  */
+/* per fer toThrow cal posar tot en funcio expect( () => {...} ).toThrow() */
 
 describe('CreaturePhenotype', () => {
     
+    let setCount;
+
     beforeEach(() => {
-        const setCount = jest.fn();
+        setCount = jest.fn();
       });
 
     afterEach(() => {

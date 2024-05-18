@@ -19,6 +19,7 @@ export type ActionName =
 export type Action = {
   name: ActionName;
   enabled: boolean;
+  family: "move" | "attack" | "basic"
 };
 
 
@@ -30,38 +31,47 @@ export default class CreatureActions {
     MoveNorth: {
       name: "MoveNorth",    // 0
       enabled: false,
+      family: "move",
     },
     MoveSouth: {
       name: "MoveSouth",  // 1
       enabled: false,
+      family: "move",
     },
     MoveEast: {
       name: "MoveEast", // 2
       enabled: true,
+      family: "move",
     },
     MoveWest: {
       name: "MoveWest", // 3
       enabled: false,
+      family: "move",
     },
     RandomMove: {
       name: "RandomMove", // 4
       enabled: false,
+      family: "move",
     },
     MoveForward: {
       name: "MoveForward",  // 5
       enabled: false,
+      family: "move",
     },
     Photosynthesis: {
       name: "Photosynthesis", // 6
       enabled: true,
+      family: "basic",
     },
     Reproduction: {
       name: "Reproduction", // 7
       enabled: true,
+      family: "basic",
     },
     Attack: {
       name: "Attack", // 8
       enabled: true,
+      family: "attack",
     },
 
   };
@@ -78,6 +88,30 @@ export default class CreatureActions {
       }
     }
     return list;
+  }
+
+  getFamilies() : string[] {
+    const list: string[] = [];
+    for (const key of Object.keys(this.data) as ActionName[]) {
+      const item = this.data[key];
+      if (item.enabled) {
+        list.push(item.family);
+      }
+    }
+    return list;
+  }
+
+  getFamily( index: number) : string {
+    let i = 0;
+    for (const key of Object.keys(this.data) as ActionName[]) {
+      const item = this.data[key];
+      if (item.enabled) {
+        if (i++ == index) {
+          return item.family;
+        }
+      }
+    }
+    throw new Error (`getFamily invalid index: ${index}  neuronsCount: ${this.neuronsCount}`);
   }
 
   loadFromList(names: string[]) {
