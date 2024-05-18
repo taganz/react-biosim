@@ -115,49 +115,102 @@ export default function SettingsPanel() {
           <UpdateParametersButton/>
         </p>
 
+
         <div className="flex flex-col gap-8">
+
+    {/*  === WORLD CONTROLLER === */}
+
           <div>
             <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
             <p>Simulation code: {worldControllerData.simCode}</p>
             <p>Phenotype mode: {worldGenerationsData.phenotypeColorMode}</p>
             <div className="grid grid-cols-2 gap-4">
 
-          {/*  size  */}
+    {/*  size  */}
+
+            <div className="flex flex-col">
+              <label className="grow">WorldController Size</label>
+              <input
+                  type="number"
+                  value={worldControllerData.size.toString()}
+                  onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+
+            {/*  initialPopulation  */}
+
+            <div className="flex flex-col">
+              <label className="grow">Initial population</label>
+              <input
+                  type="number"
+                  value={worldGenerationsData.initialPopulation.toString()}
+                  onChange={handleChangePopulation}
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+
+            {/*  stepsPerGen  */}
+
+            <div className="flex flex-col">
+              <label className="grow">Steps per generation</label>
+              <input
+                  type="number"
+                  value={worldControllerData.stepsPerGen.toString()}
+                  onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
+                  className="min-w-0 bg-grey-mid p-1"
+                >
+              </input>
+            </div>
+
+          {/*  water cell capacity   */}
+
           <div className="flex flex-col">
-            <label className="grow">WorldController Size</label>
+            <label className="grow">Cell water capacity</label>
             <input
                 type="number"
-                value={worldControllerData.size.toString()}
-                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
+                value={waterData.waterCellCapacity.toString()}
+                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterCellCapacity: parseFloat(e.target.value)}))}} 
+                step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
             </input>
           </div>
-          {/*  initialPopulation  */}
-          <div className="flex flex-col">
-            <label className="grow">Initial population</label>
-            <input
-                type="number"
-                value={worldGenerationsData.initialPopulation.toString()}
-                onChange={handleChangePopulation}
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-          {/*  stepsPerGen  */}
-          <div className="flex flex-col">
-            <label className="grow">Steps per generation</label>
-            <input
-                type="number"
-                value={worldControllerData.stepsPerGen.toString()}
-                onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-           {/*  waterDefault  */}
+
+        {/*  water total per cell  */}
+
            <div className="flex flex-col">
-            <label className="grow">Grid cells water default</label>
+            <label className="grow">Total water (per cell)</label>
+            <input
+                type="number"
+                value={waterData.waterTotalPerCell.toString()}
+                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterTotalPerCell: parseFloat(e.target.value)}))}} 
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+          
+          {/*  rain max  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Rain max per cell</label>
+            <input
+                type="number"
+                value={waterData.waterRainMaxPerCell.toString()}
+                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterRainMaxPerCell: parseFloat(e.target.value)}))}} 
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+          {/*  first rain per cell  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Initial water per cell</label>
             <input
                 type="number"
                 value={waterData.waterFirstRainPerCell.toString()}
@@ -167,26 +220,52 @@ export default function SettingsPanel() {
               >
             </input>
           </div>
+
+          {/*  evaporation  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Evaporation</label>
+            <input
+                type="number"
+                value={waterData.waterEvaporationPerCellPerGeneration.toString()}
+                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterEvaporationPerCellPerGeneration: parseFloat(e.target.value)}))}} 
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+    {/*  rainType  */}
+
           <div className="mb-1">
-          {/*  rainType  */}
-          <p  className="mb-2">Rain type: {waterData.rainType} </p>
-              <Dropdown options={rainTypeOptions}
-                        onSelect={handleRainTypeOptions} />
+            <p  className="mb-2">Rain type: {waterData.rainType} </p>
+            <Dropdown options={rainTypeOptions} 
+                      onSelect={handleRainTypeOptions} />
               <br/>
             </div>
+
             </div>
           </div>
-          <div>
-          {/*  selectionMethod  */}
+
+
+    {/*  === GENERATIONS === */}
+
+        <div>
           <h3 className="mb-1 text-2xl font-bold">Generations</h3>
-          <p  className="mb-2">Metabolism is {worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}
-          </p>
+          <p  className="mb-2">Metabolism is {worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
+
+    {/*  selectionMethod  */}
+
             <div className="mb-1">
               <p  className="mb-2">Selection method:  {worldController?.generations.selectionMethod.constructor.name} </p>
               <Dropdown options={selectionMethodOptions} 
                         onSelect={handleSelectionMethodOptions}/>
               <br/>
-          {/*  populationStrategy  */}
+            </div>
+
+    {/*  populationStrategy  */}
+
+          <div>
           <p  className="mb-2">Population strategy: {worldController?.generations.populationStrategy.constructor.name} </p>
               <Dropdown options={populationStrategyOptions}
                         onSelect={handlePopulationStrategy} />
@@ -194,10 +273,14 @@ export default function SettingsPanel() {
             </div>
           </div>
 
-          <div>
+    {/*  === NEURONAL NETWORKS === */}
+
+        <div>
             <h3 className="mb-1 text-2xl font-bold">Neuronal Networks</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {/*  initialGenomeSize  */}
+
+    {/*  initialGenomeSize  */}
+
               <div className="flex flex-col">
                 <label className="grow">Initial genome size</label>
                 <input
@@ -208,7 +291,9 @@ export default function SettingsPanel() {
                   >
                 </input>
               </div>
-            {/*  maxGenomeSize  */}
+
+    {/*  maxGenomeSize  */}
+
             <div className="flex flex-col">
                 <label className="grow">Max genome size</label>
                 <input
@@ -219,7 +304,9 @@ export default function SettingsPanel() {
                   >
                 </input>
               </div>
-            {/*  maxNumberNeurons  */}
+
+    {/*  maxNumberNeurons  */}
+
             <div className="flex flex-col">
                 <label className="grow">Max neurons</label>
                 <input
@@ -241,7 +328,9 @@ export default function SettingsPanel() {
                 <option value="singleBit">Single Bits</option>
                 <option value="singleHexDigit">Single Hexadecimal Digits</option>
               </SelectInput>
-            {/*  mutationProbability  */}
+
+    {/*  mutationProbability  */}
+
             <div className="flex flex-col">
                 <label className="grow">Mutation probability (0 - 1)</label>
                 <input
@@ -253,7 +342,9 @@ export default function SettingsPanel() {
                   >
                 </input>
               </div>
-            {/*  geneInsertionDeletionProbability  */}
+    
+    {/*  geneInsertionDeletionProbability  */}
+
             <div className="flex flex-col">
                 <label className="grow">Insertion/Deletion probability (0 - 1)</label>
                 <input
@@ -289,7 +380,8 @@ export default function SettingsPanel() {
               */}
 
           
-          {/*  sensors  */}
+    {/*  sensors  */}
+
           <div>
             <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
@@ -304,7 +396,9 @@ export default function SettingsPanel() {
                 ))}
             </div>
           </div>
-          {/*  actions  */}
+
+  {/*  actions  */}
+
           <div>
             <h3 className="mb-1 text-2xl font-bold">Actions</h3>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">

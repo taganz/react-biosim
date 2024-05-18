@@ -228,7 +228,7 @@ export default class CreatureActions {
 
     // Attack
     if (this.data.Attack.enabled) {
-      if (input > 0) {
+      if (input > constants.ACTION_REPRODUCTION_OFFSET) {    // was 0
 
         const targetDirection : Direction4 = creature.generations.grid.getNeighbour4Creature(creature.position);
         if (targetDirection!=null) {

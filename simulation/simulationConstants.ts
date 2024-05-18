@@ -76,6 +76,8 @@ export const REPRODUCTION_COST_PER_MASS_TRY = 0.1;
 export const REPRODUCTION_COST_PER_MASS_DO = 0.25; // 0.3
 export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;    
 
+export const ACTION_REPRODUCTION_OFFSET = 0.6;  // will trigger action if input value is greater
+
 export const MOVE_COST_PER_MASS_TRY = 0.2;
 export const MOVE_COST_PER_MASS_DO = 0.6;
 export const MOVE_MULTIPLE_MASS_AT_BIRTH = 2;    // 2
