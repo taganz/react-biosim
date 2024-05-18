@@ -17,7 +17,9 @@ export interface SimulationCallEvent {
   genusId: string;
   eventType: LogEvent;
   paramName: string;
-  paramValue: number | string;
+  paramValue: number;
+  paramValue2: number;
+  paramString: string;
 }
 
 interface SimulationEvent {
@@ -31,10 +33,12 @@ interface SimulationEvent {
   eventType: string;
   paramName: string;
   paramValue: string;
+  paramValue2: string;
+  paramString: string;
 }
 
 export default class EventLogger {
-  _csvHeaders = 'LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
+  _csvHeaders = 'LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue;ParamValue2;ParamString\n';
   private worldController : WorldController;
   private readonly logThreshold: number;
   // should be reset at reset()
@@ -239,9 +243,12 @@ export default class EventLogger {
     let csvData: string;
 
     csvData = this._csvHeaders;
-    
+
+    // _csvHeaders should also be initialized!!
     for (const event of this.log) {
-      csvData += `${event.logLevel};${event.stepIndex};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
+      csvData += `${event.logLevel};${event.stepIndex};${event.currentGen};${event.currentStep};`
+                  +`${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};`
+                  +`${event.paramName};${event.paramValue};${event.paramValue2};${event.paramString}\n`;
     }
 
     return csvData;
@@ -279,8 +286,9 @@ export default class EventLogger {
       creatureId : eventValues.creatureId.toString(),
       eventType : eventValues.eventType,
       paramName : eventValues.paramName,
-      paramValue : typeof(eventValues.paramValue)=="string" ? 
-          eventValues.paramValue : eventValues.paramValue.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramValue : eventValues.paramValue.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramValue2 : eventValues.paramValue2.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramString : eventValues.paramString
     }
 
     this.pushEventToLog(simulationEvent);
@@ -311,7 +319,10 @@ export default class EventLogger {
               eventType : item[0],
               paramName : item[1].concat(" count"),
               paramValue : item[2].toString(),
+              paramValue2 : "",
+              paramString : "",
             }
+
             this.pushEventToLog(aggregatedEvent);
           });
       this.stepTotals = [];
@@ -343,6 +354,8 @@ export default class EventLogger {
             eventType : item[0],
             paramName : item[1].concat(" count"),
             paramValue : item[2].toString(),
+            paramValue2 : "",
+            paramString : "",
           }
           this.pushEventToLog(aggregatedEvent);
         });

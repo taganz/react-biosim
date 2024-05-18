@@ -13,17 +13,20 @@ import { SimulationCallEvent } from "@/simulation/logger/EventLogger";
 describe('EventLogger', () => {
     let worldControllerMock: WorldController;
     let logger: EventLogger;
-    const mockEvent : SimulationCallEvent = {
-        logLevel: LogLevel.CREATURE,
-        creatureId: 1,
-        speciesId: 'species1',
-        genusId: 'genus1',
-        eventType: LogEvent.BIRTH,
-        paramName: 'param1',
-        paramValue: 'value1'
-    };
-
+    let mockEvent : SimulationCallEvent;
+    
     beforeEach(() => {
+        mockEvent = {
+            logLevel: LogLevel.CREATURE,
+            creatureId: 1,
+            speciesId: 'species1',
+            genusId: 'genus1',
+            eventType: LogEvent.BIRTH,
+            paramName: 'param1',
+            paramValue: 1,
+            paramValue2: 2,
+            paramString: "joe"
+        };
         const worldControllerData = testWorldControllerData;
         const worldGenerationsData = testWorldGenerationsData;
         worldControllerMock = new WorldController(worldControllerData, worldGenerationsData);
@@ -60,8 +63,9 @@ describe('EventLogger', () => {
 
     test('reset() - after reset logger is paused and does not log ', () => {
         logger.reset(); 
+        mockEvent.paramValue = 969;
         logger.logEvent(mockEvent);
-        expect(logger.getLog().includes('value1')).toBeFalsy();
+        expect(logger.getLog().includes('969')).toBeFalsy();
     });
     
     test('resume() - should log an event after resume', () => {
@@ -73,8 +77,9 @@ describe('EventLogger', () => {
     test('resume() - after reset and resume logger is not paused and does log ', () => {
         logger.reset(); 
         logger.resume();
+        mockEvent.paramValue = 969;
         logger.logEvent(mockEvent);
-        expect(logger.getLog().includes('value1')).toBeTruthy();
+        expect(logger.getLog().includes('969')).toBeTruthy();
     });
     test('deleteLog() - log has only headers', () => {
         logger.logEvent(mockEvent);
@@ -82,7 +87,7 @@ describe('EventLogger', () => {
         expect(logger.getLog()).toBe(logger._csvHeaders); // Should only include headers after reset
     });
     test('getLog() - correct header', () => {
-        const header = "LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue";
+        const header = "LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue;ParamValue2;ParamString";
         logger.logEvent(mockEvent);
         expect(logger.getLog().includes(header)).toBeTruthy();
     });
@@ -94,9 +99,11 @@ describe('EventLogger', () => {
             genusId: 'genus1',
             eventType: LogEvent.BIRTH,
             paramName: 'param1',
-            paramValue: 'value1'
+            paramValue: 1,
+            paramValue2: 2,
+            paramString: "joe"
         };
-        const dataLine = "CREATURE;1;1;1;species1;genus1;1;BIRTH;param1;value1";
+        const dataLine = "CREATURE;1;1;1;species1;genus1;1;BIRTH;param1;1;2;joe";
         logger.reset();
         logger.resume();
         logger.logEvent(mockEvent);
@@ -139,7 +146,7 @@ describe('EventLogger', () => {
         worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);
         worldControllerMock.currentStep = 2; // Changing step
-        logger.logEvent({...mockEvent, paramName: 'param2', paramValue: 'value2'});
+        logger.logEvent({...mockEvent, paramName: 'param2', paramValue: 1});
 
         // Verify aggregation
         const log = logger.getLog();

@@ -198,8 +198,8 @@ export default class Creature {
 
   //TODO actionInputValue es sempre 1?
   attack(actionInputValue: number, targetDirection: Direction4) {
-    this.log(LogEvent.ATTACK_TRY, "actionInputValue", actionInputValue.toFixed(2));
-    this.log(LogEvent.ATTACK_TRY, "targetDirection", <string>targetDirection);
+    this.log(LogEvent.ATTACK_TRY, "actionInputValue", Math.round(actionInputValue*100)/100);
+    this.log(LogEvent.ATTACK_TRY, "targetDirection", 0, 0, <string>targetDirection);
     const preyMass = this._attack.attack(actionInputValue, targetDirection);
     if (preyMass > 0) {
       this._mass.add(preyMass);
@@ -238,7 +238,7 @@ export default class Creature {
   private move(x: number, y: number) {
 
 
-    this.log(LogEvent.MOVE_TRY, "x,y", x.toFixed(1).concat(",", y.toFixed(1)));
+    this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
     const consumed = this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
     this._worldWater.dissipateWater(consumed);
     if (!this.hasEnoughMassToMove()) {
@@ -280,7 +280,7 @@ export default class Creature {
       else if (x==-1 && y==0) this.stepDirection = "W";
       else if (x==-1 && y==1) this.stepDirection = "NW";
       else console.log("move error", x, y);
-      this.log(LogEvent.MOVE, "direction", <string>this.stepDirection);
+      this.log(LogEvent.MOVE, "direction", Math.round(x), Math.round(y), <string>this.stepDirection);
 
     }
   }
@@ -320,7 +320,7 @@ export default class Creature {
  }
 
  killedByAttack(killerSpecie: string) {
-  this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", killerSpecie);
+  this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", Math.round(this.position[0]), Math.round(this.position[1]), killerSpecie);
   this.die("attacked");
  }
 
@@ -353,13 +353,13 @@ export default class Creature {
     this.log(LogEvent.INFO, when + " " +"_energyConsumedByActionsExecution", this.brain.actions._energyConsumedByActionsExecution);
     this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
     this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
-    this.log(LogEvent.INFO, when + " " +"position", '${this.position[0]},${this.position[0]}');
-    this.log(LogEvent.INFO, when + " " +"lastPosition", '${this.lastPosition[0]},${this.lastPosition[0]}');
-    this.log(LogEvent.INFO, when + " " +"lastMovement", '${this.lastMovement[0]},${this.lastMovement[0]}');
+    this.log(LogEvent.INFO, when + " " +"position", this.position[0], this.position[1]);
+    this.log(LogEvent.INFO, when + " " +"lastPosition x", this.lastPosition[0]);
+    this.log(LogEvent.INFO, when + " " +"lastMovement y", this.lastMovement[1]);
   }
 
   
-  log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
+  log(eventType: LogEvent, paramName? : string, paramValue? : number, paramValue2? : number, paramString?: string) { 
       if (!this.eventLogger) {
         console.error("this.eventLogger not found");
         return;
@@ -379,7 +379,9 @@ export default class Creature {
         genusId: this._genus,
         eventType: eventType,
         paramName: paramName ?? "",
-        paramValue: paramValue ?? "",
+        paramValue: paramValue ?? 0,
+        paramValue2: paramValue2 ?? 0,
+        paramString: paramString ?? ""
       }
       this.eventLogger.logEvent(event);
     }
@@ -390,7 +392,7 @@ export default class Creature {
       this.generations.worldController.grid.cell(this.position[0], this.position[1]),
       this.mass
     )
-    this.log(LogEvent.DEAD, "cause", cause);
+    this.log(LogEvent.DEAD, "cause", undefined, undefined, cause);
     this.logBasicData("dead");
     //console.log(this.id, cause, this._age, this.generations.worldController.currentStep);
     this._health = -1;

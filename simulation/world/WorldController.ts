@@ -312,7 +312,7 @@ export default class WorldController {
   }
 
 
-  private log(eventType: LogEvent, paramName? : string, paramValue? : number | string) { 
+  private log(eventType: LogEvent, paramName? : string, paramValue? : number, paramValue2? : number, paramString?: string) { 
     if (!this.eventLogger) {
       console.error("this.eventLogger not found");
       return;
@@ -324,8 +324,11 @@ export default class WorldController {
       genusId : "",
       eventType: eventType,
       paramName: paramName ?? "",
-      paramValue: paramValue ?? "",
+      paramValue: paramValue ?? 0,
+      paramValue2: paramValue2 ?? 0,
+      paramString : paramString ?? ""
     }
     this.eventLogger.logEvent(event);
   }
 }
+
