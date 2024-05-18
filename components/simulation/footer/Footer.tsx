@@ -13,7 +13,7 @@ import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 export default function Footer() {
   const [extended, setExtended] = useState(false);
 
-  const currentStep = useWorldPropertyValue((worldController) => worldController.currentStep, 0);
+  const currentStep = useWorldPropertyValue((worldController) => worldController.currentStep, 1);
   const currentGeneration = useWorldPropertyValue((worldController) => worldController.currentGen, 0);
   const stepsPerGeneration = useWorldPropertyValue((worldController) => worldController.stepsPerGen, 0);
 

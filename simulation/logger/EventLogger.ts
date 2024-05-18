@@ -163,11 +163,11 @@ export default class EventLogger {
 
     // checks for first generation recording
     if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted 
-          && (this.worldController.currentGen > 0 || (this.worldController.currentGen == 0 && this.worldController.currentStep > 0))) {
+          && (this.worldController.currentGen > 0 || (this.worldController.currentGen == 0 && this.worldController.currentStep > 1))) {
       // not restarted yet
       return;
     }
-    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted && this.worldController.currentGen == 0 && this.worldController.currentStep == 0) {
+    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted && this.worldController.currentGen == 0 && this.worldController.currentStep == 1) {
       // started
       this.firstGenerationRecordingStarted = true;
     }
@@ -280,8 +280,8 @@ export default class EventLogger {
   }
 
   private aggregateAtGenerationLevel(eventValues:SimulationCallEvent) {
-    // don't start recording a generation until step 0
-    if (this.worldController.currentStep == 0) {
+    // don't start recording a generation until step 1
+    if (this.worldController.currentStep == 1) {
       this.generationTotalsHaveSeenStepZero = true;
     } 
     if (!this.generationTotalsHaveSeenStepZero) {

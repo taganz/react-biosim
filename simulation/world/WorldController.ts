@@ -44,7 +44,7 @@ export default class WorldController {
   
   // state values
   currentGen: number = 0;
-  currentStep: number = 0;
+  currentStep: number = 1;
   lastGenerationDuration: number = 0; 
   totalTime: number = 0;
   
@@ -89,7 +89,7 @@ export default class WorldController {
      
     // state data
     this.currentGen = 0;
-    this.currentStep = 0;
+    this.currentStep = 1;
     this.lastGenerationDuration = 0;
     this.totalTime = 0;
   
@@ -198,7 +198,7 @@ export default class WorldController {
 
     
     
-    if (this.currentStep > this.stepsPerGen) {
+    if (this.currentStep == this.stepsPerGen) {
       await this.endGeneration();
       this.startGeneration();
     } else {
@@ -222,7 +222,7 @@ export default class WorldController {
     this.totalTime += this.lastGenerationDuration;
     this._lastPauseDate = undefined;
 
-    this.currentStep = 0;
+    this.currentStep = 1;
     this.currentGen++;
     
     this.generations.endGeneration();

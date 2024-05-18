@@ -75,8 +75,8 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
         
         // state values
         simCode: "SC1",
-        currentGen: 0,
-        currentStep: 0,
+        currentGen: 1,
+        currentStep: 1,
         lastGenerationDuration: 0,
         totalTime: 0
 
