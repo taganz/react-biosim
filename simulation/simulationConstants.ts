@@ -26,6 +26,8 @@ import WorldControllerData from "./world/WorldControllerData";
 export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";  
 
 
+export const PRETTIFY_OUTPUT_TO_COPY = true;   
+export const PRETTIFY_OUTPUT_TO_FILE = true;   
 
 // -- log 
 export const LOG_ENABLED : boolean = true;  // main switch for logging

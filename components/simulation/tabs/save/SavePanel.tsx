@@ -8,6 +8,7 @@ import { useState } from "react";
 import { saveWorld } from "@/simulation/serialization/saveWorld";
 import { saveAs } from "file-saver";
 import CanvasToGIF from "./CanvasToGif";
+import { PRETTIFY_OUTPUT_TO_COPY, PRETTIFY_OUTPUT_TO_FILE } from "@/simulation/simulationConstants";
 
 export default function SavePanel() {
   const worldController = useAtomValue(worldControllerAtom);
@@ -17,7 +18,11 @@ export default function SavePanel() {
   const handleSave = () => {
     if (worldController) {
       const savedWorld = saveWorld(worldController);
-      const jsonSavedWorld = JSON.stringify(savedWorld);
+      if (PRETTIFY_OUTPUT_TO_COPY) {
+        var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
+      } else {
+        var jsonSavedWorld = JSON.stringify(savedWorld);
+      }
       setDataSavedWorld(jsonSavedWorld);
     }
   };
@@ -26,7 +31,11 @@ export default function SavePanel() {
   const handleSaveToFile = () => {
     if (worldController) {
       const savedWorld = saveWorld(worldController);
-      const jsonSavedWorld = JSON.stringify(savedWorld);
+      if (PRETTIFY_OUTPUT_TO_FILE) {
+        var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
+      } else {
+        var jsonSavedWorld = JSON.stringify(savedWorld);
+      }
       setDataSavedWorld(jsonSavedWorld);
 
       const blob = new Blob ([jsonSavedWorld]  , { type: 'text/plain;charset=utf-8'})
