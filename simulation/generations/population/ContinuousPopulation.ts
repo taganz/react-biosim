@@ -16,7 +16,7 @@ export default class ContinuousPopulation implements PopulationStrategy {
       //const creatures: Creature[] = [];
 
     // First generation
-    if (worldGenerations.currentGen === 0) {
+    if (worldGenerations.currentGen === 1) {
       const arp = new AsexualRandomPopulation();
       arp.populate (worldGenerations);
     }

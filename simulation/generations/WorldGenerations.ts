@@ -215,7 +215,7 @@ public endGeneration(): void {
 
 
 get isFirstGeneration() {
-  return this.worldController.currentGen == 0;
+  return this.worldController.currentGen == 1;
 }
 get currentGen() {
   return this.worldController.currentGen;

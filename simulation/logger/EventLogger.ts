@@ -22,6 +22,7 @@ export interface SimulationCallEvent {
 
 interface SimulationEvent {
   logLevel: string;
+  stepIndex: string;
   currentGen: string;
   currentStep: string;
   speciesId: string;
@@ -33,30 +34,34 @@ interface SimulationEvent {
 }
 
 export default class EventLogger {
-  _csvHeaders = 'LogLevel;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
+  _csvHeaders = 'LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue\n';
   private worldController : WorldController;
   private readonly logThreshold: number;
   // should be reset at reset()
   private log: SimulationEvent[] = [];
   private stepTotals : [LogEvent, string][]=[];
   private generationTotals : [LogEvent, string][]=[];
-  private lastStepTotals : number = 0;
-  private lastGenerationTotals : number = 0;
+  private lastStepTotals : number = 1;
+  private lastGenerationTotals : number = 1;
   private generationTotalsHaveSeenStepZero : boolean = false;
   private paused = true; 
   private logCreatureId : number = LOG_CREATURE_ID;
   private currentLogLevel : LogLevel = LOG_LEVEL;
   private singleGenerationRecording = false;
+  private fromFirstGenerationRecording = false;
   private firstGenerationRecording = false;
   private firstGenerationRecordingStarted = false;
   private generationToRecord = 0;
+  private stepIndex = 1;   
+  private lastStepLogged = 1;
   
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
   constructor(worldController : WorldController, logThreshold: number = LOG_EVENTLOGGER_MAX_EVENTS) {
     this.worldController = worldController;
     this.logThreshold = logThreshold;
-    console.log("eventLogger initialized");
+    this.reset();
+    //console.log("eventLogger initialized");
   }
 
 
@@ -80,18 +85,17 @@ export default class EventLogger {
     // if (LOG_RESET_AT_RESTART) {
     //   deleteLog()
     // }
-    this.pause();
+    this.stepIndex = 1;
+    this.lastStepLogged = 1;
+    this.lastStepTotals = 1;
+    this.lastGenerationTotals = 1;
+    if (!this.firstGenerationRecording && !this.fromFirstGenerationRecording) {
+      this.pause();
+    }
  
    }
  
-  public deleteLog() {
-    this.log = [];
-    this.stepTotals = [];
-    this.generationTotals =[];
-    this.lastStepTotals = 0;
-    this.lastGenerationTotals = 0;
-    this.generationTotalsHaveSeenStepZero = false;
-  }
+
   public pause() {
     this.paused = true;
     this.generationTotalsHaveSeenStepZero = false;
@@ -110,6 +114,15 @@ export default class EventLogger {
     }
   }
 
+  public deleteLog() {
+    this.log = [];
+    this.stepTotals = [];
+    this.generationTotals =[];
+    this.lastStepTotals = 0;
+    this.lastGenerationTotals = 0;
+    this.generationTotalsHaveSeenStepZero = false;
+  }
+
   public startLoggingCreatureId(id: number) {
     this.paused = false;
     this.currentLogLevel = LogLevel.CREATURE;
@@ -121,6 +134,7 @@ export default class EventLogger {
     this.singleGenerationRecording = true;
     this.generationToRecord = this.worldController.currentGen + 1;
     this.firstGenerationRecording = false;
+    this.fromFirstGenerationRecording = false;
     this.deleteLog();
     this.resume();
   }
@@ -132,6 +146,7 @@ export default class EventLogger {
     this.firstGenerationRecording = true;
     this.firstGenerationRecordingStarted = false;
     this.singleGenerationRecording = false;
+    this.fromFirstGenerationRecording = false;
     this.deleteLog();
     this.resume();
   }
@@ -140,7 +155,14 @@ export default class EventLogger {
     this.firstGenerationRecordingStarted = false;
     this.pause();
   }
-
+  public recordFromFirstGeneration() {
+    this.fromFirstGenerationRecording = true;
+    this.firstGenerationRecording = false;
+    this.firstGenerationRecordingStarted = false;
+    this.singleGenerationRecording = false;
+    this.deleteLog();
+    this.resume();
+  }
   
   public logEvent(eventValues: SimulationCallEvent) : void {
 
@@ -163,19 +185,32 @@ export default class EventLogger {
 
     // checks for first generation recording
     if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted 
-          && (this.worldController.currentGen > 0 || (this.worldController.currentGen == 0 && this.worldController.currentStep > 1))) {
+          && (this.worldController.currentGen > 1 
+          || (this.worldController.currentGen == 1 && this.worldController.currentStep > 1))) {
       // not restarted yet
       return;
     }
-    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted && this.worldController.currentGen == 0 && this.worldController.currentStep == 1) {
+    if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted 
+          && this.worldController.currentGen == 1 && this.worldController.currentStep == 1) {
       // started
       this.firstGenerationRecordingStarted = true;
     }
-    if (this.firstGenerationRecording && this.firstGenerationRecordingStarted && this.worldController.currentGen > 0) {
+    if (this.firstGenerationRecording && this.firstGenerationRecordingStarted && this.worldController.currentGen > 1) {
       this.recordFirstGenerationFinished();
       return;
     }
     
+    // checks for from first generation recording
+    if (this.fromFirstGenerationRecording && !this.firstGenerationRecordingStarted 
+      && (this.worldController.currentGen > 1 || (this.worldController.currentGen == 1 && this.worldController.currentStep > 1))) {
+      // not restarted yet
+      return;
+    }
+    if (this.fromFirstGenerationRecording && !this.firstGenerationRecordingStarted && this.worldController.currentGen == 1 && this.worldController.currentStep == 1) {
+      // started
+      this.firstGenerationRecordingStarted = true;
+    }
+
 
     this.logReceivedEvent(eventValues);
     
@@ -193,11 +228,7 @@ export default class EventLogger {
   public getLogBlob(): Blob {
     let csvData: string;
 
-    csvData = this._csvHeaders;
-    
-    for (const event of this.log) {
-      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
-    }
+    csvData = this.getLog();
 
     const blob = new Blob([csvData], { type: 'text/plain;charset=utf-8' });
     return blob;
@@ -210,7 +241,7 @@ export default class EventLogger {
     csvData = this._csvHeaders;
     
     for (const event of this.log) {
-      csvData += `${event.logLevel};${event.currentGen};${event.currentStep};${event.speciesId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
+      csvData += `${event.logLevel};${event.stepIndex};${event.currentGen};${event.currentStep};${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};${event.paramName};${event.paramValue}\n`;
     }
 
     return csvData;
@@ -240,6 +271,7 @@ export default class EventLogger {
  
     const simulationEvent : SimulationEvent = {
       logLevel : eventValues.logLevel,
+      stepIndex : this.stepIndex.toString(),
       currentGen : this.worldController.currentGen.toString(),
       currentStep : this.worldController.currentStep.toString(),
       speciesId : eventValues.speciesId,
@@ -247,11 +279,19 @@ export default class EventLogger {
       creatureId : eventValues.creatureId.toString(),
       eventType : eventValues.eventType,
       paramName : eventValues.paramName,
-      paramValue : typeof(eventValues.paramValue)=="string" ? eventValues.paramValue : eventValues.paramValue.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramValue : typeof(eventValues.paramValue)=="string" ? 
+          eventValues.paramValue : eventValues.paramValue.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
     }
 
-    this.log.push(simulationEvent);
+    this.pushEventToLog(simulationEvent);
+  }
 
+  private pushEventToLog(simulationEvent : SimulationEvent) {
+    this.log.push(simulationEvent);
+    if (this.lastStepLogged != this.worldController.currentStep) {
+      this.stepIndex++;
+      this.lastStepLogged = this.worldController.currentStep;
+    }
   }
 
   private aggregateAtStepLevel(eventValues:SimulationCallEvent) {
@@ -262,6 +302,7 @@ export default class EventLogger {
         aggregatedAtStepLevel.map(item => {
             const aggregatedEvent : SimulationEvent = {
               logLevel : LogLevel.STEP,
+              stepIndex : this.stepIndex.toString(),
               currentGen : this.lastGenerationTotals.toString(),
               currentStep : this.lastStepTotals.toString(),
               speciesId : "",
@@ -271,7 +312,7 @@ export default class EventLogger {
               paramName : item[1].concat(" count"),
               paramValue : item[2].toString(),
             }
-            this.log.push(aggregatedEvent);
+            this.pushEventToLog(aggregatedEvent);
           });
       this.stepTotals = [];
       this.lastStepTotals = this.worldController.currentStep;
@@ -293,6 +334,7 @@ export default class EventLogger {
       aggregatedAtGenerationLevel.map(item => {
           const aggregatedEvent : SimulationEvent = {
             logLevel : LogLevel.GENERATION,
+            stepIndex : this.stepIndex.toString(),
             currentGen : this.lastGenerationTotals.toString(),
             currentStep : "",
             speciesId : "",
@@ -302,7 +344,7 @@ export default class EventLogger {
             paramName : item[1].concat(" count"),
             paramValue : item[2].toString(),
           }
-          this.log.push(aggregatedEvent);
+          this.pushEventToLog(aggregatedEvent);
         });
       this.generationTotals = [];
       this.lastGenerationTotals = this.worldController.currentGen;

@@ -17,7 +17,7 @@ export class GenerationRegistry {
 
   startGeneration() {
     // Register generation stats
-    if (this.worldController.currentGen > 0) {
+    if (this.worldController.currentGen > 1) {
       const generation = this.worldController.currentGen - 1;
       const survivorCount = this.worldController.generations.lastSurvivorsCount;
       const startingPopulation = this.worldController.generations.lastCreatureCount;

@@ -79,6 +79,11 @@ export default function LoggerStatus() {
         worldController.eventLogger.recordNextGeneration();
     }
   }
+  function handleRecordFromFirstGenerationLog() {
+    if (worldController) {
+        worldController.eventLogger.recordFromFirstGeneration();
+    }
+  }
   function handleRecordFirstGenerationLog() {
     if (worldController) {
         worldController.eventLogger.recordFirstGeneration();
@@ -107,7 +112,8 @@ export default function LoggerStatus() {
             <div>
               Log status: {eventLoggerIsPaused ? "Paused" : "Active"}
               <div className="my-3"><Button onClick={handleClick}>{eventLoggerIsPaused ? "Resume log" : "Pause log"}</Button></div>
-              <div className="my-3"><Button onClick={handleRecordFirstGenerationLog}>Record first generation</Button></div>
+              <div className="my-3"><Button onClick={handleRecordFirstGenerationLog}>Record first generation and pause</Button></div>
+              <div className="my-3"><Button onClick={handleRecordFromFirstGenerationLog}>Record from first generation</Button></div>
               <div className="my-3"><Button onClick={handleRecordNextGenerationLog}>Record next generation</Button></div>
               <div className="my-3"><Button onClick={handleSaveLog}>Save log</Button></div>
               <div className="my-3"><Button onClick={handleDeleteLog}>Delete log</Button></div>

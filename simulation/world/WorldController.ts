@@ -43,7 +43,7 @@ export default class WorldController {
   pauseBetweenGenerations: number = 0;
   
   // state values
-  currentGen: number = 0;
+  currentGen: number = 1;
   currentStep: number = 1;
   lastGenerationDuration: number = 0; 
   totalTime: number = 0;
@@ -88,7 +88,7 @@ export default class WorldController {
     this.initialPopulation = worldGenerationsData.initialPopulation;
      
     // state data
-    this.currentGen = 0;
+    this.currentGen = 1;
     this.currentStep = 1;
     this.lastGenerationDuration = 0;
     this.totalTime = 0;

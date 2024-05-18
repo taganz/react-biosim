@@ -16,7 +16,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
       //const creatures: Creature[] = [];
 
     // First generation
-    if (worldGenerations.currentGen === 0) {
+    if (worldGenerations.currentGen === 1) {
       for (let i = 0; i < worldGenerations.initialPopulation; i++) {
         
         // Generate the creature
