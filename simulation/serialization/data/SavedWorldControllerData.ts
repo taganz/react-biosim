@@ -1,16 +1,16 @@
 import SavedWorldObject from "@/simulation/serialization/data/SavedWorldObject";
-import { WaterData } from "@/simulation/world/WorldControllerData";
+import { WaterData } from "@/simulation/water/WaterData";
 
 export default interface SavedWorldControllerData {
   // initial values
   size: number; 
   stepsPerGen: number;
-  initialPopulation: number;
-  worldObjects : SavedWorldObject[];
-  waterFirstRainPerCell : number;
-  waterCellCapacity: number;
+  //initialPopulation: number;
+  //waterFirstRainPerCell : number;
+  //waterCellCapacity: number;
   waterData : WaterData;
-
+  worldObjects : SavedWorldObject[];
+  
   // user values
   pauseBetweenSteps: number;
   immediateSteps: number;

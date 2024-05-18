@@ -10,25 +10,28 @@ export default function serializeWorldControllerData(worldController: WorldContr
 
     return {
          // initial values
-        simCode: worldController.simCode,
         size: worldController.size, 
         stepsPerGen: worldController.stepsPerGen,
-        initialPopulation: worldController.initialPopulation,
-        worldObjects : objects,
-        waterFirstRainPerCell: worldController.waterFirstRainPerCell,
-        waterCellCapacity: worldController.waterCellCapacity,
+        //initialPopulation: worldController.initialPopulation,
+        //waterFirstRainPerCell: worldController.worldWater.waterData.waterFirstRainPerCell,
+        //waterCellCapacity: worldController.worldWater.waterData.waterCellCapacity,
         waterData : worldController.worldWater.waterData,
-
+        
         // user values
         pauseBetweenSteps: worldController.pauseBetweenSteps,
         immediateSteps: worldController.immediateSteps,
         pauseBetweenGenerations: worldController.pauseBetweenGenerations,
 
         // state values
+        simCode: worldController.simCode,
         currentGen: worldController.currentGen,
         currentStep: worldController.currentStep,
         lastGenerationDuration: worldController.lastGenerationDuration,
         totalTime: worldController.totalTime,
+
+        // grid
+        worldObjects : objects,
+        
     }
 }
 

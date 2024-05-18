@@ -14,7 +14,7 @@ import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
 import CreatureGenus, {Genus} from "./CreatureGenus";
-import WorldWater from "../world/WorldWater";
+import WorldWater from "../water/WorldWater";
 
 export const maxHealth = 100;
 

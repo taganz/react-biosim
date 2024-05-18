@@ -1,7 +1,7 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
-import { WaterData } from "@/simulation/world/WorldControllerData";
+import { WaterData } from "@/simulation/water/WaterData";
 
 // Updates worldGenerationsData and worldControllerData with current run status vars 
 // and resume worldController execution. This is intended to change initial values without 

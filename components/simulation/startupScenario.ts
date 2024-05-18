@@ -66,6 +66,7 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
             waterRainMaxPerCell:  0,             // 2
             waterTotalPerCell: 130,       // 
             waterEvaporationPerCellPerGeneration: 0,  // 0
+            rainType: "rainTypeUniform"
           },
     
         // user values

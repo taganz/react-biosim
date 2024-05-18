@@ -1,12 +1,12 @@
-import { Grid, GridPosition, GridCell } from "./grid/Grid";
-import { WaterData } from "./WorldControllerData";
+import { Grid, GridPosition, GridCell } from "../world/grid/Grid";
+import { WaterData } from "@/simulation/water/WaterData";
+import { RainType } from "./RainType";
 
 /* 
     manages the water amount in the world (should be constant)
     stores water stats
 */
 
-export type RainType = "rainTypeSinSin" | "rainTypeUniform";
 
 export default class WorldWater {
 
@@ -84,9 +84,10 @@ export default class WorldWater {
 
     // water from cloud go to cells
     //TODO functions....
-    rain(grid: Grid, rainFunction : RainType = "rainTypeUniform", rainValue = this.maxRainWaterPerCell) {
-        let rf;
-        switch(rainFunction) {
+    rain(grid: Grid) {
+        let rf : ((x: number, y:number)=> number);
+        const rainValue = this.waterData.waterRainMaxPerCell;
+        switch(this.waterData.rainType) {
             case "rainTypeSinSin":
                 rf = ((x: number, y: number) => 
                     rainValue * Math.sin(Math.PI * x/grid._size) * Math.sin(Math.PI * y/grid._size));
@@ -94,12 +95,15 @@ export default class WorldWater {
             case "rainTypeUniform":
                  rf = ( (x: number, y: number) => rainValue);
                  break;
+            case "rainTypeUniformNE":
+                 rf = ( (x: number, y: number) => { return ((x > (grid.size *0.5) && y < (grid.size * 0.5)) ? rainValue : (rainValue * 0.5)) });
+                 break;
             default:
-                throw new Error ("unknown rainType");
+                throw new Error ("unknown rainType: ".concat(this.waterData.rainType as string));
             }
         for (let y = 0; y < grid._size; y++) {
             for (let x = 0; x < grid._size; x++) {
-                let waterToAdd =  rf(x,y);
+                let waterToAdd = rf(x,y);
                 waterToAdd = Math.min(waterToAdd, this.waterInCloud);
                 const waterAdded = grid.addWater([x, y], waterToAdd);
                 this.waterInCloud-=waterAdded;

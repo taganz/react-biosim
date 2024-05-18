@@ -23,6 +23,7 @@ import { ChangeEvent } from "react";
 import * as constants from "@/simulation/simulationConstants"
 
 import UpdateParametersButton from "../../UpdateParametersButton";
+import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 
 const enabledSensorsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledSensors);
 const enabledActionsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledActions);
@@ -88,6 +89,9 @@ export default function SettingsPanel() {
         setWorldGenerationData(prev => ({ ...prev, selectionMethod: selectSelectionMethod(value) }));
       }
 
+      const handleRainTypeOptions = (value: string) => {
+        setWaterData(prev => ({ ...prev, rainType: value as RainType }));
+      }
     
       const handlePopulationStrategy = (value: string) => {
         setWorldGenerationData(prev => ({ ...prev, populationStrategy: selectPopulationStrategy(value) }));
@@ -163,11 +167,18 @@ export default function SettingsPanel() {
               >
             </input>
           </div>
+          <div className="mb-1">
+          {/*  rainType  */}
+          <p  className="mb-2">Rain type: {waterData.rainType} </p>
+              <Dropdown options={rainTypeOptions}
+                        onSelect={handleRainTypeOptions} />
+              <br/>
+            </div>
             </div>
           </div>
           <div>
           {/*  selectionMethod  */}
-          <h3 className="mb-1 text-2xl font-bold">Sim options</h3>
+          <h3 className="mb-1 text-2xl font-bold">Generations</h3>
           <p  className="mb-2">Metabolism is {worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}
           </p>
             <div className="mb-1">

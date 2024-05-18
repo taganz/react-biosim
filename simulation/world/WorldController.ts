@@ -11,7 +11,7 @@ import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger'
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
-import WorldWater from "./WorldWater";
+import WorldWater from "../water/WorldWater";
 
 
 // Manages generation-step loop

@@ -10,7 +10,7 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import * as constants from "@/simulation/simulationConstants"
 import { testWorldControllerData } from './testWorldControllerData';
 import { testWorldGenerationsData } from './testWorldGenerationsData';
-import WorldWater from '@/simulation/world/WorldWater';
+import WorldWater from '@/simulation/water/WorldWater';
 
 /* https://jestjs.io/docs/expect  */
 

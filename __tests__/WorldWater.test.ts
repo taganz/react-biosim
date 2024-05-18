@@ -19,8 +19,8 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
-import WorldWater from "@/simulation/world/WorldWater";
-import { WaterData } from "@/simulation/world/WorldControllerData";
+import WorldWater from "@/simulation/water/WorldWater";
+import { WaterData } from "@/simulation/water/WaterData";
 
 /* https://jestjs.io/docs/expect  */
 

@@ -5,7 +5,7 @@ import Button from "../global/Button";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCanvasAtom, waterDataAtom } from "./store";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
-import { WaterData } from "@/simulation/world/WorldControllerData";
+import { WaterData } from "@/simulation/water/WaterData";
 
 export default function RestartButton() {
   //const restart = useSetAtom(restartAtom);

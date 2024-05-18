@@ -19,6 +19,7 @@ import ContinuousPopulation from "./generations/population/ContinuousPopulation"
 import ContinuousSelection from "./generations/selection/ContinuousSelection";
 import WorldGenerationsData from "./generations/WorldGenerationsData";
 import WorldControllerData from "./world/WorldControllerData";
+import { WaterData } from "./water/WaterData";
 /*  ----- production setup -----
  STARTUP_MODE = "startupScenario";
 */
@@ -60,7 +61,7 @@ export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
 
 // -- metabolism 
 export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
-export const MASS_WATER_TO_MASS_PER_STEP = 0.50; //0.1 - 0.4
+export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
 export const MASS_AT_BIRTH_PLANT = 1;
 export const MASS_AT_BIRTH_MOVE = 2;
 export const MASS_AT_BIRTH_ATTACK = 2;
@@ -69,20 +70,20 @@ export const MASS_MAX_MULTIPLE_MASS_AT_BIRT = 5;
 
 export const MASS_COST_PER_EXECUTE_ACTION = 0.01; //  a plant has a minimum of 2 actions and gets energy from photosynthesis
 
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.05;   // 0.07
+export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.04;   // 0.07
 
 export const REPRODUCTION_COST_PER_MASS_TRY = 0.1;    
 export const REPRODUCTION_COST_PER_MASS_DO = 0.25; // 0.3
 export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;    
 
 export const MOVE_COST_PER_MASS_TRY = 0.2;
-export const MOVE_COST_PER_MASS_DO = 0.3;
+export const MOVE_COST_PER_MASS_DO = 0.6;
 export const MOVE_MULTIPLE_MASS_AT_BIRTH = 2;    // 2
 
-export const ATTACK_COST_PER_MASS_TRY = 0.3;
+export const ATTACK_COST_PER_MASS_TRY = 0.4;
 export const ATTACK_COST_PER_MASS_DO = 0;
-export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 0;     // 0
-export const ATTACK_MIN_PREY_MASS_FACTOR = 0;      // 0
+export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 3;     // 0
+export const ATTACK_MIN_PREY_MASS_FACTOR = 2;      // 0
 
 // -- selection method
 
@@ -114,6 +115,27 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   // initial values
   size : 50,                                // 100
   stepsPerGen: 300,                          // 300
+
+  waterData : {
+    waterFirstRainPerCell: 50,              // 10
+    waterCellCapacity: 100,     // 20
+    waterRainMaxPerCell:  30,             // 2
+    waterTotalPerCell: 130,       // 
+    waterEvaporationPerCellPerGeneration: 10,  // 0
+    rainType : "rainTypeUniform"
+  },
+  // user values
+  pauseBetweenSteps: 10,  // [0 | 10 | 50 | 200]
+  immediateSteps: 1,       // [0 | 20 | 200]
+  pauseBetweenGenerations: 0, // [0 | 1000 | 4000]
+  // state values
+  simCode: "XXX",
+  currentGen: 0,
+  currentStep: 1,
+  lastGenerationDuration: 0,
+  totalTime: 0,
+
+  // grid
   worldObjects : [
     // A spawn zone at top left
    // new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
@@ -127,23 +149,6 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
     new RectangleObject(0.9, 0.6, 0.04, 0.4),
   ],
 
-  waterData : {
-    waterFirstRainPerCell: 50,              // 10
-    waterCellCapacity: 100,     // 20
-    waterRainMaxPerCell:  15,             // 2
-    waterTotalPerCell: 130,       // 
-    waterEvaporationPerCellPerGeneration: 10,  // 0
-  },
-  // user values
-  pauseBetweenSteps: 10,  // [0 | 10 | 50 | 200]
-  immediateSteps: 1,       // [0 | 20 | 200]
-  pauseBetweenGenerations: 0, // [0 | 1000 | 4000]
-  // state values
-  simCode: "XXX",
-  currentGen: 0,
-  currentStep: 1,
-  lastGenerationDuration: 0,
-  totalTime: 0
 }
 
 export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
