@@ -90,28 +90,28 @@ describe('WorldWater', () => {
         worldWater.rain(grid);
         expect(grid.debugGetGridWater() - waterAtGridInit).toEqual(worldWater.waterInCells);
     });
-    test('should keep total water after rain uniform', () => {
+    test('rain - should keep total water after rain uniform', () => {
         worldWater.rain(grid, "rainTypeUniform", 1.7);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
-    test('should keep total water after rain sinsin', () => {
+    test('rain - should keep total water after rain sinsin', () => {
         worldWater.rain(grid, "rainTypeSinSin", 1.5);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
-    test('should keep total water after evaporation', () => {
+    test('evaporation - should keep total water after evaporation', () => {
         worldWater.rain(grid, "rainTypeUniform", 1);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
-    test('should keep total water after creature operations', () => {
+    test('returnWaterToCell - should keep total water after creature operations', () => {
         const waterGot = worldWater.getWaterFromCell(grid.cell(1,1), 3);
         worldWater.returnWaterToCell(grid.cell(1,1), waterGot);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
-    test('creature gets water from cell', () => {
+    test('getWaterFromCell - creature gets water from cell', () => {
         worldWater.firstRain(grid);  // 2.1
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
         expect(worldWater.waterInCloud).toBeCloseTo(0.4*5*5, 4);
@@ -160,7 +160,6 @@ describe('WorldWater', () => {
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1 - 10 + 4.3 - 2.1, 4);
         expect(worldWater.waterInCreatures).toBe(1 + 10 - 4.3 + 2.1);
     });
-
 })
 
 

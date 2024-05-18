@@ -110,9 +110,8 @@ export const SIM_CODE_LENGTH = 3;
 
 export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   // initial values
-  size : 25,                                // 100
-  stepsPerGen: 50,                          // 300
-  //initialPopulation: 200,                   // 500
+  size : 50,                                // 100
+  stepsPerGen: 300,                          // 300
   worldObjects : [
     // A spawn zone at top left
    // new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
@@ -125,14 +124,13 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
     new RectangleObject(0.7, 0.6, 0.04, 0.4),
     new RectangleObject(0.9, 0.6, 0.04, 0.4),
   ],
-  //waterFirstRainPerCell : GRIDPOINT_WATER_DEFAULT,
-  //waterCellCapacity: GRIDPOINT_WATER_CAPACITY_DEFAULT,
+
   waterData : {
     waterFirstRainPerCell: 50,              // 10
-    waterCellCapacity: 400,     // 20
-    waterRainMaxPerCell:  0,             // 2
+    waterCellCapacity: 100,     // 20
+    waterRainMaxPerCell:  15,             // 2
     waterTotalPerCell: 130,       // 
-    waterEvaporationPerCellPerGeneration: 0,  // 0
+    waterEvaporationPerCellPerGeneration: 10,  // 0
   },
   // user values
   pauseBetweenSteps: 10,  // [0 | 10 | 50 | 200]
@@ -141,7 +139,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   // state values
   simCode: "XXX",
   currentGen: 0,
-  currentStep: 0,
+  currentStep: 1,
   lastGenerationDuration: 0,
   totalTime: 0
 }
@@ -150,7 +148,7 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   // initial values
   populationStrategy: new ContinuousPopulation(),
   selectionMethod: new ContinuousSelection(),
-  initialPopulation: 200,       // 500
+  initialPopulation: 150,       // 500
   initialGenomeSize: 4,         // 4
   maxGenomeSize: 4,
   maxNumberNeurons: 15,

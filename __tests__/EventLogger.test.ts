@@ -97,9 +97,9 @@ describe('EventLogger', () => {
     test('should aggregate events correctly at step level', () => {
         logger.resume();
         // Simulate steps changing in WorldController
-        worldControllerMock.currentStep = 0;
+        worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);
-        worldControllerMock.currentStep = 1; // Changing step
+        worldControllerMock.currentStep = 2; // Changing step
         logger.logEvent({...mockEvent, paramName: 'param2', paramValue: 'value2'});
 
         // Verify aggregation
@@ -118,7 +118,7 @@ describe('EventLogger', () => {
     test('should log next generation', () => {
         logger.resume();
         // Simulate steps changing in WorldController
-        worldControllerMock.currentStep = 1;
+        worldControllerMock.currentStep = 2;
 
         worldControllerMock.currentGen = 1;
         logger.recordNextGeneration();
