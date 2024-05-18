@@ -50,7 +50,7 @@ export default class WorldCanvas {
     this.clearCanvas();
     this.resizeCanvas();
     // RD
-    this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color with 10% opacity
+    this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color - ok gif
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
     //this.generateWaterImage();
 
