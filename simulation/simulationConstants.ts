@@ -14,7 +14,7 @@ import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnAre
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent"
-import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
+import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 import ContinuousPopulation from "./generations/population/ContinuousPopulation";
 import ContinuousSelection from "./generations/selection/ContinuousSelection";
 import WorldGenerationsData from "./generations/WorldGenerationsData";

@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, eventLoggerAtom} from "./store";
 import {worldCanvasAtom} from "@/components/simulation/store/worldAtoms";
 import { STARTUP_MODE } from "@/simulation/simulationConstants";
-import { startupScenarioWorldControllerData, startupScenarioWorldGenerationsData } from "./startupScenario";
+import { startupScenarioWorldControllerData, startupScenarioWorldGenerationsData } from "../../simulation/startupScenario";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 //import EventLogger from "@/simulation/logger/EventLogger";
 

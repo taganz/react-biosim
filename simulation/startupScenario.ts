@@ -54,10 +54,7 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
         size: 100, 
         stepsPerGen: 300,
         //initialPopulation: 1000,   //         "initialPopulation": "1000",
-        worldObjects: [
-            new RectangleReproductionArea(0.47, 0.01, 0.53, 1, true),
-            new RectangleObject(0, 0.9, 0.01, 0.01),
-        ],
+
         //waterFirstRainPerCell: 1,
         //waterCellCapacity: 20,
         waterData : {
@@ -79,8 +76,13 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
         currentGen: 1,
         currentStep: 1,
         lastGenerationDuration: 0,
-        totalTime: 0
+        totalTime: 0,
 
+        // grid
+        worldObjects: [
+          new RectangleReproductionArea(0.47, 0.01, 0.53, 1, true),
+          new RectangleObject(0, 0.9, 0.01, 0.01),
+      ],
 
 
     };

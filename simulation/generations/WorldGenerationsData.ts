@@ -3,7 +3,7 @@ import  {ActionName} from "@/simulation/creature/brain/CreatureActions";
 import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
+import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 
 export default interface WorldGenerationsData {
     // initial values

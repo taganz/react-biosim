@@ -3,7 +3,7 @@ import { SensorName } from '../../creature/brain/CreatureSensors';
 import {SavedSelectionMethod} from "@/simulation/generations/selection/SelectionMethodFormatter";
 import {SavedPopulationStrategy} from "@/simulation/generations/population/PopulationStrategyFormatter";
 import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
-import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
+import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 
 
 export default interface SavedWorldGenerationData {

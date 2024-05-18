@@ -12,7 +12,7 @@ import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
-import {PhenoTypeColorMode} from "@/simulation/SimulationTypes";
+import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
