@@ -1,5 +1,5 @@
 import Creature from "../Creature";
-import * as constants from "../../simulationConstants"
+import * as constants from "../../simulationDataDefault"
 import {Direction, Direction4} from '@/simulation/world/direction';
 import { GridPosition } from "@/simulation/world/grid/Grid";
 

@@ -2,7 +2,7 @@
 
 
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
 import { populationStrategyFormatter } from "@/simulation/generations/population/PopulationStrategyFormatter";

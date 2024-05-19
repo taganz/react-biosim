@@ -13,11 +13,11 @@ export default class CreatureMass {
         //this._massAtBirth = massAtBirth
         this._mass = creature.massAtBirth;
         this._massAtBirth = creature.massAtBirth;
-        this._basalConsumption = creature.generations.worldController._loadedWorldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * 
+        this._basalConsumption = creature.generations.worldController.simData.worldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * 
                 creature.brain.genome.genes.length;
         this._metabolismEnabled = creature.generations.metabolismEnabled;
         this._maxMass = this._massAtBirth 
-                * creature.generations.worldController._loadedWorldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
+                * creature.generations.worldController.simData.worldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
     }
 
     basalMetabolism() : number {

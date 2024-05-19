@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import {worldControllerAtom} from "../../store";
 import {atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import {LOG_CREATURE_ID, LOG_ENABLED} from "@/simulation/simulationConstants"
 import Button from "@/components/global/Button";
 import { saveAs } from "file-saver";
 import useEventLoggerPropertyValue from "@/hooks/useEventLoggerPropertyValue";
@@ -38,10 +37,10 @@ export default function LoggerStatus() {
   };
 
   function logStatus(): string {
-    if (!LOG_ENABLED) {
+    if (!worldController?.simData.constants.LOG_ENABLED) {
       return "off"
     }
-    switch (LOG_CREATURE_ID) {
+    switch (worldController?.simData.constants.LOG_ENABLEDLOG_CREATURE_ID) {
       case 0:
         return "enabled for all creatures";
       case -10:
@@ -49,7 +48,7 @@ export default function LoggerStatus() {
       case -30:
         return "enabled for creatures 0 to 29";
       default:
-        return "enabled for creature id ".concat(LOG_CREATURE_ID.toString());
+        return "enabled for creature id ".concat(worldController.eventLogger.creatureId.toString());
     }
   }
 
@@ -105,10 +104,10 @@ export default function LoggerStatus() {
   return (
     <div>
       <p className="mb-2 text-lg">Log is: {logStatus()}</p>
-      <p className="mb-2 text-lg">{(!LOG_ENABLED || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
+      <p className="mb-2 text-lg">{(!worldController?.simData.constants.LOG_ENABLED || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
       <div>
         {
-        LOG_ENABLED ? (
+        worldController?.simData.constants.LOG_ENABLED ? (
             <div>
               Log status: {eventLoggerIsPaused ? "Paused" : "Active"}
               <div className="my-3"><Button onClick={handleClick}>{eventLoggerIsPaused ? "Resume log" : "Pause log"}</Button></div>

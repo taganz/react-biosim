@@ -8,6 +8,7 @@ export const testWorldControllerData : WorldControllerData = {
     //worldObjects : [],
     //waterFirstRainPerCell: 10,
     //waterCellCapacity: 20,
+    /*
     waterData : {
         waterFirstRainPerCell: 50,              // 10
         waterCellCapacity: 400,     // 20
@@ -16,7 +17,7 @@ export const testWorldControllerData : WorldControllerData = {
         waterEvaporationPerCellPerGeneration: 0,  // 0
         rainType: "rainTypeUniform"
       },
-
+      */
     // user values
     pauseBetweenSteps: 0,
     immediateSteps: 1,

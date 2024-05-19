@@ -21,6 +21,8 @@ export default interface WorldGenerationsData {
     enabledActions: ActionName[];
     metabolismEnabled: boolean;
     phenotypeColorMode: PhenoTypeColorMode;    //TODO aixo hauria d'estar en controller
+    plantGenes : number[],                     // plant genes to add to initial random genes
+
     // state values 
     lastCreatureIdCreated: number;
     lastCreatureCount: number;

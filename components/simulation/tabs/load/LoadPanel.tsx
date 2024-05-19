@@ -1,26 +1,38 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, waterDataAtom } from "../../store";
-import { useAtomValue, useSetAtom } from "jotai";
+import { simulationDataAtom,
+        worldControllerAtom,
+        //worldControllerDataAtom,
+        //worldGenerationDataAtom,
+        //waterDataAtom,
+        //simulationConstantsDataAtom, 
+        //worldObjectsDataAtom
+      } from "../../store";
+import { useAtomValue, useSetAtom, useAtom } from "jotai";
 import { useState } from "react";
-import { loadSavedWorldAndResumeRun } from "@/simulation/serialization/loadWorld";
+import { loadSavedWorldAndResumeRun } from "@/simulation/world/loadWorld";
 import TextareaInput from "@/components/global/inputs/TextareaInput";
 
 export default function LoadPanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
-  const setWorldControllerData = useSetAtom(worldControllerDataAtom);
-  const setWaterData = useSetAtom(waterDataAtom);
-
-  const [data, setData] = useState("");
+  //const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
+  //const setWorldControllerData = useSetAtom(worldControllerDataAtom);
+  //const setWaterData = useSetAtom(waterDataAtom);
+  const setSimulationData = useSetAtom(simulationDataAtom);
+  //const setSimulationConstantsData = useSetAtom(simulationConstantsDataAtom);
+  //const setWorldObjectsData = useSetAtom(worldObjectsDataAtom)
+  const [pastedData, setPastedData] = useState("");
 
   const handleLoadPasted = () => {
     if (worldController) {
-      const [readWorldControllerData, readWorldGenerationData] = loadSavedWorldAndResumeRun(worldController, data);
-      setWorldGenerationData(readWorldGenerationData);
-      setWorldControllerData(readWorldControllerData);
-      setWaterData(readWorldControllerData.waterData)
+      const simulationData = loadSavedWorldAndResumeRun(worldController, pastedData);
+      setSimulationData(simulationData);
+      //setWorldGenerationData(simulationData.worldGenerationsData);
+      //setWorldControllerData(simulationData.worldControllerData);
+      //setWaterData(simulationData.waterData);
+      //setSimulationConstantsData(simulationData.constants);
+      //setWorldObjectsData(simulationData.worldObjects);
     } else {
       console.warn("LoadPanel worldController not found!");
     }
@@ -34,11 +46,16 @@ export default function LoadPanel() {
     const fileReader = new FileReader(); 
     fileReader.readAsText( file ) ; 
     fileReader.onload  = () => {
-      setData(fileReader.result as string);
+      const data = fileReader.result as string;
+      setPastedData(data);
       if (worldController) {
-        const [readWorldControllerData, readWorldGenerationData]  = loadSavedWorldAndResumeRun(worldController, fileReader.result as string);
-        setWorldGenerationData(readWorldGenerationData);
-        setWorldControllerData(readWorldControllerData);
+        const simulationData = loadSavedWorldAndResumeRun(worldController, data);
+        setSimulationData(simulationData);
+        //setWorldGenerationData(simulationData.worldGenerationsData);
+        //setWorldControllerData(simulationData.worldControllerData);
+        //setWaterData(simulationData.waterData);
+        //setSimulationConstantsData(simulationData.constants);
+        //setWorldObjectsData(simulationData.worldObjects);
       }
     }
     fileReader.onerror = () => {
@@ -55,8 +72,8 @@ export default function LoadPanel() {
       </p>
 
       <TextareaInput
-        value={data}
-        onChange={(e) => setData(e.target.value)}
+        value={pastedData}
+        onChange={(e) => setPastedData(e.target.value)}
         minRows={2}
         maxRows={20}
       />

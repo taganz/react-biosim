@@ -1,4 +1,48 @@
 {
+    "constants": {
+        "PRETTIFY_OUTPUT_TO_COPY": true,
+        "PRETTIFY_OUTPUT_TO_FILE": true,
+        "LOG_ENABLED": true,
+        "LOG_LEVEL": "CREATURE",
+        "LOG_CREATURE_ID": 0,
+        "LOG_EVENTLOGGER_MAX_EVENTS": 1000000,
+        "LOG_LOCALE_STRING": "es-ES",
+        "LOG_ALLOWED_EVENTS": {
+        "INFO": true,
+        "REPRODUCE": true,
+        "REPRODUCE_TRY": true,
+        "PHOTOSYNTHESIS": true,
+        "BIRTH": true,
+        "DEAD": true,
+        "DEAD_ATTACKED": true,
+        "METABOLISM": true,
+        "ATTACK": true,
+        "ATTACK_TRY": true,
+        "MOVE": true,
+        "MOVE_TRY": true,
+        "GENERATION_START": true,
+        "GENERATION_END": true,
+        "STEP_END": true
+        },
+        "GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS": 0.05,
+        "POPULATION_DEFAULT_SPECIES": [
+        {
+            "name": "Plant-repro and photo",
+            "genome": [
+            -2071543808,
+            -2071486464
+            ]
+        }
+        ],
+        "SIM_CODE_LENGTH": 3,
+        "colors": {
+        "reproduction": "rgba(0,0,255,0.1)",
+        "obstacle": "rgb(60, 60, 60)",
+        "healing": "rgba(0,255,0, 0.1)",
+        "danger": "rgba(255,0,0, 0.1)",
+        "spawn": "rgba(255, 255, 0, 0.1)"
+        }
+    },
     "worldGenerationsData": {
         "populationStrategy": "AsexualRandomPopulation",
         "selectionMethod": "InsideReproductionAreaSelection",
@@ -28,23 +72,57 @@
             "MoveSouth",
             "MoveEast",
             "MoveWest",
-            "RandomMove",
-            "MoveForward",
-            "Photosynthesis"
+            "RandomMove"
         ],
         "metabolismEnabled": false,
         "phenotypeColorMode": "genome",
-        "lastCreatureIdCreated": 500,
-        "lastCreatureCount": 500,
-        "lastSurvivorsCount": 67,
-        "lastFitnessMaxValue": 13.4,
-        "lastSurvivalRate": 0.134
+        "plantGenes": "[]",
+        "lastCreatureIdCreated": 0,
+        "lastCreatureCount": 0,
+        "lastSurvivorsCount": 0,
+        "lastFitnessMaxValue": 0,
+        "lastSurvivalRate": 0
     },
     "worldControllerData": {
         "size": 100,
         "stepsPerGen": 300,
-        "initialPopulation": 500,
-        "worldObjects": [
+        "MASS_WATER_TO_MASS_PER_STEP": 0.3,
+        "MASS_AT_BIRTH_PLANT": 1,
+        "MASS_AT_BIRTH_MOVE": 2,
+        "MASS_AT_BIRTH_ATTACK": 2,
+        "MASS_AT_BIRTH_ATTACK_AND_MOVE": 3,
+        "MASS_MAX_MULTIPLE_MASS_AT_BIRT": 5,
+        "MASS_COST_PER_EXECUTE_ACTION": 0.01,
+        "MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE": 0.04,
+        "REPRODUCTION_COST_PER_MASS_TRY": 0.1,
+        "REPRODUCTION_COST_PER_MASS_DO": 0.25,
+        "REPRODUCTION_MULTIPLE_MASS_AT_BIRTH": 3,
+        "ACTION_REPRODUCTION_OFFSET": 0.6,
+        "MOVE_COST_PER_MASS_TRY": 0.2,
+        "MOVE_COST_PER_MASS_DO": 0.6,
+        "MOVE_MULTIPLE_MASS_AT_BIRTH": 2,
+        "ATTACK_COST_PER_MASS_TRY": 0.4,
+        "ATTACK_COST_PER_MASS_DO": 0,
+        "ATTACK_MULTIPLE_MASS_AT_BIRTH": 3,
+        "ATTACK_MIN_PREY_MASS_FACTOR": 2,
+        "pauseBetweenSteps": 10,
+        "immediateSteps": 1,
+        "pauseBetweenGenerations": 0,
+        "simCode": "T23",
+        "currentGen": 1,
+        "currentStep": 1,
+        "lastGenerationDuration": 0,
+        "totalTime": 0
+    },
+    "waterData": {
+        "waterFirstRainPerCell": 50,
+        "waterCellCapacity": 100,
+        "waterRainMaxPerCell": 30,
+        "waterTotalPerCell": 130,
+        "waterEvaporationPerCellPerGeneration": 10,
+        "rainType": "rainTypeUniform"
+    },
+    "worldObjects": [
             {
                 "data": {
                     "x": 0.1,
@@ -120,15 +198,7 @@
                 },
                 "type": "RectangleObject"
             }
-        ],
-        "waterFirstRainPerCell": 1,
-        "pauseBetweenSteps": 0,
-        "immediateSteps": 1,
-        "pauseBetweenGenerations": 0,
-        "simCode": "VER",
-        "currentGen": 4,
-        "currentStep": 138,
-        "lastGenerationDuration": 1761,
-        "totalTime": 7422
-    }
+    ],
+    "species": [],
+    "stats": {}
 }

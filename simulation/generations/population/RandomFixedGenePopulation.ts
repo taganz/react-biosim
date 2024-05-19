@@ -4,7 +4,6 @@ import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
 import Genome from "../../creature/brain/Genome"
-import { POPULATION_DEFAULT_SPECIES } from "@/simulation/simulationConstants";
 const fixedGene = Genome.encodeGeneData([ 1, 3, 1, 4, 49152 ]);  // weight = 2
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
@@ -21,7 +20,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
         let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
         if (position != null) {
           // select a random species from constant files
-          const species = POPULATION_DEFAULT_SPECIES;
+          const species = worldGenerations.worldController.simData.constants.POPULATION_DEFAULT_SPECIES;
           const randomDefaultSpecie = species[Math.floor(Math.random() * species.length)];
           worldGenerations.newCreature(position, new Genome(randomDefaultSpecie.genome) );
         }

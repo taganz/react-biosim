@@ -10,8 +10,8 @@ import Creature from "../creature/Creature"
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
-import {SIM_CODE_LENGTH} from "@/simulation/simulationConstants"
 import WorldWater from "../water/WorldWater";
+import { SimulationData } from "../SimulationData";
 
 
 // Manages generation-step loop
@@ -27,6 +27,7 @@ export default class WorldController {
   generationRegistry = new GenerationRegistry(this);
   eventLogger : EventLogger;
   worldWater : WorldWater;
+  simData : SimulationData;
 
   // initial values
   simCode: string = "XXX";
@@ -55,18 +56,15 @@ export default class WorldController {
   _lastPauseDate: Date | undefined = new Date();
   _pauseTime: number = 0;
   _timeoutId?: number;
-  _loadedWorldControllerData: WorldControllerData;
-  _loadedWorldGenerationData: WorldGenerationsData;
   
-  constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects: WorldObject[]) {
-    this._loadedWorldControllerData = worldControllerData;
-    this.loadWorldControllerInitialAndUserData(worldControllerData);
-    this.objects = worldObjects;
-    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
-    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
-    this._loadedWorldGenerationData = worldGenerationsData;
+  constructor(sim: SimulationData) {
+    this.simData = sim;
+    this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
+    this.objects = sim.worldObjects;
+    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
+    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
     this.eventLogger = new EventLogger(this);
-    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
     // request worldCanvas initialization 
     this.events.dispatchEvent(
@@ -76,20 +74,19 @@ export default class WorldController {
     //console.log("*** worldController initialized ***");
   }
 
-  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects: WorldObject[] ): string {
+  public startRun(sim: SimulationData): string {
 
-    this._loadedWorldControllerData = worldControllerData;
-    this.loadWorldControllerInitialAndUserData(worldControllerData);
-    this.objects = worldObjects; 
-    this.simCode = generateRandomString(SIM_CODE_LENGTH),
-    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
-    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.simData = sim;
+    this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
+    this.objects = sim.worldObjects; 
+    this.simCode = generateRandomString(sim.constants.SIM_CODE_LENGTH),
+    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
+    this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
-    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
-    this._loadedWorldGenerationData = worldGenerationsData;
+    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     this.eventLogger.reset();
-    this.initialPopulation = worldGenerationsData.initialPopulation;
+    this.initialPopulation = sim.worldGenerationsData.initialPopulation;
      
     // state data
     this.currentGen = 1;
@@ -110,35 +107,40 @@ export default class WorldController {
   }
 
   // load a previous simulation and run from its state
-  public resumeRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects : WorldObject[], species: Creature[], stats: GenerationRegistry ): void {
+  public resumeRun(sim: SimulationData): void {
     
-    this._loadedWorldControllerData = worldControllerData;
-    this.loadWorldControllerInitialAndUserData(worldControllerData);
-    this.objects = worldObjects; 
-    this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);  
-    this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
+    this.simData = sim;
+    this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
+    this.objects = sim.worldObjects; 
+    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);  
+    this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
     // some creatures could be now at an occupied position in the new map
     const reviewedSpecies : Creature[] = [];
-    for (let i = 0; i < species.length; i++) {
-      const added = this.grid.addCreature(species[i]);
-      if (added) {
-        reviewedSpecies.push(species[i]);
+    if (sim.species != undefined) {
+      for (let i = 0; i < sim.species.length; i++) {
+        for (let j = 0;j < sim.species[i].creatures.length; j++) {
+          const added = this.grid.addCreature(sim.species[i].creatures[j]);
+          if (added) {
+            reviewedSpecies.push(sim.species[i].creatures[j]);
+          }
+        }
       }
     }
-    this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, reviewedSpecies);
-    this._loadedWorldGenerationData = worldGenerationsData;
-    this.generationRegistry = stats;
+    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, reviewedSpecies);
+    if (sim.stats !== undefined) {
+      this.generationRegistry = sim.stats;
+    }
     this.eventLogger.reset();
-    this.initialPopulation = worldGenerationsData.initialPopulation;
+    this.initialPopulation = sim.worldGenerationsData.initialPopulation;
 
 
     // state data
-    this.simCode = worldControllerData.simCode;
-    this.currentGen = worldControllerData.currentGen;
-    this.currentStep = worldControllerData.currentStep;
-    this.lastGenerationDuration = worldControllerData.lastGenerationDuration;
-    this.totalTime = worldControllerData.totalTime;
+    this.simCode = sim.worldControllerData.simCode;
+    this.currentGen = sim.worldControllerData.currentGen;
+    this.currentStep = sim.worldControllerData.currentStep;
+    this.lastGenerationDuration = sim.worldControllerData.lastGenerationDuration;
+    this.totalTime = sim.worldControllerData.totalTime;
 
   
     this.events.dispatchEvent(
@@ -194,7 +196,7 @@ export default class WorldController {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
-      this.startRun(this._loadedWorldControllerData, this._loadedWorldGenerationData, this.objects);
+      this.startRun(this.simData);
       return;
     }
 

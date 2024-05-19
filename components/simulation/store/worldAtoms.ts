@@ -2,7 +2,7 @@ import WorldController from "@/simulation/world/WorldController";
 import WorldCanvas from "@/simulation/world/WorldCanvas";
 import Creature from "@/simulation/creature/Creature";
 import { atom } from "jotai";
-import * as constants from "@/simulation/simulationConstants"
+import {SIMULATION_DATA_DEFAULT}  from "@/simulation/simulationDataDefault"
 import EventLogger from "@/simulation/logger/EventLogger";
 
 
@@ -18,10 +18,12 @@ export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
 
-export const worldGenerationDataAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT);
-export const worldControllerDataAtom = atom(constants.WORLD_CONTROLLER_DATA_DEFAULT);
-export const waterDataAtom = atom(constants.WORLD_CONTROLLER_DATA_DEFAULT.waterData);
-export const worldObjectsDataAtom = atom(constants.WORLD_OBJECTS_DATA_DEFAULT);
+export const simulationDataAtom = atom(SIMULATION_DATA_DEFAULT);
+//export const simulationConstantsDataAtom = atom(SIMULATION_DATA_DEFAULT.constants);
+//export const worldGenerationDataAtom = atom(SIMULATION_DATA_DEFAULT.worldGenerationsData);
+//export const worldControllerDataAtom = atom(SIMULATION_DATA_DEFAULT.worldControllerData);
+//export const waterDataAtom = atom(SIMULATION_DATA_DEFAULT.waterData);
+//export const worldObjectsDataAtom = atom(SIMULATION_DATA_DEFAULT.worldObjects);
 /*
 export const currentGenAtom = atom( (get) => {
   const w = get(worldControllerAtom); 

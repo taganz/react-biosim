@@ -20,99 +20,72 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
 import WorldGenerationsData from "./generations/WorldGenerationsData";
 import WorldControllerData from "./world/WorldControllerData";
 import { WaterData } from "./water/WaterData";
+import { SimulationData
+ } from "./SimulationData";
+
+
 /*  ----- production setup -----
- STARTUP_MODE = "startupScenario";
+   STARTUP_MODE = "startupScenario";
 */
+    
+export const STARTUP_MODE : "simulationDefault" | "startupScenario" = "simulationDefault";
 
-export const STARTUP_MODE : "simulationConstants" | "startupScenario" = "simulationConstants";  
+export const CONSTANTS_DEFAULT = {
+  
+    PRETTIFY_OUTPUT_TO_COPY : true,   
+    PRETTIFY_OUTPUT_TO_FILE : true,   
 
+    // -- log 
+    LOG_ENABLED : true,  // main switch for logging
+    //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
+    LOG_LEVEL : LogLevel.CREATURE, 
+    LOG_CREATURE_ID : 0,   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+    LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
+    LOG_LOCALE_STRING : 'es-ES',
+    LOG_ALLOWED_EVENTS: {
+      // creature
+      [LogEvent.INFO]: true,
+      [LogEvent.REPRODUCE]: true,
+      [LogEvent.REPRODUCE_TRY]: true,
+      [LogEvent.PHOTOSYNTHESIS]: true,
+      [LogEvent.BIRTH]: true,
+      [LogEvent.DEAD]: true,
+      [LogEvent.DEAD_ATTACKED]: true,
+      [LogEvent.METABOLISM]: true,
+      [LogEvent.ATTACK]: true,
+      [LogEvent.ATTACK_TRY]: true,
+      [LogEvent.MOVE]: true, 
+      [LogEvent.MOVE_TRY]: true, 
+      // controller
+      [LogEvent.GENERATION_START]: true,
+      [LogEvent.GENERATION_END]: true,
+      [LogEvent.STEP_END]: true,
+    },
+    GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS : 0.05, 
 
-export const PRETTIFY_OUTPUT_TO_COPY = true;   
-export const PRETTIFY_OUTPUT_TO_FILE = true;   
+    // -- selection method
 
-// -- log 
-export const LOG_ENABLED : boolean = true;  // main switch for logging
-//export const LOG_RESET_AT_RESTART = true;    // will reset automatically on every restart
-export const LOG_LEVEL : LogLevel = LogLevel.CREATURE; 
-export const LOG_CREATURE_ID : number = 0;   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
-export const LOG_EVENTLOGGER_MAX_EVENTS = 1000000; // will stop logging at this point
-export const LOG_LOCALE_STRING = 'es-ES';
-export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
-  // creature
-  [LogEvent.INFO]: true,
-  [LogEvent.REPRODUCE]: true,
-  [LogEvent.REPRODUCE_TRY]: true,
-  [LogEvent.PHOTOSYNTHESIS]: true,
-  [LogEvent.BIRTH]: true,
-  [LogEvent.DEAD]: true,
-  [LogEvent.DEAD_ATTACKED]: true,
-  [LogEvent.METABOLISM]: true,
-  [LogEvent.ATTACK]: true,
-  [LogEvent.ATTACK_TRY]: true,
-  [LogEvent.MOVE]: true, 
-  [LogEvent.MOVE_TRY]: true, 
-  // controller
-  [LogEvent.GENERATION_START]: true,
-  [LogEvent.GENERATION_END]: true,
-  [LogEvent.STEP_END]: true,
-}
+    POPULATION_DEFAULT_SPECIES : [     // used in RandomFixedGenePopulation
+      //{name: "Basic random move", genome: [-2088452096]},
+      {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
+    ],
 
+    SIM_CODE_LENGTH : 3,
 
-/*
-// -- metabolism 
-export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
-export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
-export const MASS_AT_BIRTH_PLANT = 1;
-export const MASS_AT_BIRTH_MOVE = 2;
-export const MASS_AT_BIRTH_ATTACK = 2;
-export const MASS_AT_BIRTH_ATTACK_AND_MOVE = 3;
-export const MASS_MAX_MULTIPLE_MASS_AT_BIRT = 5;
+    // -- objects
 
-export const MASS_COST_PER_EXECUTE_ACTION = 0.01; //  a plant has a minimum of 2 actions and gets energy from photosynthesis
+    colors : {
+      reproduction: "rgba(0,0,255,0.1)",
+      obstacle: "rgb(60, 60, 60)",
+      healing: "rgba(0,255,0, 0.1)",
+      danger: "rgba(255,0,0, 0.1)",
+      spawn: "rgba(255, 255, 0, 0.1)",
 
-export const MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.04;   // 0.07
-
-export const REPRODUCTION_COST_PER_MASS_TRY = 0.1;    
-export const REPRODUCTION_COST_PER_MASS_DO = 0.25; // 0.3
-export const REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;    
-
-export const ACTION_REPRODUCTION_OFFSET = 0.6;  // will trigger action if input value is greater
-
-export const MOVE_COST_PER_MASS_TRY = 0.2;
-export const MOVE_COST_PER_MASS_DO = 0.6;
-export const MOVE_MULTIPLE_MASS_AT_BIRTH = 2;    // 2
-
-export const ATTACK_COST_PER_MASS_TRY = 0.4;
-export const ATTACK_COST_PER_MASS_DO = 0;
-export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 3;     // 0
-export const ATTACK_MIN_PREY_MASS_FACTOR = 2;      // 0
-*/
-// -- selection method
-
-export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
-
-export const POPULATION_DEFAULT_SPECIES = [     // used in RandomFixedGenePopulation
-  //{name: "Basic random move", genome: [-2088452096]},
-  {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
-]
-
-// -- objects
-
-export const colors = {
-  reproduction: "rgba(0,0,255,0.1)",
-  obstacle: "rgb(60, 60, 60)",
-  healing: "rgba(0,255,0, 0.1)",
-  danger: "rgba(255,0,0, 0.1)",
-  spawn: "rgba(255, 255, 0, 0.1)",
-
-};
+    }
 
 
+  };
 
-export const SIM_CODE_LENGTH = 3;
-
-
-  // grid
 export const WORLD_OBJECTS_DATA_DEFAULT : WorldObject[] = [
     // A spawn zone at top left
    // new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
@@ -131,17 +104,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   size : 50,                                // 100
   stepsPerGen: 300,                          // 300
 
-  waterData : {
-    waterFirstRainPerCell: 50,              // 10
-    waterCellCapacity: 100,     // 20
-    waterRainMaxPerCell:  30,             // 2
-    waterTotalPerCell: 130,       // 
-    waterEvaporationPerCellPerGeneration: 10,  // 0
-    rainType : "rainTypeUniform",
-  },
-
   // model values
-  MASS_METABOLISM_GENES : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
   MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
   MASS_AT_BIRTH_PLANT : 1,
   MASS_AT_BIRTH_MOVE : 2,
@@ -224,6 +187,8 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
      ],
   metabolismEnabled: true,    // if false creature mass won't change
   phenotypeColorMode: "trophicLevel",    // "genome", "trophicLevel",
+  plantGenes : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
+  
   // state values 
   lastCreatureIdCreated: 0,
   lastCreatureCount: 0,
@@ -232,4 +197,22 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   lastSurvivalRate: 0
 }
 
+export const WATER_DATA_DEFAULT : WaterData = {
+  waterFirstRainPerCell: 50,              // 10
+  waterCellCapacity: 100,     // 20
+  waterRainMaxPerCell:  30,             // 2
+  waterTotalPerCell: 130,       // 
+  waterEvaporationPerCellPerGeneration: 10,  // 0
+  rainType : "rainTypeUniform",
+};
+
+export const SIMULATION_DATA_DEFAULT : SimulationData = {
+  constants: CONSTANTS_DEFAULT,
+  worldGenerationsData: WORLD_GENERATIONS_DATA_DEFAULT,
+  worldControllerData: WORLD_CONTROLLER_DATA_DEFAULT,
+  waterData : WATER_DATA_DEFAULT,
+  worldObjects: WORLD_OBJECTS_DATA_DEFAULT,
+  
+
+  }
 

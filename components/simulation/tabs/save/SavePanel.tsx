@@ -1,24 +1,24 @@
 "use client";
 
 import Button from "@/components/global/Button";
-import { worldControllerAtom, worldGenerationDataAtom } from "../../store";
+import { simulationDataAtom, worldControllerAtom } from "../../store";
 import { useAtomValue } from "jotai";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import { useState } from "react";
-import { saveWorld } from "@/simulation/serialization/saveWorld";
 import { saveAs } from "file-saver";
 import CanvasToGIF from "./CanvasToGif";
-import { PRETTIFY_OUTPUT_TO_COPY, PRETTIFY_OUTPUT_TO_FILE } from "@/simulation/simulationConstants";
+import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
+import { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 
 export default function SavePanel() {
+  const simulationData = useAtomValue(simulationDataAtom);
   const worldController = useAtomValue(worldControllerAtom);
-  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
 
   const handleSave = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController);
-      if (PRETTIFY_OUTPUT_TO_COPY) {
+      const savedWorld : SavedSimulationData = serializeSimulationData(worldController);
+      if (simulationData.constants.PRETTIFY_OUTPUT_TO_COPY) {
         var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
       } else {
         var jsonSavedWorld = JSON.stringify(savedWorld);
@@ -30,8 +30,8 @@ export default function SavePanel() {
 
   const handleSaveToFile = () => {
     if (worldController) {
-      const savedWorld = saveWorld(worldController);
-      if (PRETTIFY_OUTPUT_TO_FILE) {
+      const savedWorld : SavedSimulationData = serializeSimulationData(worldController);
+      if (simulationData.constants.PRETTIFY_OUTPUT_TO_FILE) {
         var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
       } else {
         var jsonSavedWorld = JSON.stringify(savedWorld);

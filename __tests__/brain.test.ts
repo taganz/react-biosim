@@ -1,5 +1,5 @@
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
@@ -26,13 +26,13 @@ describe('brain basic tests', () => {
     generations.grid = grid;
     const joe = new Creature(generations, [10, 10]);
     const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
-    const MASS_METABOLISM_GENES = [-2071543808,-2071486464]
+    const plantGenes = [-2071543808,-2071486464]
     // el genoma son gens que es poden descomposar en 
       // sourceType, sourceId, sinkType, sinkId, weigth
       const genome = new Genome(arrayOfGene);
 
     test('DISPLAY BRAIN INFORMATION', ()=> {
-      const plantGenome = new Genome(MASS_METABOLISM_GENES);
+      const plantGenome = new Genome(plantGenes);
       const joeBrain = new CreatureBrain ( joe, plantGenome);
       console.log("=====================================");
       console.log("brain: ", joeBrain.brain);

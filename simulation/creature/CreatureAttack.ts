@@ -12,7 +12,7 @@ export default class CreatureAttack {
     constructor(creature: Creature) {
         this.creature = creature;
         this.grid = this.creature.generations.grid;
-        this.worldControllerData = this.creature.generations.worldController._loadedWorldControllerData;
+        this.worldControllerData = this.creature.generations.worldController.simData.worldControllerData;
     }
 
     //TODO revisar factor multiplicador segons sortida de l'actuador

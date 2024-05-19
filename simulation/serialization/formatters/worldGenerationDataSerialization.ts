@@ -5,10 +5,12 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import {selectionMethodFormatter} from "@/simulation/generations/selection/SelectionMethodFormatter";
 import {populationStrategyFormatter} from "@/simulation/generations/population/PopulationStrategyFormatter";
 import SavedWorldGenerationData from "../data/SavedWorldGenerationData"
-import SavedWorld from "../data/SavedWorld"
 import {serializeMutationMode, deserializeMutationMode} from "@/simulation/creature/brain/MutationMode"
+import { SimulationData } from '@/simulation/SimulationData';
+import { SavedSimulationData } from '../data/SavedSimulationData';
 
-export default function serializeWorldGenerationData(worldController: WorldController) : SavedWorldGenerationData {
+export function serializeWorldGenerationData(worldController: WorldController) 
+            : SavedWorldGenerationData {
     const wg = worldController.generations;
 
     const sensors: SensorName[] = Object.entries(wg.sensors.data)
@@ -35,17 +37,18 @@ export default function serializeWorldGenerationData(worldController: WorldContr
     enabledActions: actions,
     metabolismEnabled: wg.metabolismEnabled,
     phenotypeColorMode: wg.phenotypeColorMode,
+    plantGenes: JSON.stringify(wg.worldGenerationsData.plantGenes),
     // state values 
     lastCreatureIdCreated: wg.lastCreatureIdCreated,  
     lastCreatureCount: wg.lastCreatureCount,
     lastSurvivorsCount: wg.lastSurvivorsCount,
     lastFitnessMaxValue: wg.lastFitnessMaxValue,
-    lastSurvivalRate: wg.lastSurvivalRate
+    lastSurvivalRate: wg.lastSurvivalRate,
     }
 }
 
 
-export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenerationsData{
+export function deserializeWorldGenerationData(parsed: SavedSimulationData) : WorldGenerationsData{
         
   const worldGenerationsData : WorldGenerationsData = {
       // initial values
@@ -63,6 +66,7 @@ export function deserializeWorldGenerationData(parsed: SavedWorld) : WorldGenera
       enabledActions: parsed.worldGenerationsData.enabledActions,
       metabolismEnabled: parsed.worldGenerationsData.metabolismEnabled,
       phenotypeColorMode: parsed.worldGenerationsData.phenotypeColorMode,
+      plantGenes: JSON.parse(parsed.worldGenerationsData.plantGenes),
       
       //TODO alternativa es carregar-los aqui i despres copiar-los:
 

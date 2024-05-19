@@ -5,9 +5,8 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, eventLoggerAtom} from "./store";
-import {worldCanvasAtom, worldObjectsDataAtom} from "@/components/simulation/store/worldAtoms";
-import { STARTUP_MODE } from "@/simulation/simulationConstants";
+import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom} from "./store";
+import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
 import { startupScenarioWorldControllerData, startupScenarioWorldGenerationsData } from "../../simulation/startupScenario";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 //import EventLogger from "@/simulation/logger/EventLogger";
@@ -24,43 +23,32 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
-  const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const setEventLogger = useSetAtom(eventLoggerAtom);
-  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
-  
+  const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
+
   useEffect(
     function instantiateWorld() {
-      let worldSize = 0;
-      let worldController : WorldController;
 
-      if (STARTUP_MODE=="simulationConstants") {
-        worldController = new WorldController(worldControllerData, worldGenerationsData, worldObjectsData);
-        setWorldController(worldController);
-        const simCode = worldController.startRun(worldControllerData, worldGenerationsData, worldObjectsData );  
-        setWorldControllerData({...worldControllerData, simCode : simCode});
-        setEventLogger(worldController.eventLogger);
-        worldSize = worldControllerData.size;
-        }
-      else {
-        worldController = new WorldController(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData, worldObjectsData);
-        setWorldController(worldController);
-        const simCode = worldController.startRun(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData, worldObjectsData);  
-        setWorldControllerData({...startupScenarioWorldControllerData, simCode : simCode});
-        setEventLogger(worldController.eventLogger);
-        worldSize = startupScenarioWorldControllerData.size;
+      if (STARTUP_MODE=="startupScenario") {
+        simulationData.worldControllerData = startupScenarioWorldControllerData;
       }
 
+      let worldController = new WorldController(simulationData);
+      const simCode = worldController.startRun(simulationData);  
+      simulationData.worldControllerData.simCode = simCode;
+      
+      setWorldController(worldController);
+      setEventLogger(worldController.eventLogger);
+      setSimulationData(simulationData);
 
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;
-        setWorldCanvas(new WorldCanvas(worldController, canvas, worldSize));
+        setWorldCanvas(new WorldCanvas(worldController, canvas));
         //TODO window.addEventListener("resize", this.redrawWorldCanvas.bind(this));
       } else {
         throw new Error("Cannot found canvas");
       }
 
-      //setEventLoggerAtom(worldController.eventLogger);
 
       return () => {
         console.log("*** worldControlled destroyed ***");

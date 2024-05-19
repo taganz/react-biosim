@@ -7,7 +7,7 @@ import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 import { testWorldControllerData } from './testWorldControllerData';
 import { testWorldGenerationsData } from './testWorldGenerationsData';
 import WorldWater from '@/simulation/water/WorldWater';

@@ -5,7 +5,6 @@ import {SavedPopulationStrategy} from "@/simulation/generations/population/Popul
 import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 
-
 export default interface SavedWorldGenerationData {
   // initial values
   populationStrategy: SavedPopulationStrategy;
@@ -22,6 +21,7 @@ export default interface SavedWorldGenerationData {
   enabledActions: ActionName[];
   metabolismEnabled: boolean;
   phenotypeColorMode: PhenoTypeColorMode;
+  plantGenes: string;
   // state values 
   lastCreatureIdCreated: number;
   lastCreatureCount: number;

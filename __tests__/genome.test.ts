@@ -1,5 +1,5 @@
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 

@@ -1,7 +1,7 @@
 import Creature from "@/simulation/creature/Creature";
 import { lerp } from "../../helpers/helpers";
 import WorldController from "../WorldController";
-import { colors } from "@/simulation/simulationConstants";
+import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
 import WorldObject from "./WorldObject";
 
 /*
@@ -27,7 +27,7 @@ export default class MovingRectangleObstacle_DEPRECATED  implements WorldObject 
     public finalWidth: number,
     public finalHeight: number,
     public relative: boolean = true,
-    public color: string = colors.obstacle
+    public color: string = CONSTANTS_DEFAULT.colors.obstacle
   ) {
     if (relative) {
       this.setRelativeTransform(x, y, width, height);

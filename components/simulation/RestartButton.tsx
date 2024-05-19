@@ -2,28 +2,17 @@
 
 import React from "react";
 import Button from "../global/Button";
-import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCanvasAtom, waterDataAtom, worldObjectsDataAtom } from "./store";
-import WorldControllerData from "@/simulation/world/WorldControllerData";
-import { WaterData } from "@/simulation/water/WaterData";
+import { useAtom, useAtomValue } from "jotai";
+import { simulationDataAtom, worldControllerAtom, worldCanvasAtom} from "./store";
 
 export default function RestartButton() {
   //const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
-  const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  const waterData = useAtomValue(waterDataAtom);
-  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
-  const worldCanvas = useAtomValue(worldCanvasAtom);
-  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
+  const simulationData = useAtomValue(simulationDataAtom);
 
   const handleClick = () => {
-    if (worldController && worldCanvas) {
-      const wcd = worldControllerData;
-      (wcd as WorldControllerData).waterData = waterData as unknown as WaterData;
-      console.log(wcd);
-      const simCode = worldController?.startRun(worldControllerData, worldGenerationsData, worldObjectsData);
-      setWorldControllerData({...worldControllerData, simCode : simCode});
-      worldCanvas.size = worldControllerData.size;
+    if (worldController) {
+      const simCode = worldController?.startRun(simulationData);
     } else {
       console.warn("RestartButton worldController or worldCanvas not found!")
     }

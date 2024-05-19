@@ -11,12 +11,12 @@ export default class WorldCanvas {
   ctx: CanvasRenderingContext2D;
   size: number;  // world size (not canvas size!), used for conversion
     
-  constructor(worldController: WorldController, canvas: HTMLCanvasElement, size: number)  {
+  constructor(worldController: WorldController, canvas: HTMLCanvasElement)  {
     this.worldController = worldController;
     if (canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-      this.size = size;    
+      this.size = worldController.simData.worldControllerData.size;    
       //console.log("WorldCanvas started. Size: ", this.size);
     } else {
       throw new Error("Cannot found canvas");
@@ -46,6 +46,8 @@ export default class WorldCanvas {
   }
 
   public redraw(): void {
+    // in case worldController restarted with a different size
+    this.size = this.worldController.simData.worldControllerData.size;    
     this.worldController.generations.currentCreatures;
     this.clearCanvas();
     this.resizeCanvas();

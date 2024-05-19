@@ -1,4 +1,48 @@
 {
+  "constants": {
+    "PRETTIFY_OUTPUT_TO_COPY": true,
+    "PRETTIFY_OUTPUT_TO_FILE": true,
+    "LOG_ENABLED": true,
+    "LOG_LEVEL": "CREATURE",
+    "LOG_CREATURE_ID": 0,
+    "LOG_EVENTLOGGER_MAX_EVENTS": 1000000,
+    "LOG_LOCALE_STRING": "es-ES",
+    "LOG_ALLOWED_EVENTS": {
+      "INFO": true,
+      "REPRODUCE": true,
+      "REPRODUCE_TRY": true,
+      "PHOTOSYNTHESIS": true,
+      "BIRTH": true,
+      "DEAD": true,
+      "DEAD_ATTACKED": true,
+      "METABOLISM": true,
+      "ATTACK": true,
+      "ATTACK_TRY": true,
+      "MOVE": true,
+      "MOVE_TRY": true,
+      "GENERATION_START": true,
+      "GENERATION_END": true,
+      "STEP_END": true
+    },
+    "GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS": 0.05,
+    "POPULATION_DEFAULT_SPECIES": [
+      {
+        "name": "Plant-repro and photo",
+        "genome": [
+          -2071543808,
+          -2071486464
+        ]
+      }
+    ],
+    "SIM_CODE_LENGTH": 3,
+    "colors": {
+      "reproduction": "rgba(0,0,255,0.1)",
+      "obstacle": "rgb(60, 60, 60)",
+      "healing": "rgba(0,255,0, 0.1)",
+      "danger": "rgba(255,0,0, 0.1)",
+      "spawn": "rgba(255, 255, 0, 0.1)"
+    }
+  },
   "worldGenerationsData": {
     "populationStrategy": "ContinuousPopulation",
     "selectionMethod": "ContinuousSelection",
@@ -32,27 +76,16 @@
     ],
     "metabolismEnabled": true,
     "phenotypeColorMode": "trophicLevel",
-    "lastCreatureIdCreated": 4702,
+    "plantGenes": "[-2071543808,-2071486464]",
+    "lastCreatureIdCreated": 164,
     "lastCreatureCount": 150,
-    "lastSurvivorsCount": 240,
-    "lastFitnessMaxValue": 240,
-    "lastSurvivalRate": 1.6
+    "lastSurvivorsCount": 0,
+    "lastFitnessMaxValue": 0,
+    "lastSurvivalRate": 0
   },
   "worldControllerData": {
     "size": 50,
     "stepsPerGen": 300,
-    "waterData": {
-      "waterFirstRainPerCell": 50,
-      "waterCellCapacity": 100,
-      "waterRainMaxPerCell": 30,
-      "waterTotalPerCell": 130,
-      "waterEvaporationPerCellPerGeneration": 10,
-      "rainType": "rainTypeUniform"
-    },
-    "MASS_METABOLISM_GENES": [
-      -2071543808,
-      -2071486464
-    ],
     "MASS_WATER_TO_MASS_PER_STEP": 0.3,
     "MASS_AT_BIRTH_PLANT": 1,
     "MASS_AT_BIRTH_MOVE": 2,
@@ -75,11 +108,19 @@
     "pauseBetweenSteps": 10,
     "immediateSteps": 1,
     "pauseBetweenGenerations": 0,
-    "simCode": "BNY",
+    "simCode": "8B5",
     "currentGen": 0,
     "currentStep": 1,
     "lastGenerationDuration": 0,
     "totalTime": 0
+  },
+  "waterData": {
+    "waterFirstRainPerCell": 50,
+    "waterCellCapacity": 100,
+    "waterRainMaxPerCell": 30,
+    "waterTotalPerCell": 130,
+    "waterEvaporationPerCellPerGeneration": 10,
+    "rainType": "rainTypeUniform"
   },
   "worldObjects": [
     {
@@ -141,9 +182,9 @@
   "species": [
     {
       "genes": [
-        182299750,
-        802090599,
-        436891182,
+        -1716299397,
+        375016735,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -153,14 +194,14 @@
             0
           ],
           "lastPosition": [
-            14,
-            17
+            29,
+            31
           ],
           "position": [
-            14,
-            17
+            29,
+            31
           ],
-          "mass": 4.98,
+          "mass": 1.6690325107461865,
           "massAtBirth": 1
         },
         {
@@ -169,14 +210,14 @@
             0
           ],
           "lastPosition": [
-            13,
-            17
+            28,
+            31
           ],
           "position": [
-            13,
-            17
+            28,
+            31
           ],
-          "mass": 4.880000000000001,
+          "mass": 2.341241151040569,
           "massAtBirth": 1
         },
         {
@@ -185,14 +226,40 @@
             0
           ],
           "lastPosition": [
-            14,
-            19
+            28,
+            32
           ],
           "position": [
-            14,
-            19
+            28,
+            32
           ],
-          "mass": 4.880000000000001,
+          "mass": 0.9760939507732608,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1010521484,
+        -482239732,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            23,
+            42
+          ],
+          "position": [
+            23,
+            42
+          ],
+          "mass": 2.6526453625043054,
           "massAtBirth": 1
         },
         {
@@ -201,14 +268,40 @@
             0
           ],
           "lastPosition": [
-            13,
-            19
+            24,
+            41
           ],
           "position": [
-            13,
-            19
+            24,
+            41
           ],
-          "mass": 3.73,
+          "mass": 1.333061254200529,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1445713953,
+        1709892427,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            0
+          ],
+          "position": [
+            38,
+            0
+          ],
+          "mass": 2.1838136406189603,
           "massAtBirth": 1
         },
         {
@@ -217,14 +310,40 @@
             0
           ],
           "lastPosition": [
-            14,
-            16
+            39,
+            0
           ],
           "position": [
-            14,
-            16
+            39,
+            0
           ],
-          "mass": 4.98,
+          "mass": 1.2549217441004061,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -731015664,
+        1088341521,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            6,
+            28
+          ],
+          "position": [
+            6,
+            28
+          ],
+          "mass": 2.384170910244102,
           "massAtBirth": 1
         },
         {
@@ -233,270 +352,40 @@
             0
           ],
           "lastPosition": [
-            15,
-            16
+            7,
+            29
           ],
           "position": [
-            15,
-            16
+            7,
+            29
           ],
-          "mass": 4.880000000000001,
+          "mass": 1.332119438864486,
           "massAtBirth": 1
-        },
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1868636899,
+        899557610,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
         {
           "lastMovement": [
             0,
             0
           ],
           "lastPosition": [
-            15,
-            19
+            17,
+            36
           ],
           "position": [
-            15,
-            19
+            17,
+            36
           ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            17
-          ],
-          "position": [
-            15,
-            17
-          ],
-          "mass": 4.063757708126543,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            20
-          ],
-          "position": [
-            12,
-            20
-          ],
-          "mass": 3.6918688980300622,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            15
-          ],
-          "position": [
-            14,
-            15
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            17
-          ],
-          "position": [
-            16,
-            17
-          ],
-          "mass": 2.8475154162530845,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            17
-          ],
-          "position": [
-            12,
-            17
-          ],
-          "mass": 4.7990352006820975,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            20
-          ],
-          "position": [
-            14,
-            20
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            19
-          ],
-          "position": [
-            12,
-            19
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            19
-          ],
-          "position": [
-            16,
-            19
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            16
-          ],
-          "position": [
-            12,
-            16
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            20
-          ],
-          "position": [
-            15,
-            20
-          ],
-          "mass": 4.638049524891197,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            15
-          ],
-          "position": [
-            16,
-            15
-          ],
-          "mass": 4.779610097859561,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            16
-          ],
-          "position": [
-            16,
-            16
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            20
-          ],
-          "position": [
-            13,
-            20
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            17
-          ],
-          "position": [
-            11,
-            17
-          ],
-          "mass": 2.961458119416646,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            15
-          ],
-          "position": [
-            15,
-            15
-          ],
-          "mass": 4.919260984258493,
+          "mass": 2.7168353854389298,
           "massAtBirth": 1
         },
         {
@@ -506,271 +395,25 @@
           ],
           "lastPosition": [
             17,
-            16
+            35
           ],
           "position": [
             17,
-            16
+            35
           ],
-          "mass": 2.5523821301952023,
+          "mass": 1.6428683588798476,
           "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            21
-          ],
-          "position": [
-            14,
-            21
-          ],
-          "mass": 3.1355032761319275,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            20
-          ],
-          "position": [
-            16,
-            20
-          ],
-          "mass": 4.050472443625761,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            17
-          ],
-          "position": [
-            17,
-            17
-          ],
-          "mass": 2.283593589562486,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            20
-          ],
-          "position": [
-            17,
-            20
-          ],
-          "mass": 2.3667147354992144,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            14
-          ],
-          "position": [
-            15,
-            14
-          ],
-          "mass": 2.958275308467577,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            15
-          ],
-          "position": [
-            11,
-            15
-          ],
-          "mass": 1.9913964544043066,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            18
-          ],
-          "position": [
-            11,
-            18
-          ],
-          "mass": 3.115441611119592,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            21
-          ],
-          "position": [
-            13,
-            21
-          ],
-          "mass": 3.148562757056324,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            16
-          ],
-          "position": [
-            11,
-            16
-          ],
-          "mass": 2.7648050489297753,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            14
-          ],
-          "position": [
-            14,
-            14
-          ],
-          "mass": 2.256365621898142,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            15
-          ],
-          "position": [
-            17,
-            15
-          ],
-          "mass": 2.547926194866508,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            19
-          ],
-          "position": [
-            17,
-            19
-          ],
-          "mass": 2.3226079137715976,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            21
-          ],
-          "position": [
-            11,
-            21
-          ],
-          "mass": 3.2135319245501526,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            17
-          ],
-          "position": [
-            18,
-            17
-          ],
-          "mass": 2.1550924975185164,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            21
-          ],
-          "position": [
-            17,
-            21
-          ],
-          "mass": 2.7291376542337953,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            16
-          ],
-          "position": [
-            18,
-            16
-          ],
-          "mass": 2.6206982272021615,
-          "massAtBirth": 1
-        },
+        }
+      ]
+    },
+    {
+      "genes": [
+        -38353030,
+        -1196516233,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
         {
           "lastMovement": [
             0,
@@ -778,13 +421,13 @@
           ],
           "lastPosition": [
             10,
-            19
+            13
           ],
           "position": [
             10,
-            19
+            13
           ],
-          "mass": 1.768788540632717,
+          "mass": 2.292389500884741,
           "massAtBirth": 1
         },
         {
@@ -793,182 +436,22 @@
             0
           ],
           "lastPosition": [
-            15,
-            13
-          ],
-          "position": [
-            15,
-            13
-          ],
-          "mass": 1.5434702595378091,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
+            9,
             14
           ],
           "position": [
-            11,
+            9,
             14
           ],
-          "mass": 1.818151978442902,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            21
-          ],
-          "position": [
-            18,
-            21
-          ],
-          "mass": 1.50127312437963,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            15
-          ],
-          "position": [
-            18,
-            15
-          ],
-          "mass": 1.3843942703163576,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            14
-          ],
-          "position": [
-            18,
-            14
-          ],
-          "mass": 1.3675154162530863,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            20
-          ],
-          "position": [
-            18,
-            20
-          ],
-          "mass": 1.2421971351581789,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            13
-          ],
-          "position": [
-            13,
-            13
-          ],
-          "mass": 1.233757708126543,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            18
-          ],
-          "position": [
-            15,
-            18
-          ],
-          "mass": 0.17999999999999988,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            19,
-            17
-          ],
-          "position": [
-            19,
-            17
-          ],
-          "mass": 1.2168788540632716,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            18
-          ],
-          "position": [
-            18,
-            18
-          ],
-          "mass": 1.0168788540632714,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            18
-          ],
-          "position": [
-            14,
-            18
-          ],
-          "mass": 1,
+          "mass": 1.3089398422716978,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -859642976,
-        1989493336,
+        -2079092711,
+        617279405,
         -2071543808,
         -2071486464
       ],
@@ -979,4299 +462,14 @@
             0
           ],
           "lastPosition": [
-            42,
-            42
-          ],
-          "position": [
-            42,
-            42
-          ],
-          "mass": 0.4800000000000003,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            42
-          ],
-          "position": [
-            41,
-            42
-          ],
-          "mass": 1.2800000000000002,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            39
-          ],
-          "position": [
-            40,
-            39
-          ],
-          "mass": 1.0783686529953425,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            40
-          ],
-          "position": [
-            42,
-            40
-          ],
-          "mass": 0.8500000000000015,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            42
-          ],
-          "position": [
-            40,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            43
-          ],
-          "position": [
-            43,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            39
-          ],
-          "position": [
-            39,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            43
-          ],
-          "position": [
-            40,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            43
-          ],
-          "position": [
-            41,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            40
-          ],
-          "position": [
-            39,
-            40
-          ],
-          "mass": 3.849895684946192,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            44
-          ],
-          "position": [
-            42,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            44
-          ],
-          "position": [
-            41,
-            44
-          ],
-          "mass": 3.937761148537746,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            44
-          ],
-          "position": [
-            40,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            41
-          ],
-          "position": [
-            38,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            38
-          ],
-          "position": [
-            39,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            39
-          ],
-          "position": [
-            38,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            40
-          ],
-          "position": [
-            38,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            45
-          ],
-          "position": [
-            43,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            38
-          ],
-          "position": [
-            40,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            45
-          ],
-          "position": [
-            42,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            44
-          ],
-          "position": [
-            44,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            45
-          ],
-          "position": [
-            39,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            37
-          ],
-          "position": [
-            40,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            44
-          ],
-          "position": [
-            43,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            46
-          ],
-          "position": [
-            43,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            38
-          ],
-          "position": [
-            37,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            45
-          ],
-          "position": [
-            38,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            42
-          ],
-          "position": [
-            37,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            46
-          ],
-          "position": [
-            38,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            46
-          ],
-          "position": [
-            42,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            46
-          ],
-          "position": [
-            44,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            47
-          ],
-          "position": [
-            44,
-            47
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            46
-          ],
-          "position": [
-            39,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            44
-          ],
-          "position": [
-            38,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            45
-          ],
-          "position": [
-            37,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            47
-          ],
-          "position": [
-            43,
-            47
-          ],
-          "mass": 4.6451675965109445,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            47
-          ],
-          "position": [
-            42,
-            47
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            44
-          ],
-          "position": [
-            37,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            46
-          ],
-          "position": [
-            37,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            47
-          ],
-          "position": [
-            40,
-            47
-          ],
-          "mass": 4.965048940520495,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            47
-          ],
-          "position": [
-            39,
-            47
-          ],
-          "mass": 3.0488185429580197,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            48
-          ],
-          "position": [
-            42,
-            48
-          ],
-          "mass": 4.27350990526156,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            48
-          ],
-          "position": [
-            43,
-            48
-          ],
-          "mass": 3.2601854963850005,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            48
-          ],
-          "position": [
-            41,
-            48
-          ],
-          "mass": 3.244682601457434,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            48
-          ],
-          "position": [
-            39,
-            48
-          ],
-          "mass": 2.008392270052577,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            45
-          ],
-          "position": [
-            40,
-            45
-          ],
-          "mass": 0.2799999999999998,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            41
-          ],
-          "position": [
-            40,
-            41
-          ],
-          "mass": 0.82,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            37
-          ],
-          "position": [
-            28,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            35
-          ],
-          "position": [
-            31,
-            35
-          ],
-          "mass": 4.930497727226112,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            38
-          ],
-          "position": [
-            32,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            36
-          ],
-          "position": [
-            28,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            37
-          ],
-          "position": [
-            32,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            35
-          ],
-          "position": [
-            28,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            36
-          ],
-          "position": [
-            32,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            36
-          ],
-          "position": [
-            27,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            37
-          ],
-          "position": [
-            27,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            34
-          ],
-          "position": [
-            31,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            35
-          ],
-          "position": [
-            33,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            34
-          ],
-          "position": [
-            30,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            35
-          ],
-          "position": [
-            32,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            36
-          ],
-          "position": [
-            33,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            38
-          ],
-          "position": [
-            27,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            38
-          ],
-          "position": [
-            33,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            39
-          ],
-          "position": [
-            33,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            34
-          ],
-          "position": [
-            32,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            34
-          ],
-          "position": [
-            28,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            37
-          ],
-          "position": [
-            34,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            34
-          ],
-          "position": [
-            34,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            33
-          ],
-          "position": [
-            31,
-            33
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            39
-          ],
-          "position": [
-            34,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            40
-          ],
-          "position": [
-            34,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            38
-          ],
-          "position": [
-            34,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            34
-          ],
-          "position": [
-            33,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            40
-          ],
-          "position": [
-            33,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            32
-          ],
-          "position": [
-            32,
-            32
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            41
-          ],
-          "position": [
-            34,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            32
-          ],
-          "position": [
-            30,
-            32
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            40
-          ],
-          "position": [
-            32,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            33
-          ],
-          "position": [
-            34,
-            33
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            41
-          ],
-          "position": [
-            32,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            41
-          ],
-          "position": [
-            31,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            42
-          ],
-          "position": [
-            33,
-            42
-          ],
-          "mass": 4.799675108505154,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            42
-          ],
-          "position": [
-            34,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            44
-          ],
-          "position": [
-            3,
-            44
-          ],
-          "mass": 3.304971533798754,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            43
-          ],
-          "position": [
-            2,
-            43
-          ],
-          "mass": 3.7445267789578462,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            40
-          ],
-          "position": [
-            3,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            41
-          ],
-          "position": [
-            2,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            41
-          ],
-          "position": [
-            3,
-            41
-          ],
-          "mass": 2.560865935795514,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            44
-          ],
-          "position": [
-            2,
-            44
-          ],
-          "mass": 3.8203718477268422,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            45
-          ],
-          "position": [
-            4,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            41
-          ],
-          "position": [
-            1,
-            41
-          ],
-          "mass": 4.577412988081354,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            40
-          ],
-          "position": [
-            2,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            42
-          ],
-          "position": [
-            1,
-            42
-          ],
-          "mass": 4.51060445397512,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            40
-          ],
-          "position": [
-            4,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            45
-          ],
-          "position": [
-            2,
-            45
-          ],
-          "mass": 3.720420362987446,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            46
-          ],
-          "position": [
-            3,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            39
-          ],
-          "position": [
-            2,
-            39
-          ],
-          "mass": 4.835787010286137,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            39
-          ],
-          "position": [
-            4,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            47
-          ],
-          "position": [
-            4,
-            47
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            38
-          ],
-          "position": [
-            4,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            40
-          ],
-          "position": [
-            0,
-            40
-          ],
-          "mass": 1.1595542676845958,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            38
-          ],
-          "position": [
-            1,
-            38
-          ],
-          "mass": 2.059286808694585,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            37
-          ],
-          "position": [
-            0,
-            37
-          ],
-          "mass": 1.2008445768061002,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            42
-          ],
-          "position": [
-            3,
-            42
-          ],
-          "mass": 0.45999999999999985,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            41
-          ],
-          "position": [
-            4,
-            41
-          ],
-          "mass": 0.6399999999999999,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            44
-          ],
-          "position": [
-            1,
-            44
-          ],
-          "mass": 0.82,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -722812831,
-        -2050031864,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            4
-          ],
-          "position": [
-            18,
-            4
-          ],
-          "mass": 3.3099999999999135,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            19,
-            4
-          ],
-          "position": [
-            19,
-            4
-          ],
-          "mass": 2.3299999999999343,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            2
-          ],
-          "position": [
-            18,
-            2
-          ],
-          "mass": 2.1699999999999378,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            3
-          ],
-          "position": [
-            18,
-            3
-          ],
-          "mass": 2.319999999999955,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            20,
-            3
-          ],
-          "position": [
-            20,
-            3
-          ],
-          "mass": 2.489999999999972,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            2
-          ],
-          "position": [
-            17,
-            2
-          ],
-          "mass": 2.329999999999975,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            21,
-            3
-          ],
-          "position": [
-            21,
-            3
-          ],
-          "mass": 2.329999999999975,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            19,
-            5
-          ],
-          "position": [
-            19,
-            5
-          ],
-          "mass": 2.3099999999999756,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            3
-          ],
-          "position": [
-            17,
-            3
-          ],
-          "mass": 2.4799999999999924,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            19,
-            2
-          ],
-          "position": [
-            19,
-            2
-          ],
-          "mass": 2.319999999999996,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            20,
-            5
-          ],
-          "position": [
-            20,
-            5
-          ],
-          "mass": 2.319999999999996,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            21,
-            4
-          ],
-          "position": [
-            21,
-            4
-          ],
-          "mass": 1.4999999999999984,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            4
-          ],
-          "position": [
-            22,
-            4
-          ],
-          "mass": 1.3399999999999983,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            1
-          ],
-          "position": [
-            18,
-            1
-          ],
-          "mass": 1.3399999999999983,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            5
-          ],
-          "position": [
-            18,
-            5
-          ],
-          "mass": 1.3399999999999983,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            4
-          ],
-          "position": [
-            17,
-            4
-          ],
-          "mass": 1.3199999999999983,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            19,
-            1
-          ],
-          "position": [
-            19,
-            1
-          ],
-          "mass": 1.1799999999999982,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            26,
-            0
-          ],
-          "position": [
-            26,
-            0
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            0
-          ],
-          "position": [
-            27,
-            0
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            25,
-            0
-          ],
-          "position": [
-            25,
-            0
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            24,
-            0
-          ],
-          "position": [
-            24,
-            0
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            23,
-            0
-          ],
-          "position": [
-            23,
-            0
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            26,
-            2
-          ],
-          "position": [
-            26,
-            2
-          ],
-          "mass": 2.4235120046704295,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            23,
-            1
-          ],
-          "position": [
-            23,
-            1
-          ],
-          "mass": 2.738215966543228,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            2
-          ],
-          "position": [
-            28,
-            2
-          ],
-          "mass": 2.3680978594366273,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            1
-          ],
-          "position": [
-            22,
-            1
-          ],
-          "mass": 2.921199611706312,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            3
-          ],
-          "position": [
-            27,
-            3
-          ],
-          "mass": 2.5574588998249617,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            2
-          ],
-          "position": [
-            22,
-            2
-          ],
-          "mass": 2.869408911918478,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            3
-          ],
-          "position": [
-            28,
-            3
-          ],
-          "mass": 2.5180034594166014,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            26,
-            3
-          ],
-          "position": [
-            26,
-            3
-          ],
-          "mass": 2.5643658989173,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            21,
-            1
-          ],
-          "position": [
-            21,
-            1
-          ],
-          "mass": 3.046946284308304,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            25,
-            3
-          ],
-          "position": [
-            25,
-            3
-          ],
-          "mass": 2.583318028421869,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            25,
-            4
-          ],
-          "position": [
-            25,
-            4
-          ],
-          "mass": 1.5652145447834152,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            26,
-            1
-          ],
-          "position": [
-            26,
-            1
-          ],
-          "mass": 1,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            0
-          ],
-          "position": [
-            28,
-            0
-          ],
-          "mass": 3.4758933771260745,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            1
-          ],
-          "position": [
-            29,
-            1
-          ],
-          "mass": 4.494407111458536,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            2
-          ],
-          "position": [
-            29,
-            2
-          ],
-          "mass": 4.596966076767575,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            2
-          ],
-          "position": [
-            30,
-            2
-          ],
-          "mass": 3.549525042076605,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            3
-          ],
-          "position": [
-            29,
-            3
-          ],
-          "mass": 2.4129176103399,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            3
-          ],
-          "position": [
-            31,
-            3
-          ],
-          "mass": 2.5020840073856423,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            3
-          ],
-          "position": [
-            30,
-            3
-          ],
-          "mass": 2.4263101786031953,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            0
-          ],
-          "position": [
-            30,
-            0
-          ],
-          "mass": 3.5005363498207482,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            2
-          ],
-          "position": [
-            31,
-            2
-          ],
-          "mass": 2.5154765756489375,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            4
-          ],
-          "position": [
-            32,
-            4
-          ],
-          "mass": 1.454642972694681,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            4
-          ],
-          "position": [
-            29,
-            4
-          ],
-          "mass": 1.3788691439122343,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            4
-          ],
-          "position": [
-            30,
-            4
-          ],
-          "mass": 1.3788691439122343,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -1684090011,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            45
-          ],
-          "position": [
-            3,
-            45
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            46
-          ],
-          "position": [
-            2,
-            46
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            47
-          ],
-          "position": [
-            3,
-            47
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            47
-          ],
-          "position": [
-            2,
-            47
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            46
-          ],
-          "position": [
-            4,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            47
-          ],
-          "position": [
-            1,
-            47
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            48
-          ],
-          "position": [
-            4,
-            48
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            48
-          ],
-          "position": [
-            0,
-            48
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            49
-          ],
-          "position": [
-            3,
-            49
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            49
-          ],
-          "position": [
-            1,
-            49
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            49
-          ],
-          "position": [
-            0,
-            49
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -840001736,
-        75821625,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            34
-          ],
-          "position": [
-            29,
-            34
-          ],
-          "mass": 4.390000140113672,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            31
-          ],
-          "position": [
-            30,
-            31
-          ],
-          "mass": 2.287746769546625,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            31
-          ],
-          "position": [
-            29,
-            31
-          ],
-          "mass": 2.279685592268513,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            33
-          ],
-          "position": [
-            30,
-            33
-          ],
-          "mass": 2.2561310235943712,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            31
-          ],
-          "position": [
-            31,
-            31
-          ],
-          "mass": 2.456714662741906,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            30
-          ],
-          "position": [
-            29,
-            30
-          ],
-          "mass": 2.4547525993177044,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            30
-          ],
-          "position": [
-            30,
-            30
-          ],
-          "mass": 2.4344047013440977,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            30
-          ],
-          "position": [
-            32,
-            30
-          ],
-          "mass": 1.4584141715404022,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            30
-          ],
-          "position": [
-            31,
-            30
-          ],
-          "mass": 1.2970364842502227,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1185928007,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            39
-          ],
-          "position": [
-            30,
-            39
-          ],
-          "mass": 3.235438868093389,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            39
-          ],
-          "position": [
-            28,
-            39
-          ],
-          "mass": 4.745939642159401,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            40
-          ],
-          "position": [
-            30,
-            40
-          ],
-          "mass": 3.431078214002385,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            40
-          ],
-          "position": [
-            28,
-            40
-          ],
-          "mass": 2.4813400850244367,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            40
-          ],
-          "position": [
-            27,
-            40
-          ],
-          "mass": 2.7993453224448746,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            40
-          ],
-          "position": [
-            31,
-            40
-          ],
-          "mass": 2.599345322444876,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            41
-          ],
-          "position": [
-            30,
-            41
-          ],
-          "mass": 1,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            41
-          ],
-          "position": [
-            28,
-            41
-          ],
-          "mass": 1,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        829656995,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            38
-          ],
-          "position": [
-            41,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            37
-          ],
-          "position": [
-            42,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            36
-          ],
-          "position": [
-            41,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            37
-          ],
-          "position": [
-            43,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            36
-          ],
-          "position": [
-            42,
-            36
-          ],
-          "mass": 4.275248666090944,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            35
-          ],
-          "position": [
-            40,
-            35
-          ],
-          "mass": 3.150965899367441,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -2118061970,
-        18922329,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            45
-          ],
-          "position": [
-            0,
-            45
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            44
-          ],
-          "position": [
-            0,
-            44
-          ],
-          "mass": 2.269999999999995,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            46
-          ],
-          "position": [
-            1,
-            46
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            47
-          ],
-          "position": [
-            0,
-            47
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            43
-          ],
-          "position": [
-            1,
-            43
-          ],
-          "mass": 0.04000000000000002,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1441968958,
-        1989493336,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            39
-          ],
-          "position": [
-            43,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            38
-          ],
-          "position": [
-            42,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            38
-          ],
-          "position": [
-            44,
-            38
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            37
-          ],
-          "position": [
-            41,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            37
-          ],
-          "position": [
-            44,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -418771556,
-        -2013732191,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            34
-          ],
-          "position": [
-            14,
-            34
-          ],
-          "mass": 2.316613512773314,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            35
-          ],
-          "position": [
-            14,
-            35
-          ],
-          "mass": 2.5115333081352897,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            34
-          ],
-          "position": [
-            12,
-            34
-          ],
-          "mass": 1.9078494559514323,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            36
-          ],
-          "position": [
-            13,
-            36
-          ],
-          "mass": 1.5065378632115543,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            33
-          ],
-          "position": [
-            13,
-            33
-          ],
-          "mass": 1.3330908181410879,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -586235581,
-        2023679751,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            27
-          ],
-          "position": [
-            17,
-            27
-          ],
-          "mass": 2.0771689987484794,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            26
-          ],
-          "position": [
-            18,
-            26
-          ],
-          "mass": 2.2966927456307364,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            26
-          ],
-          "position": [
-            17,
-            26
-          ],
-          "mass": 2.197326752216959,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            27
-          ],
-          "position": [
-            18,
-            27
-          ],
-          "mass": 1.277267656679394,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            27
-          ],
-          "position": [
-            16,
-            27
-          ],
-          "mass": 1.0645603560900592,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            43
-          ],
-          "position": [
-            42,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            42
-          ],
-          "position": [
-            43,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            41
-          ],
-          "position": [
-            37,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            42
-          ],
-          "position": [
-            38,
-            42
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            43
-          ],
-          "position": [
-            37,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1359131319,
-        1743864179,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            0
-          ],
-          "position": [
-            15,
-            0
-          ],
-          "mass": 3.1417881299314123,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            0
-          ],
-          "position": [
-            16,
-            0
-          ],
-          "mass": 4.939516179561134,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            1
-          ],
-          "position": [
-            15,
-            1
-          ],
-          "mass": 2.1822228952683065,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            2
-          ],
-          "position": [
-            16,
-            2
-          ],
-          "mass": 2.165981316391782,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            1
-          ],
-          "position": [
-            14,
-            1
-          ],
-          "mass": 1.4306022750755774,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1343025579,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            33
-          ],
-          "position": [
-            32,
-            33
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            32
-          ],
-          "position": [
-            31,
-            32
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            32
-          ],
-          "position": [
-            33,
-            32
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            31
-          ],
-          "position": [
-            32,
-            31
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            32
-          ],
-          "position": [
-            34,
-            32
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1882775940,
-        579158193,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            18
-          ],
-          "position": [
-            34,
-            18
-          ],
-          "mass": 3.609169742990821,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            35,
-            17
-          ],
-          "position": [
-            35,
-            17
-          ],
-          "mass": 4.039748756219227,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            36,
-            18
-          ],
-          "position": [
-            36,
-            18
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            36,
-            19
-          ],
-          "position": [
-            36,
-            19
-          ],
-          "mass": 4.817680257906344,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1918581103,
-        955179362,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            19
-          ],
-          "position": [
-            39,
-            19
-          ],
-          "mass": 3.060460051395253,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            18
-          ],
-          "position": [
-            40,
-            18
-          ],
-          "mass": 2.011413621347786,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            19
-          ],
-          "position": [
-            38,
-            19
-          ],
-          "mass": 2.0448266495957763,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            18
-          ],
-          "position": [
-            39,
-            18
-          ],
-          "mass": 1.0399467623831469,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        -850325377,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            35
-          ],
-          "position": [
-            27,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            34
-          ],
-          "position": [
-            27,
-            34
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            33
-          ],
-          "position": [
-            28,
-            33
-          ],
-          "mass": 2.2800000000000002,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            33
-          ],
-          "position": [
-            27,
-            33
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1309917844,
-        -705242257,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            31
-          ],
-          "position": [
-            22,
-            31
-          ],
-          "mass": 2.589170404500289,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            30
-          ],
-          "position": [
-            22,
-            30
-          ],
-          "mass": 2.8509105147729854,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            32
-          ],
-          "position": [
-            22,
-            32
-          ],
-          "mass": 1.767035058565655,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        1738537225,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            39
-          ],
-          "position": [
-            29,
-            39
-          ],
-          "mass": 2.065375441406257,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            39
-          ],
-          "position": [
-            31,
-            39
-          ],
-          "mass": 3.0830562510028345,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            40
-          ],
-          "position": [
-            29,
-            40
-          ],
-          "mass": 3.1139813518141217,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            39
-          ],
-          "position": [
-            3,
-            39
-          ],
-          "mass": 4.839338908766955,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            38
-          ],
-          "position": [
-            2,
-            38
-          ],
-          "mass": 4.564105833121809,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            37
-          ],
-          "position": [
-            2,
-            37
-          ],
-          "mass": 3.420863948496657,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -840001736,
-        75821625,
-        -1607208222,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            32
-          ],
-          "position": [
-            28,
-            32
-          ],
-          "mass": 2.9749625197851666,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            32
-          ],
-          "position": [
-            27,
-            32
-          ],
-          "mass": 3.128147280591751,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            31
-          ],
-          "position": [
-            27,
-            31
-          ],
-          "mass": 1.998896799765006,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            39
-          ],
-          "position": [
-            37,
-            39
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            37,
-            40
-          ],
-          "position": [
-            37,
-            40
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            48
-          ],
-          "position": [
-            44,
-            48
-          ],
-          "mass": 0.8563702947932244,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -740262445,
-        1959582454,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            25
-          ],
-          "position": [
-            28,
-            25
-          ],
-          "mass": 2.7070092114835504,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            25
-          ],
-          "position": [
-            27,
-            25
-          ],
-          "mass": 1.777847638029689,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            24
-          ],
-          "position": [
-            30,
-            24
-          ],
-          "mass": 1.5302066056637291,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -722812831,
-        -2050031864,
-        -409497098,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            21,
-            5
-          ],
-          "position": [
-            21,
-            5
-          ],
-          "mass": 2.319999999999955,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            20,
+            46,
             6
           ],
           "position": [
-            20,
+            46,
             6
           ],
-          "mass": 2.4799999999999924,
+          "mass": 2.591110808091032,
           "massAtBirth": 1
         },
         {
@@ -5280,22 +478,23 @@
             0
           ],
           "lastPosition": [
-            21,
+            45,
             6
           ],
           "position": [
-            21,
+            45,
             6
           ],
-          "mass": 1.3199999999999983,
+          "mass": 1.5618211370033703,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        800644328,
-        38875314,
+        1340925431,
+        324636957,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -5305,14 +504,14 @@
             0
           ],
           "lastPosition": [
-            24,
-            1
+            31,
+            36
           ],
           "position": [
-            24,
-            1
+            31,
+            36
           ],
-          "mass": 3.4221453992829973,
+          "mass": 2.4272940163588124,
           "massAtBirth": 1
         },
         {
@@ -5321,38 +520,23 @@
             0
           ],
           "lastPosition": [
-            25,
-            2
+            30,
+            36
           ],
           "position": [
-            25,
-            2
+            30,
+            36
           ],
-          "mass": 2.4257156723361804,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            23,
-            2
-          ],
-          "position": [
-            23,
-            2
-          ],
-          "mass": 2.430953151297878,
+          "mass": 1.4613329136727955,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -722812831,
-        -2050031864,
+        1779464091,
+        1693772088,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -5363,13 +547,13 @@
           ],
           "lastPosition": [
             19,
-            3
+            6
           ],
           "position": [
             19,
-            3
+            6
           ],
-          "mass": 1.9899999999999771,
+          "mass": 2.493521432936484,
           "massAtBirth": 1
         },
         {
@@ -5379,432 +563,22 @@
           ],
           "lastPosition": [
             20,
-            2
-          ],
-          "position": [
-            20,
-            2
-          ],
-          "mass": 2.129999999999991,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            20,
-            1
-          ],
-          "position": [
-            20,
-            1
-          ],
-          "mass": 1.1199999999999997,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        436891182,
-        -174090849
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            14
-          ],
-          "position": [
-            16,
-            14
-          ],
-          "mass": 2.1316839029930517,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            14
-          ],
-          "position": [
-            17,
-            14
-          ],
-          "mass": 2.8785010920439764,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            13
-          ],
-          "position": [
-            17,
-            13
-          ],
-          "mass": 2.843470259537809,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1269341543,
-        1989493336,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            40
-          ],
-          "position": [
-            43,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            39
-          ],
-          "position": [
-            44,
-            39
-          ],
-          "mass": 3.7016486816210272,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1489574703,
-        683079449,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            9
-          ],
-          "position": [
-            12,
-            9
-          ],
-          "mass": 2.9081833388176,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            8
-          ],
-          "position": [
-            14,
-            8
-          ],
-          "mass": 3.0383848665315347,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            18
-          ],
-          "position": [
-            16,
-            18
-          ],
-          "mass": 3.750629947035185,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            18
-          ],
-          "position": [
-            17,
-            18
-          ],
-          "mass": 2.7692613789154104,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        2065971575,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            43
-          ],
-          "position": [
-            39,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            43
-          ],
-          "position": [
-            38,
-            43
-          ],
-          "mass": 4.45706542526708,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        643026607,
-        1051778152,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            45
-          ],
-          "position": [
-            41,
-            45
-          ],
-          "mass": 2.4126355654321365,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            47
-          ],
-          "position": [
-            41,
-            47
-          ],
-          "mass": 2.7484424613416385,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        1817127580,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            41
-          ],
-          "position": [
-            43,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            41
-          ],
-          "position": [
-            44,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -2118061970,
-        18922329,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            42
-          ],
-          "position": [
-            0,
-            42
-          ],
-          "mass": 4.62999952943135,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            43
-          ],
-          "position": [
-            0,
-            43
-          ],
-          "mass": 3.1399999999999886,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1489574703,
-        683079449,
-        1126419606,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
             7
           ],
           "position": [
-            14,
+            20,
             7
           ],
-          "mass": 2.5729151316432715,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            6
-          ],
-          "position": [
-            15,
-            6
-          ],
-          "mass": 1.5817136872147073,
+          "mass": 1.4615655094505624,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -221583108,
-        802090599,
-        436891182,
+        851881838,
+        314883768,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -5814,97 +588,14 @@
             0
           ],
           "lastPosition": [
-            13,
-            16
-          ],
-          "position": [
-            13,
-            16
-          ],
-          "mass": 4.169999999999945,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            15
-          ],
-          "position": [
-            12,
-            15
-          ],
-          "mass": 2.0299999999999785,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1882775940,
-        579158193,
-        -2071543808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            17
-          ],
-          "position": [
-            33,
-            17
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
+            9,
             19
           ],
           "position": [
-            33,
+            9,
             19
           ],
-          "mass": 4.164110212001787,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        74925401,
-        1989493336,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            38
-          ],
-          "position": [
-            38,
-            38
-          ],
-          "mass": 4.836251903000673,
+          "mass": 2.591481107067444,
           "massAtBirth": 1
         },
         {
@@ -5913,24 +604,24 @@
             0
           ],
           "lastPosition": [
-            37,
-            37
+            8,
+            19
           ],
           "position": [
-            37,
-            37
+            8,
+            19
           ],
-          "mass": 2.3739890144247426,
+          "mass": 1.5901494919978365,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -1489574703,
-        683079449,
+        -338783919,
+        1890382756,
         -2071543808,
-        -927491317
+        -2071486464
       ],
       "creatures": [
         {
@@ -5939,14 +630,14 @@
             0
           ],
           "lastPosition": [
-            11,
-            10
+            47,
+            22
           ],
           "position": [
-            11,
-            10
+            47,
+            22
           ],
-          "mass": 3.0257608817858217,
+          "mass": 2.71090768840119,
           "massAtBirth": 1
         },
         {
@@ -5955,953 +646,24 @@
             0
           ],
           "lastPosition": [
-            11,
-            9
-          ],
-          "position": [
-            11,
-            9
-          ],
-          "mass": 2.049059622411863,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -625563396,
-        -1684090011,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            48
-          ],
-          "position": [
-            3,
-            48
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            49
-          ],
-          "position": [
-            2,
-            49
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1918581103,
-        955179362,
-        1340264822,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            16
-          ],
-          "position": [
-            39,
-            16
-          ],
-          "mass": 2.4864638616269694,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            15
-          ],
-          "position": [
-            39,
-            15
-          ],
-          "mass": 1.4993302768232935,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071486464,
-        1051021432
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            1
-          ],
-          "position": [
-            30,
-            1
-          ],
-          "mass": 3.917143781557457,
-          "massAtBirth": 1
-        },
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            0
-          ],
-          "position": [
-            31,
-            0
-          ],
-          "mass": 2.5650597741718113,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        429858997,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            39
-          ],
-          "position": [
-            42,
-            39
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        682716211,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            2,
-            42
-          ],
-          "position": [
-            2,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -2071543808,
-        704890833
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            44
-          ],
-          "position": [
-            4,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        981692020,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            41
-          ],
-          "position": [
-            39,
-            41
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        1980657488,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            38
-          ],
-          "position": [
-            31,
-            38
-          ],
-          "mass": 2.373972129414494,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        -1282337625,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            30,
-            35
-          ],
-          "position": [
-            30,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1484468738,
-        111782652,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            10,
-            30
-          ],
-          "position": [
-            10,
-            30
-          ],
-          "mass": 2.6326519019190737,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        179497911,
-        -1168716411,
-        -323760893,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            35,
-            3
-          ],
-          "position": [
-            35,
-            3
-          ],
-          "mass": 2.8894473989818756,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1913482238,
-        802090599,
-        436891182,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            18
-          ],
-          "position": [
-            13,
-            18
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -2118061970,
-        18922329,
-        -2071486464,
-        1867213999
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            46
-          ],
-          "position": [
-            0,
-            46
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1933842893,
-        215401352,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            0
-          ],
-          "position": [
-            34,
-            0
-          ],
-          "mass": 3.0574557734595134,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -740262445,
-        1959582454,
-        -2071543808,
-        1346657012
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
+            46,
             23
           ],
           "position": [
-            28,
+            46,
             23
           ],
-          "mass": 4.98,
+          "mass": 1.7276180521303788,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        971853589,
-        -21171241,
-        -2071543808,
-        1460945708
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            40
-          ],
-          "position": [
-            1,
-            40
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        1680872933,
+        -834929834,
+        1941763666,
         -2071543808,
         -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            32,
-            39
-          ],
-          "position": [
-            32,
-            39
-          ],
-          "mass": 4.425806589375924,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1966762717,
-        451200459,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            42,
-            1
-          ],
-          "position": [
-            42,
-            1
-          ],
-          "mass": 2.0866416275925896,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1732020133,
-        1989493336,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            44
-          ],
-          "position": [
-            39,
-            44
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        -2071543808,
-        611645828
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            42
-          ],
-          "position": [
-            39,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        46636397,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            37
-          ],
-          "position": [
-            33,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1441968958,
-        292635793,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            40
-          ],
-          "position": [
-            44,
-            40
-          ],
-          "mass": 1.3401497406806562,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        418211878,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            45
-          ],
-          "position": [
-            1,
-            45
-          ],
-          "mass": 4.956141463660572,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -586235581,
-        2023679751,
-        -2071543808,
-        -342735498
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            29
-          ],
-          "position": [
-            16,
-            29
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -309953147,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            39
-          ],
-          "position": [
-            1,
-            39
-          ],
-          "mass": 1.6237284489758728,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1441968958,
-        1989493336,
-        -2071543808,
-        -1986434529
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            38
-          ],
-          "position": [
-            43,
-            38
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -418771556,
-        -2013732191,
-        -2071543808,
-        -1740151030
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            35
-          ],
-          "position": [
-            11,
-            35
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        734085277,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            43
-          ],
-          "position": [
-            44,
-            43
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -44344406,
-        800644328,
-        -2071543808,
-        764760073
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            25,
-            1
-          ],
-          "position": [
-            25,
-            1
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        1041492504,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
-            42
-          ],
-          "position": [
-            44,
-            42
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -1540099650,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            3,
-            38
-          ],
-          "position": [
-            3,
-            38
-          ],
-          "mass": 3.443140773039206,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        -2071543808,
-        -1841147062
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            38,
-            37
-          ],
-          "position": [
-            38,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        -1773285232,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            39
-          ],
-          "position": [
-            41,
-            39
-          ],
-          "mass": 2.491896087229534,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1080334188,
-        1989493336,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            39,
-            37
-          ],
-          "position": [
-            39,
-            37
-          ],
-          "mass": 4.921512431022718,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -1684090011,
-        454425529
       ],
       "creatures": [
         {
@@ -6911,359 +673,15 @@
           ],
           "lastPosition": [
             2,
-            48
+            40
           ],
           "position": [
             2,
-            48
+            40
           ],
-          "mass": 4.98,
+          "mass": 2.665911044386957,
           "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1166201483,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            36
-          ],
-          "position": [
-            34,
-            36
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -1684090011,
-        -1392115482
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            48
-          ],
-          "position": [
-            1,
-            48
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        436891182,
-        547775269
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            18
-          ],
-          "position": [
-            12,
-            18
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -1365537050,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            39
-          ],
-          "position": [
-            27,
-            39
-          ],
-          "mass": 2.286816745101959,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            35
-          ],
-          "position": [
-            34,
-            35
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        573295993,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            33
-          ],
-          "position": [
-            33,
-            33
-          ],
-          "mass": 4.152719495363623,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1882775940,
-        579158193,
-        -2071543808,
-        1533180849
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            35,
-            19
-          ],
-          "position": [
-            35,
-            19
-          ],
-          "mass": 4.038635047250718,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            37
-          ],
-          "position": [
-            4,
-            37
-          ],
-          "mass": 0.2062227527597292,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1810493309,
-        2023679751,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            29
-          ],
-          "position": [
-            15,
-            29
-          ],
-          "mass": 2.2246816006684194,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1038414765,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            0,
-            41
-          ],
-          "position": [
-            0,
-            41
-          ],
-          "mass": 4.880000000000001,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -1193060852,
-        -1684090011,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            4,
-            49
-          ],
-          "position": [
-            4,
-            49
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        436891182,
-        331171844
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            15
-          ],
-          "position": [
-            13,
-            15
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        -2071486464,
-        -1500401217
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            1
-          ],
-          "position": [
-            28,
-            1
-          ],
-          "mass": 2.0134583198963085,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        971853589,
-        -21171241,
-        -2071543808
-      ],
-      "creatures": [
+        },
         {
           "lastMovement": [
             0,
@@ -7271,48 +689,23 @@
           ],
           "lastPosition": [
             3,
-            37
+            40
           ],
           "position": [
             3,
-            37
+            40
           ],
-          "mass": 4.98,
+          "mass": 1.66275326011701,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -840001736,
-        75821625,
-        -2071543808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            31
-          ],
-          "position": [
-            28,
-            31
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -840001736,
-        75821625,
+        -1508742532,
+        -1215612179,
         -2071543808,
-        -1838642160
+        -2071486464
       ],
       "creatures": [
         {
@@ -7321,49 +714,23 @@
             0
           ],
           "lastPosition": [
-            29,
-            33
+            26,
+            0
           ],
           "position": [
-            29,
-            33
+            26,
+            0
           ],
-          "mass": 1.2162297149431087,
+          "mass": 4.9521579994899,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -44344406,
-        800644328,
+        -1620608391,
+        1643031238,
         -2071543808,
-        1707645141
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            2
-          ],
-          "position": [
-            27,
-            2
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1355260264,
         -2071486464
       ],
       "creatures": [
@@ -7373,254 +740,22 @@
             0
           ],
           "lastPosition": [
-            33,
-            41
-          ],
-          "position": [
-            33,
-            41
-          ],
-          "mass": 4.05400809448564,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        643026607,
-        1051778152,
-        -2071543808,
-        -88908468
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            41,
-            46
-          ],
-          "position": [
-            41,
-            46
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1489574703,
-        683079449,
-        1883226429,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            7
-          ],
-          "position": [
-            12,
-            7
-          ],
-          "mass": 2.3119500179735932,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1393038163,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            35
-          ],
-          "position": [
-            29,
-            35
-          ],
-          "mass": 4.350949518121251,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        1779763327,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            13,
-            14
-          ],
-          "position": [
-            13,
-            14
-          ],
-          "mass": 1.860821557226859,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        436891182,
-        -1880315727
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            21
-          ],
-          "position": [
-            12,
-            21
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -1679638285
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            29,
-            0
-          ],
-          "position": [
-            29,
-            0
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1989493336,
-        829656995,
-        -889031200
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            44,
+            10,
             36
           ],
           "position": [
-            44,
+            10,
             36
           ],
-          "mass": 4.98,
+          "mass": 0.4131355817806722,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        182299750,
-        802090599,
-        436891182,
-        -1336866427
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            11,
-            20
-          ],
-          "position": [
-            11,
-            20
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        -533922947,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            21
-          ],
-          "position": [
-            15,
-            21
-          ],
-          "mass": 1.7004724436257765,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -418771556,
-        1303196480,
+        -24064912,
+        1124192682,
         -2071543808,
         -2071486464
       ],
@@ -7631,22 +766,152 @@
             0
           ],
           "lastPosition": [
-            13,
-            34
+            8,
+            24
           ],
           "position": [
-            13,
-            34
+            8,
+            24
           ],
-          "mass": 2.434070661239306,
+          "mass": 0.922655394869239,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -28938667,
-        1989493336,
+        -57335491,
+        -1698318833,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            23,
+            2
+          ],
+          "position": [
+            23,
+            2
+          ],
+          "mass": 4.790130396270831,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1351943414,
+        -1046710167,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            10
+          ],
+          "position": [
+            0,
+            10
+          ],
+          "mass": 3.7399901780416696,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1064436583,
+        1840325820,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            16
+          ],
+          "position": [
+            31,
+            16
+          ],
+          "mass": 3.200960633419881,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2090646370,
+        -1498720477,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            11
+          ],
+          "position": [
+            8,
+            11
+          ],
+          "mass": 4.98,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1439982129,
+        -1194270908,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            25,
+            25
+          ],
+          "position": [
+            25,
+            25
+          ],
+          "mass": 1.7890874623383273,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1033815535,
+        1382668884,
         -2071543808,
         -2071486464
       ],
@@ -7658,45 +923,22 @@
           ],
           "lastPosition": [
             38,
-            47
+            16
           ],
           "position": [
             38,
-            47
+            16
           ],
-          "mass": 3.0823891618534582,
+          "mass": 2.205963530250208,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        971853589,
-        -2071543808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            1,
-            37
-          ],
-          "position": [
-            1,
-            37
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
+        1447849949,
+        -1294260545,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -7706,24 +948,128 @@
             0
           ],
           "lastPosition": [
-            11,
-            19
+            17,
+            25
           ],
           "position": [
-            11,
-            19
+            17,
+            25
           ],
-          "mass": 2.3813964544042996,
+          "mass": 4.882108809694871,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -859642976,
-        1989493336,
+        -346498949,
+        -640332851,
         -2071543808,
-        -851387253
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            2
+          ],
+          "position": [
+            28,
+            2
+          ],
+          "mass": 4.514418182642855,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1006702644,
+        1991821758,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            7
+          ],
+          "position": [
+            7,
+            7
+          ],
+          "mass": 2.237765574849652,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1211949633,
+        1242041389,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            6,
+            21
+          ],
+          "position": [
+            6,
+            21
+          ],
+          "mass": 4.98,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1526118759,
+        1218399384,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            24
+          ],
+          "position": [
+            19,
+            24
+          ],
+          "mass": 1.9394300957855164,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1077084795,
+        -841811904,
+        -2071543808,
+        -2071486464
       ],
       "creatures": [
         {
@@ -7733,21 +1079,73 @@
           ],
           "lastPosition": [
             44,
-            45
+            25
           ],
           "position": [
             44,
-            45
+            25
           ],
-          "mass": 4.98,
+          "mass": 0.8866558218196855,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        958692254,
-        1989493336,
+        -1182219997,
+        -1120234413,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            26
+          ],
+          "position": [
+            17,
+            26
+          ],
+          "mass": 2.385721180684852,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1625896317,
+        1978735721,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            43
+          ],
+          "position": [
+            13,
+            43
+          ],
+          "mass": 4.951201603343638,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1224130030,
+        -1254789994,
         -2071543808,
         -2071486464
       ],
@@ -7759,21 +1157,21 @@
           ],
           "lastPosition": [
             37,
-            47
+            28
           ],
           "position": [
             37,
-            47
+            28
           ],
-          "mass": 3.0703193427876188,
+          "mass": 1.7287770272483702,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -859642976,
-        -1827333896,
+        1169867997,
+        1846544171,
         -2071543808,
         -2071486464
       ],
@@ -7784,763 +1182,24 @@
             0
           ],
           "lastPosition": [
-            40,
-            36
-          ],
-          "position": [
-            40,
-            36
-          ],
-          "mass": 2.295699485201682,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1997423082,
-        802090599,
-        436891182,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            21
-          ],
-          "position": [
-            16,
-            21
-          ],
-          "mass": 1.557002184087966,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -722812831,
-        -2050031864,
-        -1742409175,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            17,
-            5
-          ],
-          "position": [
-            17,
-            5
-          ],
-          "mass": 2.319999999999996,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1918581103,
-        955179362,
-        -2071543808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            40,
-            16
-          ],
-          "position": [
-            40,
-            16
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        -709132872,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            34,
-            31
-          ],
-          "position": [
-            34,
-            31
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1489574703,
-        683079449,
-        -2071543808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            8
-          ],
-          "position": [
-            15,
-            8
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        945326797
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            22,
-            0
-          ],
-          "position": [
-            22,
-            0
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        -2071543808,
-        263334995
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            33,
-            31
-          ],
-          "position": [
-            33,
-            31
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        436891182,
-        -1018399783
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            22
-          ],
-          "position": [
-            14,
-            22
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1055413709,
-        683079449,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            8
-          ],
-          "position": [
-            12,
-            8
-          ],
-          "mass": 1.899710617529943,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        1341314817,
-        436891182,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            10,
-            14
-          ],
-          "position": [
-            10,
-            14
-          ],
-          "mass": 1.5959929104036323,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        1833008120,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            16,
-            13
-          ],
-          "position": [
-            16,
-            13
-          ],
-          "mass": 1.2869405190756167,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -1452692417,
-        802090599,
-        436891182,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            19
-          ],
-          "position": [
-            18,
-            19
-          ],
-          "mass": 1.2869405190756167,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        -468934227
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            4
-          ],
-          "position": [
-            27,
-            4
-          ],
-          "mass": 4.98,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071486464,
-        -1944546937
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            31,
-            1
-          ],
-          "position": [
-            31,
-            1
-          ],
-          "mass": 1.9658933771260676,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -859642976,
-        1610580371,
-        829656995,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            36
-          ],
-          "position": [
-            43,
-            36
-          ],
-          "mass": 1.235293063672902,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        -1822539652,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            15,
-            22
-          ],
-          "position": [
-            15,
-            22
-          ],
-          "mass": 1.1603491136010782,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        67171636,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            21,
-            2
-          ],
-          "position": [
-            21,
-            2
-          ],
-          "mass": 0.5755839777890576,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -722812831,
-        -2050031864,
-        -2071543808,
-        1130446830
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            18,
-            6
-          ],
-          "position": [
-            18,
-            6
-          ],
-          "mass": 2.9199999999999986,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -34677779,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            23,
-            3
-          ],
-          "position": [
-            23,
-            3
-          ],
-          "mass": 1.8999380581180372,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        88455538,
-        2023679751,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            14,
-            29
-          ],
-          "position": [
-            14,
-            29
-          ],
-          "mass": 1.216811026625831,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        1907927713,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            24,
-            3
-          ],
-          "position": [
-            24,
-            3
-          ],
-          "mass": 1.683299352526711,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -1903962622
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            28,
-            4
-          ],
-          "position": [
-            28,
-            4
-          ],
-          "mass": 2.75773828782447,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        -2071486464,
-        -2134482081
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            26,
-            4
-          ],
-          "position": [
-            26,
-            4
-          ],
-          "mass": 1.0118857472651337,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        182299750,
-        802090599,
-        -719213833
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            10,
-            18
-          ],
-          "position": [
-            10,
-            18
-          ],
-          "mass": 1.387515416253085,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        1966762717,
-        2008059104,
-        -2071543808,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            0
-          ],
-          "position": [
-            43,
-            0
-          ],
-          "mass": 0.5546772617710386,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -473622928,
-        1989493336,
-        829656995,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            43,
-            35
-          ],
-          "position": [
-            43,
-            35
-          ],
-          "mass": 0.0999999999999998,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        800644328,
-        -2071543808,
-        157459808
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            24,
-            2
-          ],
-          "position": [
-            24,
-            2
-          ],
-          "mass": 1.7708740355172998,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        802090599,
-        436891182,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            12,
-            14
-          ],
-          "position": [
-            12,
-            14
-          ],
-          "mass": 1.0968788540632715,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -2133742371,
-        1185928007,
-        -2071486464
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
+            47,
             41
           ],
           "position": [
-            27,
+            47,
             41
           ],
-          "mass": 0.9697720008288214,
+          "mass": 2.4041496616800684,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        -722812831,
-        1408730982
+        -1191240255,
+        -1476956646,
+        -2071543808,
+        -2071486464
       ],
       "creatures": [
         {
@@ -8550,21 +1209,22 @@
           ],
           "lastPosition": [
             20,
-            4
+            20
           ],
           "position": [
             20,
-            4
+            20
           ],
-          "mass": 1,
+          "mass": 4.44296547807187,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        182299750,
-        436891182,
+        1982806501,
+        -1194647050,
+        -2071543808,
         -2071486464
       ],
       "creatures": [
@@ -8574,49 +1234,23 @@
             0
           ],
           "lastPosition": [
-            10,
-            15
+            41,
+            4
           ],
           "position": [
-            10,
-            15
+            41,
+            4
           ],
-          "mass": 1,
+          "mass": 4.355345112983913,
           "massAtBirth": 1
         }
       ]
     },
     {
       "genes": [
-        800644328,
+        1590082253,
+        -1656834705,
         -2071543808,
-        -2071486464,
-        -1991125185
-      ],
-      "creatures": [
-        {
-          "lastMovement": [
-            0,
-            0
-          ],
-          "lastPosition": [
-            27,
-            1
-          ],
-          "position": [
-            27,
-            1
-          ],
-          "mass": 1,
-          "massAtBirth": 1
-        }
-      ]
-    },
-    {
-      "genes": [
-        -861870835,
-        -656069809,
-        1656296904,
         -2071486464
       ],
       "creatures": [
@@ -8627,41 +1261,204 @@
           ],
           "lastPosition": [
             29,
-            38
+            37
           ],
           "position": [
             29,
-            38
+            37
           ],
-          "mass": 1,
+          "mass": 1.504057729410374,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1009835517,
+        2033582084,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            17
+          ],
+          "position": [
+            27,
+            17
+          ],
+          "mass": 3.3645085805731814,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1463954489,
+        1287304773,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            9
+          ],
+          "position": [
+            18,
+            9
+          ],
+          "mass": 0.9114480485294166,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1243127414,
+        -637588351,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            44
+          ],
+          "position": [
+            34,
+            44
+          ],
+          "mass": 3.431038296503184,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1186110739,
+        986099166,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            43
+          ],
+          "position": [
+            1,
+            43
+          ],
+          "mass": 2.4892679448837116,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -2007738458,
+        332470751,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            11
+          ],
+          "position": [
+            15,
+            11
+          ],
+          "mass": 4.98,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        248309055,
+        544405472,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            6,
+            1
+          ],
+          "position": [
+            6,
+            1
+          ],
+          "mass": 2.2601739330028443,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        248309055,
+        544405472,
+        -2071543808,
+        2129838234
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            2
+          ],
+          "position": [
+            7,
+            2
+          ],
+          "mass": 2.799997317767009,
           "massAtBirth": 1
         }
       ]
     }
   ],
   "stats": {
-    "generations": [
-      {
-        "g": 1,
-        "sP": 150,
-        "sC": 162,
-        "fV": 162
-      },
-      {
-        "g": 2,
-        "sP": 150,
-        "sC": 665,
-        "fV": 665
-      },
-      {
-        "g": 1,
-        "sP": 150,
-        "sC": 240,
-        "fV": 240
-      }
-    ],
-    "maxSurvivorCount": 665,
-    "minSurvivorCount": 162,
+    "generations": [],
+    "maxSurvivorCount": 5e-324,
+    "minSurvivorCount": 1.7976931348623157e+308,
     "maxFitnessValue": 0
   }
 }

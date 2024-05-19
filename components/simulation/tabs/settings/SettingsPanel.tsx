@@ -9,9 +9,10 @@ import SelectionMethod from "@/simulation/generations/selection/SelectionMethod"
 import {
   worldControllerAtom,
   //restartCountAtom,
-  worldGenerationDataAtom,
-  worldControllerDataAtom,
-  waterDataAtom,
+  //worldGenerationDataAtom,
+  //worldControllerDataAtom,
+  simulationDataAtom,
+  //waterDataAtom,
 } from "../../store";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
@@ -20,10 +21,11 @@ import {Sensor,SensorName} from "@/simulation/creature/brain/CreatureSensors";
 import {Action, ActionName} from "@/simulation/creature/brain/CreatureActions";
 //import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 import { ChangeEvent } from "react";
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 
 import UpdateParametersButton from "../../UpdateParametersButton";
 import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
+import { SimulationData } from "@/simulation/SimulationData";
 
 const enabledSensorsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledSensors);
 const enabledActionsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledActions);
@@ -41,22 +43,25 @@ export default function SettingsPanel() {
   const actions = Object.values(worldController?.generations.actions.data ?? {});
   const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);   
   const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
-  const [worldGenerationsData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
-  const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  const [waterData, setWaterData] = useAtom(waterDataAtom);
+  //const [worldGenerationsData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
+  //const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
+  //const [waterData, setWaterData] = useAtom(waterDataAtom);
+  const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
     
-  setEnabledSensors(worldGenerationsData.enabledSensors);
-  setEnabledActions(worldGenerationsData.enabledActions);
+  setEnabledSensors(simulationData.worldGenerationsData.enabledSensors);
+  setEnabledActions(simulationData.worldGenerationsData.enabledActions);
 
   const handleSensorChange = (name: SensorName, checked: boolean) => {
 
     //const handleSensorChange = (name: SensorName, checked: ChangeEvent<HTMLInputElement>) => {
       if (checked) {
         setEnabledSensors([...enabledSensors, name]);
-        setWorldGenerationData(prev => ({ ...prev, enabledSensors: [...enabledSensors, name] }));
+        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+          enabledSensors: [...enabledSensors, name]}}));
       } else if (enabledSensors.length > 1) {
         setEnabledSensors(enabledSensors.filter((item) => item !== name));
-        setWorldGenerationData(prev => ({ ...prev, enabledSensors: enabledSensors.filter((item) => item !== name) }));
+        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+          enabledSensors: enabledSensors.filter((item) => item !== name)}}));
       }
     };
 
@@ -65,10 +70,12 @@ export default function SettingsPanel() {
   const handleActionChange = (name: ActionName, checked: boolean) => {
     if (checked) {
       setEnabledActions([...enabledActions, name]);
-      setWorldGenerationData(prev => ({ ...prev, enabledActions: [...enabledActions, name] }));
-    } else if (enabledActions.length > 1) {
+      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+        enabledActions: [...enabledActions, name]}}));
+  } else if (enabledActions.length > 1) {
       setEnabledActions(enabledActions.filter((item) => item !== name));
-      setWorldGenerationData(prev => ({ ...prev, enabledActions: enabledActions.filter((item) => item !== name) }));
+      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+        enabledActions: enabledActions.filter((item) => item !== name)}}));
     }
   };
 
@@ -86,22 +93,32 @@ export default function SettingsPanel() {
 
 
       const handleSelectionMethodOptions = (value: string) => {
-        setWorldGenerationData(prev => ({ ...prev, selectionMethod: selectSelectionMethod(value) }));
+        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+          selectionMethod: selectSelectionMethod(value)}}));
       }
 
       const handleRainTypeOptions = (value: string) => {
-        setWaterData(prev => ({ ...prev, rainType: value as RainType }));
+        setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+          rainType: value as RainType}}));
       }
     
       const handlePopulationStrategy = (value: string) => {
-        setWorldGenerationData(prev => ({ ...prev, populationStrategy: selectPopulationStrategy(value) }));
+        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+          populationStrategy: selectPopulationStrategy(value)}}));
       }
 
         
     const handleChangePopulation = (e: { target: { value: any; }; }) => {
-      setWorldGenerationData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
-      //setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
+      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+        initialPopulation: e.target.value}}));
+    //setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
     }
+
+    
+    const handleSize = (e: { target: { value: any; }; }) => {
+      setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
+           size: parseInt(e.target.value),}}))};
+
 
     //TODO - select combo
     //const handlePhenotypeColorMode = (e: { target: { value: any; }; }) => {
@@ -122,8 +139,8 @@ export default function SettingsPanel() {
 
           <div>
             <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
-            <p>Simulation code: {worldControllerData.simCode}</p>
-            <p>Phenotype mode: {worldGenerationsData.phenotypeColorMode}</p>
+            <p>Simulation code: {simulationData.worldControllerData.simCode}</p>
+            <p>Phenotype mode: {simulationData.worldGenerationsData.phenotypeColorMode}</p>
             <div className="grid grid-cols-2 gap-4">
 
     {/*  size  */}
@@ -132,8 +149,9 @@ export default function SettingsPanel() {
               <label className="grow">WorldController Size</label>
               <input
                   type="number"
-                  value={worldControllerData.size.toString()}
-                  onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, size: parseInt(e.target.value)}))}} 
+                  value={simulationData.worldControllerData.size.toString()}
+                  onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
+                                  size: parseInt(e.target.value),}}))}}
                   className="min-w-0 bg-grey-mid p-1"
                 >
               </input>
@@ -145,7 +163,7 @@ export default function SettingsPanel() {
               <label className="grow">Initial population</label>
               <input
                   type="number"
-                  value={worldGenerationsData.initialPopulation.toString()}
+                  value={simulationData.worldGenerationsData.initialPopulation.toString()}
                   onChange={handleChangePopulation}
                   className="min-w-0 bg-grey-mid p-1"
                 >
@@ -158,8 +176,9 @@ export default function SettingsPanel() {
               <label className="grow">Steps per generation</label>
               <input
                   type="number"
-                  value={worldControllerData.stepsPerGen.toString()}
-                  onChange={(e) => {setWorldControllerData(prevState => ({ ...prevState, stepsPerGen: parseInt(e.target.value)}))}} 
+                  value={simulationData.worldControllerData.stepsPerGen.toString()}
+                  onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
+                    stepsPerGen: parseInt(e.target.value),}}))}}
                   className="min-w-0 bg-grey-mid p-1"
                 >
               </input>
@@ -171,9 +190,10 @@ export default function SettingsPanel() {
             <label className="grow">Cell water capacity</label>
             <input
                 type="number"
-                value={waterData.waterCellCapacity.toString()}
-                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterCellCapacity: parseFloat(e.target.value)}))}} 
-                step="0.1"
+                value={simulationData.waterData.waterCellCapacity.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterCellCapacity: parseFloat(e.target.value),}}))}}
+              step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
             </input>
@@ -185,8 +205,9 @@ export default function SettingsPanel() {
             <label className="grow">Total water (per cell)</label>
             <input
                 type="number"
-                value={waterData.waterTotalPerCell.toString()}
-                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterTotalPerCell: parseFloat(e.target.value)}))}} 
+                value={simulationData.waterData.waterTotalPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterTotalPerCell: parseFloat(e.target.value),}}))}}
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -199,8 +220,9 @@ export default function SettingsPanel() {
             <label className="grow">Rain max per cell</label>
             <input
                 type="number"
-                value={waterData.waterRainMaxPerCell.toString()}
-                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterRainMaxPerCell: parseFloat(e.target.value)}))}} 
+                value={simulationData.waterData.waterRainMaxPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterRainMaxPerCell: parseFloat(e.target.value),}}))}}                
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -213,8 +235,9 @@ export default function SettingsPanel() {
             <label className="grow">Initial water per cell</label>
             <input
                 type="number"
-                value={waterData.waterFirstRainPerCell.toString()}
-                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterFirstRainPerCell: parseFloat(e.target.value)}))}} 
+                value={simulationData.waterData.waterFirstRainPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterFirstRainPerCell: parseFloat(e.target.value),}}))}}     
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -227,8 +250,9 @@ export default function SettingsPanel() {
             <label className="grow">Evaporation</label>
             <input
                 type="number"
-                value={waterData.waterEvaporationPerCellPerGeneration.toString()}
-                onChange={(e) => {setWaterData(prevState => ({ ...prevState, waterEvaporationPerCellPerGeneration: parseFloat(e.target.value)}))}} 
+                value={simulationData.waterData.waterEvaporationPerCellPerGeneration.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterEvaporationPerCellPerGeneration: parseFloat(e.target.value),}}))}}   
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -238,7 +262,7 @@ export default function SettingsPanel() {
     {/*  rainType  */}
 
           <div className="mb-1">
-            <p  className="mb-2">Rain type: {waterData.rainType} </p>
+            <p  className="mb-2">Rain type: {simulationData.waterData.rainType} </p>
             <Dropdown options={rainTypeOptions} 
                       onSelect={handleRainTypeOptions} />
               <br/>
@@ -252,7 +276,7 @@ export default function SettingsPanel() {
 
         <div>
           <h3 className="mb-1 text-2xl font-bold">Generations</h3>
-          <p  className="mb-2">Metabolism is {worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
+          <p  className="mb-2">Metabolism is {simulationData.worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
 
     {/*  selectionMethod  */}
 
@@ -285,8 +309,9 @@ export default function SettingsPanel() {
                 <label className="grow">Initial genome size</label>
                 <input
                     type="number"
-                    value={worldGenerationsData.initialGenomeSize.toString()}
-                    onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, initialGenomeSize: parseInt(e.target.value)}))}} 
+                    value={simulationData.worldGenerationsData.initialGenomeSize.toString()}
+                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+                      initialGenomeSize: parseInt(e.target.value),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -298,8 +323,9 @@ export default function SettingsPanel() {
                 <label className="grow">Max genome size</label>
                 <input
                     type="number"
-                    value={worldGenerationsData.maxGenomeSize.toString()}
-                    onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, maxGenomeSize: parseInt(e.target.value)}))}} 
+                    value={simulationData.worldGenerationsData.maxGenomeSize.toString()}
+                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+                      maxGenomeSize: parseInt(e.target.value),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -311,8 +337,9 @@ export default function SettingsPanel() {
                 <label className="grow">Max neurons</label>
                 <input
                     type="number"
-                    value={worldGenerationsData.maxNumberNeurons.toString()}
-                    onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, maxNumberNeurons: parseInt(e.target.value)}))}} 
+                    value={simulationData.worldGenerationsData.maxNumberNeurons.toString()}
+                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+                      maxNumberNeurons: parseInt(e.target.value),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -335,8 +362,9 @@ export default function SettingsPanel() {
                 <label className="grow">Mutation probability (0 - 1)</label>
                 <input
                     type="number"
-                    value={worldGenerationsData.mutationProbability.toString()}
-                    onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, mutationProbability: parseFloat(e.target.value)}))}} 
+                    value={simulationData.worldGenerationsData.mutationProbability.toString()}
+                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+                      mutationProbability: parseFloat(e.target.value),}}))}}   
                     step="0.01"
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -349,8 +377,9 @@ export default function SettingsPanel() {
                 <label className="grow">Insertion/Deletion probability (0 - 1)</label>
                 <input
                     type="number"
-                    value={worldGenerationsData.geneInsertionDeletionProbability.toString()}
-                    onChange={(e) => {setWorldGenerationData(prevState => ({ ...prevState, geneInsertionDeletionProbability: parseFloat(e.target.value)}))}} 
+                    value={simulationData.worldGenerationsData.geneInsertionDeletionProbability.toString()}
+                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+                      geneInsertionDeletionProbability: parseFloat(e.target.value),}}))}}   
                     step="0.001"
                     className="min-w-0 bg-grey-mid p-1"
                   >

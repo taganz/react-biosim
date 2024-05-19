@@ -8,6 +8,7 @@ import InsideReproductionAreaSelection from "@/simulation/generations/selection/
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import WorldObject from "./world/objects/WorldObject";
+import { WaterData } from "./water/WaterData";
 
 export const startupScenarioWorldGenerationsData : WorldGenerationsData = {
     populationStrategy: new AsexualRandomPopulation,
@@ -42,6 +43,8 @@ export const startupScenarioWorldGenerationsData : WorldGenerationsData = {
           ],
     metabolismEnabled: false,
     phenotypeColorMode: "genome",
+    plantGenes : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
+
     // state values 
     lastCreatureIdCreated: 0,
     lastCreatureCount: 0,
@@ -55,16 +58,8 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
         size: 100, 
         stepsPerGen: 300,
 
-        waterData : {
-            waterFirstRainPerCell: 50,              // 10
-            waterCellCapacity: 400,     // 20
-            waterRainMaxPerCell:  0,             // 2
-            waterTotalPerCell: 130,       // 
-            waterEvaporationPerCellPerGeneration: 0,  // 0
-            rainType: "rainTypeUniform"
-          },
+
           // model values
-          MASS_METABOLISM_GENES : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
           MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
           MASS_AT_BIRTH_MOVE : 2,
@@ -106,6 +101,15 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
 
 
     };
+
+export const startUpScenarioWaterData : WaterData = {
+  waterFirstRainPerCell: 50,              // 10
+  waterCellCapacity: 400,     // 20
+  waterRainMaxPerCell:  0,             // 2
+  waterTotalPerCell: 130,       // 
+  waterEvaporationPerCellPerGeneration: 0,  // 0
+  rainType: "rainTypeUniform"
+};
 
 export const startupScenarioWorldObjectsData: WorldObject[] = [
           new RectangleReproductionArea(0.47, 0.01, 0.53, 1, true),

@@ -1,4 +1,4 @@
-import { colors } from "@/simulation/simulationConstants";
+import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
 import WorldObject from "./WorldObject";
 
 export default class RectangleObject implements WorldObject {
@@ -19,7 +19,7 @@ export default class RectangleObject implements WorldObject {
     public width: number,
     public height: number,
     public relative: boolean = true,
-    public color: string = colors.obstacle
+    public color: string = CONSTANTS_DEFAULT.colors.obstacle
   ) {}
 
   clone() {

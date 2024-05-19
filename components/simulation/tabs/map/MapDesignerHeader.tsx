@@ -2,7 +2,6 @@
 
 import Button from "@/components/global/Button";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import { worldControllerAtom } from "../../store";
 import {
         mapDesignerFullscreenAtom,
         mapDesignerObjectsAtom,
@@ -11,12 +10,14 @@ import {
 import { BsArrowsFullscreen, BsFullscreenExit } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { TfiCheckBox } from "react-icons/tfi";
-import {  worldGenerationDataAtom,
-          worldControllerDataAtom,
-          waterDataAtom,
-          worldObjectsDataAtom
+import {  worldControllerAtom,
+          //worldGenerationDataAtom,
+          //worldControllerDataAtom,
+          //waterDataAtom,
+          //worldObjectsDataAtom,
+          simulationDataAtom
         } from "../../store";
-import worldControllerInitialValuesHotChange from "@/simulation/world/worldControllerInitialValuesHotChange";
+import worldControllerSimDataHotChange from "@/simulation/world/worldControllerSimDataHotChange";
 
 
 export default function MapDesignerHeader() {
@@ -26,18 +27,21 @@ export default function MapDesignerHeader() {
   const [mapDesignerObjects, setObjects] = useAtom(mapDesignerObjectsAtom);
   const [isFullscreen, setIsFullscreen] = useAtom(mapDesignerFullscreenAtom);
 
-  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
-  const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  const waterData = useAtomValue(waterDataAtom);
-  const setWorldObjectsData = useSetAtom(worldObjectsDataAtom);
+  //const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
+  //const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
+  //const waterData = useAtomValue(waterDataAtom);
+  //const setWorldObjectsData = useSetAtom(worldObjectsDataAtom);
+  const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
   
   // Button "Use Map": set objects in worldController and resume, store also in atom for further initializations
   const handleUseMap = () => {
     if (worldController) {
       const worldObjectsData = mapDesignerObjects.map((obj) => obj.clone());
-      setWorldObjectsData(worldObjectsData)
-      setWorldControllerData(worldControllerData);
-      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, worldObjectsData, waterData );
+      simulationData.worldObjects = worldObjectsData;
+      //setWorldObjectsData(worldObjectsData)
+      //setWorldControllerData(worldControllerData);
+      setSimulationData(simulationData);
+      worldControllerSimDataHotChange(worldController, simulationData);
     }
     else {
       throw new Error ("worldController not found");

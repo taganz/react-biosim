@@ -17,7 +17,6 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
-import SavedWorld from "@/simulation/serialization/data/SavedWorld";
 import { saveWorld } from "@/simulation/serialization/saveWorld";
 import SavedWorldControllerData from "@/simulation/serialization/data/SavedWorldControllerData";
 describe('Serialization', () => {

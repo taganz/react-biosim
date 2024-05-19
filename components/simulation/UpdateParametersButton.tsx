@@ -3,20 +3,19 @@
 import React from "react";
 import Button from "../global/Button";
 import { useAtomValue } from "jotai";
-import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, waterDataAtom, worldObjectsDataAtom } from "./store";
-import worldControllerInitialValuesHotChange from "@/simulation/world/worldControllerInitialValuesHotChange";
+import { worldControllerAtom, simulationDataAtom } from "./store";
+import worldControllerSimDataHotChange from "@/simulation/world/worldControllerSimDataHotChange";
 
 export default function UpdateParametersButton() {
   const worldController = useAtomValue(worldControllerAtom);
-  const worldControllerData = useAtomValue(worldControllerDataAtom);
-  const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
-  const waterData = useAtomValue(waterDataAtom);
-  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
+  const simulationData = useAtomValue(simulationDataAtom);
   
 
+  //TODO canvas size hot change could lead to unknown results
+  
   const handleClick = () => {
     if (worldController) {
-      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, worldObjectsData, waterData );
+      worldControllerSimDataHotChange(worldController, simulationData);
     } else {
       console.warn("UpdateParametersButton worldController not found!")
     }

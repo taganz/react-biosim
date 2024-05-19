@@ -58,7 +58,7 @@ export default class Creature {
 
   constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
     this.generations = generations;
-    this.worldControllerData = generations.worldController._loadedWorldControllerData;
+    this.worldControllerData = generations.worldController.simData.worldControllerData;
 
     this.id = generations.lastCreatureIdCreated + 1;
     this.stepBirth = generations.worldController.currentStep;
@@ -73,11 +73,11 @@ export default class Creature {
 
     if (!genome) {
       // 1st generation, create genome
-      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? this.worldControllerData.MASS_METABOLISM_GENES.length : 0);
+      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? this.generations.worldGenerationsData.plantGenes.length : 0);
       const newGenome = new Genome(
         [...new Array(randomGenesToAdd)].map(() => Genome.generateRandomGene()));
       if (this.generations.metabolismEnabled) {
-        newGenome.addGenes(this.worldControllerData.MASS_METABOLISM_GENES);
+        newGenome.addGenes(this.generations.worldGenerationsData.plantGenes);
       }
       this.brain = new CreatureBrain(this, newGenome);
     }

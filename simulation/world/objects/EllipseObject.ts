@@ -1,4 +1,4 @@
-import { colors } from "@/simulation/simulationConstants";
+import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
 import WorldObject from "./WorldObject";
 
 export default class EllipseObject implements WorldObject {
@@ -20,7 +20,7 @@ export default class EllipseObject implements WorldObject {
     public height: number,
     public relative: boolean = true,
     public drawIndividualPixels: boolean = true,
-    public color: string = colors.obstacle
+    public color: string = CONSTANTS_DEFAULT.colors.obstacle
   ) {}
 
   clone() {

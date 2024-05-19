@@ -4,7 +4,7 @@ import Toggle from "@/components/global/Toggle";
 import classNames from "classnames";
 import {worldControllerAtom} from "../store";
 import {atom, useAtom, useAtomValue } from "jotai";
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 
 interface Props
   extends React.PropsWithChildren,

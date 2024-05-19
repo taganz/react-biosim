@@ -7,10 +7,8 @@ export default interface WorldControllerData {
     // initial values
     size: number; 
     stepsPerGen: number;
-    waterData : WaterData;
 
     // model values
-    MASS_METABOLISM_GENES : [number, number], 
     MASS_WATER_TO_MASS_PER_STEP : number, 
     MASS_AT_BIRTH_PLANT : number, 
     MASS_AT_BIRTH_MOVE : number, 

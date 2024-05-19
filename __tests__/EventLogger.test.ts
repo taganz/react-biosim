@@ -4,6 +4,9 @@ import WorldController from "@/simulation/world/WorldController";
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import { SimulationCallEvent } from "@/simulation/logger/EventLogger";
+import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { SimulationData } from "@/simulation/SimulationData";
+
 
 /* https://jestjs.io/docs/expect  */
 
@@ -14,6 +17,8 @@ describe('EventLogger', () => {
     let worldControllerMock: WorldController;
     let logger: EventLogger;
     let mockEvent : SimulationCallEvent;
+    let mockSimulationDataConstants : any;
+    let simulationData : SimulationData;
     
     beforeEach(() => {
         mockEvent = {
@@ -27,9 +32,39 @@ describe('EventLogger', () => {
             paramValue2: 2,
             paramString: "joe"
         };
-        const worldControllerData = testWorldControllerData;
-        const worldGenerationsData = testWorldGenerationsData;
-        worldControllerMock = new WorldController(worldControllerData, worldGenerationsData);
+        mockSimulationDataConstants = {
+              // -- log 
+            LOG_ENABLED : true,  // main switch for logging
+            //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
+            LOG_LEVEL : LogLevel.CREATURE, 
+            LOG_CREATURE_ID : 0,   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+            LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
+            LOG_LOCALE_STRING : 'es-ES',
+            LOG_ALLOWED_EVENTS: {
+            // creature
+            [LogEvent.INFO]: true,
+            [LogEvent.REPRODUCE]: true,
+            [LogEvent.REPRODUCE_TRY]: true,
+            [LogEvent.PHOTOSYNTHESIS]: true,
+            [LogEvent.BIRTH]: true,
+            [LogEvent.DEAD]: true,
+            [LogEvent.DEAD_ATTACKED]: true,
+            [LogEvent.METABOLISM]: true,
+            [LogEvent.ATTACK]: true,
+            [LogEvent.ATTACK_TRY]: true,
+            [LogEvent.MOVE]: true, 
+            [LogEvent.MOVE_TRY]: true, 
+            // controller
+            [LogEvent.GENERATION_START]: true,
+            [LogEvent.GENERATION_END]: true,
+            [LogEvent.STEP_END]: true,
+            },
+        }
+        //const worldControllerData = testWorldControllerData;
+        //const worldGenerationsData = testWorldGenerationsData;
+        simulationData = SIMULATION_DATA_DEFAULT;
+        simulationData.constants.mockSimulationDataConstants;
+        worldControllerMock = new WorldController(simulationData);
         logger = new EventLogger(worldControllerMock, 10);
     });
     afterEach(() => {
@@ -41,7 +76,6 @@ describe('EventLogger', () => {
     test('constructor() - it is paused on creation', () => {
         expect(logger.isPaused).toBeTruthy();
     });
-
      
     test('pause() - should not log an event if paused', () => {
         logger.pause();
@@ -49,16 +83,26 @@ describe('EventLogger', () => {
         expect(logger.getLog().includes('value1')).toBeFalsy;
     });
 
+    test('resume() after resume can log events', () => {
+        logger.resume();
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(1);
+    });
 
     test('reset() pauses the log', () => {
-        const count = logger.logCount;
         logger.reset();
         expect(logger.isPaused).toBeTruthy();
     });
+
+
     test('reset() doesn t clear the log', () => {
-        const count = logger.logCount;
+        logger.deleteLog();
+        logger.resume();
+        logger.logEvent(mockEvent);
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(2);
         logger.reset();
-        expect(logger.logCount).toBe(count);
+        expect(logger.logCount).toBe(2);
     });
 
     test('reset() - after reset logger is paused and does not log ', () => {

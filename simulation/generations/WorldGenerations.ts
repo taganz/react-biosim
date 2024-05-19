@@ -13,6 +13,7 @@ import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
+import WorldGenerationsData from "./WorldGenerationsData";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -23,7 +24,10 @@ export default class WorldGenerations {
   grid: Grid;
   currentCreatures: Creature[] = [];
   eventLogger : EventLogger;
+  worldGenerationsData : WorldGenerationsData;
   
+  //TODO following data is repeated in worldGenerationsData
+
   // initial values
   populationStrategy:   PopulationStrategy; 
   selectionMethod: SelectionMethod;  
@@ -60,6 +64,7 @@ export default class WorldGenerations {
   constructor(worldController: WorldController, worldGenerationsData: worldGenerationsData, grid: Grid, creatures?: Creature[]) {
         
     this.worldController = worldController;
+    this.worldGenerationsData = worldGenerationsData;
     this.grid = grid;
     
     // initial values
@@ -74,8 +79,8 @@ export default class WorldGenerations {
     this.deletionRatio = worldGenerationsData.deletionRatio;
     this.geneInsertionDeletionProbability = worldGenerationsData.geneInsertionDeletionProbability;
     this.sensors = new CreatureSensors();
-    this.actions = new CreatureActions (worldController._loadedWorldControllerData.MASS_COST_PER_EXECUTE_ACTION,
-                  worldController._loadedWorldControllerData.ACTION_REPRODUCTION_OFFSET);
+    this.actions = new CreatureActions (worldController.simData.worldControllerData.MASS_COST_PER_EXECUTE_ACTION,
+                  worldController.simData.worldControllerData.ACTION_REPRODUCTION_OFFSET);
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;

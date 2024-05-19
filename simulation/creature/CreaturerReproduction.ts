@@ -1,4 +1,3 @@
-import * as constants from "../simulationConstants"
 import Creature from "./Creature";
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 

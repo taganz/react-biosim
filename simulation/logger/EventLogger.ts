@@ -1,13 +1,4 @@
 import WorldController from '../world/WorldController';
-import {
-      LOG_ENABLED,
-      LOG_CREATURE_ID,
-      LOG_LOCALE_STRING,
-      LOG_ALLOWED_EVENTS,
-      LOG_EVENTLOGGER_MAX_EVENTS,
-      LOG_LEVEL,
- //     LOG_RESET_AT_RESTART
-    } from "@/simulation/simulationConstants"
 import {LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
 
 export interface SimulationCallEvent {
@@ -49,8 +40,8 @@ export default class EventLogger {
   private lastGenerationTotals : number = 1;
   private generationTotalsHaveSeenStepZero : boolean = false;
   private paused = true; 
-  private logCreatureId : number = LOG_CREATURE_ID;
-  private currentLogLevel : LogLevel = LOG_LEVEL;
+  private logCreatureId : number;
+  private currentLogLevel : LogLevel;
   private singleGenerationRecording = false;
   private fromFirstGenerationRecording = false;
   private firstGenerationRecording = false;
@@ -61,9 +52,15 @@ export default class EventLogger {
   
 
  // constructor(logFilePath: string, logThreshold: number = 10) {
-  constructor(worldController : WorldController, logThreshold: number = LOG_EVENTLOGGER_MAX_EVENTS) {
+  constructor(worldController : WorldController, logThreshold?: number) {
     this.worldController = worldController;
-    this.logThreshold = logThreshold;
+    this.logCreatureId = this.worldController.simData.constants.LOG_CREATURE_ID;
+    this.currentLogLevel = this.worldController.simData.constants.LOG_LEVEL;
+    if (logThreshold) {
+      this.logThreshold = logThreshold;
+    } else {
+      this.logThreshold =  this.worldController.simData.constants.LOG_EVENTLOGGER_MAX_EVENTS;
+    }
     this.reset();
     //console.log("eventLogger initialized");
   }
@@ -86,7 +83,7 @@ export default class EventLogger {
   }
 
   public reset() {
-    // if (LOG_RESET_AT_RESTART) {
+    // if (this.worldController.simData.constants.RESET_AT_RESTART) {
     //   deleteLog()
     // }
     this.stepIndex = 1;
@@ -175,9 +172,8 @@ export default class EventLogger {
       return;
     }
     if (this.isPaused) return;
-    if (!LOG_ENABLED) return ;
-    if (!LOG_ALLOWED_EVENTS[eventValues.eventType]) return;
-
+    if (!this.worldController.simData.constants.LOG_ENABLED) return ;
+    if (!this.worldController.simData.constants.LOG_ALLOWED_EVENTS[eventValues.eventType]) return;
     // checks for single generation recording
     if (this.singleGenerationRecording && this.worldController.currentGen < this.generationToRecord) {
       return;
@@ -186,7 +182,7 @@ export default class EventLogger {
       this.recordNextGenerationFinished();
       return;
     }
-
+    
     // checks for first generation recording
     if (this.firstGenerationRecording && !this.firstGenerationRecordingStarted 
           && (this.worldController.currentGen > 1 
@@ -215,7 +211,7 @@ export default class EventLogger {
       this.firstGenerationRecordingStarted = true;
     }
 
-
+    
     this.logReceivedEvent(eventValues);
     
     if (eventValues.logLevel == LogLevel.CREATURE) {
@@ -286,8 +282,8 @@ export default class EventLogger {
       creatureId : eventValues.creatureId.toString(),
       eventType : eventValues.eventType,
       paramName : eventValues.paramName,
-      paramValue : eventValues.paramValue.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
-      paramValue2 : eventValues.paramValue2.toLocaleString(LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramValue : eventValues.paramValue.toLocaleString(this.worldController.simData.constants.LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
+      paramValue2 : eventValues.paramValue2.toLocaleString(this.worldController.simData.constants.LOG_LOCALE_STRING, {maximumFractionDigits : 2}),
       paramString : eventValues.paramString
     }
 

@@ -1,6 +1,6 @@
 //import {describe, expect, test} from '@jest/globals';
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
-import * as constants from "@/simulation/simulationConstants"
+import * as constants from "@/simulation/simulationDataDefault"
 import Creature from "@/simulation/creature/Creature";
 import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";

@@ -8,48 +8,48 @@
         "LOG_EVENTLOGGER_MAX_EVENTS": 1000000,
         "LOG_LOCALE_STRING": "es-ES",
         "LOG_ALLOWED_EVENTS": {
-        "INFO": true,
-        "REPRODUCE": true,
-        "REPRODUCE_TRY": true,
-        "PHOTOSYNTHESIS": true,
-        "BIRTH": true,
-        "DEAD": true,
-        "DEAD_ATTACKED": true,
-        "METABOLISM": true,
-        "ATTACK": true,
-        "ATTACK_TRY": true,
-        "MOVE": true,
-        "MOVE_TRY": true,
-        "GENERATION_START": true,
-        "GENERATION_END": true,
-        "STEP_END": true
+            "INFO": true,
+            "REPRODUCE": true,
+            "REPRODUCE_TRY": true,
+            "PHOTOSYNTHESIS": true,
+            "BIRTH": true,
+            "DEAD": true,
+            "DEAD_ATTACKED": true,
+            "METABOLISM": true,
+            "ATTACK": true,
+            "ATTACK_TRY": true,
+            "MOVE": true,
+            "MOVE_TRY": true,
+            "GENERATION_START": true,
+            "GENERATION_END": true,
+            "STEP_END": true
         },
         "GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS": 0.05,
         "POPULATION_DEFAULT_SPECIES": [
-        {
-            "name": "Plant-repro and photo",
-            "genome": [
-            -2071543808,
-            -2071486464
-            ]
-        }
+            {
+                "name": "Plant-repro and photo",
+                "genome": [
+                    -2071543808,
+                    -2071486464
+                ]
+            }
         ],
         "SIM_CODE_LENGTH": 3,
         "colors": {
-        "reproduction": "rgba(0,0,255,0.1)",
-        "obstacle": "rgb(60, 60, 60)",
-        "healing": "rgba(0,255,0, 0.1)",
-        "danger": "rgba(255,0,0, 0.1)",
-        "spawn": "rgba(255, 255, 0, 0.1)"
+            "reproduction": "rgba(0,0,255,0.1)",
+            "obstacle": "rgb(60, 60, 60)",
+            "healing": "rgba(0,255,0, 0.1)",
+            "danger": "rgba(255,0,0, 0.1)",
+            "spawn": "rgba(255, 255, 0, 0.1)"
         }
     },
     "worldGenerationsData": {
         "populationStrategy": "AsexualRandomPopulation",
         "selectionMethod": "InsideReproductionAreaSelection",
-        "initialPopulation": 500,
+        "initialPopulation": "1000",
         "initialGenomeSize": 4,
-        "maxGenomeSize": 30,
-        "maxNumberNeurons": 15,
+        "maxGenomeSize": 4,
+        "maxNumberNeurons": 1,
         "mutationMode": "wholeGene",
         "mutationProbability": 0.05,
         "deletionRatio": 0.5,
@@ -77,11 +77,11 @@
         "metabolismEnabled": false,
         "phenotypeColorMode": "genome",
         "plantGenes": "[]",
-        "lastCreatureIdCreated": 0,
-        "lastCreatureCount": 0,
-        "lastSurvivorsCount": 0,
-        "lastFitnessMaxValue": 0,
-        "lastSurvivalRate": 0
+        "lastCreatureIdCreated": 1000,
+        "lastCreatureCount": 1000,
+        "lastSurvivorsCount": 960,
+        "lastFitnessMaxValue": 96,
+        "lastSurvivalRate": 0.96
     },
     "worldControllerData": {
         "size": 100,
@@ -104,13 +104,13 @@
         "ATTACK_COST_PER_MASS_TRY": 0.4,
         "ATTACK_COST_PER_MASS_DO": 0,
         "ATTACK_MULTIPLE_MASS_AT_BIRTH": 3,
-        "ATTACK_MIN_PREY_MASS_FACTOR": 2,        
-        "pauseBetweenSteps": 0,
+        "ATTACK_MIN_PREY_MASS_FACTOR": 2,
+        "pauseBetweenSteps": 10,
         "immediateSteps": 1,
         "pauseBetweenGenerations": 0,
-        "simCode": "CAR",
-        "currentGen": 0,
-        "currentStep": 0,
+        "simCode": "LAJ",
+        "currentGen": 1,
+        "currentStep": 1,
         "lastGenerationDuration": 0,
         "totalTime": 0
     },
@@ -125,10 +125,10 @@
     "worldObjects": [
         {
             "data": {
-                "x": 0.25,
-                "y": 0.25,
-                "width": 0.5,
-                "height": 0.5,
+                "x": 0.85,
+                "y": 0,
+                "width": 0.5800000000000002,
+                "height": 1,
                 "relative": true
             },
             "type": "RectangleReproductionArea"
@@ -137,8 +137,18 @@
             "data": {
                 "x": 0,
                 "y": 0,
-                "width": 0.2,
-                "height": 0.2,
+                "width": 0.16,
+                "height": 1,
+                "relative": true
+            },
+            "type": "RectangleReproductionArea"
+        },
+        {
+            "data": {
+                "x": 0.23,
+                "y": 0.11,
+                "width": 0.03999999999999998,
+                "height": 0.29,
                 "relative": true,
                 "color": "rgb(60, 60, 60)"
             },
@@ -146,10 +156,10 @@
         },
         {
             "data": {
-                "x": 0.2,
-                "y": 0.2,
-                "width": 0.2,
-                "height": 0.2,
+                "x": 0.73,
+                "y": 0.58,
+                "width": 0.03999999999999998,
+                "height": 0.29,
                 "relative": true,
                 "color": "rgb(60, 60, 60)"
             },
@@ -157,10 +167,10 @@
         },
         {
             "data": {
-                "x": 0.4,
-                "y": 0.4,
-                "width": 0.2,
-                "height": 0.2,
+                "x": 0.24,
+                "y": 0.57,
+                "width": 0.03999999999999998,
+                "height": 0.29,
                 "relative": true,
                 "color": "rgb(60, 60, 60)"
             },
@@ -168,10 +178,10 @@
         },
         {
             "data": {
-                "x": 0.6,
-                "y": 0.6,
-                "width": 0.2,
-                "height": 0.2,
+                "x": 0.47,
+                "y": 0.35,
+                "width": 0.03999999999999998,
+                "height": 0.29,
                 "relative": true,
                 "color": "rgb(60, 60, 60)"
             },
@@ -179,10 +189,10 @@
         },
         {
             "data": {
-                "x": 0.8,
-                "y": 0.8,
-                "width": 0.2,
-                "height": 0.2,
+                "x": 0.73,
+                "y": 0.11,
+                "width": 0.03999999999999998,
+                "height": 0.29,
                 "relative": true,
                 "color": "rgb(60, 60, 60)"
             },

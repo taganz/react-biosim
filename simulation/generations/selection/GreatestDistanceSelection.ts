@@ -1,9 +1,7 @@
 import WorldGenerations from "../WorldGenerations";
 import Creature from "../../creature/Creature";
 import SelectionMethod from "./SelectionMethod";
-import {GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS} from "../../simulationConstants"
 
-const topPercentSelected = GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS;  
 
 export default class GreatestDistanceSelection
   implements SelectionMethod
@@ -13,6 +11,7 @@ export default class GreatestDistanceSelection
   shouldResetLastCreatureIdCreatedEveryGeneration = true;
   
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number} {
+    const topPercentSelected = generations.worldController.simData.constants.GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS;  
     const distanceValuesSorted : Creature [] = generations.currentCreatures.sort((a, b) =>{ return b.distanceCovered - a.distanceCovered});
     const top = Math.floor(generations.currentCreatures.length * topPercentSelected);   
     const fitMax = distanceValuesSorted[0]?.distanceCovered;
