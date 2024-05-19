@@ -1,7 +1,6 @@
 //import { max } from "d3";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
-import * as constants from "@/simulation/simulationConstants"
 import {Direction, Direction4} from '@/simulation/world/direction';
 import shuffle from "lodash.shuffle";
 

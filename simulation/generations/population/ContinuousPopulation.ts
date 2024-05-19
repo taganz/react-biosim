@@ -1,10 +1,7 @@
 import shuffle from "lodash.shuffle";
 import WorldGenerations from "../WorldGenerations";
-import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
-import * as constants from "@/simulation/simulationConstants";
-import Genome from "../../creature/brain/Genome"
 import AsexualRandomPopulation from "./AsexualRandomPopulation";
 
 

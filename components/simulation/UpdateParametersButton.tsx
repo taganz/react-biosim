@@ -3,7 +3,7 @@
 import React from "react";
 import Button from "../global/Button";
 import { useAtomValue } from "jotai";
-import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, waterDataAtom } from "./store";
+import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, waterDataAtom, worldObjectsDataAtom } from "./store";
 import worldControllerInitialValuesHotChange from "@/simulation/world/worldControllerInitialValuesHotChange";
 
 export default function UpdateParametersButton() {
@@ -11,11 +11,12 @@ export default function UpdateParametersButton() {
   const worldControllerData = useAtomValue(worldControllerDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const waterData = useAtomValue(waterDataAtom);
+  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
   
 
   const handleClick = () => {
     if (worldController) {
-      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, waterData );
+      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, worldObjectsData, waterData );
     } else {
       console.warn("UpdateParametersButton worldController not found!")
     }

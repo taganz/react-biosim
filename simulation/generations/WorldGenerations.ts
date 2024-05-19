@@ -35,8 +35,8 @@ export default class WorldGenerations {
   mutationProbability: number = 0;
   deletionRatio : number;
   geneInsertionDeletionProbability: number = 0;
-  sensors: CreatureSensors = new CreatureSensors();
-  actions: CreatureActions = new CreatureActions();
+  sensors: CreatureSensors;
+  actions: CreatureActions;
   metabolismEnabled : boolean;
   phenotypeColorMode : PhenoTypeColorMode;
   // state values
@@ -73,6 +73,9 @@ export default class WorldGenerations {
     this.mutationProbability = worldGenerationsData.mutationProbability;
     this.deletionRatio = worldGenerationsData.deletionRatio;
     this.geneInsertionDeletionProbability = worldGenerationsData.geneInsertionDeletionProbability;
+    this.sensors = new CreatureSensors();
+    this.actions = new CreatureActions (worldController._loadedWorldControllerData.MASS_COST_PER_EXECUTE_ACTION,
+                  worldController._loadedWorldControllerData.ACTION_REPRODUCTION_OFFSET);
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;

@@ -3,7 +3,7 @@
 import React from "react";
 import Button from "../global/Button";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCanvasAtom, waterDataAtom } from "./store";
+import { worldControllerAtom, worldGenerationDataAtom, worldControllerDataAtom, worldCanvasAtom, waterDataAtom, worldObjectsDataAtom } from "./store";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import { WaterData } from "@/simulation/water/WaterData";
 
@@ -14,13 +14,14 @@ export default function RestartButton() {
   const waterData = useAtomValue(waterDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const worldCanvas = useAtomValue(worldCanvasAtom);
+  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
 
   const handleClick = () => {
     if (worldController && worldCanvas) {
       const wcd = worldControllerData;
       (wcd as WorldControllerData).waterData = waterData as unknown as WaterData;
       console.log(wcd);
-      const simCode = worldController?.startRun(worldControllerData, worldGenerationsData);
+      const simCode = worldController?.startRun(worldControllerData, worldGenerationsData, worldObjectsData);
       setWorldControllerData({...worldControllerData, simCode : simCode});
       worldCanvas.size = worldControllerData.size;
     } else {

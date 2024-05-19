@@ -6,8 +6,8 @@ import SavedWorld from "./data/SavedWorld";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
 import WorldGenerationsData from "../generations/WorldGenerationsData";
 import {deserializeSpecies} from "./formatters/speciesSerialitzation";
-import {deserializeWorldGenerationData} from "./formatters/worldGenerationDataSerialization"
-import {deserializeWorldControllerData} from "./formatters/worldControllerDataSerialization"
+import {deserializeWorldGenerationData} from "./formatters/worldGenerationDataSerialization";
+import { deserializeObjects } from "./formatters/objectsSerialization";
 
 /*
 function loadGenerationRegistry(worldController: WorldController, parsed: SavedWorld) : void {
@@ -24,7 +24,8 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
 }
 */
 
-export function loadSavedWorldAndResumeRun(worldController: WorldController, data: string) : [WorldControllerData, WorldGenerationsData] {
+export function loadSavedWorldAndResumeRun(worldController: WorldController, data: string) : 
+              [WorldControllerData, WorldGenerationsData, WorldControllerData] {
   
   const parsed = JSON.parse(data) as SavedWorld;
   
@@ -39,13 +40,17 @@ export function loadSavedWorldAndResumeRun(worldController: WorldController, dat
   worldController.pause();
 
   const worldGenerationsData = deserializeWorldGenerationData(parsed);
-  const worldControllerData = deserializeWorldControllerData(parsed);
+  const worldControllerData = parsed.worldControllerData;
+  const worldObjectsData = deserializeObjects(parsed.worldObjects);
+  // export function deserializeObjects
+  //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
+  
   const species = deserializeSpecies(worldController, parsed.species);
   const stats = generationRegistryFormatter.deserialize(parsed.stats,worldController);
   
-  worldController.resumeRun(worldControllerData, worldGenerationsData, species, stats);
+  worldController.resumeRun(worldControllerData, worldGenerationsData, worldObjectsData, species, stats);
 
-  return [worldControllerData, worldGenerationsData];
+  return [worldControllerData, worldGenerationsData, worldControllerData];
 }
 
 export function loadSavedWorldAndStartRun(worldController: WorldController, data: string) : [WorldControllerData, WorldGenerationsData] {
@@ -55,9 +60,10 @@ export function loadSavedWorldAndStartRun(worldController: WorldController, data
   worldController.pause();
 
   const worldGenerationsData = deserializeWorldGenerationData(parsed);
-  const worldControllerData = deserializeWorldControllerData(parsed);
-  
-  const simCode = worldController.startRun(worldControllerData, worldGenerationsData);
+  const worldControllerData = parsed.worldControllerData;
+  const worldObjectsData = deserializeObjects(parsed.worldObjects);
+
+  const simCode = worldController.startRun(worldControllerData, worldGenerationsData, worldObjectsData);
   worldControllerData.simCode = simCode;
   
   return [worldControllerData, worldGenerationsData];

@@ -7,4 +7,5 @@ export type WaterData = {
     waterTotalPerCell: number,
     waterEvaporationPerCellPerGeneration: number,
     rainType : RainType
+
   };

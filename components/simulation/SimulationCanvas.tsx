@@ -6,7 +6,7 @@ import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import {worldControllerAtom, worldControllerDataAtom, worldGenerationDataAtom, eventLoggerAtom} from "./store";
-import {worldCanvasAtom} from "@/components/simulation/store/worldAtoms";
+import {worldCanvasAtom, worldObjectsDataAtom} from "@/components/simulation/store/worldAtoms";
 import { STARTUP_MODE } from "@/simulation/simulationConstants";
 import { startupScenarioWorldControllerData, startupScenarioWorldGenerationsData } from "../../simulation/startupScenario";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
@@ -27,6 +27,7 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const setEventLogger = useSetAtom(eventLoggerAtom);
+  const worldObjectsData = useAtomValue(worldObjectsDataAtom);
   
   useEffect(
     function instantiateWorld() {
@@ -34,17 +35,17 @@ export default function SimulationCanvas({ className }: Props) {
       let worldController : WorldController;
 
       if (STARTUP_MODE=="simulationConstants") {
-        worldController = new WorldController(worldControllerData, worldGenerationsData);
+        worldController = new WorldController(worldControllerData, worldGenerationsData, worldObjectsData);
         setWorldController(worldController);
-        const simCode = worldController.startRun(worldControllerData, worldGenerationsData );  
+        const simCode = worldController.startRun(worldControllerData, worldGenerationsData, worldObjectsData );  
         setWorldControllerData({...worldControllerData, simCode : simCode});
         setEventLogger(worldController.eventLogger);
         worldSize = worldControllerData.size;
         }
       else {
-        worldController = new WorldController(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData);
+        worldController = new WorldController(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData, worldObjectsData);
         setWorldController(worldController);
-        const simCode = worldController.startRun(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData );  
+        const simCode = worldController.startRun(startupScenarioWorldControllerData, startupScenarioWorldGenerationsData, worldObjectsData);  
         setWorldControllerData({...startupScenarioWorldControllerData, simCode : simCode});
         setEventLogger(worldController.eventLogger);
         worldSize = startupScenarioWorldControllerData.size;

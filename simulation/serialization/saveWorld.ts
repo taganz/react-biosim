@@ -1,9 +1,9 @@
 import WorldController from "../world/WorldController";
 import SavedWorld from "./data/SavedWorld";
 import generationRegistryFormatter from "./formatters/generationRegistryFormatter";
-import serializeWorldControllerData from "./formatters/worldControllerDataSerialization";
 import serializeWorldGenerationData from "./formatters/worldGenerationDataSerialization";
 import serializeSpecies from "./formatters/speciesSerialitzation";
+import { serializeObjects } from "./formatters/objectsSerialization";
 //import SavedWorldControllerData from "./data/SavedWorldControllerData";
 
 
@@ -11,7 +11,8 @@ import serializeSpecies from "./formatters/speciesSerialitzation";
   return {
 
     worldGenerationsData: serializeWorldGenerationData(worldController),
-    worldControllerData: serializeWorldControllerData(worldController),
+    worldControllerData: worldController._loadedWorldControllerData,
+    worldObjects: serializeObjects(worldController.objects),
     species: serializeSpecies(worldController),
     stats: generationRegistryFormatter.serialize(worldController.generationRegistry)
     

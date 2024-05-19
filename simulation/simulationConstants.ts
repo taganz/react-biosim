@@ -58,7 +58,7 @@ export const LOG_ALLOWED_EVENTS: AllowedLogEvents = {
 }
 
 
-
+/*
 // -- metabolism 
 export const MASS_METABOLISM_GENES = [-2071543808,-2071486464]; // random-2->photosynthesis, random-1->reproduction
 export const MASS_WATER_TO_MASS_PER_STEP = 0.30; //0.1 - 0.4
@@ -86,7 +86,7 @@ export const ATTACK_COST_PER_MASS_TRY = 0.4;
 export const ATTACK_COST_PER_MASS_DO = 0;
 export const ATTACK_MULTIPLE_MASS_AT_BIRTH = 3;     // 0
 export const ATTACK_MIN_PREY_MASS_FACTOR = 2;      // 0
-
+*/
 // -- selection method
 
 export const GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS = 0.05; 
@@ -112,6 +112,19 @@ export const colors = {
 export const SIM_CODE_LENGTH = 3;
 
 
+  // grid
+export const WORLD_OBJECTS_DATA_DEFAULT : WorldObject[] = [
+    // A spawn zone at top left
+   // new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
+    // A reproduction zone at  center
+   // new RectangleReproductionArea(0.3, 0.6, 0.2, 0.4, true),
+    // A map divided at bottom by 5 columns
+    new RectangleObject(0.1, 0.6, 0.04, 0.4),
+    new RectangleObject(0.3, 0.6, 0.04, 0.4),
+    new RectangleObject(0.5, 0.6, 0.04, 0.4),
+    new RectangleObject(0.7, 0.6, 0.04, 0.4),
+    new RectangleObject(0.9, 0.6, 0.04, 0.4),
+  ];
 
 export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   // initial values
@@ -124,8 +137,37 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
     waterRainMaxPerCell:  30,             // 2
     waterTotalPerCell: 130,       // 
     waterEvaporationPerCellPerGeneration: 10,  // 0
-    rainType : "rainTypeUniform"
+    rainType : "rainTypeUniform",
   },
+
+  // model values
+  MASS_METABOLISM_GENES : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
+  MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
+  MASS_AT_BIRTH_PLANT : 1,
+  MASS_AT_BIRTH_MOVE : 2,
+  MASS_AT_BIRTH_ATTACK : 2,
+  MASS_AT_BIRTH_ATTACK_AND_MOVE : 3,
+  MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
+
+  MASS_COST_PER_EXECUTE_ACTION : 0.01, //  a plant has a minimum of 2 actions and gets energy from photosynthesis
+
+  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
+
+  REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
+  REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3
+  REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : 3,    
+
+  ACTION_REPRODUCTION_OFFSET : 0.6,  // will trigger action if input value is greater
+
+  MOVE_COST_PER_MASS_TRY : 0.2,
+  MOVE_COST_PER_MASS_DO : 0.6,
+  MOVE_MULTIPLE_MASS_AT_BIRTH : 2,    // 2
+
+  ATTACK_COST_PER_MASS_TRY : 0.4,
+  ATTACK_COST_PER_MASS_DO : 0,
+  ATTACK_MULTIPLE_MASS_AT_BIRTH : 3,     // 0
+  ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
+  
   // user values
   pauseBetweenSteps: 10,  // [0 | 10 | 50 | 200]
   immediateSteps: 1,       // [0 | 20 | 200]
@@ -137,19 +179,6 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   lastGenerationDuration: 0,
   totalTime: 0,
 
-  // grid
-  worldObjects : [
-    // A spawn zone at top left
-   // new RectangleSpawnArea(0.1, 0.1, 0.2, 0.2, true),
-    // A reproduction zone at  center
-   // new RectangleReproductionArea(0.3, 0.6, 0.2, 0.4, true),
-    // A map divided at bottom by 5 columns
-    new RectangleObject(0.1, 0.6, 0.04, 0.4),
-    new RectangleObject(0.3, 0.6, 0.04, 0.4),
-    new RectangleObject(0.5, 0.6, 0.04, 0.4),
-    new RectangleObject(0.7, 0.6, 0.04, 0.4),
-    new RectangleObject(0.9, 0.6, 0.04, 0.4),
-  ],
 
 }
 

@@ -1,4 +1,3 @@
-import * as constants from "../../simulationConstants";
 import Creature from "../Creature";
 import CreatureSensors from "./CreatureSensors";
 import CreatureActions from "./CreatureActions";

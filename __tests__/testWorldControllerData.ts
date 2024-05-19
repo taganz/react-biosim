@@ -5,7 +5,7 @@ export const testWorldControllerData : WorldControllerData = {
     size: 5, 
     stepsPerGen: 10,
     //initialPopulation: 1,
-    worldObjects : [],
+    //worldObjects : [],
     //waterFirstRainPerCell: 10,
     //waterCellCapacity: 20,
     waterData : {

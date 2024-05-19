@@ -79,6 +79,12 @@ export default class CreatureActions {
   neuronsCount: number = 0;
   _energyConsumedByActionsExecution : number = 0;
 
+
+  constructor (private costPerExecuteAction: number,
+               private actionReproductionOffset: number
+   ){
+
+  }
   getList() {
     const list: ActionName[] = [];
     for (const key of Object.keys(this.data) as ActionName[]) {
@@ -130,7 +136,7 @@ export default class CreatureActions {
         this.neuronsCount++;
       }
     }
-    this._energyConsumedByActionsExecution = this.neuronsCount * constants.MASS_COST_PER_EXECUTE_ACTION;
+    this._energyConsumedByActionsExecution = this.neuronsCount * this.costPerExecuteAction; 
   }
 
   executeActions(creature: Creature, values: number[]) {
@@ -228,7 +234,7 @@ export default class CreatureActions {
 
     // Attack
     if (this.data.Attack.enabled) {
-      if (input > constants.ACTION_REPRODUCTION_OFFSET) {    // was 0
+      if (input > this.actionReproductionOffset) {    // was 0
 
         const targetDirection : Direction4 = creature.generations.grid.getNeighbour4Creature(creature.position);
         if (targetDirection!=null) {

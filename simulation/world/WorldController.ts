@@ -58,10 +58,13 @@ export default class WorldController {
   _loadedWorldControllerData: WorldControllerData;
   _loadedWorldGenerationData: WorldGenerationsData;
   
-  constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData) {
+  constructor(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects: WorldObject[]) {
+    this._loadedWorldControllerData = worldControllerData;
     this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.objects = worldObjects;
     this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
+    this._loadedWorldGenerationData = worldGenerationsData;
     this.eventLogger = new EventLogger(this);
     this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
@@ -69,20 +72,21 @@ export default class WorldController {
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
-    this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationsData;
   
     //console.log("*** worldController initialized ***");
   }
 
-  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData ): string {
+  public startRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects: WorldObject[] ): string {
 
+    this._loadedWorldControllerData = worldControllerData;
     this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.objects = worldObjects; 
     this.simCode = generateRandomString(SIM_CODE_LENGTH),
     this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid);
+    this._loadedWorldGenerationData = worldGenerationsData;
     this.generationRegistry = new GenerationRegistry(this);
     this.eventLogger.reset();
     this.initialPopulation = worldGenerationsData.initialPopulation;
@@ -93,8 +97,6 @@ export default class WorldController {
     this.lastGenerationDuration = 0;
     this.totalTime = 0;
   
-    this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationsData;
   
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -108,9 +110,11 @@ export default class WorldController {
   }
 
   // load a previous simulation and run from its state
-  public resumeRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, species: Creature[], stats: GenerationRegistry ): void {
+  public resumeRun(worldControllerData: WorldControllerData, worldGenerationsData: WorldGenerationsData, worldObjects : WorldObject[], species: Creature[], stats: GenerationRegistry ): void {
     
+    this._loadedWorldControllerData = worldControllerData;
     this.loadWorldControllerInitialAndUserData(worldControllerData);
+    this.objects = worldObjects; 
     this.grid = new Grid(this.size, this.objects, worldControllerData.waterData.waterCellCapacity);  
     this.worldWater = new WorldWater(this.size, worldControllerData.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
@@ -123,6 +127,7 @@ export default class WorldController {
       }
     }
     this.generations = new WorldGenerations(this, worldGenerationsData, this.grid, reviewedSpecies);
+    this._loadedWorldGenerationData = worldGenerationsData;
     this.generationRegistry = stats;
     this.eventLogger.reset();
     this.initialPopulation = worldGenerationsData.initialPopulation;
@@ -135,8 +140,6 @@ export default class WorldController {
     this.lastGenerationDuration = worldControllerData.lastGenerationDuration;
     this.totalTime = worldControllerData.totalTime;
 
-    this._loadedWorldControllerData = worldControllerData;
-    this._loadedWorldGenerationData = worldGenerationsData;
   
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
@@ -151,9 +154,8 @@ export default class WorldController {
     // initial values
     this.size = worldControllerData.size;
     this.stepsPerGen = worldControllerData.stepsPerGen;
-    if (worldControllerData.worldObjects) {
-      this.objects = [...worldControllerData.worldObjects];   
-    }
+  
+
     //this.waterFirstRainPerCell = worldControllerData.waterFirstRainPerCell;
     //this.waterCellCapacity = worldControllerData.waterCellCapacity;
 
@@ -192,7 +194,7 @@ export default class WorldController {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
-      this.startRun(this._loadedWorldControllerData, this._loadedWorldGenerationData);
+      this.startRun(this._loadedWorldControllerData, this._loadedWorldGenerationData, this.objects);
       return;
     }
 

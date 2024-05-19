@@ -21,7 +21,7 @@ export const selectedCreatureAtom = atom (<Creature | null>(null));
 export const worldGenerationDataAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT);
 export const worldControllerDataAtom = atom(constants.WORLD_CONTROLLER_DATA_DEFAULT);
 export const waterDataAtom = atom(constants.WORLD_CONTROLLER_DATA_DEFAULT.waterData);
-
+export const worldObjectsDataAtom = atom(constants.WORLD_OBJECTS_DATA_DEFAULT);
 /*
 export const currentGenAtom = atom( (get) => {
   const w = get(worldControllerAtom); 

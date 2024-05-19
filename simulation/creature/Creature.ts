@@ -1,9 +1,6 @@
 import WorldGenerations from "../generations/WorldGenerations";
 import Genome from "./brain/Genome";
 import { probabilityToBool } from "../helpers/helpers";
-
-
-import * as constants from "../simulationConstants"
 import {GridPosition } from "../world/grid/Grid";
 import CreatureMass from "./CreatureMass";
 import CreatureAttack from "./CreatureAttack";
@@ -15,6 +12,7 @@ import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
 import CreatureGenus, {Genus} from "./CreatureGenus";
 import WorldWater from "../water/WorldWater";
+import WorldControllerData from "../world/WorldControllerData";
 
 export const maxHealth = 100;
 
@@ -27,6 +25,7 @@ const stepsStoppedPenalization = 100;
 export default class Creature {
   generations: WorldGenerations;
   eventLogger: EventLogger;
+  worldControllerData : WorldControllerData;
 
   id : number;
   stepBirth : number;  
@@ -59,6 +58,7 @@ export default class Creature {
 
   constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
     this.generations = generations;
+    this.worldControllerData = generations.worldController._loadedWorldControllerData;
 
     this.id = generations.lastCreatureIdCreated + 1;
     this.stepBirth = generations.worldController.currentStep;
@@ -73,11 +73,11 @@ export default class Creature {
 
     if (!genome) {
       // 1st generation, create genome
-      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? constants.MASS_METABOLISM_GENES.length : 0);
+      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? this.worldControllerData.MASS_METABOLISM_GENES.length : 0);
       const newGenome = new Genome(
         [...new Array(randomGenesToAdd)].map(() => Genome.generateRandomGene()));
       if (this.generations.metabolismEnabled) {
-        newGenome.addGenes(constants.MASS_METABOLISM_GENES);
+        newGenome.addGenes(this.worldControllerData.MASS_METABOLISM_GENES);
       }
       this.brain = new CreatureBrain(this, newGenome);
     }
@@ -90,16 +90,16 @@ export default class Creature {
     switch(this._genus)   {
       case "plant":
       case "unknown":
-        this.massAtBirth = constants.MASS_AT_BIRTH_PLANT;
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_PLANT;
         break;
       case "attack" :
-        this.massAtBirth = constants.MASS_AT_BIRTH_ATTACK;
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK;
         break;
       case "move":
-        this.massAtBirth = constants.MASS_AT_BIRTH_MOVE;
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_MOVE;
         break;
       case "attack_move":
-        this.massAtBirth = constants.MASS_AT_BIRTH_ATTACK_AND_MOVE;
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK_AND_MOVE;
         break;
       default:
         console.error("genus unknown ", this._genus);
@@ -111,7 +111,7 @@ export default class Creature {
           // if first generation, water should be obtained from cloud
           this._worldWater.getWaterFromCloud(this.massAtBirth);
     }
-    this._mass = new CreatureMass(this.brain.genome.genes.length, this.massAtBirth, this.generations.metabolismEnabled);
+    this._mass = new CreatureMass(this);
     this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
     this.eventLogger = generations.worldController.eventLogger;
@@ -239,12 +239,12 @@ export default class Creature {
 
 
     this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
-    const consumed = this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_TRY);    
+    const consumed = this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);    
     this._worldWater.dissipateWater(consumed);
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
-    const consumedDo = this._mass.consume(this.massAtBirth * constants.MOVE_COST_PER_MASS_DO);    
+    const consumedDo = this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
     this._worldWater.dissipateWater(consumedDo);
     
     const finalX = this.position[0] + x;
@@ -297,7 +297,7 @@ export default class Creature {
       return true;
     }
     return this._mass.mass > this.massAtBirth *
-      (constants.MOVE_MULTIPLE_MASS_AT_BIRTH + constants.MOVE_COST_PER_MASS_DO);
+      (this.worldControllerData.MOVE_MULTIPLE_MASS_AT_BIRTH + this.worldControllerData.MOVE_COST_PER_MASS_DO);
   }
 
   get mass(): number {
@@ -311,7 +311,7 @@ export default class Creature {
 //TODO wanted water depends on actionInputValue
  photosynthesis(actionInputValue: number) : void {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
-    const waterWanted = constants.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
+    const waterWanted = this.worldControllerData.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
     const waterGotFromCell = this._worldWater.getWaterFromCell(cell, waterWanted);
     this._mass.add(waterGotFromCell);
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);

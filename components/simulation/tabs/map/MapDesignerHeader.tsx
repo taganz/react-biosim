@@ -13,7 +13,8 @@ import { FaTrash } from "react-icons/fa";
 import { TfiCheckBox } from "react-icons/tfi";
 import {  worldGenerationDataAtom,
           worldControllerDataAtom,
-          waterDataAtom
+          waterDataAtom,
+          worldObjectsDataAtom
         } from "../../store";
 import worldControllerInitialValuesHotChange from "@/simulation/world/worldControllerInitialValuesHotChange";
 
@@ -28,13 +29,15 @@ export default function MapDesignerHeader() {
   const worldGenerationsData = useAtomValue(worldGenerationDataAtom);
   const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
   const waterData = useAtomValue(waterDataAtom);
+  const setWorldObjectsData = useSetAtom(worldObjectsDataAtom);
   
   // Button "Use Map": set objects in worldController and resume, store also in atom for further initializations
   const handleUseMap = () => {
     if (worldController) {
-      worldControllerData.worldObjects = [...mapDesignerObjects.map((obj) => obj.clone())];
+      const worldObjectsData = mapDesignerObjects.map((obj) => obj.clone());
+      setWorldObjectsData(worldObjectsData)
       setWorldControllerData(worldControllerData);
-      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, waterData );
+      worldControllerInitialValuesHotChange(worldController, worldControllerData, worldGenerationsData, worldObjectsData, waterData );
     }
     else {
       throw new Error ("worldController not found");

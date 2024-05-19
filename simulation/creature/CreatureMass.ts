@@ -1,5 +1,4 @@
-import {MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
-        , MASS_MAX_MULTIPLE_MASS_AT_BIRT} from "../simulationConstants"
+import Creature from "./Creature";
 
 export default class CreatureMass {
     //_massAtBirth : number;
@@ -9,13 +8,16 @@ export default class CreatureMass {
     _massAtBirth : number; 
     _maxMass : number;
 
-    constructor(genomeLength : number, massAtBirth: number, _metabolismEnabled: boolean) {
+    constructor(creature: Creature) {
+
         //this._massAtBirth = massAtBirth
-        this._mass = massAtBirth;
-        this._massAtBirth = massAtBirth;
-        this._basalConsumption = MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * genomeLength;
-        this._metabolismEnabled = _metabolismEnabled;
-        this._maxMass = this._massAtBirth * MASS_MAX_MULTIPLE_MASS_AT_BIRT;
+        this._mass = creature.massAtBirth;
+        this._massAtBirth = creature.massAtBirth;
+        this._basalConsumption = creature.generations.worldController._loadedWorldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * 
+                creature.brain.genome.genes.length;
+        this._metabolismEnabled = creature.generations.metabolismEnabled;
+        this._maxMass = this._massAtBirth 
+                * creature.generations.worldController._loadedWorldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
     }
 
     basalMetabolism() : number {
