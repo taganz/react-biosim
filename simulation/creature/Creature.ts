@@ -354,8 +354,7 @@ export default class Creature {
     this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
     this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
     this.log(LogEvent.INFO, when + " " +"position", this.position[0], this.position[1]);
-    this.log(LogEvent.INFO, when + " " +"lastPosition x", this.lastPosition[0]);
-    this.log(LogEvent.INFO, when + " " +"lastMovement y", this.lastMovement[1]);
+    this.log(LogEvent.INFO, when + " " +"lastMovement" , this.lastMovement[0], this.lastMovement[1]);
   }
 
   
@@ -364,14 +363,14 @@ export default class Creature {
         console.error("this.eventLogger not found");
         return;
       }
-      // discard trivial logs
-      if ( eventType == LogEvent.PHOTOSYNTHESIS 
-        || eventType == LogEvent.METABOLISM) {
-          if (this.generations.worldController.currentStep % 10 != 0) {
-            return;
-          }
-        }
 
+      // reduce trivial logs
+
+      const discardStep = this.generations.worldController.currentStep % 10 != 0;
+      if (eventType == LogEvent.PHOTOSYNTHESIS && paramName == "actionInputValue" && discardStep) return;
+      if (eventType == LogEvent.PHOTOSYNTHESIS && paramName == "waterGotFromCell" && discardStep) return;
+      if (eventType == LogEvent.METABOLISM && discardStep) return;
+      
       const event : SimulationCallEvent = {
         logLevel: LogLevel.CREATURE,
         creatureId: this.id,

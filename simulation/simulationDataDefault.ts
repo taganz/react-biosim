@@ -114,7 +114,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
 
   MASS_COST_PER_EXECUTE_ACTION : 0.005, //  0.01 a plant has a minimum of 2 actions and gets energy from photosynthesis
 
-  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
+  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.004,   // 0.07
 
   REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
   REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3
@@ -150,8 +150,8 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   populationStrategy: new ContinuousPopulation(),
   selectionMethod: new ContinuousSelection(),
   initialPopulation: 150,       // 500
-  initialGenomeSize: 4,         // 4
-  maxGenomeSize: 4,
+  initialGenomeSize: 6,         // 4
+  maxGenomeSize: 20,             // 30
   maxNumberNeurons: 15,
   mutationMode: MutationMode.wholeGene,
   mutationProbability: 0.25 ,     // 0.05

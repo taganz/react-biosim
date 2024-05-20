@@ -1,81 +1,4582 @@
 {
-    "worldGenerationsData": {
-        "populationStrategy": "ContinuousPopulation",
-        "selectionMethod": "ContinuousSelection",
-        "initialPopulation": "5",
-        "initialGenomeSize": 4,
-        "maxGenomeSize": 30,
-        "maxNumberNeurons": 15,
-        "mutationMode": "wholeGene",
-        "mutationProbability": 0.05,
-        "deletionRatio": 0.5,
-        "geneInsertionDeletionProbability": 0.015,
-        "enabledSensors": [
-            "HorizontalPosition",
-            "VerticalPosition",
-            "Age",
-            "Oscillator",
-            "Random",
-            "HorizontalSpeed",
-            "VerticalSpeed",
-            "HorizontalBorderDistance",
-            "VerticalBorderDistance",
-            "BorderDistance",
-            "Mass"
-        ],
-        "enabledActions": [
-            "MoveNorth",
-            "MoveSouth",
-            "MoveEast",
-            "MoveWest",
-            "RandomMove",
-            "MoveForward",
-            "Photosynthesis",
-            "Reproduction",
-            "Attack"
-        ],
-        "metabolismEnabled": true,
-        "phenotypeColorMode": "trophicLevel",
-        "lastCreatureIdCreated": 4,
-        "lastCreatureCount": 4,
-        "lastSurvivorsCount": 4,
-        "lastFitnessMaxValue": 0,
-        "lastSurvivalRate": 0
+  "constants": {
+    "PRETTIFY_OUTPUT_TO_COPY": true,
+    "PRETTIFY_OUTPUT_TO_FILE": true,
+    "LOG_ENABLED": true,
+    "LOG_LEVEL": "CREATURE",
+    "LOG_CREATURE_ID": -30,
+    "LOG_EVENTLOGGER_MAX_EVENTS": 1000000,
+    "LOG_LOCALE_STRING": "es-ES",
+    "LOG_ALLOWED_EVENTS": {
+      "INFO": true,
+      "REPRODUCE": true,
+      "REPRODUCE_TRY": true,
+      "PHOTOSYNTHESIS": true,
+      "BIRTH": true,
+      "DEAD": true,
+      "DEAD_ATTACKED": true,
+      "METABOLISM": true,
+      "ATTACK": true,
+      "ATTACK_TRY": true,
+      "MOVE": true,
+      "MOVE_TRY": true,
+      "GENERATION_START": true,
+      "GENERATION_END": true,
+      "STEP_END": true
     },
-    "worldControllerData": {
-        "simCode": "tst",
-        "size": 5,
-        "stepsPerGen": 300,
-        "initialPopulation": "5",
-        "worldObjects": [],
-        "waterFirstRainPerCell": 200,
-        "waterCellCapacity": 400,
-        "pauseBetweenSteps": 0,
-        "immediateSteps": 1,
-        "pauseBetweenGenerations": 0,
-        "currentGen": 1,
-        "currentStep": 0,
-        "lastGenerationDuration": 0,
-        "totalTime": 0
+    "GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS": 0.05,
+    "POPULATION_DEFAULT_SPECIES": [
+      {
+        "name": "Plant-repro and photo",
+        "genome": [
+          -2071543808,
+          -2071486464
+        ]
+      }
+    ],
+    "SIM_CODE_LENGTH": 3,
+    "colors": {
+      "reproduction": "rgba(0,0,255,0.1)",
+      "obstacle": "rgb(60, 60, 60)",
+      "healing": "rgba(0,255,0, 0.1)",
+      "danger": "rgba(255,0,0, 0.1)",
+      "spawn": "rgba(255, 255, 0, 0.1)"
+    }
+  },
+  "worldGenerationsData": {
+    "populationStrategy": "ContinuousPopulation",
+    "selectionMethod": "ContinuousSelection",
+    "initialPopulation": "100",
+    "initialGenomeSize": 6,
+    "maxGenomeSize": 20,
+    "maxNumberNeurons": 15,
+    "mutationMode": "wholeGene",
+    "mutationProbability": 0.25,
+    "deletionRatio": 0.5,
+    "geneInsertionDeletionProbability": 0.1,
+    "enabledSensors": [
+      "HorizontalPosition",
+      "VerticalPosition",
+      "Age",
+      "Oscillator",
+      "Random",
+      "HorizontalSpeed",
+      "VerticalSpeed",
+      "HorizontalBorderDistance",
+      "VerticalBorderDistance",
+      "BorderDistance",
+      "Touch",
+      "Pain",
+      "PopulationDensity",
+      "Mass"
+    ],
+    "enabledActions": [
+      "MoveNorth",
+      "MoveSouth",
+      "MoveEast",
+      "MoveWest",
+      "RandomMove",
+      "MoveForward",
+      "Photosynthesis",
+      "Reproduction",
+      "Attack"
+    ],
+    "metabolismEnabled": true,
+    "phenotypeColorMode": "trophicLevel",
+    "plantGenes": "[-2071543808,-2071486464]",
+    "lastCreatureIdCreated": 389,
+    "lastCreatureCount": 100,
+    "lastSurvivorsCount": 235,
+    "lastFitnessMaxValue": 235,
+    "lastSurvivalRate": 2.35
+  },
+  "worldControllerData": {
+    "size": 100,
+    "stepsPerGen": 300,
+    "MASS_WATER_TO_MASS_PER_STEP": 0.3,
+    "MASS_AT_BIRTH_PLANT": 1,
+    "MASS_AT_BIRTH_MOVE": 2,
+    "MASS_AT_BIRTH_ATTACK": 2,
+    "MASS_AT_BIRTH_ATTACK_AND_MOVE": 3,
+    "MASS_MAX_MULTIPLE_MASS_AT_BIRT": 5,
+    "MASS_COST_PER_EXECUTE_ACTION": 0.005,
+    "MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE": 0.004,
+    "REPRODUCTION_COST_PER_MASS_TRY": 0.1,
+    "REPRODUCTION_COST_PER_MASS_DO": 0.25,
+    "REPRODUCTION_MULTIPLE_MASS_AT_BIRTH": 3,
+    "ACTION_REPRODUCTION_OFFSET": 0.6,
+    "MOVE_COST_PER_MASS_TRY": 0.2,
+    "MOVE_COST_PER_MASS_DO": 0.2,
+    "MOVE_MULTIPLE_MASS_AT_BIRTH": 2,
+    "ATTACK_COST_PER_MASS_TRY": 0,
+    "ATTACK_COST_PER_MASS_DO": 0,
+    "ATTACK_MULTIPLE_MASS_AT_BIRTH": 2,
+    "ATTACK_MIN_PREY_MASS_FACTOR": 2,
+    "pauseBetweenSteps": 10,
+    "immediateSteps": 1,
+    "pauseBetweenGenerations": 0,
+    "simCode": "OKN",
+    "currentGen": 0,
+    "currentStep": 1,
+    "lastGenerationDuration": 0,
+    "totalTime": 0
+  },
+  "waterData": {
+    "waterFirstRainPerCell": 50,
+    "waterCellCapacity": 100,
+    "waterRainMaxPerCell": 30,
+    "waterTotalPerCell": 130,
+    "waterEvaporationPerCellPerGeneration": 10,
+    "rainType": "rainTypeUniform"
+  },
+  "worldObjects": [
+    {
+      "data": {
+        "x": 0.1,
+        "y": 0.6,
+        "width": 0.04,
+        "height": 0.4,
+        "relative": true,
+        "color": "rgb(60, 60, 60)"
+      },
+      "type": "RectangleObject"
     },
-   "species": [
+    {
+      "data": {
+        "x": 0.3,
+        "y": 0.6,
+        "width": 0.04,
+        "height": 0.4,
+        "relative": true,
+        "color": "rgb(60, 60, 60)"
+      },
+      "type": "RectangleObject"
+    },
+    {
+      "data": {
+        "x": 0.5,
+        "y": 0.6,
+        "width": 0.04,
+        "height": 0.4,
+        "relative": true,
+        "color": "rgb(60, 60, 60)"
+      },
+      "type": "RectangleObject"
+    },
+    {
+      "data": {
+        "x": 0.7,
+        "y": 0.6,
+        "width": 0.04,
+        "height": 0.4,
+        "relative": true,
+        "color": "rgb(60, 60, 60)"
+      },
+      "type": "RectangleObject"
+    },
+    {
+      "data": {
+        "x": 0.9,
+        "y": 0.6,
+        "width": 0.04,
+        "height": 0.4,
+        "relative": true,
+        "color": "rgb(60, 60, 60)"
+      },
+      "type": "RectangleObject"
+    }
+  ],
+  "species": [
+    {
+      "genes": [
+        572634088,
+        945083679,
+        957471656,
+        38638433,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
         {
-            "genes": [-2088452096, -2071486464], 
-            "creatures": [
-                {"lastMovement": [0,0],"lastPosition": [2,2],"position": [2,2],"mass": 1,"massAtBirth": 1},
-                {"lastMovement": [0,0],"lastPosition": [2,3],"position": [2,3],"mass": 1,"massAtBirth": 1},
-                {"lastMovement": [0,0],"lastPosition": [3,2],"position": [3,2],"mass": 1,"massAtBirth": 1},
-                {"lastMovement": [0,0],"lastPosition": [3,3],"position": [3,3],"mass": 1,"massAtBirth": 1},
-                {"lastMovement": [0,0],"lastPosition": [4,2],"position": [4,2],"mass": 1,"massAtBirth": 1}
-            ]
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            32
+          ],
+          "position": [
+            33,
+            32
+          ],
+          "mass": 2.798000000000015,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            32
+          ],
+          "position": [
+            32,
+            32
+          ],
+          "mass": 4.8082216531186095,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            34
+          ],
+          "position": [
+            33,
+            34
+          ],
+          "mass": 4.855,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            34
+          ],
+          "position": [
+            31,
+            34
+          ],
+          "mass": 2.979276058604084,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            33
+          ],
+          "position": [
+            33,
+            33
+          ],
+          "mass": 2.57163945450894,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            32
+          ],
+          "position": [
+            31,
+            32
+          ],
+          "mass": 2.7944294927945306,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            35
+          ],
+          "position": [
+            31,
+            35
+          ],
+          "mass": 3.620754331842571,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            35
+          ],
+          "position": [
+            32,
+            35
+          ],
+          "mass": 4.194047843217031,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            34
+          ],
+          "position": [
+            34,
+            34
+          ],
+          "mass": 4.193845180251825,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            31
+          ],
+          "position": [
+            34,
+            31
+          ],
+          "mass": 4.786211057078727,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            34
+          ],
+          "position": [
+            30,
+            34
+          ],
+          "mass": 2.352500366597888,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            31
+          ],
+          "position": [
+            31,
+            31
+          ],
+          "mass": 3.362979725641305,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            35
+          ],
+          "position": [
+            30,
+            35
+          ],
+          "mass": 2.1332021947531756,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            33
+          ],
+          "position": [
+            31,
+            33
+          ],
+          "mass": 2.8975905601912837,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            32
+          ],
+          "position": [
+            34,
+            32
+          ],
+          "mass": 2.4327744106875437,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            30
+          ],
+          "position": [
+            34,
+            30
+          ],
+          "mass": 2.700191932132092,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            31
+          ],
+          "position": [
+            32,
+            31
+          ],
+          "mass": 2.5385473221955,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            36
+          ],
+          "position": [
+            31,
+            36
+          ],
+          "mass": 2.432122172523896,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            35
+          ],
+          "position": [
+            33,
+            35
+          ],
+          "mass": 4.02613694308493,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            33
+          ],
+          "position": [
+            30,
+            33
+          ],
+          "mass": 2.114250321001328,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            31
+          ],
+          "position": [
+            30,
+            31
+          ],
+          "mass": 2.942918034510307,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            35
+          ],
+          "position": [
+            34,
+            35
+          ],
+          "mass": 1.4094859151156163,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            36
+          ],
+          "position": [
+            30,
+            36
+          ],
+          "mass": 2.901340424115721,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            32
+          ],
+          "position": [
+            30,
+            32
+          ],
+          "mass": 1.9034882067404708,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            36
+          ],
+          "position": [
+            33,
+            36
+          ],
+          "mass": 2.0114708264817356,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            36
+          ],
+          "position": [
+            32,
+            36
+          ],
+          "mass": 2.320374520452436,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            33
+          ],
+          "position": [
+            29,
+            33
+          ],
+          "mass": 3.083674154668158,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            36
+          ],
+          "position": [
+            34,
+            36
+          ],
+          "mass": 1.988898149422429,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            35
+          ],
+          "position": [
+            29,
+            35
+          ],
+          "mass": 2.398036930789691,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            35,
+            29
+          ],
+          "position": [
+            35,
+            29
+          ],
+          "mass": 3.0210727410890916,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            30
+          ],
+          "position": [
+            31,
+            30
+          ],
+          "mass": 2.366387286050234,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            34
+          ],
+          "position": [
+            29,
+            34
+          ],
+          "mass": 1.340348578180912,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            37
+          ],
+          "position": [
+            32,
+            37
+          ],
+          "mass": 1.3870506914338223,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            37
+          ],
+          "position": [
+            33,
+            37
+          ],
+          "mass": 1.0400909678800905,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            32
+          ],
+          "position": [
+            29,
+            32
+          ],
+          "mass": 1.1039975268004827,
+          "massAtBirth": 1
         }
-        ],
-    "stats": {
-        "generations": [
-            {
-                "g": 0,
-                "sP": 0,
-                "sC": 0,
-                "fV": 0
-            }]}
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            40
+          ],
+          "position": [
+            41,
+            40
+          ],
+          "mass": 2.7516169890010813,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            40
+          ],
+          "position": [
+            40,
+            40
+          ],
+          "mass": 4.855,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            41
+          ],
+          "position": [
+            41,
+            41
+          ],
+          "mass": 3.0770933433758647,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            39
+          ],
+          "position": [
+            41,
+            39
+          ],
+          "mass": 2.703829911378648,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            39
+          ],
+          "position": [
+            42,
+            39
+          ],
+          "mass": 2.815551499594217,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            40
+          ],
+          "position": [
+            39,
+            40
+          ],
+          "mass": 2.3907379921101493,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            41
+          ],
+          "position": [
+            43,
+            41
+          ],
+          "mass": 2.37422880171717,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            41
+          ],
+          "position": [
+            40,
+            41
+          ],
+          "mass": 4.614519922488878,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            41
+          ],
+          "position": [
+            42,
+            41
+          ],
+          "mass": 2.488911814710952,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            39
+          ],
+          "position": [
+            43,
+            39
+          ],
+          "mass": 2.4708324833107542,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            44,
+            42
+          ],
+          "position": [
+            44,
+            42
+          ],
+          "mass": 3.456970540829976,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            41
+          ],
+          "position": [
+            39,
+            41
+          ],
+          "mass": 3.0879331202709555,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            42
+          ],
+          "position": [
+            43,
+            42
+          ],
+          "mass": 3.0502007697544866,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            42
+          ],
+          "position": [
+            39,
+            42
+          ],
+          "mass": 2.544757915330277,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            39
+          ],
+          "position": [
+            39,
+            39
+          ],
+          "mass": 2.111560876846296,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            42
+          ],
+          "position": [
+            40,
+            42
+          ],
+          "mass": 2.323923603177493,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            41
+          ],
+          "position": [
+            38,
+            41
+          ],
+          "mass": 2.501557720301162,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            44,
+            39
+          ],
+          "position": [
+            44,
+            39
+          ],
+          "mass": 2.274287830980026,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            44,
+            41
+          ],
+          "position": [
+            44,
+            41
+          ],
+          "mass": 2.750291556551904,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            38
+          ],
+          "position": [
+            41,
+            38
+          ],
+          "mass": 2.336914583906373,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            42
+          ],
+          "position": [
+            38,
+            42
+          ],
+          "mass": 1.8740429467330904,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            37,
+            41
+          ],
+          "position": [
+            37,
+            41
+          ],
+          "mass": 2.271207630685448,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            44,
+            43
+          ],
+          "position": [
+            44,
+            43
+          ],
+          "mass": 2.0618214705704534,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            37,
+            40
+          ],
+          "position": [
+            37,
+            40
+          ],
+          "mass": 1.5445887447076463,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            43
+          ],
+          "position": [
+            39,
+            43
+          ],
+          "mass": 1.3936032551235755,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1592496048,
+        -585811788,
+        -1470049178,
+        -318249628,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            33
+          ],
+          "position": [
+            0,
+            33
+          ],
+          "mass": 4.855,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            34
+          ],
+          "position": [
+            0,
+            34
+          ],
+          "mass": 2.8470358258328865,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            34
+          ],
+          "position": [
+            2,
+            34
+          ],
+          "mass": 2.5911006081736137,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            34
+          ],
+          "position": [
+            1,
+            34
+          ],
+          "mass": 2.0741529394091156,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            33
+          ],
+          "position": [
+            2,
+            33
+          ],
+          "mass": 2.6520905463351196,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            35
+          ],
+          "position": [
+            0,
+            35
+          ],
+          "mass": 2.880728595792319,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            35
+          ],
+          "position": [
+            2,
+            35
+          ],
+          "mass": 2.800139641454659,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            34
+          ],
+          "position": [
+            3,
+            34
+          ],
+          "mass": 3.4469117098339637,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            35
+          ],
+          "position": [
+            1,
+            35
+          ],
+          "mass": 2.968361555309314,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            32
+          ],
+          "position": [
+            3,
+            32
+          ],
+          "mass": 3.2902625308188194,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            36
+          ],
+          "position": [
+            2,
+            36
+          ],
+          "mass": 2.3746144394202795,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            35
+          ],
+          "position": [
+            3,
+            35
+          ],
+          "mass": 2.991875846525914,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            36
+          ],
+          "position": [
+            1,
+            36
+          ],
+          "mass": 2.052174761900902,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            34
+          ],
+          "position": [
+            4,
+            34
+          ],
+          "mass": 2.0239461992828427,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            36
+          ],
+          "position": [
+            3,
+            36
+          ],
+          "mass": 2.382506889123767,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            37
+          ],
+          "position": [
+            0,
+            37
+          ],
+          "mass": 2.219281693419591,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            35
+          ],
+          "position": [
+            4,
+            35
+          ],
+          "mass": 2.3081196828836283,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            36
+          ],
+          "position": [
+            0,
+            36
+          ],
+          "mass": 1.6515842992319651,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            37
+          ],
+          "position": [
+            1,
+            37
+          ],
+          "mass": 1.3801041092032993,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            33
+          ],
+          "position": [
+            1,
+            33
+          ],
+          "mass": 1,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            24
+          ],
+          "position": [
+            15,
+            24
+          ],
+          "mass": 4.029904469572849,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            25
+          ],
+          "position": [
+            15,
+            25
+          ],
+          "mass": 2.6312138776052065,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            24
+          ],
+          "position": [
+            14,
+            24
+          ],
+          "mass": 4.086194700357033,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            23
+          ],
+          "position": [
+            16,
+            23
+          ],
+          "mass": 3.3495733469186657,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            24
+          ],
+          "position": [
+            17,
+            24
+          ],
+          "mass": 2.1616712666720566,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            26
+          ],
+          "position": [
+            14,
+            26
+          ],
+          "mass": 2.673299935641724,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            23
+          ],
+          "position": [
+            14,
+            23
+          ],
+          "mass": 3.6277967132458118,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            25
+          ],
+          "position": [
+            14,
+            25
+          ],
+          "mass": 3.5969135578335956,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            25
+          ],
+          "position": [
+            18,
+            25
+          ],
+          "mass": 2.362348122653716,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            23
+          ],
+          "position": [
+            13,
+            23
+          ],
+          "mass": 2.215138336721643,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            25
+          ],
+          "position": [
+            13,
+            25
+          ],
+          "mass": 2.5483645659017866,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            22
+          ],
+          "position": [
+            15,
+            22
+          ],
+          "mass": 2.451880273697363,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            26
+          ],
+          "position": [
+            13,
+            26
+          ],
+          "mass": 1.480870303754407,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            27
+          ],
+          "position": [
+            14,
+            27
+          ],
+          "mass": 2.3931438198057737,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            26
+          ],
+          "position": [
+            15,
+            26
+          ],
+          "mass": 2.741752378049745,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            12,
+            22
+          ],
+          "position": [
+            12,
+            22
+          ],
+          "mass": 2.519028709515393,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            26
+          ],
+          "position": [
+            19,
+            26
+          ],
+          "mass": 1.4554659374023509,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            24
+          ],
+          "position": [
+            16,
+            24
+          ],
+          "mass": 0.15499999999999986,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        825740395,
+        -1402944047,
+        -972794287,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            32
+          ],
+          "position": [
+            0,
+            32
+          ],
+          "mass": 4.716618245542087,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            31
+          ],
+          "position": [
+            1,
+            31
+          ],
+          "mass": 4.855,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            32
+          ],
+          "position": [
+            2,
+            32
+          ],
+          "mass": 3.8299724526370817,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            31
+          ],
+          "position": [
+            0,
+            31
+          ],
+          "mass": 3.1843456041180906,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            31
+          ],
+          "position": [
+            2,
+            31
+          ],
+          "mass": 3.0034390843217458,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            31
+          ],
+          "position": [
+            3,
+            31
+          ],
+          "mass": 2.387298073507285,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            30
+          ],
+          "position": [
+            2,
+            30
+          ],
+          "mass": 4.1984341543399895,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            33
+          ],
+          "position": [
+            3,
+            33
+          ],
+          "mass": 3.2602111645638647,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            30
+          ],
+          "position": [
+            0,
+            30
+          ],
+          "mass": 4.108085648806385,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            29
+          ],
+          "position": [
+            3,
+            29
+          ],
+          "mass": 2.521312477305629,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            0,
+            29
+          ],
+          "position": [
+            0,
+            29
+          ],
+          "mass": 2.243694382566972,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            29
+          ],
+          "position": [
+            2,
+            29
+          ],
+          "mass": 3.057056940927175,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            31
+          ],
+          "position": [
+            4,
+            31
+          ],
+          "mass": 2.82637878877728,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            33
+          ],
+          "position": [
+            4,
+            33
+          ],
+          "mass": 2.4263560683340213,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            29
+          ],
+          "position": [
+            4,
+            29
+          ],
+          "mass": 1.2533878210958838,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            28
+          ],
+          "position": [
+            1,
+            28
+          ],
+          "mass": 1.124452106105995,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1897064919,
+        1280604702,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            13
+          ],
+          "position": [
+            28,
+            13
+          ],
+          "mass": 1.8216719855483405,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            12
+          ],
+          "position": [
+            29,
+            12
+          ],
+          "mass": 2.315084456662155,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            13
+          ],
+          "position": [
+            27,
+            13
+          ],
+          "mass": 2.5709053303664278,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            12
+          ],
+          "position": [
+            28,
+            12
+          ],
+          "mass": 2.4115960674922956,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            14
+          ],
+          "position": [
+            28,
+            14
+          ],
+          "mass": 2.9476111222792123,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            14
+          ],
+          "position": [
+            27,
+            14
+          ],
+          "mass": 2.8990306358482463,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            11
+          ],
+          "position": [
+            28,
+            11
+          ],
+          "mass": 2.4911716028817827,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            26,
+            13
+          ],
+          "position": [
+            26,
+            13
+          ],
+          "mass": 2.559160916779633,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            11
+          ],
+          "position": [
+            29,
+            11
+          ],
+          "mass": 1.6307808220707383,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        1786485835,
+        239625048,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            23
+          ],
+          "position": [
+            17,
+            23
+          ],
+          "mass": 3.3924533098090586,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            24
+          ],
+          "position": [
+            18,
+            24
+          ],
+          "mass": 3.6612208092662675,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            22
+          ],
+          "position": [
+            18,
+            22
+          ],
+          "mass": 2.417281484930317,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            23
+          ],
+          "position": [
+            19,
+            23
+          ],
+          "mass": 2.3769387861536346,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            22
+          ],
+          "position": [
+            17,
+            22
+          ],
+          "mass": 2.1628122421147804,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            24
+          ],
+          "position": [
+            19,
+            24
+          ],
+          "mass": 2.1484443504729427,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            20,
+            22
+          ],
+          "position": [
+            20,
+            22
+          ],
+          "mass": 2.0444346009006202,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            25
+          ],
+          "position": [
+            19,
+            25
+          ],
+          "mass": 1.85786908312802,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            22
+          ],
+          "position": [
+            19,
+            22
+          ],
+          "mass": 2.3148870228908414,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1190616904,
+        1246472778,
+        -1660337105,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            48
+          ],
+          "position": [
+            8,
+            48
+          ],
+          "mass": 4.381852367445613,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            9,
+            49
+          ],
+          "position": [
+            9,
+            49
+          ],
+          "mass": 3.7153034232039253,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            10,
+            48
+          ],
+          "position": [
+            10,
+            48
+          ],
+          "mass": 2.46019119857982,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            48
+          ],
+          "position": [
+            7,
+            48
+          ],
+          "mass": 3.050034075180265,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            11,
+            48
+          ],
+          "position": [
+            11,
+            48
+          ],
+          "mass": 2.157315704083277,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            9,
+            48
+          ],
+          "position": [
+            9,
+            48
+          ],
+          "mass": 0.49299999999999994,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1638630183,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            42
+          ],
+          "position": [
+            41,
+            42
+          ],
+          "mass": 3.705353651883862,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            43
+          ],
+          "position": [
+            42,
+            43
+          ],
+          "mass": 2.322751866388158,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            43
+          ],
+          "position": [
+            40,
+            43
+          ],
+          "mass": 3.0806148875655,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            41,
+            43
+          ],
+          "position": [
+            41,
+            43
+          ],
+          "mass": 1.8933223115427325,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            44
+          ],
+          "position": [
+            39,
+            44
+          ],
+          "mass": 1.8754549177534146,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            44
+          ],
+          "position": [
+            43,
+            44
+          ],
+          "mass": 1.6862471403809691,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1846326128,
+        1280604702,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            14
+          ],
+          "position": [
+            30,
+            14
+          ],
+          "mass": 2.2592081365813472,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            14
+          ],
+          "position": [
+            29,
+            14
+          ],
+          "mass": 2.909988865349313,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            14
+          ],
+          "position": [
+            31,
+            14
+          ],
+          "mass": 2.693705022827743,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            15
+          ],
+          "position": [
+            30,
+            15
+          ],
+          "mass": 2.141049143692325,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            15
+          ],
+          "position": [
+            31,
+            15
+          ],
+          "mass": 2.517048263413274,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1190616904,
+        -1823852768,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            10,
+            47
+          ],
+          "position": [
+            10,
+            47
+          ],
+          "mass": 2.5471050538934445,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            11,
+            47
+          ],
+          "position": [
+            11,
+            47
+          ],
+          "mass": 2.3345780023237466,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            11,
+            46
+          ],
+          "position": [
+            11,
+            46
+          ],
+          "mass": 2.166184404783131,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            12,
+            48
+          ],
+          "position": [
+            12,
+            48
+          ],
+          "mass": 2.9196066341875047,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            12,
+            46
+          ],
+          "position": [
+            12,
+            46
+          ],
+          "mass": 1.4428696732717645,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1190616904,
+        1246472778,
+        -2143996806,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            9,
+            47
+          ],
+          "position": [
+            9,
+            47
+          ],
+          "mass": 3.2144267802176847,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            46
+          ],
+          "position": [
+            8,
+            46
+          ],
+          "mass": 3.038871464036136,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            9,
+            46
+          ],
+          "position": [
+            9,
+            46
+          ],
+          "mass": 2.2257787825913096,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            45
+          ],
+          "position": [
+            8,
+            45
+          ],
+          "mass": 0.7318846157006541,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1634944242,
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            15,
+            23
+          ],
+          "position": [
+            15,
+            23
+          ],
+          "mass": 3.8022058452514162,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            22
+          ],
+          "position": [
+            16,
+            22
+          ],
+          "mass": 2.924689846268277,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            21
+          ],
+          "position": [
+            17,
+            21
+          ],
+          "mass": 2.2700536390825676,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            14,
+            22
+          ],
+          "position": [
+            14,
+            22
+          ],
+          "mass": 2.2687716073868374,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1190616904,
+        1246472778,
+        -1823852768,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            49
+          ],
+          "position": [
+            8,
+            49
+          ],
+          "mass": 3.8386493277584632,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            10,
+            49
+          ],
+          "position": [
+            10,
+            49
+          ],
+          "mass": 2.3029292300836737,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            49
+          ],
+          "position": [
+            7,
+            49
+          ],
+          "mass": 3.083621031585085,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            11,
+            49
+          ],
+          "position": [
+            11,
+            49
+          ],
+          "mass": 2.9739906563186063,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        572634088,
+        -480969873,
+        38638433,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            31
+          ],
+          "position": [
+            33,
+            31
+          ],
+          "mass": 4.098505017467525,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            30
+          ],
+          "position": [
+            32,
+            30
+          ],
+          "mass": 2.4647135551383084,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            33,
+            30
+          ],
+          "position": [
+            33,
+            30
+          ],
+          "mass": 2.7918421955579467,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            29
+          ],
+          "position": [
+            31,
+            29
+          ],
+          "mass": 1.8805593563815837,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1193247762,
+        1598021366,
+        -1790454113,
+        -213397515,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            0
+          ],
+          "position": [
+            27,
+            0
+          ],
+          "mass": 1.8858273883406493,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            1
+          ],
+          "position": [
+            27,
+            1
+          ],
+          "mass": 2.319471224708273,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            28,
+            0
+          ],
+          "position": [
+            28,
+            0
+          ],
+          "mass": 1.843647125254602,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            26,
+            2
+          ],
+          "position": [
+            26,
+            2
+          ],
+          "mass": 1.0832020633105066,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1190616904,
+        1246472778,
+        -1823852768,
+        -2071543808,
+        -2071486464,
+        1153859930
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            8,
+            47
+          ],
+          "position": [
+            8,
+            47
+          ],
+          "mass": 4.158284943289051,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            47
+          ],
+          "position": [
+            7,
+            47
+          ],
+          "mass": 4.642123657743976,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            7,
+            46
+          ],
+          "position": [
+            7,
+            46
+          ],
+          "mass": 1.453528366915231,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        -1403697247,
+        -332934891,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            42
+          ],
+          "position": [
+            42,
+            42
+          ],
+          "mass": 2.8477776926606344,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            43
+          ],
+          "position": [
+            43,
+            43
+          ],
+          "mass": 2.050232923362803,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            44
+          ],
+          "position": [
+            42,
+            44
+          ],
+          "mass": 1.1743150977213386,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            39
+          ],
+          "position": [
+            40,
+            39
+          ],
+          "mass": 3.252741887029832,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            39,
+            38
+          ],
+          "position": [
+            39,
+            38
+          ],
+          "mass": 2.721143068543771,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            40,
+            38
+          ],
+          "position": [
+            40,
+            38
+          ],
+          "mass": 1.5024262138465803,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -2029367807,
+        1897064919,
+        1280604702,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            13
+          ],
+          "position": [
+            30,
+            13
+          ],
+          "mass": 1.9175517274359173,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            12
+          ],
+          "position": [
+            31,
+            12
+          ],
+          "mass": 2.35442361540983,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            31,
+            13
+          ],
+          "position": [
+            31,
+            13
+          ],
+          "mass": 1.559824569165595,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            25
+          ],
+          "position": [
+            16,
+            25
+          ],
+          "mass": 2.359197166439671,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            26
+          ],
+          "position": [
+            16,
+            26
+          ],
+          "mass": 2.8796436860490577,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            27
+          ],
+          "position": [
+            17,
+            27
+          ],
+          "mass": 1.4586182338206817,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -2081169720,
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            24
+          ],
+          "position": [
+            13,
+            24
+          ],
+          "mass": 2.929082022339946,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            12,
+            25
+          ],
+          "position": [
+            12,
+            25
+          ],
+          "mass": 2.6313761021561937,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1553175445,
+        1246472778,
+        -2143996806,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            10,
+            46
+          ],
+          "position": [
+            10,
+            46
+          ],
+          "mass": 2.2992700893773343,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            9,
+            45
+          ],
+          "position": [
+            9,
+            45
+          ],
+          "mass": 1.3646865294083854,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        825740395,
+        -1402944047,
+        -972794287,
+        -2071543808,
+        -1477771814
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            29
+          ],
+          "position": [
+            1,
+            29
+          ],
+          "mass": 2.7043016613550015,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            28
+          ],
+          "position": [
+            2,
+            28
+          ],
+          "mass": 2.3113287952133916,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        572634088,
+        945083679,
+        957471656,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            34
+          ],
+          "position": [
+            32,
+            34
+          ],
+          "mass": 2.3507486524967547,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            37
+          ],
+          "position": [
+            30,
+            37
+          ],
+          "mass": 1.451221189025005,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        189599352,
+        -1859699353,
+        -2143996806,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            10,
+            45
+          ],
+          "position": [
+            10,
+            45
+          ],
+          "mass": 2.222898780216457,
+          "massAtBirth": 1
+        },
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            11,
+            45
+          ],
+          "position": [
+            11,
+            45
+          ],
+          "mass": 1.1444359242756335,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1364574338,
+        -444807550,
+        608946370,
+        -332062224,
+        -2071543808,
+        -2119945634
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            19,
+            21
+          ],
+          "position": [
+            19,
+            21
+          ],
+          "mass": 7.954000000000026,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        771944288
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            17,
+            25
+          ],
+          "position": [
+            17,
+            25
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808,
+        1477422926
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            38
+          ],
+          "position": [
+            42,
+            38
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1138376550,
+        1897064919,
+        1280604702,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            12
+          ],
+          "position": [
+            27,
+            12
+          ],
+          "mass": 2.9936876116352322,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        825740395,
+        -1402944047,
+        -972794287,
+        -2071543808
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            30
+          ],
+          "position": [
+            1,
+            30
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808,
+        1114544690
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            40
+          ],
+          "position": [
+            43,
+            40
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            43,
+            38
+          ],
+          "position": [
+            43,
+            38
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        1599327851,
+        -1402944047,
+        -972794287,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            32
+          ],
+          "position": [
+            4,
+            32
+          ],
+          "mass": 2.8010953387627215,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1907668019,
+        945083679,
+        957471656,
+        38638433,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            34,
+            33
+          ],
+          "position": [
+            34,
+            33
+          ],
+          "mass": 3.2939861273462983,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        360166505,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            44,
+            40
+          ],
+          "position": [
+            44,
+            40
+          ],
+          "mass": 4.649933348835638,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1846326128,
+        1280604702,
+        -2071543808,
+        -663092201
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            15
+          ],
+          "position": [
+            29,
+            15
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        964559488,
+        -1402944047,
+        -972794287,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            3,
+            30
+          ],
+          "position": [
+            3,
+            30
+          ],
+          "mass": 1.8142689463086417,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        1786485835,
+        239625048,
+        -2039838604,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            12,
+            23
+          ],
+          "position": [
+            12,
+            23
+          ],
+          "mass": 2.7213602885888406,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464,
+        659661707
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            23
+          ],
+          "position": [
+            18,
+            23
+          ],
+          "mass": 2.0776834796477885,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1138376550,
+        1897064919,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            11
+          ],
+          "position": [
+            27,
+            11
+          ],
+          "mass": 2.519318881125876,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        572634088,
+        945083679,
+        957471656,
+        -782936192,
+        -2071543808,
+        -2071486464,
+        531584655
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            30
+          ],
+          "position": [
+            30,
+            30
+          ],
+          "mass": 0.6694573175750268,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        1786485835,
+        239625048,
+        -1873152291,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            13,
+            22
+          ],
+          "position": [
+            13,
+            22
+          ],
+          "mass": 0.5770320141946589,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1897064919,
+        1280604702,
+        -2071543808,
+        1714383049
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            15
+          ],
+          "position": [
+            27,
+            15
+          ],
+          "mass": 4.955,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -798140408,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            40
+          ],
+          "position": [
+            38,
+            40
+          ],
+          "mass": 2.306812173462233,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        652936252,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            39
+          ],
+          "position": [
+            38,
+            39
+          ],
+          "mass": 1.2650092027496163,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        -1965016168,
+        239625048,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            18,
+            21
+          ],
+          "position": [
+            18,
+            21
+          ],
+          "mass": 1.477306118284887,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1138376550,
+        -1710972374,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            27,
+            10
+          ],
+          "position": [
+            27,
+            10
+          ],
+          "mass": 0.0579999999999999,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        -332934891,
+        -2071543808,
+        -2071486464,
+        -988089642
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            38,
+            38
+          ],
+          "position": [
+            38,
+            38
+          ],
+          "mass": 1.4881798061698581,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -2071695434,
+        964559488,
+        -1402944047,
+        -972794287,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            4,
+            30
+          ],
+          "position": [
+            4,
+            30
+          ],
+          "mass": 1.7743130897217319,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        2052921900,
+        -1489562391,
+        239625048,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            16,
+            21
+          ],
+          "position": [
+            16,
+            21
+          ],
+          "mass": 1.2392800886104682,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1897064919,
+        1280604702,
+        -2071543808,
+        1200158010,
+        -1152575663
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            29,
+            13
+          ],
+          "position": [
+            29,
+            13
+          ],
+          "mass": 1.7080000000000002,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        -1592496048,
+        -585811788,
+        -1470049178,
+        -318249628,
+        -180490673,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            2,
+            37
+          ],
+          "position": [
+            2,
+            37
+          ],
+          "mass": 0.6619999999999999,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -115053595,
+        -1138376550,
+        1897064919,
+        1280604702,
+        -2071543808,
+        -2071486464,
+        1216872891
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            11
+          ],
+          "position": [
+            30,
+            11
+          ],
+          "mass": 1.8016305495003946,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        1965839426,
+        -1138376550,
+        1846326128,
+        1280604702,
+        -2071543808,
+        639463961
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            30,
+            16
+          ],
+          "position": [
+            30,
+            16
+          ],
+          "mass": 1.1271698899822833,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        572634088,
+        945083679,
+        957471656,
+        -891485750,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            32,
+            33
+          ],
+          "position": [
+            32,
+            33
+          ],
+          "mass": 1.735,
+          "massAtBirth": 2
+        }
+      ]
+    },
+    {
+      "genes": [
+        874583158,
+        825740395,
+        -1402944047,
+        -972794287,
+        -1035588196,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            1,
+            32
+          ],
+          "position": [
+            1,
+            32
+          ],
+          "mass": 0.831,
+          "massAtBirth": 1
+        }
+      ]
+    },
+    {
+      "genes": [
+        -110713212,
+        -681412133,
+        2137269356,
+        1928884824,
+        -2071543808,
+        -2071486464
+      ],
+      "creatures": [
+        {
+          "lastMovement": [
+            0,
+            0
+          ],
+          "lastPosition": [
+            42,
+            40
+          ],
+          "position": [
+            42,
+            40
+          ],
+          "mass": 2,
+          "massAtBirth": 2
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "generations": [
+      {
+        "g": 1,
+        "sP": 100,
+        "sC": 235,
+        "fV": 235
+      }
+    ],
+    "maxSurvivorCount": 235,
+    "minSurvivorCount": 235,
+    "maxFitnessValue": 0
+  }
 }

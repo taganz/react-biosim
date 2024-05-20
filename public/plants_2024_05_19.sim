@@ -48,7 +48,7 @@
     "selectionMethod": "ContinuousSelection",
     "initialPopulation": 150,
     "initialGenomeSize": 4,
-    "maxGenomeSize": 4,
+    "maxGenomeSize": 10,
     "maxNumberNeurons": 15,
     "mutationMode": "wholeGene",
     "mutationProbability": 0.25,
