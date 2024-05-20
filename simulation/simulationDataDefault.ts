@@ -112,7 +112,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   MASS_AT_BIRTH_ATTACK_AND_MOVE : 3,
   MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
-  MASS_COST_PER_EXECUTE_ACTION : 0.01, //  a plant has a minimum of 2 actions and gets energy from photosynthesis
+  MASS_COST_PER_EXECUTE_ACTION : 0.005, //  0.01 a plant has a minimum of 2 actions and gets energy from photosynthesis
 
   MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
 
@@ -175,15 +175,15 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
     
   ],
   enabledActions: [
-    //   "MoveNorth",        // 0
-    //   "MoveSouth",        // 1
-    //   "MoveEast",         // 2
-    //   "MoveWest",         // 3
-    //   "RandomMove",       // 4
-    //   "MoveForward",      // 5
+       "MoveNorth",        // 0
+       "MoveSouth",        // 1
+       "MoveEast",         // 2
+       "MoveWest",         // 3
+       "RandomMove",       // 4
+       "MoveForward",      // 5
        "Photosynthesis",   // 6 
        "Reproduction",     // 7
-    //   "Attack",           // 8
+       "Attack",           // 8
      ],
   metabolismEnabled: true,    // if false creature mass won't change
   phenotypeColorMode: "trophicLevel",    // "genome", "trophicLevel",

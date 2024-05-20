@@ -27,10 +27,10 @@ describe('EventLogger', () => {
             speciesId: 'species1',
             genusId: 'genus1',
             eventType: LogEvent.BIRTH,
-            paramName: 'param1',
+            paramName: 'massAtBirth',
             paramValue: 1,
-            paramValue2: 2,
-            paramString: "joe"
+            paramValue2: 0,
+            paramString: ''
         };
         mockSimulationDataConstants = {
               // -- log 
@@ -66,6 +66,8 @@ describe('EventLogger', () => {
         simulationData.constants.mockSimulationDataConstants;
         worldControllerMock = new WorldController(simulationData);
         logger = new EventLogger(worldControllerMock, 10);
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 1;
     });
     afterEach(() => {
         // Clear the log and perform any cleanup after each test
@@ -125,6 +127,25 @@ describe('EventLogger', () => {
         logger.logEvent(mockEvent);
         expect(logger.getLog().includes('969')).toBeTruthy();
     });
+    test('resume() - event logging starts always at step 0 ', () => {
+        
+        worldControllerMock.currentGen = 10;
+        worldControllerMock.currentStep = 3;        
+        logger.resume();     
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(0);
+        worldControllerMock.currentStep = 4;        
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(0);
+        worldControllerMock.currentStep = 5;        
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(0);
+        worldControllerMock.currentGen = 11;        
+        worldControllerMock.currentStep = 1;        
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(1);
+    });
+
     test('deleteLog() - log has only headers', () => {
         logger.logEvent(mockEvent);
         logger.deleteLog();
@@ -138,20 +159,20 @@ describe('EventLogger', () => {
     test('getLog() - correct data line', () => {
         const mockEvent : SimulationCallEvent = {
             logLevel: LogLevel.CREATURE,
-            creatureId: 1,
             speciesId: 'species1',
             genusId: 'genus1',
+            creatureId: 1,
             eventType: LogEvent.BIRTH,
-            paramName: 'param1',
+            paramName: 'massAtBirth',
             paramValue: 1,
-            paramValue2: 2,
-            paramString: "joe"
+            paramValue2: 0,
+            paramString: ""
         };
-        const dataLine = "CREATURE;1;1;1;species1;genus1;1;BIRTH;param1;1;2;joe";
+        const dataLine = "CREATURE;1;1;1;species1;genus1;1;BIRTH;massAtBirth;1;0;";
         logger.reset();
         logger.resume();
         logger.logEvent(mockEvent);
-        //console.log("getLog() test ---- \n", logger.getLog());
+        console.log("getLog() - correct data line ---- \n\n", logger.getLog());
         expect(logger.getLog().includes(dataLine)).toBeTruthy();
     });
     test('threshold - should stop logging after limit', async () => {
@@ -162,12 +183,9 @@ describe('EventLogger', () => {
         logger3.logEvent(mockEvent);
         logger3.logEvent(mockEvent);
         logger3.logEvent(mockEvent);
-        console.log(logger3.getLog());
+        //console.log(logger3.getLog());
         expect(logger3.logCount).toBe(3); // only 3 logs
     });
-
-  
- 
     test('threshold - should not log events once the threshold is reached', () => {
         logger.resume();
         for (let i = 0; i < 11; i++) {
@@ -184,17 +202,60 @@ describe('EventLogger', () => {
     });
 */
 
-    test('logEvent() - should aggregate events correctly at step level', () => {
+
+
+    test('logEvent() - step index is 1 at beginning of log', () => {
+        logger.resume();
+        logger.logEvent(mockEvent);
+        // Simulate steps changing in WorldController
+        const log = logger.getLog();
+        expect(log.includes("CREATURE;1")).toBeTruthy();
+    });
+
+    test('logEvent() - should aggregate events at step and generation levels', () => {
         logger.resume();
         // Simulate steps changing in WorldController
-        worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);
-        worldControllerMock.currentStep = 2; // Changing step
-        logger.logEvent({...mockEvent, paramName: 'param2', paramValue: 1});
+        logger.logEvent({...mockEvent, eventType: LogEvent.METABOLISM,
+                        creatureId: 101, paramName: 'mass', paramValue: 1});
+        logger.logEvent({...mockEvent, eventType: LogEvent.METABOLISM,
+                        creatureId: 102, paramName: 'mass', paramValue: 1});
+        logger.logEvent({...mockEvent, eventType: LogEvent.METABOLISM,
+                        creatureId: 103, paramName: 'mass', paramValue: 1});
+        worldControllerMock.currentGen = 2; 
+        worldControllerMock.currentStep = 1; 
+        logger.logEvent({...mockEvent, eventType: LogEvent.METABOLISM,
+            creatureId: 103, paramName: 'mass', paramValue: 1});
+            
+        console.log("logEvent() - should aggregate events at step and generation levels\n\n", logger.getLog());
 
         // Verify aggregation
         const log = logger.getLog();
-        expect(log.includes('count')).toBeTruthy();
+        expect(log.includes("STEP TOTALS;1;1;1;;;;BIRTH;massAtBirth sum;1;;")).toBeTruthy();
+        expect(log.includes("STEP TOTALS;1;1;1;;;;METABOLISM;mass sum;3;;")).toBeTruthy();
+        expect(log.includes("GENERATION TOTALS;1;1;;;;;BIRTH;massAtBirth sum;1;;")).toBeTruthy();
+        expect(log.includes("GENERATION TOTALS;1;1;;;;;METABOLISM;mass sum;3;;")).toBeTruthy();
+    });
+
+    test('logEvent() - aggregate step events at step level', () => {
+        logger.resume();
+
+        // generation 1 step 1
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent({...mockEvent, creatureId: 1});
+        logger.logEvent({...mockEvent, creatureId: 2});
+        logger.logEvent({...mockEvent, creatureId: 3});
+        
+        // step 2
+        worldControllerMock.currentGen = 1; 
+        worldControllerMock.currentStep = 2; // Changing step
+        logger.logEvent({...mockEvent, creatureId: 4});
+
+        console.log("logEvent() - aggregate step events at step level");
+        console.log(logger.getLog());
+
+        expect(logger.getLog().includes('STEP TOTALS;1;1;1')).toBeTruthy();
     });
 
 
@@ -204,13 +265,13 @@ describe('EventLogger', () => {
         // gen 1
 
         worldControllerMock.currentGen = 1;
-        worldControllerMock.currentStep = 1;        
+        worldControllerMock.currentStep = 2;        
         logger.recordNextGeneration();  // call function
         logger.logEvent(mockEvent);
         expect(logger.logCount).toBe(0);
 
         worldControllerMock.currentGen = 1;
-        worldControllerMock.currentStep = 2;
+        worldControllerMock.currentStep = 3;
         logger.logEvent(mockEvent);
         expect(logger.logCount).toBe(0);
 
@@ -224,20 +285,54 @@ describe('EventLogger', () => {
         worldControllerMock.currentGen = 2;
         worldControllerMock.currentStep = 2;
         logger.logEvent(mockEvent);
-        //console.log(logger.getLog());
-        expect(logger.logCount).toBe(3);  // es 3 perque afegeix STEP TOTALS
+        expect(logger.logCount).toBe(3);  // 1 step totals + 2 creatures
 
         // gen 3
         worldControllerMock.currentGen = 3;
         worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);
-        expect(logger.logCount).toBe(3);
+        console.log("recordNextGeneration() - should log one generation after current\n\n", logger.getLog());
+        expect(logger.logCount).toBe(5);    // 1 gen totals + 2 step totals + 2 creatures
     });
 
-    test('recordFirsttGeneration() - should log only the first generation', () => {
+
+    test('recordFirsttGeneration() -  is not paused after call ', () => {
+        logger.pause();
+        
+        // gen 3
+
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 1;        
+        logger.recordFirstGeneration();  // call function
+        expect(logger.isPaused).toBeFalsy();
+    });
+    test('recordFirsttGeneration() -  log is empty after call ', () => {
         logger.resume();
         
-        // gen 1
+        // gen 3
+
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 1;        
+        logger.recordFirstGeneration();  // call function
+        expect(logger.logCount).toBe(0);
+    });
+    test('recordFirsttGeneration() - doesn t log until first generation ', () => {
+        logger.resume();
+        
+        // gen 3
+
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 2;        
+        logger.recordFirstGeneration();  // call function
+        logger.logEvent(mockEvent);             // not logged
+        expect(logger.logCount).toBe(0);
+    });
+
+    
+    test('recordFirsttGeneration() - log only first generation for complete generation', () => {
+        logger.resume();
+        
+        // gen 3
 
         worldControllerMock.currentGen = 3;
         worldControllerMock.currentStep = 1;        
@@ -256,20 +351,114 @@ describe('EventLogger', () => {
         worldControllerMock.currentGen = 1;
         worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);             // +1 creature event
-        expect(logger.logCount).toBe(1);
+        expect(logger.logCount).toBe(1);        // 1 creature
         
         worldControllerMock.currentGen = 1;
         worldControllerMock.currentStep = 2;
         logger.logEvent(mockEvent);             // +1 creature event
         //console.log(logger.getLog());
-        expect(logger.logCount).toBe(3);  // 2 creature event + 1 step event
+        expect(logger.logCount).toBe(3);        // 2 creature event + 1 step event
 
-        // gen 1
+        // gen 2
         worldControllerMock.currentGen = 2;
         worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);              // +1 creature event
-        console.log(logger.getLog());
-        expect(logger.logCount).toBe(3);  // 3 creatures + 2 (!) step + 1 gen event
+        expect(logger.logCount).toBe(5);        // 1 gen totas + 2 step totals + 2 creatures
+        console.log("recordFirsttGeneration() - log only first generation for complete generation\n\n", logger.getLog());
+    });
+
+    test('recordFirsttGeneration() - log complete generation and generation totals', () => {
+        logger.resume();
+        
+        logger.recordFirstGeneration();  // call function
+
+        // gen 3 not logged
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 1;        
+        logger.logEvent(mockEvent);             
+        expect(logger.logCount).toBe(0);
+
+
+        // worldcontroller reset
+        logger.reset();  
+
+        // gen 1 
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent(mockEvent);             // +1 creature event
+        expect(logger.logCount).toBe(1);
+        
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 2;
+        logger.logEvent(mockEvent);             // +1 creature event
+        expect(logger.logCount).toBe(3);        // 1 step change + 2 creature      
+
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 3;
+        logger.logEvent(mockEvent);             // +1 creature event
+        expect(logger.logCount).toBe(5);        // 2 step change + 3 creature
+
+        // gen 2
+        worldControllerMock.currentGen = 2;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent(mockEvent);              
+        //console.log(logger.getLog());
+        expect(logger.logCount).toBe(7);        // 1 gen total + 3 step total + 3 creature
+
+        console.log("recordFirsttGeneration() - log complete generation and generation totals---- \n\n", logger.getLog());
+
+        const log = logger.getLog();
+        expect(log.includes("GENERATION TOTALS;3")).toBeTruthy();
+
+    });
+
+    test('recordFirsttGeneration() - log only first generation for partial generation when extintion', () => {
+        logger.resume();
+        
+        // gen 3
+
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 1;        
+        logger.recordFirstGeneration();  // call function
+        logger.logEvent(mockEvent);             // not logged
+        expect(logger.logCount).toBe(0);
+
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 2;
+        logger.logEvent(mockEvent);
+        expect(logger.logCount).toBe(0);   // not logged
+
+        // gen 1 step 1
+        logger.reset();  // called by worldController at reset
+
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent({...mockEvent, creatureId: 101});             // +1 creature event
+        logger.logEvent({...mockEvent, creatureId: 102});             // +1 creature event
+        
+        expect(logger.logCount).toBe(2);                           // 2 creatures 
+        
+        // gen 1 step 2
+        
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 2;
+        logger.logEvent({...mockEvent, creatureId: 101});             // +1 creature event
+        logger.logEvent({...mockEvent, creatureId: 102});             // +1 creature event
+        expect(logger.logCount).toBe(5);                        // step 1 totals + 4 creatures
+
+        // extintion happen and simulation reset!
+
+        // gen 1 but step 1 again
+        logger.reset();
+        worldControllerMock.currentGen = 1;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent({...mockEvent, creatureId: 201});               // +1 creature event
+        expect(logger.isPaused).toBeTruthy;
+        console.log("recordFirsttGeneration() - log only first generation for partial generation when extintion\n\n", logger.getLog());
+        expect(logger.logCount).toBe(5);                            //  1 step + 4 creatures, could not record gen stats
+
+
+        
     });
 
     
@@ -307,7 +496,7 @@ describe('EventLogger', () => {
         worldControllerMock.currentGen = 2;
         worldControllerMock.currentStep = 1;
         logger.logEvent(mockEvent);              // +1 creature event
-        console.log(logger.getLog());
+        //console.log(logger.getLog());
         expect(logger.logCount).toBe(6);  // 3 creatures + 2 (!) step + 1 gen event
     });
 
