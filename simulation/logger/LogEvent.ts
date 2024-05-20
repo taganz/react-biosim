@@ -18,7 +18,7 @@ export enum LogEvent {
     STEP_END = "STEP_END"
   }
   
-  // un mapped type
+// un mapped type
 export type AllowedLogEvents = {
     [key in LogEvent]: boolean;
 };

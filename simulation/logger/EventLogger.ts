@@ -28,21 +28,17 @@ interface SimulationEvent {
   paramString: string;
 }
 
+
 export default class EventLogger {
   _csvHeaders = 'LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue;ParamValue2;ParamString\n';
   private worldController : WorldController;
   private readonly logThreshold: number;
-  // should be reset at reset()
   private log: SimulationEvent[] = [];
   private stepTotals : [LogEvent, string][]=[];
   private genTotals : [LogEvent, string][]=[];
-  private resumedAndWaitingForStep1 = true;
   private paused = true; 
   private logCreatureId : number;
   private currentLogLevel : LogLevel;
-  //private singleGenerationRecording = false;
-  //private fromFirstGenerationRecording = false;
-  private firstGenerationRecordingStarted = false;
   private waitingForFirstGenerationRecording = false;
   
   
@@ -53,12 +49,8 @@ export default class EventLogger {
   private stepIndex = 0;   
   private lastGenLogged  = 0;
   private lastStepLogged = 0;
-  //private lastStepTotals = -1;
-  //private lastGenTotals  = -1;
-  
-  
+   
 
- // constructor(logFilePath: string, logThreshold: number = 10) {
   constructor(worldController : WorldController, logThreshold?: number) {
     this.worldController = worldController;
     this.logCreatureId = this.worldController.simData.constants.LOG_CREATURE_ID;
@@ -69,7 +61,6 @@ export default class EventLogger {
       this.logThreshold =  this.worldController.simData.constants.LOG_EVENTLOGGER_MAX_EVENTS;
     }
     this.reset();
-    //console.log("eventLogger initialized");
   }
 
 
@@ -215,8 +206,6 @@ export default class EventLogger {
 
   }
 
- 
-
   private logReceivedEvent(eventValues:SimulationCallEvent) {
     
       if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.STEP)) return ;
@@ -261,7 +250,6 @@ export default class EventLogger {
 
     }
   }
-
   
   // get events data in blog format to write to file 
   public getLogBlob(): Blob {
