@@ -47,7 +47,7 @@ export default function serializeSpecies(worldController: WorldController) {
     species.forEach((savedSpecies) => {
       savedSpecies.creatures.forEach((savedCreature) => {
         const genome: Genome = new Genome(savedSpecies.genes);
-        const creature = new Creature(worldController.generations, savedCreature.position, genome);
+        const creature = new Creature(worldController.generations, savedCreature.position, false, genome);
         creature.lastMovement = savedCreature.lastMovement;
         creature.lastPosition = savedCreature.lastPosition;
         creature.massAtBirth = savedCreature.massAtBirth;

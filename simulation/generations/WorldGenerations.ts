@@ -14,6 +14,8 @@ import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger'
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 import WorldGenerationsData from "./WorldGenerationsData";
+import { SensorName } from "../creature/brain/CreatureSensors";
+import { ActionName } from "../creature/brain/CreatureActions";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -40,6 +42,8 @@ export default class WorldGenerations {
   deletionRatio : number;
   geneInsertionDeletionProbability: number = 0;
   sensors: CreatureSensors;
+  enabledSensors: SensorName[];
+  enabledActions: ActionName[];
   actions: CreatureActions;
   metabolismEnabled : boolean;
   phenotypeColorMode : PhenoTypeColorMode;
@@ -83,6 +87,9 @@ export default class WorldGenerations {
                   worldController.simData.worldControllerData.ACTION_REPRODUCTION_OFFSET);
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
+    this.enabledSensors = worldGenerationsData.enabledSensors;
+    this.enabledActions = worldGenerationsData.enabledActions;
+  
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;
     this.phenotypeColorMode = worldGenerationsData.phenotypeColorMode;
     this.eventLogger = worldController.eventLogger;
@@ -124,8 +131,8 @@ export default class WorldGenerations {
 
 
   // creates a new creature, add to currentCreatures, add to grid, mutate genome
-  public newCreature(position : GridPosition, genome?: Genome) : Creature {
-    if (genome) {
+  public newCreature(position : GridPosition, firstGeneration: boolean, genome?: Genome) : Creature {
+    if (genome && !firstGeneration) {
       let genomeOffspring = genome.clone(
         true,
         this.mutationMode,
@@ -134,10 +141,10 @@ export default class WorldGenerations {
         this.geneInsertionDeletionProbability,
         this.deletionRatio
       )
-      var creature = new Creature(this, position, genomeOffspring);
+      var creature = new Creature(this, position, firstGeneration, genomeOffspring);
     }
     else {
-      var creature = new Creature(this, position);
+      var creature = new Creature(this, position, firstGeneration, genome);
     }
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);

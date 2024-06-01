@@ -56,29 +56,33 @@ export default class Creature {
   
   private _health: number = maxHealth;
 
-  constructor(generations: WorldGenerations, position: GridPosition, genome?: Genome) {
+  // firstGeneration creatures get mass from waterInCloud
+  // firstGeneration creatures can receive a genome to spawn a specific genus
+  constructor(generations: WorldGenerations, position: GridPosition, firstGeneration: boolean, genome?: Genome) {
+    
     this.generations = generations;
     this.worldControllerData = generations.worldController.simData.worldControllerData;
 
     this.id = generations.lastCreatureIdCreated + 1;
     this.stepBirth = generations.worldController.currentStep;
-   // this.massAtBirth = massAtBirth ? massAtBirth : constants.MASS_AT_BIRTH_GENERATION_0;
     
     // Position
     this.position = position;
     this.lastPosition = [position[0], position[1]];
     this.urgeToMove = [0, 0];
     this.lastMovement = [0, 0];
-    //this._metabolismEnabled = generations.metabolismEnabled;
 
     if (!genome) {
-      // 1st generation, create genome
-      const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? this.generations.worldGenerationsData.plantGenes.length : 0);
+      //1/6/24 remove adding plants genes if metabolism enabled, plants can be added from simulationdatadefaults
+      //const randomGenesToAdd = this.generations.initialGenomeSize - (this.generations.metabolismEnabled ? this.generations.worldGenerationsData.plantGenes.length : 0);
+      //const newGenome = new Genome(
+      //  [...new Array(randomGenesToAdd)].map(() => Genome.generateRandomGene()));
+      //if (this.generations.metabolismEnabled) {
+      //  newGenome.addGenes(this.generations.worldGenerationsData.plantGenes);
+      //}
+      const randomGenesToAdd = this.generations.initialGenomeSize;
       const newGenome = new Genome(
         [...new Array(randomGenesToAdd)].map(() => Genome.generateRandomGene()));
-      if (this.generations.metabolismEnabled) {
-        newGenome.addGenes(this.generations.worldGenerationsData.plantGenes);
-      }
       this.brain = new CreatureBrain(this, newGenome);
     }
     else {
@@ -87,19 +91,17 @@ export default class Creature {
     }
     this._genus = CreatureGenus.getGenus(this.brain);
 
+    //TODO hauria d'estar en CreatureMass
     switch(this._genus)   {
       case "plant":
       case "unknown":
         this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_PLANT;
         break;
-      case "attack" :
-        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK;
+      case "attack_plant":
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK_PLANT;
         break;
-      case "move":
-        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_MOVE;
-        break;
-      case "attack_move":
-        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK_AND_MOVE;
+      case "attack_animal":
+        this.massAtBirth = this.worldControllerData.MASS_AT_BIRTH_ATTACK_ANIMAL;
         break;
       default:
         console.error("genus unknown ", this._genus);
@@ -107,7 +109,7 @@ export default class Creature {
     }
     
     this._worldWater = this.generations.worldController.worldWater;
-    if (!genome) {
+    if (firstGeneration) {
           // if first generation, water should be obtained from cloud
           this._worldWater.getWaterFromCloud(this.massAtBirth);
     }
@@ -141,7 +143,7 @@ export default class Creature {
     this._age++;
 
     const basalMetabolismConsumed = this._mass.basalMetabolism();
-    this._worldWater.dissipateWater(basalMetabolismConsumed);
+    this._worldWater.dissipateWater(basalMetabolismConsumed);         //TODO la relacio amb WorldWater hauria d'estar directament en CreatureMass
     this.log(LogEvent.METABOLISM, "mass", this.mass);
     this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
     if (!this.isAlive) {
@@ -171,7 +173,7 @@ export default class Creature {
 
     // Move
     if (probX !== 0 || probY !== 0) {
-      this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
+      this.attack_plant((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
       this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
     }
 
@@ -235,7 +237,7 @@ export default class Creature {
     }
   }
 
-  private move(x: number, y: number) {
+  private attack_plant(x: number, y: number) {
 
 
     this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
@@ -279,7 +281,7 @@ export default class Creature {
       else if (x==-1 && y==-1) this.stepDirection = "SW";
       else if (x==-1 && y==0) this.stepDirection = "W";
       else if (x==-1 && y==1) this.stepDirection = "NW";
-      else console.log("move error", x, y);
+      else console.log("attack_plant error", x, y);
       this.log(LogEvent.MOVE, "direction", Math.round(x), Math.round(y), <string>this.stepDirection);
 
     }

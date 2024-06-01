@@ -5,7 +5,7 @@
 import * as constants from "@/simulation/simulationDataDefault"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import { populationStrategyFormatter } from "@/simulation/generations/population/PopulationStrategyFormatter";
+import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
@@ -20,6 +20,7 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
+import { SimulationData } from "@/simulation/SimulationData";
 
 export type SavedPopulationStrategy = string;
 
@@ -27,6 +28,7 @@ export type SavedPopulationStrategy = string;
 
 describe('populationStrategy', () => {
 
+        let simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
         
         //const worldControllerData = testWorldControllerData;
         //const worldGenerationsData = testWorldGenerationsData
@@ -58,8 +60,8 @@ describe('populationStrategy', () => {
                 expect(populationStrategyFormatter.deserialize("RandomFixedGenePopulation")).toEqual(rfgp);
                 expect(populationStrategyFormatter.deserialize("ContinuousPopulation")).toEqual(cpp);
                         });
-        test('AsexualZonePopulation 1st generation without zone', ()=> {
-                const worldController = new WorldController(testWorldControllerData, testWorldGenerationsData);
+        test('DISPLAY--AsexualZonePopulation 1st generation without zone', ()=> {
+                const worldController = new WorldController(simulationData);
                 const arp = new AsexualRandomPopulation();
                 arp.populate(worldController.generations);
                 worldController.generations.grid.debugPrintGridCreatures();

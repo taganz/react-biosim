@@ -46,7 +46,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
           offspringPosition = generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, generations.initialPopulation);
         }        
         if (offspringPosition != null) {
-          generations.newCreature(offspringPosition);
+          generations.newCreature(offspringPosition, true);
         }
         else {
           console.warn("no position for creature");
@@ -73,7 +73,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
           const parent = shuffledParents[parentIdx];
           let position : GridPosition | null = generations.grid.getRandomAvailablePosition();
           if (position != null) {
-            generations.newCreature(position, parent.brain.genome);
+            generations.newCreature(position, false, parent.brain.genome);
           }
           else {
             console.warn("no free position found 2");
@@ -103,7 +103,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
               offspringPosition =  generations.grid.getCenteredAvailablePosition(pos[0], pos[1], halfWidth, halfHeight, generations.initialPopulation);
             }
             if (offspringPosition != null) {
-              generations.newCreature(offspringPosition, parent.brain.genome);
+              generations.newCreature(offspringPosition, false, parent.brain.genome);
             }
             else {
               console.warn("no position for creature 2");

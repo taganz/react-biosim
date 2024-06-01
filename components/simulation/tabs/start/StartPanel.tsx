@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import ScenariosSelection from "./ScenarioSelection";
 import LoggerStatus from "./LoggerStatus";
+import WorldWaterStatus from "./WorldWaterStatus";
 
 
 export default function StartPanel() {
@@ -15,6 +16,7 @@ export default function StartPanel() {
       <ScenariosSelection></ScenariosSelection>
       </div>
      <LoggerStatus/>
+     <WorldWaterStatus/>
     </div>
   );
 }

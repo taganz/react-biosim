@@ -3,7 +3,7 @@
 import * as constants from "@/simulation/simulationDataDefault"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import { populationStrategyFormatter } from "@/simulation/generations/population/PopulationStrategyFormatter";
+import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
@@ -31,7 +31,7 @@ describe('WorldWater', () => {
     let grid : Grid;
     
     beforeEach(() => {
-        waterData = constants.WORLD_CONTROLLER_DATA_DEFAULT.waterData;
+        waterData = constants.SIMULATION_DATA_DEFAULT.waterData;
         waterData.waterRainMaxPerCell = 1.1;
         waterData.waterFirstRainPerCell = 2.1;
         waterData.waterCellCapacity = 4.3;
@@ -51,7 +51,8 @@ describe('WorldWater', () => {
         expect(totalWater).toBeCloseTo(2.5 * 5 * 5, 4);
     });
     test('rain typeUniform should give max water per cell to grid', () => {
-        worldWater.rain(grid, "rainTypeUniform");
+        worldWater.waterData.rainType = "rainTypeUniform";
+        worldWater.rain(grid);
         // ojo, dependra de capacitat de les cel.les!!
         grid.debugPrintWater();
         expect(grid.cell(2,2).water).toBe(1.1);
@@ -91,17 +92,23 @@ describe('WorldWater', () => {
         expect(grid.debugGetGridWater() - waterAtGridInit).toEqual(worldWater.waterInCells);
     });
     test('rain - should keep total water after rain uniform', () => {
-        worldWater.rain(grid, "rainTypeUniform", 1.7);
+        worldWater.waterData.rainType = "rainTypeUniform";
+        //worldWater.rain(grid, "rainTypeUniform", 1.7);
+        worldWater.rain(grid);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
     test('rain - should keep total water after rain sinsin', () => {
-        worldWater.rain(grid, "rainTypeSinSin", 1.5);
+        worldWater.waterData.rainType = "rainTypeSinSin";
+        //worldWater.rain(grid, "rainTypeSinSin", 1.5);
+        worldWater.rain(grid);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
     test('evaporation - should keep total water after evaporation', () => {
-        worldWater.rain(grid, "rainTypeUniform", 1);
+        worldWater.waterData.rainType = "rainTypeUniform";
+        //worldWater.rain(grid, "rainTypeUniform", 1);
+        worldWater.rain(grid);
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });

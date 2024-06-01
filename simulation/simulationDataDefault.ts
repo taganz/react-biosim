@@ -20,9 +20,12 @@ import ContinuousSelection from "./generations/selection/ContinuousSelection";
 import WorldGenerationsData from "./generations/WorldGenerationsData";
 import WorldControllerData from "./world/WorldControllerData";
 import { WaterData } from "./water/WaterData";
-import { SimulationData
- } from "./SimulationData";
-
+import { SimulationData} from "./SimulationData";
+import Genome from "./creature/brain/Genome";
+import { NeuronType } from "./creature/brain/Neuron";
+import { selectGenusBasedOnProbability, GenusProbability } from "./generations/population/selectGenusBasedOnProbability";
+import GreatestMassSelection from "./generations/selection/GreatestMassSelection";
+import PlantHerbivorePopulation from "./generations/population/PlantHerbivorePopulation";
 
 /*  ----- production setup -----
    STARTUP_MODE = "startupScenario";
@@ -62,15 +65,20 @@ export const CONSTANTS_DEFAULT = {
       [LogEvent.STEP_END]: true,
     },
     GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS : 0.05, 
+    GREATEST_MASS_SELECTION_TOP_SURVIVORS : 0.05, 
 
     // -- selection method
 
-    POPULATION_DEFAULT_SPECIES : [     // used in RandomFixedGenePopulation
-      //{name: "Basic random move", genome: [-2088452096]},
-      {name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
+    POPULATION_DEFAULT_SPECIES : [     // used in RandomFixedGenePopulation    -- //TODO deprecated?
+      //{name: "Basic random attack_plant", genome: [-2088452096]},
+      //{name: "Plant-repro and photo", genome: [-2071543808,-2071486464]}
+      {name: "random-random attack_plant", genome: [Genome.connectionToGene({sourceType: NeuronType.SENSOR, sourceId: 4, sinkType: NeuronType.ACTION, sinkId: 4, weight: 1})]}
     ],
 
-    SIM_CODE_LENGTH : 3,
+    POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.8},
+                                {genus: "attack_plant", probability: 0.2}],  // used in RandomFixedGenePopulation
+
+    SIM_CODE_LENGTH : 3,    
 
     // -- objects
 
@@ -107,29 +115,31 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   // model values
   MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
   MASS_AT_BIRTH_PLANT : 1,
-  MASS_AT_BIRTH_MOVE : 2,
+  MASS_AT_BIRTH_ATTACK_PLANT : 2,
   MASS_AT_BIRTH_ATTACK : 2,
-  MASS_AT_BIRTH_ATTACK_AND_MOVE : 3,
-  MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
+  MASS_AT_BIRTH_ATTACK_ANIMAL : 3,
+  MASS_MAX_MULTIPLE_MASS_AT_BIRT : 1000, // 5,
 
-  MASS_COST_PER_EXECUTE_ACTION : 0.005, //  0.01 a plant has a minimum of 2 actions and gets energy from photosynthesis
+  MASS_COST_PER_EXECUTE_ACTION : 0,  //  0.01 a plant has a minimum of 2 actions and gets energy from photosynthesis
 
-  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.004,   // 0.07
+  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0,        //0.004,   // 0.07
 
   REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
   REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3
-  REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : 3,    
+  REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : 300,    //3
 
   ACTION_REPRODUCTION_OFFSET : 0.6,  // will trigger action if input value is greater
 
-  MOVE_COST_PER_MASS_TRY : 0.2,
-  MOVE_COST_PER_MASS_DO : 0.6,
-  MOVE_MULTIPLE_MASS_AT_BIRTH : 2,    // 2
+  MOVE_COST_PER_MASS_TRY : 0,       //0.2,
+  MOVE_COST_PER_MASS_DO : 0,        //  0.6,
+  MOVE_MULTIPLE_MASS_AT_BIRTH : 1,  // 2
 
-  ATTACK_COST_PER_MASS_TRY : 0.4,
+  ATTACK_COST_PER_MASS_TRY : 0,         // 0.4,
   ATTACK_COST_PER_MASS_DO : 0,
   ATTACK_MULTIPLE_MASS_AT_BIRTH : 3,     // 0
   ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
+
+
   
   // user values
   pauseBetweenSteps: 10,  // [0 | 10 | 50 | 200]
@@ -147,10 +157,10 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
 
 export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   // initial values
-  populationStrategy: new ContinuousPopulation(),
-  selectionMethod: new ContinuousSelection(),
-  initialPopulation: 150,       // 500
-  initialGenomeSize: 6,         // 4
+  populationStrategy: new PlantHerbivorePopulation(),
+  selectionMethod: new GreatestMassSelection(),
+  initialPopulation: 500,       // 500
+  initialGenomeSize: 4,         // 4
   maxGenomeSize: 20,             // 30
   maxNumberNeurons: 15,
   mutationMode: MutationMode.wholeGene,
@@ -168,11 +178,17 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
     "HorizontalBorderDistance", // 7
     "VerticalBorderDistance",   // 8
     "BorderDistance",           // 9
-    "Touch",                    // 10
-    "Pain",                     // 11
-    "PopulationDensity",        // 12
-    "Mass"                     // 13
-    
+    "TouchNorth",               // 10
+    "TouchEast",                // 11
+    "TouchSouth",               // 12
+    "TouchWest",                // 13
+    "Pain",                     // 14
+    "PopulationDensity",        // 15
+    "Mass",                     // 16
+    "PreyDistance",             // 17
+    "PreyDirection",            // 18
+    "PredatorDistance",         // 19
+    "PredatorDirection"         // 20
   ],
   enabledActions: [
        "MoveNorth",        // 0
@@ -183,11 +199,12 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
        "MoveForward",      // 5
        "Photosynthesis",   // 6 
        "Reproduction",     // 7
-       "Attack",           // 8
+       "AttackPlant",      // 8
+       "AttackAnimal"      // 9
      ],
-  metabolismEnabled: true,    // if false creature mass won't change
+  metabolismEnabled: true,    // true   -- if false creature mass won't change
   phenotypeColorMode: "trophicLevel",    // "genome", "trophicLevel",
-  plantGenes : [-2071543808,-2071486464], // random-2->photosynthesis, random-1->reproduction
+  plantGenes : [-2071543808,-2071486464],  // 
   
   // state values 
   lastCreatureIdCreated: 0,
@@ -198,11 +215,11 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
 }
 
 export const WATER_DATA_DEFAULT : WaterData = {
-  waterFirstRainPerCell: 50,              // 10
-  waterCellCapacity: 100,     // 20
-  waterRainMaxPerCell:  30,             // 2
-  waterTotalPerCell: 130,       // 
-  waterEvaporationPerCellPerGeneration: 10,  // 0
+  waterFirstRainPerCell: 10,              // 10
+  waterCellCapacity: 20,     // 20
+  waterRainMaxPerCell:  2,             // 2
+  waterTotalPerCell: 20,       // 20
+  waterEvaporationPerCellPerGeneration: 10,  // 10
   rainType : "rainTypeUniform",
 };
 

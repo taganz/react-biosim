@@ -6,7 +6,11 @@ import {
   paddingLeft,
   probabilityToBool,
 } from "../../helpers/helpers";
+import { Genus } from "../CreatureGenus";
 import { MutationMode } from "./MutationMode";
+import { ConnectionType } from "./Connection";
+import { NeuronType, neuronTypeToString } from "./Neuron";
+import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 const logMutations = false;
 const logBeforeAndAfter = false;
@@ -23,10 +27,37 @@ const decimalPad = maxGenNumber
   .map(() => "0")
   .join("");
 
-export default class Genome {
-  genes: number[];
+export type Gene = number;
 
-  constructor(genes: number[]) {
+export const geneToString = (generations: WorldGenerations, gene: Gene) : string => {
+  const connection : ConnectionType = Genome.geneToConnection(gene, generations);
+  let str : string = "[";
+  if (connection.sourceType === NeuronType.SENSOR) {
+    str += generations.sensors.enabledSensors[connection.sourceId].toString();
+  } else {
+    str += "neuron "+connection.sourceId.toString();
+  }
+  str += "] ---> " + connection.weight.toFixed(2) + " ---> [";
+  if (connection.sinkType === NeuronType.ACTION) {
+    str += generations.actions.enabledActions[connection.sinkId].toString();
+  } else {
+    str += "neuron  "+connection.sinkId.toString();
+  }
+  str +="]";
+  return str;
+}
+
+export const geneArrayToString = (generations: WorldGenerations, geneArray: Gene[]) : string => {
+  let str = "";
+  geneArray.map(gene => {str += geneToString(generations, gene)+"\n"});
+  return str;
+}
+
+
+export default class Genome {
+  genes: Gene[];
+
+  constructor(genes: Gene[]) {
     this.genes = genes;
   }
 
@@ -135,11 +166,11 @@ export default class Genome {
     return new Genome(newGenes);
   }
 
-  addGenes(newGene: number[]): void {
+  addGenes(newGene: Gene[]): void {
     this.genes = this.genes.concat(newGene);
 
   }
-  static generateRandomGene(): number {
+  static generateRandomGene(): Gene {
     let result = 0;
     for (let i = 1; i <= geneBitSize; i++) {
       if (Math.random() < 0.5) {
@@ -150,6 +181,12 @@ export default class Genome {
     return result;
 
     // return Math.round(Math.random() * maxGenNumber);
+  }
+
+  static addGenesToLength(genes: Gene[], length: number) : Gene[] {
+    if (length <= genes.length) return genes;
+    return genes.concat([...new Array(length - genes.length)].map(() => Genome.generateRandomGene()));
+    
   }
 
   getRandomGeneIndex() {
@@ -178,32 +215,51 @@ export default class Genome {
       .join(" ");
   }
 
-  getGeneData(index: number): number[] {
+  toString(generations: WorldGenerations): string {
+    let str = "";
+    this.genes.map(gene => {str+=geneToString(generations, gene)+"\n"});
+    return str;
+  }
+  /*
+  genesIndexToConnection(index: number): ConnectionType {
     // sourceType, sourceId, sinkType, sinkId, weigth
     // 1 1110001 0 0110101 0001111111100011
-    return Genome.decodeGeneData(this.genes[index]);
+    return Genome.geneToConnection(this.genes[index]);
   }
+  */
 
-  static decodeGeneData(gene : number) : number[] {
-    return [
-      (gene >> 31) & 1,
-      (gene >> 24) & 127,
-      (gene >> 23) & 1,
-      (gene >> 16) & 127,
-      (gene & 65535)/8192-4,
-    ];
+  static geneToConnection(gene : Gene, generations: WorldGenerations) : ConnectionType {
+    const connection =  {
+      sourceType: (gene >> 31) & 1,
+      sourceId: ((gene >> 24) & 127),
+      sinkType: (gene >> 23) & 1,
+      sinkId: (gene >> 16) & 127,
+      weight: (gene & 65535)/8192-4,
+    };
 
+    // Renumber sourceId: from random number to one of the available options<
+    if (connection.sourceType == NeuronType.SENSOR) {
+      connection.sourceId %= generations.sensors.neuronsCount;
+    } else {
+      connection.sourceId %= generations.maxNumberNeurons;
+    }
+    // Renumber sinkId
+    if (connection.sinkType == NeuronType.ACTION) {
+      connection.sinkId %= generations.actions.neuronsCount;
+    } else {
+      connection.sinkId %= generations.maxNumberNeurons;
+    }
+    return connection;
   }
-  static encodeGeneData(data: number[]): number {
-    const [sourceType, sourceId, sinkType, sinkId, weight] = data;
-  
+  static connectionToGene(data: ConnectionType): Gene {
+    
     // Assuming each field's range is correct
     const encoded =
-      (sourceType & 1) << 31 |
-      (sourceId & 127) << 24 |
-      (sinkType & 1) << 23 |
-      (sinkId & 127) << 16 |
-      ((weight +4)*8192 & 65535);
+      (data.sourceType & 1) << 31 |
+      (data.sourceId & 127) << 24 |
+      (data.sinkType & 1) << 23 |
+      (data.sinkId & 127) << 16 |
+      ((data.weight +4)*8192 & 65535);
   
     return encoded;
   }
@@ -240,4 +296,5 @@ export default class Genome {
 
     return true;
   }
+
 }

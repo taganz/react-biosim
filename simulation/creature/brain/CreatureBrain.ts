@@ -11,8 +11,8 @@ export const initialNeuronOutput = 0.5;
 
 export default class CreatureBrain {
     creature : Creature;
-    sensors: CreatureSensors;
-    actions: CreatureActions;
+    sensors: CreatureSensors;   // shortcut to generations.sensors
+    actions: CreatureActions;   // shortcut to generations.actions
     brain!: Network;
     genome: Genome;
     _networkInputCount: number;
@@ -54,29 +54,30 @@ export default class CreatureBrain {
         // Create connections from genes
         const connections: Connection[] = [];
         for (let geneIdx = 0; geneIdx < this.genome.genes.length; geneIdx++) {
-        let [sourceType, sourceId, sinkType, sinkId, weigth] =
-            this.genome.getGeneData(geneIdx);
+            const connection = Genome.geneToConnection(this.genome.genes[geneIdx], this.creature.generations);
+            /*
+            // Renumber sourceId: from random number to one of the available options<
+            if (connection.sourceType === NeuronType.SENSOR) {
+                connection.sourceId %= this._networkInputCount;
+            } else {
+                connection.sourceId %= this._maxNumberNeurons;
+            }
 
-        // Renumber sourceId: from random number to one of the available options<
-        if (sourceType === NeuronType.SENSOR) {
-            sourceId %= this._networkInputCount;
-        } else {
-            sourceId %= this._maxNumberNeurons;
-        }
+            // Renumber sinkId
+            if (connection.sinkType === NeuronType.ACTION) {
+                connection.sinkId %= this._networkOutputCount;
+            } else {
+                connection.sinkId %= this._maxNumberNeurons;
+            }
 
-        // Renumber sinkId
-        if (sinkType === NeuronType.ACTION) {
-            sinkId %= this._networkOutputCount;
-        } else {
-            sinkId %= this._maxNumberNeurons;
-        }
-
-        // Renumber weigth to a -4 and 4
-        //weigth = weigth / 8192 - 4;
-
-        connections.push(
-            new Connection(sourceType, sourceId, sinkType, sinkId, weigth)
-        );
+            // Renumber weigth to a -4 and 4
+            //weigth = weigth / 8192 - 4;
+            */
+            connections.push(
+                //TODO refactor
+                new Connection(connection.sourceType, connection.sourceId, 
+                    connection.sinkType, connection.sinkId, connection.weight)
+            );
         }
 
         // Build a map of neurons. We won't include sensor or action neurons

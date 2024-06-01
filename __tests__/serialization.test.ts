@@ -1,7 +1,7 @@
 import * as constants from "@/simulation/simulationConstants"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import { populationStrategyFormatter } from "@/simulation/generations/population/PopulationStrategyFormatter";
+import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';

@@ -115,7 +115,7 @@ export default class WorldWater {
         }
     }
 
-    // move some water from cells to clouds to redistribute it
+    // attack_plant some water from cells to clouds to redistribute it
     evaporation(grid: Grid) {
         let accumWaterToEvaporate = 0;
         for (let y = 0; y < grid._size; y++) {

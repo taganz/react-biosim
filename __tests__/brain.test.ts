@@ -13,27 +13,30 @@ import WorldControllerData from '@/simulation/world/WorldControllerData';
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
+import { SimulationData } from "@/simulation/SimulationData";
+import CreatureGenus from "@/simulation/creature/CreatureGenus";
+import { Gene } from "@/simulation/creature/brain/Genome";
 
 /* https://jestjs.io/docs/expect  */
 
 describe('brain basic tests', () => {
 
-    const worldControllerData : WorldControllerData =  testWorldControllerData;
-    const worldGenerationsData : WorldGenerationsData = testWorldGenerationsData;
-    const worldController = new WorldController(worldControllerData, worldGenerationsData);
-    const generations = new Generations(worldController, worldGenerationsData, worldController.grid);
-    const grid = new Grid(worldControllerData.size, []); 
-    generations.grid = grid;
-    const joe = new Creature(generations, [10, 10]);
-    const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
-    const plantGenes = [-2071543808,-2071486464]
-    // el genoma son gens que es poden descomposar en 
-      // sourceType, sourceId, sinkType, sinkId, weigth
-      const genome = new Genome(arrayOfGene);
+    let genomePlant = new Genome([CreatureGenus.geneDefaultGenus(generations, "plant")]);
+    let genomeMove = new Genome([CreatureGenus.geneDefaultGenus(generations, "attack_plant")]);
+    let genomeAttack = new Genome([CreatureGenus.geneDefaultGenus(generations, "attack")]);
+    
+    const simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
+    const worldController = new WorldController(simulationData);
+    const generations = worldController.generations;
+    //const grid = worldController.generations.grid; 
+    const joe = generations.newCreature([10, 10], true, genomePlant);
+
+    test('constructor - load one gene', ()=> {
+      expect(joe.brain.genome.genes).toEqual(genomePlant.genes)
+    });
 
     test('DISPLAY BRAIN INFORMATION', ()=> {
-      const plantGenome = new Genome(plantGenes);
-      const joeBrain = new CreatureBrain ( joe, plantGenome);
+      const joeBrain = joe.brain;
       console.log("=====================================");
       console.log("brain: ", joeBrain.brain);
       console.log("brain.genome: ", joeBrain.genome);
@@ -46,10 +49,16 @@ describe('brain basic tests', () => {
 
     
     test("load brain with Oscil.lator--(2)-->RandomMove network", ()=> {
-      console.log("3333333333333333333333333333333333333333333");
-      const geneData = [ 1, 3, 1, 4, 2 ];  
-      const gene : number = Genome.encodeGeneData(geneData);
-      console.log ("geneData: ", geneData, " gene: ", gene);
+      console.log("load brain with Oscil.lator--(2)-->RandomMove network\n");
+      const connection = {
+        sourceType: 1,
+        sourceId: 3,
+        sinkType: 1,
+        sinkId:  4,
+        weight: 2 
+    };
+      const gene : Gene = Genome.connectionToGene(connection);
+      console.log ("connection: ", connection, " gene: ", gene);
       const genome = new Genome([gene]);
       const brain = new CreatureBrain(joe, genome);
       expect(brain.genome.genes[0]).toEqual(gene);
@@ -65,6 +74,8 @@ describe('brain basic tests', () => {
       console.log(brain.genome);
       console.log(brain.brain);
     });
+
+    /*
     test("DISPLAY create brain with metabolism enabled", ()=> {
       console.log("55555555555555555555555555555555555555555");
       const worldGenerationsData2 = {...worldGenerationsData, metabolismEnabled: true};
@@ -78,5 +89,6 @@ describe('brain basic tests', () => {
       
 
     });
+    */
 });
 

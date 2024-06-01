@@ -11,9 +11,9 @@ export default interface WorldControllerData {
     // model values
     MASS_WATER_TO_MASS_PER_STEP : number, 
     MASS_AT_BIRTH_PLANT : number, 
-    MASS_AT_BIRTH_MOVE : number, 
+    MASS_AT_BIRTH_ATTACK_PLANT : number, 
     MASS_AT_BIRTH_ATTACK : number, 
-    MASS_AT_BIRTH_ATTACK_AND_MOVE : number, 
+    MASS_AT_BIRTH_ATTACK_ANIMAL : number, 
     MASS_MAX_MULTIPLE_MASS_AT_BIRT : number, 
     
     MASS_COST_PER_EXECUTE_ACTION : number, 

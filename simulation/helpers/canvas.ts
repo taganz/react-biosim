@@ -79,7 +79,7 @@ export const drawBendLine = (
   // convert arrow length to angular len
   arrowAng = (aLen / radius) * Math.sign(bend);
 
-  // get angular length of start and end circles and move arc start and ends
+  // get angular length of start and end circles and attack_plant arc start and ends
   a1 += (startRadius / radius) * Math.sign(bend);
   a2 -= (endRadius / radius) * Math.sign(bend);
   aa1 = a1;
@@ -92,11 +92,11 @@ export const drawBendLine = (
   // is there a start arrow
   if (startArrow) {
     aa1 += arrowAng;
-  } // move arc start to inside arrow
+  } // attack_plant arc start to inside arrow
   // is there an end arrow
   if (endArrow) {
     aa2 -= arrowAng;
-  } // move arc end to inside arrow
+  } // attack_plant arc end to inside arrow
 
   // check for too close and remove arrows if so
   if ((bend < 0 && aa1 < aa2) || (bend > 0 && aa2 < aa1)) {

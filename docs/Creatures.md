@@ -13,11 +13,11 @@
 ## species and genus
 
 - Species depends on genome
-- Genus depends on some key actions included on the genome (plant, move, attack, attack_move)
+- Genus depends on some key actions included on the genome (plant, attack_plant, attack, attack_animal)
 - Creatures can have mass
 - Creature's color can depend on species or genus depending on selected scenario
     - If species: color depend on genome numeric value
-    - If genus: color are based on green for plants, yellow for move, blue for attack and red for attack_move
+    - If genus: color are based on green for plants, yellow for attack_plant, blue for attack and red for attack_animal
 
 
 

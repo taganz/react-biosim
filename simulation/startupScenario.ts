@@ -62,9 +62,9 @@ export const startupScenarioWorldControllerData : WorldControllerData = {
           // model values
           MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
-          MASS_AT_BIRTH_MOVE : 2,
+          MASS_AT_BIRTH_ATTACK_PLANT : 2,
           MASS_AT_BIRTH_ATTACK : 2,
-          MASS_AT_BIRTH_ATTACK_AND_MOVE : 3,
+          MASS_AT_BIRTH_ATTACK_ANIMAL : 3,
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_COST_PER_EXECUTE_ACTION : 0.01, //  a plant has a minimum of 2 actions and gets energy from photosynthesis

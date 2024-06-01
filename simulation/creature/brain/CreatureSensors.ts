@@ -1,4 +1,6 @@
+import { detectClosest } from "@/simulation/world/grid/GridDetect";
 import Creature from "../Creature";
+import { Genus } from "../CreatureGenus";
 
 const adjacentTilesLookup: [number, number][] = [
   [-1, 1],
@@ -12,107 +14,198 @@ const adjacentTilesLookup: [number, number][] = [
 ];
 
 export type SensorName =
-  | "HorizontalPosition"
-  | "VerticalPosition"
-  | "Age"
-  | "Oscillator"
-  | "Random"
-  | "HorizontalSpeed"
-  | "VerticalSpeed"
-  | "HorizontalBorderDistance"
-  | "VerticalBorderDistance"
-  | "BorderDistance"
-  | "Touch"
-  | "Pain"
-  | "PopulationDensity"
-  | "Mass";
+  | "HorizontalPosition"    // 0
+  | "VerticalPosition"      // 1
+  | "Age"                   // 2
+  | "Oscillator"            // 3
+  | "Random"                // 4
+  | "HorizontalSpeed"       // 5
+  | "VerticalSpeed"         // 6
+  | "HorizontalBorderDistance"  // 7
+  | "VerticalBorderDistance"  // 8
+  | "BorderDistance"        // 9
+  | "TouchNorth"                 // 10
+  | "TouchEast"                // 11
+  | "TouchSouth"               // 12
+  | "TouchWest"                // 13
+  | "Pain"                  // 14
+  | "PopulationDensity"     // 15
+  | "Mass"                  // 16
+  | "PreyDistance"          // 17
+  | "PreyDirection"         // 18
+  | "PredatorDistance"      // 19
+  | "PredatorDirection";    // 20
 
 export type Sensor = {
   name: SensorName;
   enabled: boolean;
-  neuronCount: number;
+  neuronCount: number;   //TODO to be removed. should be always 1
+  compatibleGenus: Genus[];     
+  mainGenus: Genus | null,    //TODO to be removed. always null in sensors 
 };
 
 //export type Sensors = Record<SensorName, Sensor>;
 type Sensors = Record<SensorName, Sensor>;
 
+
 export default class CreatureSensors {
+  
+  //TODO neuronCount should be always 1, should be removed
   data: Sensors = {
     HorizontalPosition: {
       name: "HorizontalPosition",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     VerticalPosition: {
       name: "VerticalPosition",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     Age: {
       name: "Age",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     Oscillator: {
       name: "Oscillator",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     Random: {
       name: "Random",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     HorizontalSpeed: {
       name: "HorizontalSpeed",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     VerticalSpeed: {
       name: "VerticalSpeed",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     HorizontalBorderDistance: {
       name: "HorizontalBorderDistance",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     VerticalBorderDistance: {
       name: "VerticalBorderDistance",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     BorderDistance: {
       name: "BorderDistance",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
-    Touch: {
-      name: "Touch",
+    TouchNorth: {
+      name: "TouchNorth",
       enabled: false,
-      neuronCount: 4,
+      neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    TouchEast: {
+      name: "TouchEast",
+      enabled: false,
+      neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    TouchSouth: {
+      name: "TouchSouth",
+      enabled: false,
+      neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    TouchWest: {
+      name: "TouchWest",
+      enabled: false,
+      neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     Pain: {
       name: "Pain",
       enabled: false,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     PopulationDensity: {
       name: "PopulationDensity",
       enabled: false,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
     Mass: {
       name: "Mass",
       enabled: true,
       neuronCount: 1,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    PreyDistance: {
+      name: "PreyDistance",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    PreyDirection: {
+      name: "PreyDirection",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    PredatorDistance: {
+      name: "PredatorDistance",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant"],
+      mainGenus: null,
+    },
+    PredatorDirection: {
+      name: "PredatorDirection",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant"],
+      mainGenus: null,
     },
   };
 
-  neuronsCount: number = 0;
 
-  getList() {
+  neuronsCount: number = 0;
+  enabledSensors : SensorName[] = [];
+
+  private getList() {
     const list: SensorName[] = [];
     for (const key of Object.keys(this.data) as SensorName[]) {
       const item = this.data[key];
@@ -129,6 +222,7 @@ export default class CreatureSensors {
     }
 
     this.updateInternalValues();
+    this.enabledSensors = this.getList();
   }
 
   private updateInternalValues() {
@@ -141,7 +235,58 @@ export default class CreatureSensors {
     }
   }
 
-  calculateOutputs(creature: Creature): number[] {
+  getGenusMain( index: number) : Genus | null {
+    let i = 0;
+    for (const key of Object.keys(this.data) as SensorName[]) {
+      const item = this.data[key];
+      if (item.enabled) {
+        if (i++ == index) {
+          return item.mainGenus;
+        }
+      }
+    }
+    throw new Error (`getGenusMain invalid index: ${index}  neuronsCount: ${this.neuronsCount}`);
+  }
+
+  // returns all genus compatibles with a sensor
+  sensorsByCompatibleGenus( index: number) : Genus[] {
+    let i = 0;
+    for (const key of Object.keys(this.data) as SensorName[]) {
+      const item = this.data[key];
+      if (item.enabled) {
+        if (i++ == index) {
+          return item.compatibleGenus;
+        }
+      }
+    }
+    throw new Error (`sensorsByCompatibleGenus invalid index: ${index}  neuronsCount: ${this.neuronsCount}`);
+  }
+
+  //TODO to be removed. always null in sensors 
+  sensorsByMainGenus(genus: Genus) : SensorName []{
+    let i = 0;
+    let sensorList : SensorName[] = [];
+    for (const key of Object.keys(this.data) as SensorName[]) {
+      const item = this.data[key];
+      console.log(key, item);
+      if (item.enabled && item.mainGenus === genus) {
+        sensorList.push(item.name);
+        }
+      }
+    return sensorList;
+  }
+
+  sensorNameToId(sensorName: SensorName): number {
+    return this.enabledSensors.indexOf(sensorName);
+  }
+
+  enabledSensorsForGenus(genus: Genus) : SensorName[] {
+    return Object.values(this.data).filter(sensor =>
+        sensor.compatibleGenus.includes(genus) && sensor.enabled === true
+    ).map(item => {return item.name});;
+  }
+
+  calculateOutputs(creature: Creature): number[] {  
     const values: number[] = [];
     const worldSize = creature.generations.grid.size;
 
@@ -206,10 +351,9 @@ export default class CreatureSensors {
       );
     }
 
-    //Touch
-    if (this.data.Touch.enabled) {
+    //TouchNorth
+    if (this.data.TouchNorth.enabled) {
       // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
-
       // Top
       let x = creature.position[0];
       let y = creature.position[1] - 1;
@@ -218,32 +362,46 @@ export default class CreatureSensors {
         tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
+    }
 
+    //TouchEast
+    if (this.data.TouchEast.enabled) {
+      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
       // Right
-      x = creature.position[0] + 1;
-      y = creature.position[1];
+      let x = creature.position[0] + 1;
+      let y = creature.position[1];
       if (x < worldSize) {
-        tile = creature.generations.grid.cell(x,y);
+        let tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
+    }
+
+    //TouchSouth
+    if (this.data.TouchSouth.enabled) {
+      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
       // Bottom
-      x = creature.position[0];
-      y = creature.position[1] + 1;
+      let x = creature.position[0];
+      let y = creature.position[1] + 1;
       if (y < worldSize) {
-        tile = creature.generations.grid.cell(x,y);
+        let tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
 
+    }
+
+    //TouchWest
+    if (this.data.TouchWest.enabled) {
+      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
       // Left
-      x = creature.position[0] - 1;
-      y = creature.position[1];
+      let x = creature.position[0] - 1;
+      let y = creature.position[1];
       if (x >= 0) {
-        tile = creature.generations.grid.cell(x,y);
+        let tile = creature.generations.grid.cell(x,y);
         values.push(tile.creature || tile.isSolid ? 1.0 : 0);
       }
     }
-
+  
     // Pain/Health
     if (this.data.Pain.enabled) {
       values.push((100 - creature.health) / 100);
@@ -281,6 +439,11 @@ export default class CreatureSensors {
       values.push(creature.mass);
     }
 
+    // PreyDistance
+    if (this.data.PreyDistance.enabled) {
+      values.push(detectClosest(creature.generations.grid, creature.position, 5)?.distance ?? 0);
+    }
+    
     return values;
   }
 }

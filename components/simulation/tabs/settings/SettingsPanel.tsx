@@ -2,10 +2,8 @@
 
 //import NumberInput from "@/components/global/inputs/NumberInput";
 import {Dropdown, Option} from "../../../global/inputs/Dropdown"; 
-import {selectionMethodOptions, selectSelectionMethod} from "./selectionMethodOptions";
-import {populationStrategyOptions, selectPopulationStrategy} from "./populationStrategyOptions"
-import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
-import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
+import {selectionMethodOptions, selectSelectionMethod} from "../../../../simulation/generations/selection/selectionMethodOptions";
+import {populationStrategyOptions, selectPopulationStrategy} from "../../../../simulation/generations/population/populationStrategyOptions"
 import {
   worldControllerAtom,
   //restartCountAtom,

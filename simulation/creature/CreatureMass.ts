@@ -59,8 +59,10 @@ export default class CreatureMass {
         return this._mass;
     }
 
+    /*
     set mass(m: number) {
         if (!this._metabolismEnabled) {return}
         this._mass = m;
     }
+    */
 }

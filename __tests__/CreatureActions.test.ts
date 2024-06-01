@@ -1,6 +1,6 @@
 
 import CreatureActions from "@/simulation/creature/brain/CreatureActions";
-
+import { ActionName } from "@/simulation/creature/brain/CreatureActions";
 
 /* https://jestjs.io/docs/expect  */
 
@@ -33,6 +33,7 @@ describe('CreatureActions', () => {
              ];
         ca.loadFromList(enabledActions);
         expect(ca.neuronsCount).toBe(2);
+        expect(ca.neuronsCount).toBe(ca.enabledActions.length);  // all neuronsCount should be 1
     });
     test('loadFromList 2 actions and return correct getList', () => {
         const enabledActions = [
@@ -40,27 +41,90 @@ describe('CreatureActions', () => {
                "Reproduction",     // 7
              ];
         ca.loadFromList(enabledActions);
-        expect(ca.getList()).toStrictEqual(enabledActions);
+        expect(ca.enabledActions).toStrictEqual(enabledActions);
     });
-    test('getFamilies ', () => {
+    test('actionsByCompatibleGenus ', () => {
         const enabledActions = [
                "MoveNorth",   
                "Reproduction",     
              ];
         ca.loadFromList(enabledActions);
-        expect(ca.getFamily(0)).toBe("move");
-        expect(ca.getFamily(1)).toBe("basic");
+        expect(ca.actionsByCompatibleGenus(0)).toStrictEqual(["attack_plant", "attack_animal"]);
+        expect(ca.actionsByCompatibleGenus(1)).toStrictEqual(["plant", "attack_plant", "attack_animal"]);
     });
-    test('getFamilies throw error if invalid index ', () => {
+    test('actionsByCompatibleGenus throw error if invalid index ', () => {
         expect(() => {
             const enabledActions = [
                 "MoveNorth",   
                 "Reproduction",     
               ];
              ca.loadFromList(enabledActions);
-             ca.getFamily(2);
+             ca.actionsByCompatibleGenus(2);
             }).toThrow();
     });
+    test ('actionNameToId()', () => {
+      const enabledActions : ActionName[] = [
+          "MoveNorth"          
+        , "Reproduction"         
+      ];
+      ca.loadFromList(enabledActions);
+      expect(ca.actionNameToId("MoveNorth")).toBe(0);
+      expect(ca.actionNameToId("Reproduction")).toBe(1);
+    });
+    test ('enabledActionsForFamily()', () => {
+      const enabledSensors : ActionName[] = [
+        "MoveNorth",        // 0
+        "MoveSouth",        // 1
+        "MoveEast",         // 2
+        "MoveWest",         // 3
+        "RandomMove",       // 4
+        "MoveForward",      // 5
+        "Photosynthesis",   // 6 
+        "Reproduction",     // 7
+        "AttackPlant",      // 8
+        "AttackAnimal",     // 9
+    ];
+    ca.loadFromList(enabledSensors);
+      //console.log("ca.enabledSensorsForFamily()\n\n", ca.enabledSensorsForFamily("attack"));
+      expect(ca.enabledActionsForGenus("plant")).toEqual([
+      //  "MoveNorth",        // 0
+      //  "MoveSouth",        // 1
+      //  "MoveEast",         // 2
+      //  "MoveWest",         // 3
+      //  "RandomMove",       // 4
+      //  "MoveForward",      // 5
+        "Photosynthesis",   // 6 
+        "Reproduction",     // 7
+      //  "AttackPlant",           // 8
+      //  "AttackAnimal",           // 9
+      ]);
+      expect(ca.enabledActionsForGenus("attack_plant")).toEqual([
+        "MoveNorth",        // 0
+        "MoveSouth",        // 1
+        "MoveEast",         // 2
+        "MoveWest",         // 3
+        "RandomMove",       // 4
+        "MoveForward",      // 5
+      //  "Photosynthesis",   // 6 
+        "Reproduction",     // 7
+        "AttackPlant",           // 8
+      //  "AttackAnimal",           // 9
+    ]);
+
+      expect(ca.enabledActionsForGenus("attack_animal")).toEqual([
+        "MoveNorth",        // 0
+        "MoveSouth",        // 1
+        "MoveEast",         // 2
+        "MoveWest",         // 3
+        "RandomMove",       // 4
+        "MoveForward",      // 5
+      //  "Photosynthesis",   // 6 
+        "Reproduction",     // 7
+        "AttackPlant",           // 8
+        "AttackAnimal",           // 9
+    ]);
+    });
+
 })
 
 

@@ -3,7 +3,7 @@
 import * as constants from "@/simulation/simulationDataDefault"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import { populationStrategyFormatter } from "@/simulation/generations/population/PopulationStrategyFormatter";
+import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
@@ -19,18 +19,29 @@ import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData'
 import { testWorldControllerData } from "./testWorldControllerData";
 import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
+import { SimulationData } from "@/simulation/SimulationData";
+import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+
 
 /* https://jestjs.io/docs/expect  */
 /* per fer toThrow cal posar tot en funcio expect( () => {...} ).toThrow() */
 
 describe('CreaturePhenotype', () => {
     
-    let setCount;
-
+    let worldController : WorldController;
+    let joe : Creature;
+    let grid : Grid;
+    
     beforeEach(() => {
-        setCount = jest.fn();
+        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        simulationData.worldObjects = [];
+        simulationData.worldControllerData.size = 5;
+        simulationData.worldGenerationsData.initialPopulation = 3;
+        worldController = new WorldController(simulationData);
+        grid = worldController.generations.grid;
+        //joe = worldController.generations.newCreature([1, 1]);
+        //console.log(grid.debugPrintGridCreatures());
       });
-
     afterEach(() => {
     });
   
@@ -38,5 +49,4 @@ describe('CreaturePhenotype', () => {
         expect(1+1).toEqual(2);
     });
 })
-
 

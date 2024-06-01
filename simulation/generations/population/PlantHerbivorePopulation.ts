@@ -4,39 +4,59 @@ import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
 import Genome from "../../creature/brain/Genome"
-import CreatureGenus from "@/simulation/creature/CreatureGenus";
+import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { selectGenusBasedOnProbability } from "./selectGenusBasedOnProbability"; 
 
+/* 
+  WORK
+
+// populate with a given distribution of plants and herbivores
+
+*/
+const HERBIVORES_PROPORTION = 0.2;
+
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
-export default class RandomFixedGenePopulation implements PopulationStrategy {
-  name = "RandomFixedGenePopulation";
-  populate(worldGenerations: WorldGenerations, parents?: Creature[]): void {
+export default class PlantHerbivorePopulation implements PopulationStrategy {
+  name = "PlantHerbivorePopulation";
+
+  private addCreaturesForGenus(worldGenerations: WorldGenerations, genus: Genus, total: number) {
+    for (let i = 0; i < total; i++) {
+      let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
+      if (position != null) {
+          var genes = CreatureGenus.geneArrayForGenus(worldGenerations, genus, worldGenerations.initialGenomeSize);
+          worldGenerations.newCreature(position, true, new Genome(genes) );
+      }
+      else {
+        console.warn("no free position found");
+      }
+    }
+  }
+  populate(worldGenerations: WorldGenerations, attackPlantParents?: Creature[]): void {
 
     if (worldGenerations.currentGen === 1) {
-      // First generation: fill up to initial population with creatures from available genus list, with a given probabilty, in a random free cell
-      for (let i = 0; i < worldGenerations.initialPopulation; i++) {
-        let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
-        if (position != null) {
-          const genus = selectGenusBasedOnProbability(worldGenerations.worldController.simData.constants.POPULATION_DEFAULT_GENUS);
-          const genes = CreatureGenus.geneArrayForGenus(worldGenerations, genus, worldGenerations.initialGenomeSize);
-          worldGenerations.newCreature(position, true, new Genome(genes) );
-        }
-        else {
-          console.warn("no free position found");
-        }
-      }
-
-    } else {
-
-      if (!parents) {
+        this.addCreaturesForGenus(worldGenerations, "attack_plant", worldGenerations.initialPopulation*HERBIVORES_PROPORTION );
+        this.addCreaturesForGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
+    } 
+    else {
+    
+      if (!attackPlantParents) {
           throw new Error ("generations > 0 should have parents");
       }
+
+      // only herbivores will be taken into account 
+      const parents = attackPlantParents.filter(item => item._genus == "attack_plant");
+      if (parents.length != attackPlantParents.length) {
+        //TODO should be a warning
+        throw new Error("PlantHerbivorePopulation is receiving non expected parent genus");
+      }
+
+
       // Determine how many children per parent are needed
       const childrenPerParent = Math.max(
-        Math.ceil(worldGenerations.initialPopulation / parents.length),
+        Math.ceil(worldGenerations.initialPopulation * HERBIVORES_PROPORTION / parents.length),
         1
       );
-      let totalNeededCreatures = worldGenerations.initialPopulation - parents.length;
+      let totalNeededCreatures = worldGenerations.initialPopulation*HERBIVORES_PROPORTION - parents.length;
 
       // Add extra creatures to achieve the target population, but
       // we want all survivors to have at least one children
@@ -45,7 +65,7 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
       //===================================================
       //TODO RD 23/4/25 - PROVES LIMITAR A INITIAL POPULATION
       if (totalNeededCreatures < 0 ) {
-        for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation; parentIdx++) {
+        for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation*HERBIVORES_PROPORTION; parentIdx++) {
           const parent = shuffledParents[parentIdx];
           let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
           if (position != null) {
@@ -76,6 +96,9 @@ export default class RandomFixedGenePopulation implements PopulationStrategy {
           }
         }
       }
+
+      // now add plants to complete population
+      this.addCreaturesForGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
     }
 
   }

@@ -56,7 +56,7 @@ export default function MapDesignerLayer({ index, obj }: Props) {
       newObjects.splice(index, 1);
       newObjects.splice(index + movement, 0, object);
 
-      // Also move the selected index
+      // Also attack_plant the selected index
       if (selectedObjectIndex === index) {
         setSelectedObjectIndex(selectedObjectIndex + movement);
       }

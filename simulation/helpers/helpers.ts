@@ -66,3 +66,8 @@ export const linearTanhActivation = (x: number) => {
   else if (x >= 1) return 1;
   return x;
 };
+
+export const getRandomItem = <T>(a: Array<T>): T => {
+  const randomIndex = Math.floor(Math.random() * a.length);
+  return a[randomIndex];
+}
