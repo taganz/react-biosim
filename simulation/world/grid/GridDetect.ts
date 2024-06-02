@@ -61,7 +61,13 @@ export function detectAll(grid: Grid, origin: GridPosition, radius: number): Det
 
 // returns closes creature inside radius distance
 export function detectClosest(grid: Grid, origin: GridPosition, radius: number, genus?: Genus): DetectedCreature | null {
-    const creatures = detectAll(grid, origin, radius);
+    let creatures = [];
+    if (genus) {
+        creatures = detectAll(grid, origin, radius).filter(creat => creat.genus === genus);
+    }
+    else {
+        creatures = detectAll(grid, origin, radius);
+    }
     if (creatures.length === 0) {
         return null; // No creatures found within the given radius
     }
@@ -72,8 +78,9 @@ export function detectClosest(grid: Grid, origin: GridPosition, radius: number, 
         });
     } else {
         // Find the creature with the minimum distance
-        const selected = creatures.reduce((closest, creature) => { console.log("reduce creature", creature);
-            return (((closest.distance <= creature.distance) && (creature.genus == genus)) ? creature : closest);
+        const selected = creatures.reduce((closest, creature) => {
+            // console.log("reduce creature", creature);
+            return ((closest.distance < creature.distance ) ? closest : creature);
         });
         if (selected.genus == genus) {
             return selected;

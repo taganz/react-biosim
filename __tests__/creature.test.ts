@@ -90,7 +90,21 @@ describe('creature test', () => {
       const joe2 = worldController.generations.newCreature([2,2], true, genomePlant);
       console.log(`cloud: ${worldWater.waterInCloud} creatures: ${worldWater.waterInCreatures} grid: ${worldWater.waterInCells}`);
     });
+    test('genus, preyGenus, predatorGenus', () => {
+      const joe2 = worldController.generations.newCreature([2,2], true, genomePlant);
+      expect(joe2.genus).toBe("plant");
+      expect(joe2.preyGenus).toBeUndefined();
+      expect(joe2.predatorGenus).toBe("attack_plant");
+      const joeAttackPlant = worldController.generations.newCreature([3,3], true, genomeAttackPlant);
+      expect(joeAttackPlant.genus).toBe("attack_plant");
+      expect(joeAttackPlant.preyGenus).toBe("plant");
+      expect(joeAttackPlant.predatorGenus).toBe("attack_animal");
+      const joeAttackAnimal = worldController.generations.newCreature([2,2], true, genomeAttackAnimal);
+      expect(joeAttackAnimal.genus).toBe("attack_animal");
+      expect(joeAttackAnimal.preyGenus).toBe("attack_plant");
+      expect(joeAttackAnimal.predatorGenus).toBeUndefined();
 
+    });
 
     /*
   //TODO depend de si te fotosintesi, si es reprodueix, de les constants.... 

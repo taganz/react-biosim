@@ -75,8 +75,8 @@ export const CONSTANTS_DEFAULT = {
       {name: "random-random attack_plant", genome: [Genome.connectionToGene({sourceType: NeuronType.SENSOR, sourceId: 4, sinkType: NeuronType.ACTION, sinkId: 4, weight: 1})]}
     ],
 
-    POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.8},
-                                {genus: "attack_plant", probability: 0.2}],  // used in RandomFixedGenePopulation
+    POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.9},
+                                {genus: "attack_plant", probability: 0.1}],  // used in RandomFixedGenePopulation
 
     SIM_CODE_LENGTH : 3,    
 
@@ -89,9 +89,9 @@ export const CONSTANTS_DEFAULT = {
       danger: "rgba(255,0,0, 0.1)",
       spawn: "rgba(255, 255, 0, 0.1)",
 
-    }
+    },
 
-
+    DETECT_RADIUS : 10,    
   };
 
 export const WORLD_OBJECTS_DATA_DEFAULT : WorldObject[] = [
@@ -118,7 +118,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
   MASS_AT_BIRTH_ATTACK_PLANT : 2,
   MASS_AT_BIRTH_ATTACK : 2,
   MASS_AT_BIRTH_ATTACK_ANIMAL : 3,
-  MASS_MAX_MULTIPLE_MASS_AT_BIRT : 1000, // 5,
+  MASS_MAX_MULTIPLE_MASS_AT_BIRT : 10, // 5,
 
   MASS_COST_PER_EXECUTE_ACTION : 0,  //  0.01 a plant has a minimum of 2 actions and gets energy from photosynthesis
 
@@ -168,27 +168,30 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   deletionRatio: 0.5,             // 0.5
   geneInsertionDeletionProbability: 0.1,    // 0.015
   enabledSensors: [
-    "HorizontalPosition",       // 0
-    "VerticalPosition",         // 1
-    "Age",                      // 2
-    "Oscillator",               // 3
-    "Random",                   // 4
-    "HorizontalSpeed",          // 5
-    "VerticalSpeed",            // 6
-    "HorizontalBorderDistance", // 7
-    "VerticalBorderDistance",   // 8
-    "BorderDistance",           // 9
-    "TouchNorth",               // 10
-    "TouchEast",                // 11
-    "TouchSouth",               // 12
-    "TouchWest",                // 13
-    "Pain",                     // 14
-    "PopulationDensity",        // 15
-    "Mass",                     // 16
-    "PreyDistance",             // 17
-    "PreyDirection",            // 18
-    "PredatorDistance",         // 19
-    "PredatorDirection"         // 20
+    "HorizontalPosition"    // 0
+    , "VerticalPosition"      // 1
+    , "Age"                   // 2
+    , "Oscillator"            // 3
+    , "Random"                // 4
+    , "HorizontalSpeed"       // 5
+    , "VerticalSpeed"         // 6
+    , "HorizontalBorderDistance"  // 7
+    , "VerticalBorderDistance"  // 8
+    , "BorderDistance"        // 9
+    , "TouchNorth"                 // 10
+    , "TouchEast"                 // 11
+    , "TouchSouth"                 // 12
+    , "TouchWest"                 // 13
+    , "Pain"                  // 14
+    , "PopulationDensity"     // 15
+    , "Mass"                  // 16
+    , "PreyDistance"          // 17
+    , "PreyNorth"             // 18
+    , "PreyEast"      // 19
+    , "PreySouth"     // 20
+    , "PreyWest"      // 21
+    , "PredatorDistance" // 22   
+    , "PredatorDirection"  // 23
   ],
   enabledActions: [
        "MoveNorth",        // 0

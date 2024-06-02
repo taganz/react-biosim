@@ -1,4 +1,3 @@
-
 import CreatureSensors from "@/simulation/creature/brain/CreatureSensors";
 import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
 import {Grid, GridCell} from '../simulation/world/grid/Grid';
@@ -341,6 +340,9 @@ describe('CreatureSensors', () => {
             }).toThrow();
     });
     */
+   
+
+  
 })
 
 

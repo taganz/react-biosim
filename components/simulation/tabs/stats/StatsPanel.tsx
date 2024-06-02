@@ -7,6 +7,7 @@ import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
 import { TestStats } from "./TestStats";
+import WorldWaterStatus from "./WorldWaterStatus";
 //import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 
 function getter(data: SingleGeneration): [number, number] {
@@ -56,6 +57,7 @@ export default function StatsPanel() {
 
   return (
     <div>
+    <div>
       <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.generations.selectionMethod.fitnessValueName}</h3>
       <LinearGraph
         data={data}
@@ -73,5 +75,7 @@ export default function StatsPanel() {
      {/* TODO genus graph.... */ }
      {/* <TestStats></TestStats>   */}
      </div>
+    <WorldWaterStatus/>
+    </div>
   );
 }

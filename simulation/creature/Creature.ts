@@ -120,7 +120,20 @@ export default class Creature {
     this.logBasicData("birth");
   }
 
+  get genus(): Genus {
+    return this._genus;
+  }
+  get preyGenus(): Genus | undefined {
+    if (this._genus === "attack_animal") return "attack_plant";
+    if (this._genus === "attack_plant") return "plant";
+    return undefined;    
+  }
 
+  get predatorGenus(): Genus | undefined {
+    if (this._genus === "plant") return "attack_plant";
+    if (this._genus === "attack_plant") return "attack_animal";
+    return undefined;    
+  }
 
   getColor(): string {
     return CreaturePhenothype.getColor(this.generations.phenotypeColorMode, this._genus, this.brain);

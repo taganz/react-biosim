@@ -1,6 +1,7 @@
 import { detectClosest } from "@/simulation/world/grid/GridDetect";
 import Creature from "../Creature";
 import { Genus } from "../CreatureGenus";
+import { Direction4 } from "@/simulation/world/direction";
 
 const adjacentTilesLookup: [number, number][] = [
   [-1, 1],
@@ -32,9 +33,12 @@ export type SensorName =
   | "PopulationDensity"     // 15
   | "Mass"                  // 16
   | "PreyDistance"          // 17
-  | "PreyDirection"         // 18
-  | "PredatorDistance"      // 19
-  | "PredatorDirection";    // 20
+  | "PreyNorth"              // 18     
+  | "PreyEast"              // 19
+  | "PreySouth"              // 20
+  | "PreyWest"              // 21
+  | "PredatorDistance"      // 22
+  | "PredatorDirection";    // 23
 
 export type Sensor = {
   name: SensorName;
@@ -178,13 +182,39 @@ export default class CreatureSensors {
       compatibleGenus: ["attack_plant", "attack_animal"],
       mainGenus: null,
     },
-    PreyDirection: {
-      name: "PreyDirection",
+
+    PreyNorth: {
+      name: "PreyNorth",
       enabled: true,
       neuronCount: 1,
       compatibleGenus: ["attack_plant", "attack_animal"],
       mainGenus: null,
     },
+
+    PreyEast: {
+      name: "PreyEast",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+
+    PreySouth: {
+      name: "PreySouth",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+
+    PreyWest: {
+      name: "PreyWest",
+      enabled: true,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+
     PredatorDistance: {
       name: "PredatorDistance",
       enabled: true,
@@ -441,9 +471,41 @@ export default class CreatureSensors {
 
     // PreyDistance
     if (this.data.PreyDistance.enabled) {
-      values.push(detectClosest(creature.generations.grid, creature.position, 5)?.distance ?? 0);
-    }
+      const closestPrey = detectClosest(creature.generations.grid, creature.position, 
+        creature.generations.worldController.simData.constants.DETECT_RADIUS,
+        creature.preyGenus);
+      values.push(closestPrey?.distance ?? 999999);
+      console.log("creature.preyGenus ", creature.preyGenus, "closestPrey.genus ", closestPrey?.genus);
+      }
     
+    // PreyDirection
+    let preyDirection : Direction4[] = [];
+
+    if (this.data.PreyNorth.enabled || this.data.PreyEast.enabled ||
+       this.data.PreySouth.enabled || this.data.PreyWest.enabled) {
+      const prey = detectClosest(creature.generations.grid, creature.position, 
+        creature.generations.worldController.simData.constants.DETECT_RADIUS,
+        creature.preyGenus);
+      if (prey) {
+        if (prey?.position[0] < creature.position[0]) preyDirection.push("W");
+        if (prey?.position[0] > creature.position[0]) preyDirection.push("E");
+        if (prey?.position[1] < creature.position[1]) preyDirection.push("N");
+        if (prey?.position[1] > creature.position[1]) preyDirection.push("S");
+      }
+    }
+
+    if (this.data.PreyNorth.enabled) {
+      values.push(preyDirection?.includes("N") ? 1 : 0);
+    }
+    if (this.data.PreyEast.enabled) {
+      values.push(preyDirection?.includes("E") ? 1 : 0);
+    }
+    if (this.data.PreySouth.enabled) {
+      values.push(preyDirection?.includes("S") ? 1 : 0);
+    }
+    if (this.data.PreyWest.enabled) {
+      values.push(preyDirection?.includes("W") ? 1 : 0);
+    }   
     return values;
   }
 }
