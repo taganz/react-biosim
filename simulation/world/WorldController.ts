@@ -230,6 +230,9 @@ export default class WorldController {
     this.currentGen++;
     
     this.generations.endGeneration();
+    if (this.generations.selectionMethod.isContinuous == false) {
+      this.worldWater.reset();   
+    }
     this.worldWater.rain(this.grid);
     this.generationRegistry.startGeneration();
 

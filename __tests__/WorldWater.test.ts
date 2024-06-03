@@ -112,12 +112,7 @@ describe('WorldWater', () => {
         worldWater.evaporation(grid);
         expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
-    test('returnWaterToCell - should keep total water after creature operations', () => {
-        const waterGot = worldWater.getWaterFromCell(grid.cell(1,1), 3);
-        worldWater.returnWaterToCell(grid.cell(1,1), waterGot);
-        worldWater.evaporation(grid);
-        expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
-    });
+
     test('getWaterFromCell - creature gets water from cell', () => {
         worldWater.firstRain(grid);  // 2.1
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
@@ -166,6 +161,13 @@ describe('WorldWater', () => {
 
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1 - 10 + 4.3 - 2.1, 4);
         expect(worldWater.waterInCreatures).toBe(1 + 10 - 4.3 + 2.1);
+    });
+    //TODO -- FIX
+    test('returnWaterToCell - send water to cell, if not enought capacity send also to cloud', () => {
+        const waterGot = worldWater.getWaterFromCell(grid.cell(1,1), 3);
+        worldWater.returnWaterToCell(grid.cell(1,1), waterGot);
+        worldWater.evaporation(grid);
+        expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
     });
 })
 

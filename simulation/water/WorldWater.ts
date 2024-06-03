@@ -28,6 +28,14 @@ export default class WorldWater {
         return this.waterInCells + this.waterInCloud + this.waterInCreatures
     }
 
+    reset() {
+        this.waterInCloud = this._worldSize * this._worldSize * this.waterData.waterTotalPerCell;
+        this.waterInCells = 0;
+        this.waterInCreatures = 0;
+        this.maxRainWaterPerCell = this.waterData.waterRainMaxPerCell;
+        this.waterData = this.waterData;
+    }
+
     // gets water from cell and gives it to creature
     getWaterFromCell (cell: GridCell, waterWanted: number): number {
         const waterGotFromCell = Math.min(waterWanted, cell.water);
@@ -42,7 +50,8 @@ export default class WorldWater {
         const waterReturnedToCell = Math.min(waterToReturn, cell.waterCapacity - cell.water);
         cell.water += waterReturnedToCell;
         this.waterInCells += waterReturnedToCell;
-        this.waterInCreatures -= waterReturnedToCell;
+        this.waterInCloud += (waterToReturn - waterReturnedToCell);
+        this.waterInCreatures -= waterToReturn;
     }
 
     // first generation creatures should get water from the environment

@@ -7,6 +7,7 @@ export default class InsideReproductionAreaSelection
   implements SelectionMethod
 {
   name = "InsideReproductionAreaSelection";
+  isContinuous = false;
   fitnessValueName = "Survival rate (%)";
   shouldResetLastCreatureIdCreatedEveryGeneration = true;
   

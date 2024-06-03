@@ -4,6 +4,7 @@ import WorldGenerations from "../WorldGenerations";
 
 export default interface SelectionMethod {
   name: string;
+  isContinuous: boolean;
   fitnessValueName: string;
   shouldResetLastCreatureIdCreatedEveryGeneration : boolean;
   getSurvivors(generations: WorldGenerations): {survivors: Creature[], fitnessMaxValue : number};

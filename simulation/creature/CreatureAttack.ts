@@ -30,7 +30,7 @@ export default class CreatureAttack {
     if (!this.hasEnoughtMassToAttack) {
         return 0;
     }
-    this.creature._mass.consumeMassFraction(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);    
+    this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);    
     const preyPosition = this.grid.cellOffsetDirection4(this.creature.position, targetDirection);
     if (preyPosition != null) {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
@@ -43,7 +43,7 @@ export default class CreatureAttack {
             }
             const preyMass = prey.mass;
             prey.killedByAttack(this.creature.specie);
-            this.creature._mass.consumeMassFraction(this.worldControllerData.ATTACK_COST_PER_MASS_DO);    
+            this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_DO);    
             return preyMass;
         } else {
             console.error("prey is null");

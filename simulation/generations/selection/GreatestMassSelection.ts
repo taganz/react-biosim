@@ -15,6 +15,7 @@ export default class GreatestMassSelection
   implements SelectionMethod
 {
   name = "GreatestMass (herbivores)";  //TODO update when changed
+  isContinuous = false;
   fitnessValueName = "Greatest mass";
   shouldResetLastCreatureIdCreatedEveryGeneration = true;
 

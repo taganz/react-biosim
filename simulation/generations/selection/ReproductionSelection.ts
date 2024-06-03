@@ -6,6 +6,7 @@ export default class ReproductionSelection
   implements SelectionMethod
 {
   name = "ReproductionSelection";
+  isContinuous = true;
   fitnessValueName = "Reproduction";
   shouldResetLastCreatureIdCreatedEveryGeneration = true;
   
