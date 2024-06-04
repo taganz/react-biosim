@@ -3,8 +3,6 @@
 import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import WorldController from "@/simulation/world/WorldController";
 import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
-import { testWorldControllerData } from "./testWorldControllerData";
-import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
 import GreatestDistanceSelection from "@/simulation/generations/selection/GreatestDistanceSelection";
 import ContinuousSelection from "@/simulation/generations/selection/ContinuousSelection";

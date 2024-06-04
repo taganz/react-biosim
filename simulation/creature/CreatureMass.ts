@@ -103,7 +103,7 @@ export default class CreatureMass {
     }
     
     die() {
-        this._worldWater.returnWaterToCell(
+        this._worldWater.returnWaterToCellOrCloud(
             this._creature.generations.worldController.grid.cell(this._creature.position[0], this._creature.position[1]),
             this._mass) 
         this._mass = 0;

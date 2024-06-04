@@ -46,7 +46,7 @@ export default class WorldWater {
     }
 
     // when a creatures dies
-    returnWaterToCell (cell: GridCell, waterToReturn: number) {
+    returnWaterToCellOrCloud (cell: GridCell, waterToReturn: number) {
         const waterReturnedToCell = Math.min(waterToReturn, cell.waterCapacity - cell.water);
         cell.water += waterReturnedToCell;
         this.waterInCells += waterReturnedToCell;
@@ -80,7 +80,7 @@ export default class WorldWater {
         if (waterToAddTotal > this.waterInCloud ) {
             waterToAddPerCell = this.waterInCloud / grid.size / grid.size;
             waterToAddTotal = this.waterInCloud; 
-            console.warn("WorldWater not enought water for firsRain. Adjusting waterDefaultPerCell from ", this.waterData.waterFirstRainPerCell.toFixed(2), " to ", waterToAddPerCell.toFixed(2));
+            console.warn("WorldWater not enought water for firstRain. Adjusting waterDefaultPerCell from ", this.waterData.waterFirstRainPerCell.toFixed(2), " to ", waterToAddPerCell.toFixed(2));
         }
         for (let y = 0; y < grid._size; y++) {
             for (let x = 0; x < grid._size; x++) {
@@ -94,6 +94,13 @@ export default class WorldWater {
     // water from cloud go to cells
     //TODO functions....
     rain(grid: Grid) {
+
+        // if not enough water to do uniform rain, don't do rain at all
+        if (this.waterData.waterRainMaxPerCell * this._worldSize * this._worldSize 
+            > this.waterInCloud ) {
+                return;
+        }
+
         let rf : ((x: number, y:number)=> number);
         const rainValue = this.waterData.waterRainMaxPerCell;
         switch(this.waterData.rainType) {

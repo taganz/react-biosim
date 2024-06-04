@@ -1,8 +1,6 @@
 import { LogLevel, LogEvent } from "@/simulation/logger/LogEvent";
 import EventLogger from "@/simulation/logger/EventLogger";
 import WorldController from "@/simulation/world/WorldController";
-import { testWorldControllerData } from "./testWorldControllerData";
-import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import { SimulationCallEvent } from "@/simulation/logger/EventLogger";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
 import { SimulationData } from "@/simulation/SimulationData";

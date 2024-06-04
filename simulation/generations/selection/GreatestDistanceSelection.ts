@@ -7,6 +7,7 @@ export default class GreatestDistanceSelection
   implements SelectionMethod
 {
   name = "GreatestDistanceSelection";
+  prettyName = "GreatestDistanceSelection";
   isContinuous = false;
   fitnessValueName = "Distance index";
   shouldResetLastCreatureIdCreatedEveryGeneration = true;

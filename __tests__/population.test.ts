@@ -17,8 +17,6 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import { testWorldControllerData } from "./testWorldControllerData";
-import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import { SimulationData } from "@/simulation/SimulationData";
 

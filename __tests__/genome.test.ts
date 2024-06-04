@@ -4,6 +4,9 @@ import Genome, {geneToString} from "@/simulation/creature/brain/Genome";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import { ConnectionType } from "@/simulation/creature/brain/Connection";
 import WorldController from "@/simulation/world/WorldController";
+import { SimulationData } from "@/simulation/SimulationData";
+import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
+import { ActionName } from "@/simulation/creature/brain/CreatureActions";
 
 /* https://jestjs.io/docs/expect  */
 
@@ -11,10 +14,53 @@ import WorldController from "@/simulation/world/WorldController";
 
 describe('genome test', () => {
 
+  let simulationData : SimulationData;  
+
   const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
   const genome = new Genome(arrayOfGene);
 
-  const worldController = new WorldController(constants.SIMULATION_DATA_DEFAULT);
+  const allSensors : SensorName[] = [
+    "HorizontalPosition"    // 0
+    , "VerticalPosition"      // 1
+    , "Age"                   // 2
+    , "Oscillator"            // 3
+    , "Random"                // 4
+    , "HorizontalSpeed"       // 5
+    , "VerticalSpeed"         // 6
+    , "HorizontalBorderDistance"  // 7
+    , "VerticalBorderDistance"  // 8
+    , "BorderDistance"        // 9
+    , "TouchNorth"                 // 10
+    , "TouchEast"                 // 11
+    , "TouchSouth"                 // 12
+    , "TouchWest"                 // 13
+    , "Pain"                  // 14
+    , "PopulationDensity"     // 15
+    , "Mass"                  // 16
+    , "PreyDistance"          // 17
+    , "PreyNorth"             // 18
+    , "PreyEast"      // 19
+    , "PreySouth"     // 20
+    , "PreyWest"      // 21
+    , "PredatorDistance" // 22   
+    , "PredatorDirection"  // 23
+  ];
+  const allActions : ActionName[] = [
+    "MoveNorth",        // 0
+    "MoveSouth",        // 1
+    "MoveEast",         // 2
+    "MoveWest",         // 3
+    "RandomMove",       // 4
+    "MoveForward",      // 5
+    "Photosynthesis",   // 6 
+    "Reproduction",     // 7
+    "AttackPlant",      // 8
+    "AttackAnimal",     // 9
+  ];
+  simulationData = constants.SIMULATION_DATA_DEFAULT;
+  simulationData.worldGenerationsData.enabledSensors = allSensors;
+  simulationData.worldGenerationsData.enabledActions = allActions;
+  const worldController = new WorldController(simulationData);
   const generations = worldController.generations;
 
 
@@ -127,7 +173,7 @@ describe('genome test', () => {
       };
       let gene = Genome.connectionToGene(connection);
       //console.log("geneToString gene: ", gene, "\n\n", geneToString(generations, gene));
-      expect(geneToString(generations, gene)).toEqual("[Random] ---> 2.00 ---> [RandomMove]");
+      expect(geneToString(generations, gene)).toEqual(`[${allSensors[3]}] ---> 2.00 ---> [${allActions[4]}]`);
     })
 
     /*

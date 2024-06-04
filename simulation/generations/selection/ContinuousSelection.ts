@@ -9,6 +9,7 @@ export default class ContinuousSelection
   implements SelectionMethod
 {
   name = "ContinuousSelection";
+  prettyName = "ContinuousSelection";
   isContinuous = true;
   fitnessValueName = "ContinuousSelection Fitness Value TBD";
   shouldResetLastCreatureIdCreatedEveryGeneration = false;

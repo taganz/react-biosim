@@ -328,10 +328,7 @@ export default class Creature {
     const result = Math.max(0, Math.min(maxHealth, value));
 
     if (result <= 0 && result !== this._health) {
-      // Free grid point
-      //this.generations.grid[this.position[0]][this.position[1]].creature = null;
       this.die("health");
-      // console.log("free!!!")
     }
 
     this._health = result;

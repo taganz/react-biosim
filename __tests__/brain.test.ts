@@ -11,8 +11,6 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import WorldControllerData from '@/simulation/world/WorldControllerData';
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import { testWorldControllerData } from "./testWorldControllerData";
-import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import { SimulationData } from "@/simulation/SimulationData";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import { Gene } from "@/simulation/creature/brain/Genome";
@@ -21,13 +19,13 @@ import { Gene } from "@/simulation/creature/brain/Genome";
 
 describe('brain basic tests', () => {
 
-    let genomePlant = new Genome([CreatureGenus.geneDefaultGenus(generations, "plant")]);
-    let genomeMove = new Genome([CreatureGenus.geneDefaultGenus(generations, "attack_plant")]);
-    let genomeAttack = new Genome([CreatureGenus.geneDefaultGenus(generations, "attack")]);
     
     const simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
     const worldController = new WorldController(simulationData);
     const generations = worldController.generations;
+    let genomePlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "plant", 1));
+    let genomeMove = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 1));
+    let genomeAttack = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_animal", 1));
     //const grid = worldController.generations.grid; 
     const joe = generations.newCreature([10, 10], true, genomePlant);
 

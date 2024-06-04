@@ -16,8 +16,6 @@ import AsexualZonePopulation from "@/simulation/generations/population/AsexualZo
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import { testWorldControllerData } from "./testWorldControllerData";
-import { testWorldGenerationsData } from "./testWorldGenerationsData";
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import WorldWater from "@/simulation/water/WorldWater";
 import { WaterData } from "@/simulation/water/WaterData";
@@ -37,27 +35,22 @@ describe('WorldWater', () => {
         waterData.waterCellCapacity = 4.3;
         waterData.waterTotalPerCell = 2.5;
         waterData.waterEvaporationPerCellPerGeneration = 0.7;
+        waterData.rainType = "rainTypeUniform";
         worldWater = new WorldWater(5, waterData);
         grid = new Grid(5, [], waterData.waterCellCapacity);
+        worldWater.firstRain(grid); // all cells have 2.1
       });
 
 
-    test('should store in waterInCloud size * size * waterFirstRainPerCell', () => {
-        expect(worldWater.waterInCloud).toEqual(2.5 * 5 * 5); 
+    //console.log("xxx\n\n", grid.debugGetGridWater();
+    test('firstRain() - test values after firstRain with enough water available', () => {
+        expect(grid.cell(2,2).water).toEqual(2.1);
+        expect(worldWater.waterInCreatures).toEqual(0); 
+        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
+        expect(worldWater.waterInCloud).toBeCloseTo((2.5-2.1)*5*5, 4);
+        expect(worldWater.totalWater).toEqual(2.5*5*5);
     });
-    test('should keep total water after rain', () => {
-        worldWater.rain(grid);
-        const totalWater = worldWater.waterInCells + worldWater.waterInCloud + worldWater.waterInCreatures;
-        expect(totalWater).toBeCloseTo(2.5 * 5 * 5, 4);
-    });
-    test('rain typeUniform should give max water per cell to grid', () => {
-        worldWater.waterData.rainType = "rainTypeUniform";
-        worldWater.rain(grid);
-        // ojo, dependra de capacitat de les cel.les!!
-        grid.debugPrintWater();
-        expect(grid.cell(2,2).water).toBe(1.1);
 
-    });
     /*
     test('firstRain should throw error if there is not enought water', () => {
         const worldWater = new WorldWater(10);
@@ -65,19 +58,18 @@ describe('WorldWater', () => {
         expect(() => {worldWater.firstRain(grid, 3)}).toThrow();  // need 3 * 5 * 5 = 75 > 10   
     });
     */
-    test('firstRain with enough water available in cloud', () => {
-        worldWater.firstRain(grid);    
-        expect(grid.cell(2,2).water).toEqual(2.1);
-        expect(grid.debugGetGridWater()).toBeCloseTo(2.1*5*5, 4);
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
-        expect(worldWater.waterInCloud).toBeCloseTo((2.5-2.1)*5*5, 4);
-        expect(worldWater.totalWater).toEqual(2.5*5*5);
-        
-    });
-    test('firstRain with not enought capacity in cells caps rain at capacity ', () => {
+
+    
+    test('firstRain() - first rain per cell greater than cell capacity ', () => {
+        waterData = constants.SIMULATION_DATA_DEFAULT.waterData;
+        waterData.waterCellCapacity = 4.3;
         waterData.waterFirstRainPerCell = 10;
         waterData.waterTotalPerCell = 100;
         worldWater = new WorldWater(5, waterData);
+        grid = new Grid(5, [], waterData.waterCellCapacity);
+        expect(worldWater.waterData.waterFirstRainPerCell).toBe(10);
+        expect(worldWater.waterInCells).toBe(0);
+        expect(worldWater.waterInCloud).toBe(100*5*5);
         worldWater.firstRain(grid);    
         expect(grid.cell(2,2).water).toEqual(4.3);
         expect(grid.debugGetGridWater()).toBeCloseTo(4.3*5*5, 4);
@@ -86,10 +78,27 @@ describe('WorldWater', () => {
         expect(worldWater.totalWater).toEqual(100*5*5);
         
     });
+
+    test('rain() - enough water in cloud for rain', () => {
+        expect(grid.cell(2,2).water).toBe(2.1);
+        worldWater.waterData.waterRainMaxPerCell = 0.1;
+        expect(worldWater.waterInCloud).toBeGreaterThanOrEqual(0.1*5*5);
+        worldWater.rain(grid);
+        expect(grid.cell(2,2).water).toBe(2.1 + 0.1);
+        expect(worldWater.waterInCells).toBeCloseTo((2.1+0.1) * 5 * 5, 4);
+        expect(worldWater.waterInCloud).toBeCloseTo((2.5-2.1-0.1) * 5 * 5, 4);
+        const totalWater = worldWater.waterInCells + worldWater.waterInCloud + worldWater.waterInCreatures;
+        expect(totalWater).toBeCloseTo(2.5 * 5 * 5, 4);
+    });
+
+
+    
     test('grid total water should match grid waterInCell', () => {
         const waterAtGridInit = grid.debugGetGridWater();
+        expect(waterAtGridInit).toBeCloseTo(waterData.waterFirstRainPerCell * 5 * 5);
+        expect(grid.debugGetGridWater()).toBeCloseTo(worldWater.waterInCells);
         worldWater.rain(grid);
-        expect(grid.debugGetGridWater() - waterAtGridInit).toEqual(worldWater.waterInCells);
+        expect(grid.debugGetGridWater()).toEqual(worldWater.waterInCells);
     });
     test('rain - should keep total water after rain uniform', () => {
         worldWater.waterData.rainType = "rainTypeUniform";
@@ -114,7 +123,6 @@ describe('WorldWater', () => {
     });
 
     test('getWaterFromCell - creature gets water from cell', () => {
-        worldWater.firstRain(grid);  // 2.1
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
         expect(worldWater.waterInCloud).toBeCloseTo(0.4*5*5, 4);
         const cell0 = grid.cell(0,0);
@@ -126,48 +134,16 @@ describe('WorldWater', () => {
         expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 3.1, 4);
         expect(worldWater.waterInCreatures).toBeCloseTo(3.1, 4);
     });
-    test('creature return water to cell', () => {
-        worldWater.firstRain(grid);  // 2.1
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5, 4);
-        expect(worldWater.waterInCloud).toBeCloseTo(0.4*5*5, 4);
-        const cell0 = grid.cell(0,0);
-        const cell1 = grid.cell(1,1);
-
-        // gets 2 and return 1
-
-        worldWater.getWaterFromCell(cell0, 2);
-        expect(cell0.water).toBe(2.1 - 2);                   
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 2, 4);
-        expect(worldWater.waterInCreatures).toBe(2);
-
-        worldWater.returnWaterToCell(cell0, 1);
-        expect(cell0.water).toBe(2.1 - 2 + 1);                   
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1, 4);
-        expect(worldWater.waterInCreatures).toBe(1);
-        
-        // gets 10 from different cells and try to return to 1 cell, over capacity
-
-        worldWater.getWaterFromCell(grid.cell(4,0), 2);
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1 - 2, 4);
-        expect(worldWater.waterInCreatures).toBe(1 + 2);
-        worldWater.getWaterFromCell(grid.cell(4,1), 2);
-        worldWater.getWaterFromCell(grid.cell(4,2), 2);
-        worldWater.getWaterFromCell(grid.cell(4,3), 2);
-        worldWater.getWaterFromCell(grid.cell(4,4), 2);
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1 - 10, 4);
-        expect(cell1.water).toBe(2.1);              // cell previous value
-        worldWater.returnWaterToCell(cell1, 10);   // greater than capacity
-        expect(cell1.water).toBe(4.3);              // returns capacity
-
-        expect(worldWater.waterInCells).toBeCloseTo(2.1*5*5 - 1 - 10 + 4.3 - 2.1, 4);
-        expect(worldWater.waterInCreatures).toBe(1 + 10 - 4.3 + 2.1);
-    });
-    //TODO -- FIX
-    test('returnWaterToCell - send water to cell, if not enought capacity send also to cloud', () => {
-        const waterGot = worldWater.getWaterFromCell(grid.cell(1,1), 3);
-        worldWater.returnWaterToCell(grid.cell(1,1), waterGot);
-        worldWater.evaporation(grid);
-        expect(worldWater.totalWater).toBeCloseTo(2.5*5*5, 4);
+    test('returnWaterToCellOrCloud - send water to cell, if not enought capacity send also to cloud', () => {
+        const waterInCloud = worldWater.waterInCloud;
+        const waterInCells = worldWater.waterInCells;
+        const waterInCreatures = worldWater.waterInCreatures;
+        expect(grid.cell(1,1).water).toBe(2.1);
+        worldWater.returnWaterToCellOrCloud(grid.cell(1,1), 10);
+        expect(grid.cell(1,1).water).toBe(4.3);
+        expect(worldWater.waterInCreatures).toBeCloseTo(waterInCreatures - 10);
+        expect(worldWater.waterInCells).toBeCloseTo(waterInCells + 4.3 - 2.1);
+        expect(worldWater.waterInCloud).toBeCloseTo(waterInCloud + 10 - 4.3 + 2.1);
     });
 })
 

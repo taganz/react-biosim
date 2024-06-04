@@ -298,7 +298,7 @@ export default class CreatureSensors {
     let sensorList : SensorName[] = [];
     for (const key of Object.keys(this.data) as SensorName[]) {
       const item = this.data[key];
-      console.log(key, item);
+      //console.log(key, item);
       if (item.enabled && item.mainGenus === genus) {
         sensorList.push(item.name);
         }
@@ -475,7 +475,7 @@ export default class CreatureSensors {
         creature.generations.worldController.simData.constants.DETECT_RADIUS,
         creature.preyGenus);
       values.push(closestPrey?.distance ?? 999999);
-      console.log("creature.preyGenus ", creature.preyGenus, "closestPrey.genus ", closestPrey?.genus);
+      //console.log("creature.preyGenus ", creature.preyGenus, "closestPrey.genus ", closestPrey?.genus);
       }
     
     // PreyDirection

@@ -15,7 +15,7 @@ describe('selectGenusBasedOnProbability', () => {
         for(let i=0;i<100;i++) {
             str += selectGenusBasedOnProbability(genera) +"\n";
         };
-        console.log(str);
+        //console.log(str);
         
         expect(1).toBe(1);
     });

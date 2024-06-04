@@ -20,7 +20,7 @@ export const selectionMethodFormatter = {
         return new InsideReproductionAreaSelection();
       case "GreatestDistanceSelection":
         return new GreatestDistanceSelection();
-      case "GreatestMass":
+      case "GreatestMassSelection":
         return new GreatestMassSelection();
       case "ContinuousSelection":
         return new ContinuousSelection();

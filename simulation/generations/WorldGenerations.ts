@@ -58,11 +58,6 @@ export default class WorldGenerations {
   
 
 
-  // internal use
-  //_lastGenerationSurvivors : Creature[] = [];
-  // need this for creature logging
-  //currentStep : number = 0;
-  //currentGen : number = 0;
 
   // if creatures is not null, assume we are loading a saved state
   constructor(worldController: WorldController, worldGenerationsData: worldGenerationsData, grid: Grid, creatures?: Creature[]) {
@@ -123,10 +118,9 @@ export default class WorldGenerations {
   }
 
   
-  public startFirstGeneration() {
+  public populate() {
       this.populationStrategy.populate(this);
       this.lastCreatureCount = this.currentCreatures.length;
-      //console.log("worldGenerations first generation started")
   }
 
 
@@ -192,41 +186,36 @@ public step(): number {
       }
     }
 
-  //this.currentStep++;
   return creaturesStillLive;
   
   }
 
 
-public endGeneration(): void {
+public selectionAndRepopulate(): void {
 
-  //this.currentGen++;
 
   // Get survivors and calculate maximum fitness for this generation
   const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
-  //console.log("generation ", this.currentGen, " step ", this.currentStep, " survivors found: ", survivors.length);
 
-  // Reset creatures
   this.grid.clearCreatures();
   this.currentCreatures = [];
   if (this.selectionMethod.shouldResetLastCreatureIdCreatedEveryGeneration) {
     this.lastCreatureIdCreated = 0;   
   }
-  //this.currentStep = 0;
 
   
   // Repopulate with survivors
   this.populationStrategy.populate(this, survivors);
+
+  // update generation stats
   this.lastSurvivorsCount = survivors.length;
   this.lastSurvivalRate = this.lastSurvivorsCount / this.lastCreatureCount;
   this.lastFitnessMaxValue = fitnessMaxValue;
 
 
-  //this._lastGenerationSurvivors = survivors;
 
 }
 
-//public startGeneration(): void {};
 
 
 get isFirstGeneration() {

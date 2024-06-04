@@ -13,7 +13,7 @@ import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 /* https://jestjs.io/docs/expect  */
 
-describe('CreatureSensors', () => {
+describe('CreatureSensors - not including prey sensors, ...', () => {
     let simulationData : SimulationData;  
     let worldController : WorldController;
     let generations : WorldGenerations
@@ -25,7 +25,7 @@ describe('CreatureSensors', () => {
     let genomeAttackAnimal : Genome;
     
     const allSensors : SensorName[] = [
-        "HorizontalPosition"    // 0
+      "HorizontalPosition"    // 0
       , "VerticalPosition"      // 1
       , "Age"                   // 2
       , "Oscillator"            // 3
@@ -43,9 +43,12 @@ describe('CreatureSensors', () => {
       , "PopulationDensity"     // 15
       , "Mass"                  // 16
       , "PreyDistance"          // 17
-      , "PreyDirection"         // 18
-      , "PredatorDistance"      // 19
-      , "PredatorDirection"     // 20
+      , "PreyNorth"             // 18
+      , "PreyEast"      // 19
+      , "PreySouth"     // 20
+      , "PreyWest"      // 21
+      , "PredatorDistance" // 22   
+      , "PredatorDirection"  // 23
     ];
 
     beforeEach(() => {
@@ -178,7 +181,8 @@ describe('CreatureSensors', () => {
       expect(cs.neuronsCount).toEqual(1);
     });
 
-    test('calculateOutputs() - PreyDistance: finds nearest creature -- NOT PREY YET!!!!', () => {
+    /*
+    test('calculateOutputs() - PreyDistance: finds nearest prey counting chess king steps', () => {
 
       const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
       simulationData.worldObjects = [];
@@ -194,12 +198,12 @@ describe('CreatureSensors', () => {
         ];
       cs.loadFromList(enabledSensors);
 
-      const ann = worldController.generations.newCreature([1, 3], true);
-      const bob = worldController.generations.newCreature([1, 4], true);      
+      const ann = worldController.generations.newCreature([1, 3], true, genomePlant);
+      const bob = worldController.generations.newCreature([1, 4], true, genomePlant);      
       //console.log(cs.calculateOutputs(joe).toString());
       expect(cs.calculateOutputs(joeAt00)).toEqual([3]);  // ann
     });
-
+    */
     test ('sensorNameToId()', () => {
       const enabledSensors : SensorName[] = [
           "Random"          
@@ -212,26 +216,29 @@ describe('CreatureSensors', () => {
     test ('enabledSensorsForGenus()', () => {
       const enabledSensors : SensorName[] = [
         "HorizontalPosition"    // 0
-      , "VerticalPosition"      // 1
-      , "Age"                   // 2
-      , "Oscillator"            // 3
-      , "Random"                // 4
-      , "HorizontalSpeed"       // 5
-      , "VerticalSpeed"         // 6
-      , "HorizontalBorderDistance"  // 7
-      , "VerticalBorderDistance"  // 8
-      , "BorderDistance"        // 9
-      , "TouchNorth"                 // 10
-      , "TouchEast"                 // 11
-      , "TouchSouth"                 // 12
-      , "TouchWest"                 // 13
-      , "Pain"                  // 14
-      , "PopulationDensity"     // 15
-      , "Mass"                  // 16
-      , "PreyDistance"          // 17
-      , "PreyDirection"         // 18
-      , "PredatorDistance"      // 19
-      , "PredatorDirection"     // 20
+        , "VerticalPosition"      // 1
+        , "Age"                   // 2
+        , "Oscillator"            // 3
+        , "Random"                // 4
+        , "HorizontalSpeed"       // 5
+        , "VerticalSpeed"         // 6
+        , "HorizontalBorderDistance"  // 7
+        , "VerticalBorderDistance"  // 8
+        , "BorderDistance"        // 9
+        , "TouchNorth"                 // 10
+        , "TouchEast"                 // 11
+        , "TouchSouth"                 // 12
+        , "TouchWest"                 // 13
+        , "Pain"                  // 14
+        , "PopulationDensity"     // 15
+        , "Mass"                  // 16
+        , "PreyDistance"          // 17
+        , "PreyNorth"             // 18
+        , "PreyEast"      // 19
+        , "PreySouth"     // 20
+        , "PreyWest"      // 21
+        , "PredatorDistance" // 22   
+        , "PredatorDirection"  // 23
     ];
       cs.loadFromList(enabledSensors);
       //console.log("cs.enabledSensorsForFamily()\n\n", cs.enabledSensorsForFamily("attack"));
@@ -254,10 +261,7 @@ describe('CreatureSensors', () => {
           , "Pain"                  // 14
           , "PopulationDensity"     // 15
           , "Mass"                  // 16
-   //       , "PreyDistance"          // 17
-   //       , "PreyDirection"         // 18
-   //       , "PredatorDistance"      // 19
-   //       , "PredatorDirection"     // 20
+
         ]
       );
       expect(cs.enabledSensorsForGenus("attack_animal")).toEqual( 
@@ -280,7 +284,10 @@ describe('CreatureSensors', () => {
           , "PopulationDensity"     // 15
           , "Mass"                  // 16
           , "PreyDistance"          // 17
-          , "PreyDirection"         // 18
+          , "PreyNorth"             // 18
+          , "PreyEast"      // 19
+          , "PreySouth"     // 20
+          , "PreyWest"      // 21
       //    , "PredatorDistance"      // 19
       //    , "PredatorDirection"     // 20
          ]);
@@ -304,7 +311,10 @@ describe('CreatureSensors', () => {
             , "PopulationDensity"     // 15
             , "Mass"                  // 16
             , "PreyDistance"          // 17
-            , "PreyDirection"         // 18
+            , "PreyNorth"             // 18
+            , "PreyEast"      // 19
+            , "PreySouth"     // 20
+            , "PreyWest"      // 21
             , "PredatorDistance"      // 19
             , "PredatorDirection"     // 20
            ]);  

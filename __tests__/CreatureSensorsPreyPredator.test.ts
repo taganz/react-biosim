@@ -14,7 +14,7 @@ import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 /* https://jestjs.io/docs/expect  */
 
-describe('CreatureSensors', () => {
+describe('CreatureSensors - Prey and Predator sensors', () => {
     let simulationData : SimulationData;  
     let worldController : WorldController;
     let generations : WorldGenerations
@@ -102,6 +102,28 @@ describe('CreatureSensors', () => {
       expect(cs.calculateOutputs(joeAttackPlantAt00)).toEqual([2]);  
 
     });
+
+    test('calculateOutputs() - PreyDistance: finds nearest prey counting chess king steps', () => {
+
+      const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+      simulationData.worldObjects = [];
+      simulationData.worldControllerData.size = 5;
+      simulationData.worldGenerationsData.initialPopulation = 3;
+      worldController = new WorldController(simulationData);
+      grid = worldController.generations.grid;
+      joeAt00 = worldController.generations.newCreature([0, 0], true, genomeAttackPlant);
+      // remove other joes
+
+      const enabledSensors : SensorName[] = [
+         "PreyDistance"                
+        ];
+      cs.loadFromList(enabledSensors);
+
+      const ann = worldController.generations.newCreature([1, 3], true, genomePlant);
+      const bob = worldController.generations.newCreature([1, 4], true, genomePlant);      
+      //console.log(cs.calculateOutputs(joe).toString());
+      expect(cs.calculateOutputs(joeAt00)).toEqual([3]);  // ann
+    });
     test('sensor preyDistance outside radius returns distance 999999', () => {
       const enabledSensors : SensorName[] = [
         "PreyDistance"          
@@ -138,16 +160,16 @@ describe('CreatureSensors', () => {
     let joePlantAt22 = worldController.generations.newCreature([2, 2], true, genomePlant);
     expect(cs.calculateOutputs(joeAattackPlantAt00)).toEqual([0, 0, 0, 0]);  
   });
-  test('sensor predatorDirection', () => {
+  test.skip('sensor predatorDirection', () => {
       expect(1+1).toEqual(3);
   });
-  test('sensor predatorDistance', () => {
+  test.skip('sensor predatorDistance', () => {
       expect(1+1).toEqual(3);
   });
-  test('log target prey for debug', () => {
+  test.skip('log target prey for debug', () => {
       expect(1+1).toEqual(3);
   });
-  test('log target predator for debug', () => {
+  test.skip('log target predator for debug', () => {
       expect(1+1).toEqual(3);
   });
   

@@ -99,7 +99,7 @@ export default class WorldController {
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
 
-    this.generations.startFirstGeneration();
+    this.generations.populate();
     this.computeStep();
 
     return this.simCode;
@@ -229,11 +229,13 @@ export default class WorldController {
     this.currentStep = 1;
     this.currentGen++;
     
-    this.generations.endGeneration();
+    this.generations.selectionAndRepopulate();
+
     if (this.generations.selectionMethod.isContinuous == false) {
       this.worldWater.reset();   
+      this.worldWater.firstRain(this.grid);
     }
-    this.worldWater.rain(this.grid);
+    this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     this.generationRegistry.startGeneration();
 
     this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);

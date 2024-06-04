@@ -8,16 +8,15 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import * as constants from "@/simulation/simulationDataDefault"
-import { testWorldControllerData } from './testWorldControllerData';
-import { testWorldGenerationsData } from './testWorldGenerationsData';
 import WorldWater from '@/simulation/water/WorldWater';
 
 /* https://jestjs.io/docs/expect  */
 
 describe('grid basics', () => {
-        const grid = new Grid(100, []); 
+        const CELL_WATER_CAPACITY = 1;
+        const grid = new Grid(100, [], CELL_WATER_CAPACITY); 
         function create_grid_all_isSolid(size: number) : Grid {
-                const grid = new Grid(size, []);
+                const grid = new Grid(size, [], CELL_WATER_CAPACITY);
                 for (let x = 0; x < size; x++) {
                         for (let y = 0; y < size; y++) {
                                 grid._grid[x][y].isSolid = true;
@@ -34,24 +33,24 @@ describe('grid basics', () => {
 
 
         // cell with isSolid == false
-        const g0 : GridCell =  {creature: null, objects: [], isSolid: false, water: constants.GRIDPOINT_WATER_DEFAULT, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT};
+        const g0 : GridCell =  {creature: null, objects: [], isSolid: false, water: 0, waterCapacity: 5};
         // cell with isSolid == true
-        const g1 : GridCell =  {creature: null, objects: [], isSolid: true, water: constants.GRIDPOINT_WATER_DEFAULT, waterCapacity: constants.GRIDPOINT_WATER_CAPACITY_DEFAULT};
+        const g1 : GridCell =  {creature: null, objects: [], isSolid: true, water: 0, waterCapacity: 5};
     
         test('cell() ', () => {
-                const grid5 = new Grid(5, []);
+                const grid5 = new Grid(5, [], 5);
                 grid5._grid[2][2].isSolid = true;
                 expect(grid5.cell(2,2)).toEqual(g1);
         })
         test('isTileInsideWorld() ', () => {
-                const grid5 = new Grid(5, []);        
+                const grid5 = new Grid(5, [], CELL_WATER_CAPACITY);        
                 expect(grid5.isTileInsideWorld(-1,0)).toEqual(false);
                 expect(grid5.isTileInsideWorld(0,0)).toEqual(true);
                 expect(grid5.isTileInsideWorld(4,4)).toEqual(true);
                 expect(grid5.isTileInsideWorld(5,5)).toEqual(false);
         })
         test('isTileEmpty() ', () => {
-                const grid5 = new Grid(5, []);
+                const grid5 = new Grid(5, [], CELL_WATER_CAPACITY);
                 grid5._grid[2][2].isSolid = true;
                 expect(grid5.isTileEmpty(0,0)).toEqual(true);
                 expect(grid5.isTileEmpty(2,2)).toEqual(false);
@@ -66,7 +65,7 @@ describe('grid basics', () => {
                 expect(grid_all_isSolid.getRandomAvailablePosition()).toBeNull();
         })
         test('getRandomAvailablePosition() - near empty', () => {
-                const grid_near_empty = new Grid(5, []);
+                const grid_near_empty = new Grid(5, [], CELL_WATER_CAPACITY);
                 grid_near_empty._grid[0][1].isSolid = true;
                 for(let i = 0; i < 100; i++) {
                         expect(grid_near_empty.getRandomAvailablePosition()).not.toBe([0,1]);
@@ -91,35 +90,24 @@ describe('grid basics', () => {
 
         })
         test('set waterdefault', () => {
-                const grid = new Grid(5, []); 
-                grid.waterDefault = 0.123;
-                expect(grid.cell(2,2).water).toBe(0.123);
+                const grid = new Grid(5, [], 5); 
+                expect(grid.cell(2,2).water).toBe(0);
         });
         test('add water limited by waterdefault', () => {
-                const grid = new Grid(5, []); 
-                grid.waterDefault = 3;
-                grid.cell(2,2).waterCapacity = 6;
-                grid.addWater([2, 2], 2);
-                expect(grid.cell(2,2).water).toBe(5);
-                grid.addWater([2, 2], 10);
-                expect(grid.cell(2,2).water).toBe(6);
+                const grid = new Grid(5, [], 4); 
+                expect(grid.addWater([2, 2], 1)).toBe(1);
+                expect(grid.cell(2,2).water).toBe(1);
+                expect(grid.addWater([2, 2], 10)).toBe(3);  // added water = min (10, 4 - 1)
+                expect(grid.cell(2,2).water).toBe(4);
 
         });
-        test('rain function', () => {
-                const grid = new Grid(10, []); 
-                const worldWater = new WorldWater(999999999);
-                grid.waterDefault = 2;
-                worldWater.rain(grid);
-                console.log("--rain function--");
-                grid.debugPrintWater();
-        });
         
-        const worldController = new WorldController(testWorldControllerData, testWorldGenerationsData);
-        const generations = new Generations(worldController, testWorldGenerationsData, worldController.grid);
-        const joe = new Creature(generations, [10, 10]);
+        const worldController = new WorldController(constants.SIMULATION_DATA_DEFAULT);
+        const generations = new Generations(worldController, worldController.simData.worldGenerationsData, worldController.grid);
+        const joe = new Creature(generations, [10, 10], true);
  
         test('getNeighbour4Creature', () => {
-                const grid = new Grid(5, []); 
+                const grid = new Grid(5, [], 5); 
                 grid._grid[2][2].creature = joe;
                 grid._grid[4][2].creature = joe;
                 grid.debugPrintGridCreatures();
@@ -129,7 +117,7 @@ describe('grid basics', () => {
                 console.log(grid.getNeighbour4Creature([3, 2]));
         });
         test('cellOffsetDirection4', () => {
-                const grid = new Grid(5, []); 
+                const grid = new Grid(5, [], CELL_WATER_CAPACITY); 
                 grid._grid[2][2].creature = joe;
                 grid._grid[4][2].creature = joe;
                 grid.debugPrintGridCreatures();
