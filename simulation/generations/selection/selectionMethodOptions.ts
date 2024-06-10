@@ -14,25 +14,23 @@ export const selectionMethodOptions: Option[] = [
   {value: "ContinuousSelection", label: "Continuous"},
 ];
 
-export function selectSelectionMethod(value: string) : SelectionMethod {
-  console.log("selectionMethodObjectList ", value);
-  switch(value) {
-    case "InsideReproductionAreaSelection":
-      return new InsideReproductionAreaSelection();
-      break;
-      case "GreatestDistanceSelection":
-        return new GreatestDistanceSelection();
-        break;
-      case "GreatestMassSelection":
-        return new GreatestMassSelection();
-        break;
-        case "ReproductionSelection":
-        return new ReproductionSelection();
-        break;
-      case "ContinuousSelection":
-        return new ContinuousSelection();
-        default:
-      console.log("selectionMethodObjectList invalid value: ", value);
-      return new InsideReproductionAreaSelection();
-   }
+// Mapping from values to constructor functions
+export const selectionMap: { [key: string]: () => SelectionMethod } = {
+  "InsideReproductionAreaSelection": () => new InsideReproductionAreaSelection(),
+  "GreatestDistanceSelection": () => new GreatestDistanceSelection(),
+  "GreatestMassSelection": () => new GreatestMassSelection(),
+  "ReproductionSelection": () => new ReproductionSelection(),
+  "ContinuousSelection": () => new ContinuousSelection(),
+};
+
+
+
+export function selectSelectionMethod(value: string): SelectionMethod {
+  const strategyConstructor = selectionMap[value];
+  if (strategyConstructor) {
+    return strategyConstructor();
+  } else {
+    console.warn("selectionMethodObjectList invalid value: ", value);
+    return new InsideReproductionAreaSelection(); // default case
+  }
 }

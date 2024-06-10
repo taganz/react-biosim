@@ -14,16 +14,23 @@ export const populationStrategyOptions: Option[] = [
   {value: "5", label: "PlantHerbivorePopulation"},
 ];
 
-export function selectPopulationStrategy(value: string) : PopulationStrategy {
-  console.log("selectPopulationStrategy ", value);
-  switch(value) {
-    case "1": return new AsexualRandomPopulation();
-    case "2": return new AsexualZonePopulation();
-    case "3": return new RandomFixedGenePopulation();
-    case "4": return new ContinuousPopulation();
-    case "5": return new PlantHerbivorePopulation();
-    default:
-      console.warn("onSelectPopulationStrategy invalid value: ", value);
-      return new AsexualRandomPopulation();
-   }
+// Mapping from values to constructor functions
+export const populationMap: { [key: string]: () => PopulationStrategy } = {
+  "AsexualRandomPopulation": () => new AsexualRandomPopulation(),
+  "AsexualZonePopulation": () => new AsexualZonePopulation(),
+  "RandomFixedGenePopulation": () => new RandomFixedGenePopulation(),
+  "ContinuousPopulation": () => new ContinuousPopulation(),
+  "PlantHerbivorePopulation": () => new PlantHerbivorePopulation(),
+};
+
+
+
+export function selectPopulationStrategy(value: string): PopulationStrategy {
+  const strategyConstructor = populationMap[value];
+  if (strategyConstructor) {
+    return strategyConstructor();
+  } else {
+    console.warn("onSelectPopulationStrategy invalid value: ", value);
+    return new AsexualRandomPopulation(); // default case
+  }
 }
