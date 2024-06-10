@@ -34,10 +34,6 @@ export default class ContinuousPopulation implements PopulationStrategy {
         }
       }
 
-
-
-
-
     }
      else
     {

@@ -100,7 +100,7 @@ export default class WorldController {
     );
 
     this.generations.populate();
-    this.computeStep();
+    this.mainLoop();
 
     return this.simCode;
   
@@ -147,28 +147,30 @@ export default class WorldController {
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
     
-    this.computeStep();
+    this.mainLoop();
   }
 
   private loadWorldControllerInitialAndUserData(worldControllerData: WorldControllerData) : void {
     // --> load only worldController values. worldGeneration will load others
 
-    // initial values
     this.size = worldControllerData.size;
     this.stepsPerGen = worldControllerData.stepsPerGen;
-  
-
-    //this.waterFirstRainPerCell = worldControllerData.waterFirstRainPerCell;
-    //this.waterCellCapacity = worldControllerData.waterCellCapacity;
-
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;
     this.pauseBetweenGenerations = worldControllerData.pauseBetweenGenerations;
 
   }
 
-  private async computeStep(): Promise<void> {
+  // generations enters mainLoop() with currentCreatures already populated
+  private async mainLoop(): Promise<void> {
           
+    if (this.currentStep === 1) {
+      this.logStartGeneration();
+      this.events.dispatchEvent(
+        new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
+      );
+    }
+
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.startStep, { detail: { worldController: this } })
     );
@@ -180,14 +182,7 @@ export default class WorldController {
       new CustomEvent(WorldEvents.endStep, { detail: { worldController: this } })
     );
 
-    this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
-    this.log(LogEvent.STEP_END, "waterInCells", this.worldWater.waterInCells);
-    this.log(LogEvent.STEP_END, "waterInCloud", this.worldWater.waterInCloud);
-    this.log(LogEvent.STEP_END, "waterInCreatures", this.worldWater.waterInCreatures);
-    this.log(LogEvent.STEP_END, "waterTotal", 
-            this.worldWater.waterInCells 
-            + this.worldWater.waterInCloud 
-            + this.worldWater.waterInCreatures);
+    this.logEndStep();
     
     this.sendRedrawEventEveryImmediateSteps();
     
@@ -201,25 +196,34 @@ export default class WorldController {
     }
 
     
-    
     if (this.currentStep == this.stepsPerGen) {
       await this.endGeneration();
-      this.startGeneration();
     } else {
       this.currentStep++;
     }
 
     // loop after pause
     this._timeoutId = window.setTimeout(
-        this.computeStep.bind(this),
+        this.mainLoop.bind(this),
         this.pauseBetweenSteps
       );
       
   }
 
+  
+  private async endGeneration(): Promise<void> {
 
-  //private async startGeneration(): Promise<void> {
-  private startGeneration() : void {
+    this.logEndGeneration();
+    
+    // Small pause
+    if (this.pauseBetweenGenerations > 0) {
+      await new Promise((resolve) =>
+        setTimeout(() => resolve(true), this.pauseBetweenGenerations)
+      );
+    }
+    //this._immediateStepsCounter = this.immediateSteps;
+
+    
     this.lastGenerationDuration = new Date().getTime() - this._lastGenerationDate.getTime() - this._pauseTime;
     this._lastGenerationDate = new Date();
     this._pauseTime = 0;
@@ -238,33 +242,8 @@ export default class WorldController {
     this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     this.generationRegistry.startGeneration();
 
-    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
-    this.events.dispatchEvent(
-      new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
-    );
+    this.logStartGeneration();
 
-
-  }
-
-  
-  private async endGeneration(): Promise<void> {
-    this.log(LogEvent.GENERATION_END, "population", this.generations.currentCreatures.length);
-    this.worldWater.evaporation(this.grid);
-    this.log(LogEvent.GENERATION_END, "waterInCells", this.worldWater.waterInCells);
-    this.log(LogEvent.GENERATION_END, "waterInCloud", this.worldWater.waterInCloud);
-    this.log(LogEvent.GENERATION_END, "waterInCreatures", this.worldWater.waterInCreatures);
-    this.log(LogEvent.GENERATION_END, "waterTotal", 
-            this.worldWater.waterInCells 
-            + this.worldWater.waterInCloud 
-            + this.worldWater.waterInCreatures);
-    
-    // Small pause
-    if (this.pauseBetweenGenerations > 0) {
-      await new Promise((resolve) =>
-        setTimeout(() => resolve(true), this.pauseBetweenGenerations)
-      );
-    }
-    //this._immediateStepsCounter = this.immediateSteps;
 
   }
 
@@ -302,7 +281,7 @@ export default class WorldController {
         ? new Date().getTime() - this._lastPauseDate.getTime()
         : 0;
 
-      this.computeStep();
+      this.mainLoop();
     }
   }
 
@@ -320,6 +299,41 @@ export default class WorldController {
     return !this._timeoutId;
   }
 
+
+  private logStartGeneration() {
+    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
+  }
+
+  private logEndStep() {
+    this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
+    this.log(LogEvent.STEP_END, "population_plant", this.generations.currentCreatures.filter(crea => crea.genus === "plant").length);
+    this.log(LogEvent.STEP_END, "population_attack_plant", this.generations.currentCreatures.filter(crea => crea.genus === "attack_plant").length);
+    this.log(LogEvent.STEP_END, "population_attack_animal", this.generations.currentCreatures.filter(crea => crea.genus === "attack_animal").length);
+    this.log(LogEvent.STEP_END, "waterInCells", this.worldWater.waterInCells);
+    this.log(LogEvent.STEP_END, "waterInCloud", this.worldWater.waterInCloud);
+    this.log(LogEvent.STEP_END, "waterInCreatures", this.worldWater.waterInCreatures);
+    this.log(LogEvent.STEP_END, "waterTotal", 
+            this.worldWater.waterInCells 
+            + this.worldWater.waterInCloud 
+            + this.worldWater.waterInCreatures);
+
+  }
+
+  private logEndGeneration() {
+    this.log(LogEvent.GENERATION_END, "population", this.generations.currentCreatures.length);
+    this.log(LogEvent.GENERATION_END, "population_plant", this.generations.currentCreatures.filter(crea => crea.genus === "plant").length);
+    this.log(LogEvent.GENERATION_END, "population_attack_plant", this.generations.currentCreatures.filter(crea => crea.genus === "attack_plant").length);
+    this.log(LogEvent.GENERATION_END, "population_attack_animal", this.generations.currentCreatures.filter(crea => crea.genus === "attack_animal").length);
+    this.worldWater.evaporation(this.grid);
+    this.log(LogEvent.GENERATION_END, "waterInCells", this.worldWater.waterInCells);
+    this.log(LogEvent.GENERATION_END, "waterInCloud", this.worldWater.waterInCloud);
+    this.log(LogEvent.GENERATION_END, "waterInCreatures", this.worldWater.waterInCreatures);
+    this.log(LogEvent.GENERATION_END, "waterTotal", 
+            this.worldWater.waterInCells 
+            + this.worldWater.waterInCloud 
+            + this.worldWater.waterInCreatures);
+
+  }
 
   private log(eventType: LogEvent, paramName? : string, paramValue? : number, paramValue2? : number, paramString?: string) { 
     if (!this.eventLogger) {

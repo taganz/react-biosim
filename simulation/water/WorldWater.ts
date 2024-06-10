@@ -58,7 +58,7 @@ export default class WorldWater {
     getWaterFromCloud(waterWanted: number) {
         this.waterInCloud -= waterWanted;
         this.waterInCreatures += waterWanted;
-        if (this.waterInCloud < 0 ) {
+        if (this.waterInCloud < 0 ) {  
             throw new Error (`getWaterFromCloud - not enough waterInCloud for first generation creature ${waterWanted.toFixed(2)}`)
         }
     }
@@ -67,7 +67,7 @@ export default class WorldWater {
     dissipateWater(water: number) {
         this.waterInCreatures -= water;
         this.waterInCloud += water;
-        if (this.waterInCreatures < 0) {
+        if (this.waterInCreatures < 0) {  
             throw new Error (`dissipateWater - waterInCreatures < 0: ${water.toFixed(2)}`);
         }
     }

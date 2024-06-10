@@ -41,7 +41,7 @@ export const CONSTANTS_DEFAULT = {
     // -- log 
     LOG_ENABLED : true,  // main switch for logging
     //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
-    LOG_LEVEL : LogLevel.CREATURE, 
+    LOG_LEVEL : LogLevel.STEP,
     LOG_CREATURE_ID : 0,   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
     LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
     LOG_LOCALE_STRING : 'es-ES',
@@ -75,8 +75,11 @@ export const CONSTANTS_DEFAULT = {
       {name: "random-random attack_plant", genome: [Genome.connectionToGene({sourceType: NeuronType.SENSOR, sourceId: 4, sinkType: NeuronType.ACTION, sinkId: 4, weight: 1})]}
     ],
 
-    POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.9},
-                                {genus: "attack_plant", probability: 0.1}],  // used in RandomFixedGenePopulation
+    //POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.9},
+    //                            {genus: "attack_plant", probability: 0.1}],  // used in RandomFixedGenePopulation
+    POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.7},
+                                {genus: "attack_plant", probability: 0.3},  // used in RandomFixedGenePopulation
+                                {genus: "attack_animal", probability: 0}],  // used in RandomFixedGenePopulation
 
     SIM_CODE_LENGTH : 3,    
 
@@ -157,7 +160,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
 
 export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   // initial values
-  populationStrategy: new PlantHerbivorePopulation(),
+  populationStrategy: new RandomFixedGenePopulation(),
   selectionMethod: new GreatestMassSelection(),
   initialPopulation: 500,       // 500
   initialGenomeSize: 4,         // 4
@@ -205,7 +208,7 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
        "AttackPlant",      // 8
        "AttackAnimal"      // 9
      ],
-  metabolismEnabled: true,    // true   -- if false creature mass won't change
+  metabolismEnabled: false,    // true   -- if false creature mass won't change
   phenotypeColorMode: "trophicLevel",    // "genome", "trophicLevel",
   plantGenes : [-2071543808,-2071486464],  // 
   

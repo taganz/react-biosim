@@ -1,8 +1,10 @@
 //import { max } from "d3";
+import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
 import {Direction, Direction4} from '@/simulation/world/direction';
 import shuffle from "lodash.shuffle";
+import { geneArrayToString } from "@/simulation/creature/brain/Genome";
 
 
 export type GridCell = {
@@ -310,4 +312,30 @@ public debugPrintWater(maxColumns=10) {
   }
   console.log(grid);
 }
+
+public debugPrintCreatures(generations : WorldGenerations, maxColumns = 10) {
+  let grid : string = "";
+  for (let y=0; y < Math.min(this._grid.length, maxColumns); y++) {
+    let row : string = "";
+    for (let x=0; x < Math.min(this._grid.length, maxColumns); x++) {
+      const cell = this.cell(x,y);
+      if (cell.creature) {
+        row += x.toString() + ", " + y.toString() + ": " + cell.creature.genus +"\n";
+        //row += geneArrayToString(generations, cell.creature.brain.genome.genes);   
+      }
+     } 
+    grid += row;
+  }
+  console.log(grid);
+
+}
+
+public creatureCount() : number {
+  return this._grid.map(row => 
+    row.reduce((count, cell) => count + (cell.creature != null  ? 1 : 0), 0) // Contar en cada fila
+  ).reduce((total, current) => total + current, 0); // Sumar todos los conteos de las filas
+}
+
+
+
 }

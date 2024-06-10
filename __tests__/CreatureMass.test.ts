@@ -110,17 +110,37 @@ describe('CreaturePhenotype', () => {
         expect(mass._worldWater.waterInCloud).toBe(194);
         expect(mass._worldWater.waterInCells).toBe(50);
     });
-    test('addFromGrid - add mass from waterInGrid', ()=> {
+    test('addFromGrid - add mass from waterInGrid - enough mass in cell', ()=> {
         mass = joeAttackAnimal._mass;
-        
+        const WATER_WANTED = 1;
         const cell = grid.cell(joeAttackAnimal.position[0], joeAttackAnimal.position[1]);
-        mass.addFromGrid(cell, 1);
+        const waterInCell = cell.water;
+        expect(waterInCell).toBeGreaterThan(WATER_WANTED)
+        const waterGot = mass.addFromGrid(cell, WATER_WANTED);
         
-        expect(mass.mass).toBe(3 + 1);
+        expect(waterGot).toBe(waterGot);
+        expect(cell.water).toBe(waterInCell - WATER_WANTED);
+        expect(mass.mass).toBe(3 + waterGot);
         expect(mass._worldWater.totalWater).toBe(250);
-        expect(mass._worldWater.waterInCreatures).toBe(6 + 1);
+        expect(mass._worldWater.waterInCreatures).toBe(6 + waterGot);
         expect(mass._worldWater.waterInCloud).toBe(194);
-        expect(mass._worldWater.waterInCells).toBe(50 - 1);
+        expect(mass._worldWater.waterInCells).toBe(50 - waterGot);
+    });
+    test('addFromGrid - add mass from waterInGrid - NOT enough mass in cell: get only available water', ()=> {
+        mass = joeAttackAnimal._mass;
+        const WATER_WANTED = 10;
+        const cell = grid.cell(joeAttackAnimal.position[0], joeAttackAnimal.position[1]);
+        const waterInCell = cell.water;
+        expect(waterInCell).toBeLessThan(WATER_WANTED)
+        const waterGot = mass.addFromGrid(cell, WATER_WANTED);
+        
+        expect(waterGot).toBe(waterInCell);
+        expect(cell.water).toBe(0);
+        expect(mass.mass).toBe(3 + waterGot);
+        expect(mass._worldWater.totalWater).toBe(250);
+        expect(mass._worldWater.waterInCreatures).toBe(6 + waterGot);
+        expect(mass._worldWater.waterInCloud).toBe(194);
+        expect(mass._worldWater.waterInCells).toBe(50 - waterGot);
     });
     test('consume - reduce mass and send to cloud', ()=> {
         mass = joeAttackAnimal._mass;

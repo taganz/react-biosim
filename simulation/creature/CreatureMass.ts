@@ -33,7 +33,10 @@ export default class CreatureMass {
         }
 
         this._mass = this._massAtBirth;
-        this._birth(firstGeneration);
+        if (firstGeneration) {
+            // if first generation, water should be obtained from cloud
+            this._worldWater.getWaterFromCloud(this.massAtBirth);
+        }
 
         this._basalConsumption = creature.generations.worldController.simData.worldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * 
                 creature.brain.genome.genes.length;
@@ -52,13 +55,6 @@ export default class CreatureMass {
 
     get massAtBirth(): number {
         return this._massAtBirth;
-    }
-
-    _birth(firstGeneration: boolean) {
-        if (firstGeneration) {
-            // if first generation, water should be obtained from cloud
-            this._worldWater.getWaterFromCloud(this.massAtBirth);
-        }
     }
 
 

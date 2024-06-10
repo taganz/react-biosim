@@ -19,6 +19,8 @@ import AsexualRandomPopulation from "@/simulation/generations/population/Asexual
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import { SimulationData } from "@/simulation/SimulationData";
+import PlantHerbivorePopulation from "@/simulation/generations/population/PlantHerbivorePopulation";
+import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 export type SavedPopulationStrategy = string;
 
@@ -27,6 +29,12 @@ export type SavedPopulationStrategy = string;
 describe('populationStrategy', () => {
 
         let simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
+        simulationData.worldGenerationsData.initialPopulation = 5;
+        simulationData.worldControllerData.size = 5;
+        
+        let worldController : WorldController;
+        let generations : WorldGenerations;
+        let grid : Grid;
         
         //const worldControllerData = testWorldControllerData;
         //const worldGenerationsData = testWorldGenerationsData
@@ -36,7 +44,12 @@ describe('populationStrategy', () => {
         //const arrayOfGene = [...new Array(4)].map(() => Genome.generateRandomGene());
         //const genome = new Genome(arrayOfGene);
         
+        beforeEach(() => {
+                worldController = new WorldController(simulationData);
+                generations = worldController.generations;
+                grid = worldController.grid;
 
+        });
         test('populationStrategyFormatter serialize all strategies ', () => {
                 const arp = new AsexualRandomPopulation();
                 const azp = new AsexualZonePopulation();
@@ -57,14 +70,39 @@ describe('populationStrategy', () => {
                 expect(populationStrategyFormatter.deserialize("AsexualZonePopulation")).not.toEqual(arp);
                 expect(populationStrategyFormatter.deserialize("RandomFixedGenePopulation")).toEqual(rfgp);
                 expect(populationStrategyFormatter.deserialize("ContinuousPopulation")).toEqual(cpp);
-                        });
-        test('DISPLAY--AsexualZonePopulation 1st generation without zone', ()=> {
-                const worldController = new WorldController(simulationData);
-                const arp = new AsexualRandomPopulation();
-                arp.populate(worldController.generations);
-                worldController.generations.grid.debugPrintGridCreatures();
         });
-
+        test('AsexualZonePopulation(): 1st generation without zone', ()=> {
+                const arp = new AsexualZonePopulation();
+                arp.populate(generations);
+                console.log("AsexualZonePopulation(): 1st generation without zone");
+                console.log(grid.creatureCount(), " creatures in grid");
+                grid.debugPrintGridCreatures();
+                grid.debugPrintCreatures(generations);
+        });
+        test('AsexualRandomPopulation()', ()=> {
+                const arp = new AsexualRandomPopulation();
+                arp.populate(generations);
+                console.log("AsexualRandomPopulation()");
+                console.log(grid.creatureCount(), " creatures in grid");
+                grid.debugPrintGridCreatures();
+                grid.debugPrintCreatures(generations);
+        });
+        test('PlantHerbivorePopulation()', ()=> {
+                const arp = new PlantHerbivorePopulation();
+                arp.populate(generations);
+                console.log("PlantHerbivorePopulation()");
+                console.log(grid.creatureCount(), " creatures in grid");
+                grid.debugPrintGridCreatures();
+                grid.debugPrintCreatures(generations);
+        });
+        test('RandomFixedGenePopulation()', ()=> {
+                const arp = new RandomFixedGenePopulation();
+                arp.populate(generations);
+                console.log("RandomFixedGenePopulation()");
+                console.log(grid.creatureCount(), " creatures in grid");
+                grid.debugPrintGridCreatures();
+                grid.debugPrintCreatures(generations);
+        });
 });
 
 

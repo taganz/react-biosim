@@ -6,6 +6,7 @@ import PopulationStrategy from "./PopulationStrategy";
 import Genome from "../../creature/brain/Genome"
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { selectGenusBasedOnProbability } from "./selectGenusBasedOnProbability"; 
+import { addCreaturesFromGenus } from "./addCreaturesForGenus";
 
 /* 
   WORK
@@ -19,23 +20,12 @@ const HERBIVORES_PROPORTION = 0.2;
 export default class PlantHerbivorePopulation implements PopulationStrategy {
   name = "PlantHerbivorePopulation";
 
-  private addCreaturesForGenus(worldGenerations: WorldGenerations, genus: Genus, total: number) {
-    for (let i = 0; i < total; i++) {
-      let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
-      if (position != null) {
-          var genes = CreatureGenus.geneArrayForGenus(worldGenerations, genus, worldGenerations.initialGenomeSize);
-          worldGenerations.newCreature(position, true, new Genome(genes) );
-      }
-      else {
-        console.warn("no free position found");
-      }
-    }
-  }
+
   populate(worldGenerations: WorldGenerations, attackPlantParents?: Creature[]): void {
 
     if (worldGenerations.currentGen === 1) {
-        this.addCreaturesForGenus(worldGenerations, "attack_plant", worldGenerations.initialPopulation*HERBIVORES_PROPORTION );
-        this.addCreaturesForGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
+        addCreaturesFromGenus(worldGenerations, "attack_plant", worldGenerations.initialPopulation*HERBIVORES_PROPORTION );
+        addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
     } 
     else {
     
@@ -98,7 +88,7 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
       }
 
       // now add plants to complete population
-      this.addCreaturesForGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
+      addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
     }
 
   }

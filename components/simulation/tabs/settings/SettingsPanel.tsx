@@ -276,6 +276,16 @@ export default function SettingsPanel() {
           <h3 className="mb-1 text-2xl font-bold">Generations</h3>
           <p  className="mb-2">Metabolism is {simulationData.worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
 
+    {/*  populationStrategy  */}
+
+    <div>
+        <br/>
+          <p  className="mb-2">Population strategy: {worldController?.generations.populationStrategy.constructor.name} </p>
+              <Dropdown options={populationStrategyOptions}
+                        onSelect={handlePopulationStrategy} />
+            </div>
+          </div>
+
     {/*  selectionMethod  */}
 
             <div className="mb-1">
@@ -284,16 +294,6 @@ export default function SettingsPanel() {
                         onSelect={handleSelectionMethodOptions}/>
               <br/>
             </div>
-
-    {/*  populationStrategy  */}
-
-          <div>
-          <p  className="mb-2">Population strategy: {worldController?.generations.populationStrategy.constructor.name} </p>
-              <Dropdown options={populationStrategyOptions}
-                        onSelect={handlePopulationStrategy} />
-              <br/>
-            </div>
-          </div>
 
     {/*  === NEURONAL NETWORKS === */}
 
