@@ -2,7 +2,7 @@ import { ActionName } from '../../creature/brain/CreatureActions';
 import { SensorName } from '../../creature/brain/CreatureSensors';
 import WorldController from '@/simulation/world/WorldController';
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import {selectionMethodFormatter} from "@/simulation/generations/selection/selectionMethodFormatter";
+import { selectionMethodFormatter } from '@/simulation/generations/selection/selectionMethodFormatter';
 import {populationStrategyFormatter} from "@/simulation/generations/population/populationStrategyFormatter";
 import SavedWorldGenerationData from "../data/SavedWorldGenerationData"
 import {serializeMutationMode, deserializeMutationMode} from "@/simulation/creature/brain/MutationMode"
