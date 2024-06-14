@@ -73,28 +73,46 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={7}>
-                  Source code :{" "}
-                  <a
-                    href="https://github.com/taganz/react-biosim"
-                    target="_blank"
-                  >
-                    https://github.com/taganz/react-biosim
-                  </a>
-                  <br></br>A fork from:{" "}
-                  <a
-                    href="https://github.com/carlo697/react-biosim"
-                    target="_blank"
-                  >
-                    https://github.com/carlo697/react-biosim
-                  </a>
-                  <br></br>Based on the video:{" "}
-                  <a
+                  
+                  <p>
+                      This is an environment to create <b>evolutionary simulations</b> inspired in the video&nbsp;
+                      <a
                     href="https://www.youtube.com/watch?v=N3tRFayqVtk"
                     target="_blank"
                   >
                     &apos;I programmed some creatures. They Evolved&apos;
                   </a>
                   , by davidrandallmiller.
+                  </p>
+                  <p>
+                    <br/>
+                    How to use:
+                    <p>
+                    <li>Start by using one of the simulations based on the video in the &apos;Start&apos;&nbsp;panel.</li>
+                    <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
+                    <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
+                    <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
+                    <li>Create a gif or save an image of current generation in &apos;Save&apos;&nbsp;panel.</li>
+                    <li>Save a copy of current simulation and load it again with &apos;Save&apos;and &apos;Load&apos;panels.</li>
+                    </p>
+                  </p>
+                  <br/>
+                  Source code by taganz:&nbsp;{" "}
+                  <a
+                    href="https://github.com/taganz/react-biosim"
+                    target="_blank"
+                  >
+                    https://github.com/taganz/react-biosim
+                  </a>
+                  <br/>
+                  <br></br>A fork from the original port to react and typescript by carlo697:{" "}
+                  <a
+                    href="https://github.com/carlo697/react-biosim"
+                    target="_blank"
+                  >
+                    https://github.com/carlo697/react-biosim
+                  </a>
+                  <br/>
                 </TabPanel>
               </Tabs>
             </div>

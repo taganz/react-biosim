@@ -11,7 +11,7 @@ export default function StartPanel() {
       <p className="mb-2 text-lg">
         This is an evolution simulator. Observe random created creatures evolving across generations.  
         <br/><br/>
-        Start by selecting a scenario inspired on David R. Miller video. 
+        Start by selecting a scenario. 
       </p>
       <div className="text-lg">
       <ScenariosSelection/>
@@ -19,7 +19,7 @@ export default function StartPanel() {
       <p className="mb-2 text-lg">
         Create your own scenario using Settings and Map tabs.
         <br/><br/>
-        See About tab for more info.
+        See &quot;About&quot; tab for more info and link to David R. Miller inspiring video.
       </p>
     </div>
   );

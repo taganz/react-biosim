@@ -181,94 +181,7 @@ export default function SettingsPanel() {
                 >
               </input>
             </div>
-
-          {/*  water cell capacity   */}
-
-          <div className="flex flex-col">
-            <label className="grow">Cell water capacity</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterCellCapacity.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterCellCapacity: parseFloat(e.target.value),}}))}}
-              step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-        {/*  water total per cell  */}
-
-           <div className="flex flex-col">
-            <label className="grow">Total water (per cell)</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterTotalPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterTotalPerCell: parseFloat(e.target.value),}}))}}
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-          
-          {/*  rain max  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Rain max per cell</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterRainMaxPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterRainMaxPerCell: parseFloat(e.target.value),}}))}}                
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-          {/*  first rain per cell  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Initial water per cell</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterFirstRainPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterFirstRainPerCell: parseFloat(e.target.value),}}))}}     
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-          {/*  evaporation  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Evaporation</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterEvaporationPerCellPerGeneration.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterEvaporationPerCellPerGeneration: parseFloat(e.target.value),}}))}}   
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-    {/*  rainType  */}
-
-          <div className="mb-1">
-            <p  className="mb-2">Rain type: {simulationData.waterData.rainType} </p>
-            <Dropdown options={rainTypeOptions} 
-                      onSelect={handleRainTypeOptions} />
-              <br/>
-            </div>
-
-            </div>
-          </div>
-
+      </div>
 
     {/*  === GENERATIONS === */}
 
@@ -442,6 +355,105 @@ export default function SettingsPanel() {
             </div>
           </div>
         </div>
+
+      <div>
+        
+    {/*  === IN DEV OPTIONS === */}
+
+            <h3 className="mb-1 text-2xl font-bold">Under development options</h3>
+            <div className="grid grid-cols-2 gap-4">
+
+         {/*  water cell capacity   */}
+
+          <div className="flex flex-col">
+            <label className="grow">Cell water capacity</label>
+            <input
+                type="number"
+                value={simulationData.waterData.waterCellCapacity.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterCellCapacity: parseFloat(e.target.value),}}))}}
+              step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+        {/*  water total per cell  */}
+
+           <div className="flex flex-col">
+            <label className="grow">Total water (per cell)</label>
+            <input
+                type="number"
+                value={simulationData.waterData.waterTotalPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterTotalPerCell: parseFloat(e.target.value),}}))}}
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+          
+          {/*  rain max  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Rain max per cell</label>
+            <input
+                type="number"
+                value={simulationData.waterData.waterRainMaxPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterRainMaxPerCell: parseFloat(e.target.value),}}))}}                
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+          {/*  first rain per cell  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Initial water per cell</label>
+            <input
+                type="number"
+                value={simulationData.waterData.waterFirstRainPerCell.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterFirstRainPerCell: parseFloat(e.target.value),}}))}}     
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+          {/*  evaporation  */}
+
+          <div className="flex flex-col">
+            <label className="grow">Evaporation</label>
+            <input
+                type="number"
+                value={simulationData.waterData.waterEvaporationPerCellPerGeneration.toString()}
+                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
+                  waterEvaporationPerCellPerGeneration: parseFloat(e.target.value),}}))}}   
+                step="0.1"
+                className="min-w-0 bg-grey-mid p-1"
+              >
+            </input>
+          </div>
+
+          </div>
+
+           {/*  rainType  */}
+          <br/>
+          <div className="flex flex-col">
+            <label  className="grow">Rain type: {simulationData.waterData.rainType} </label>
+            <Dropdown options={rainTypeOptions} 
+                      onSelect={handleRainTypeOptions} />
+              <br/>
+            </div>
+
+          </div>
+
+      </div>
+
+
       </div>
     );
 }

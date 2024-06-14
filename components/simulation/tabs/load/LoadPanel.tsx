@@ -3,11 +3,6 @@
 import Button from "@/components/global/Button";
 import { simulationDataAtom,
         worldControllerAtom,
-        //worldControllerDataAtom,
-        //worldGenerationDataAtom,
-        //waterDataAtom,
-        //simulationConstantsDataAtom, 
-        //worldObjectsDataAtom
       } from "../../store";
 import { useAtomValue, useSetAtom, useAtom } from "jotai";
 import { useState } from "react";
@@ -16,23 +11,14 @@ import TextareaInput from "@/components/global/inputs/TextareaInput";
 
 export default function LoadPanel() {
   const worldController = useAtomValue(worldControllerAtom);
-  //const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
-  //const setWorldControllerData = useSetAtom(worldControllerDataAtom);
-  //const setWaterData = useSetAtom(waterDataAtom);
   const setSimulationData = useSetAtom(simulationDataAtom);
-  //const setSimulationConstantsData = useSetAtom(simulationConstantsDataAtom);
-  //const setWorldObjectsData = useSetAtom(worldObjectsDataAtom)
   const [pastedData, setPastedData] = useState("");
 
   const handleLoadPasted = () => {
     if (worldController) {
       const simulationData = loadSavedWorldAndResumeRun(worldController, pastedData);
       setSimulationData(simulationData);
-      //setWorldGenerationData(simulationData.worldGenerationsData);
-      //setWorldControllerData(simulationData.worldControllerData);
-      //setWaterData(simulationData.waterData);
-      //setSimulationConstantsData(simulationData.constants);
-      //setWorldObjectsData(simulationData.worldObjects);
+
     } else {
       console.warn("LoadPanel worldController not found!");
     }
@@ -51,11 +37,6 @@ export default function LoadPanel() {
       if (worldController) {
         const simulationData = loadSavedWorldAndResumeRun(worldController, data);
         setSimulationData(simulationData);
-        //setWorldGenerationData(simulationData.worldGenerationsData);
-        //setWorldControllerData(simulationData.worldControllerData);
-        //setWaterData(simulationData.waterData);
-        //setSimulationConstantsData(simulationData.constants);
-        //setWorldObjectsData(simulationData.worldObjects);
       }
     }
     fileReader.onerror = () => {

@@ -9,9 +9,9 @@ import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 export const populationStrategyOptions: Option[] = [
   {value: "1", label: "Asexual Random"},
   {value: "2", label: "Asexual Zone"},
-  {value: "3", label: "Random Fixed Gene"},
-  {value: "4", label: "Continuous"},
-  {value: "5", label: "PlantHerbivorePopulation"},
+  {value: "3", label: "Random Fixed Gene (in dev)"},
+  {value: "4", label: "Continuous (in dev)"},
+  {value: "5", label: "PlantHerbivorePopulation (in dev)"},
 ];
 
 // Mapping from values to constructor functions

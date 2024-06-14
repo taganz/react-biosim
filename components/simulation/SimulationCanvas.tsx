@@ -7,7 +7,10 @@ import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom} from "./store";
 import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
-import { startupScenarioWorldControllerData, startupScenarioWorldGenerationsData } from "../../simulation/startupScenario";
+import { startUpScenarioSimulationData } from "../../simulation/startupScenario";
+import { constants } from "buffer";
+import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { SimulationData } from "@/simulation/SimulationData";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 //import EventLogger from "@/simulation/logger/EventLogger";
 
@@ -29,17 +32,20 @@ export default function SimulationCanvas({ className }: Props) {
   useEffect(
     function instantiateWorld() {
 
+      let simData : SimulationData;
       if (STARTUP_MODE=="startupScenario") {
-        simulationData.worldControllerData = startupScenarioWorldControllerData;
+        simData = startUpScenarioSimulationData;
+      } else {
+        simData = SIMULATION_DATA_DEFAULT;
       }
 
-      let worldController = new WorldController(simulationData);
-      const simCode = worldController.startRun(simulationData);  
-      simulationData.worldControllerData.simCode = simCode;
+      let worldController = new WorldController(simData);
+      const simCode = worldController.startRun(simData);  
+      simData.worldControllerData.simCode = simCode;
       
       setWorldController(worldController);
       setEventLogger(worldController.eventLogger);
-      setSimulationData(simulationData);
+      setSimulationData(simData);
 
       if (canvasRef.current) {
         const canvas : HTMLCanvasElement = canvasRef.current;

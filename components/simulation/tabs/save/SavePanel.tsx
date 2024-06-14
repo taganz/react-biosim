@@ -63,8 +63,6 @@ export default function SavePanel() {
         <p>Display current simulation state for copy</p>
         <Button onClick={handleSave}>Save to copy</Button>
         <br/>
-        <h3 className="mb-1 text-xl font-bold">Beta options</h3>
-        <br/>
         <p>Save current simulation state</p>
         <Button onClick={handleSaveToFile}>Save to file</Button>
         <CanvasToGIF></CanvasToGIF>

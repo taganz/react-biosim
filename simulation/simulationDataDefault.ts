@@ -31,7 +31,7 @@ import PlantHerbivorePopulation from "./generations/population/PlantHerbivorePop
    STARTUP_MODE = "startupScenario";
 */
     
-export const STARTUP_MODE : "simulationDefault" | "startupScenario" = "simulationDefault";
+export const STARTUP_MODE : "simulationDefault" | "startupScenario" = "startupScenario";
 
 export const CONSTANTS_DEFAULT = {
   
