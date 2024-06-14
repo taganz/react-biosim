@@ -5,6 +5,7 @@ import { GridPosition } from "@/simulation/world/grid/Grid";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import Creature from "@/simulation/creature/Creature";
 
+// creates a number of creatures for a given genus
 
 export function addCreaturesFromGenus(worldGenerations: WorldGenerations, genus: Genus, total: number) {
     for (let i = 0; i < total; i++) {
@@ -18,6 +19,8 @@ export function addCreaturesFromGenus(worldGenerations: WorldGenerations, genus:
       }
     }
   }
+
+// creates a number of creatures for a given parent
 
   export function addCreaturesFromParent(worldGenerations: WorldGenerations, parent: Creature, total: number) {
     for (let i = 0; i < total; i++) {

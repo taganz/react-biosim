@@ -2,20 +2,25 @@
 
 import React, { useEffect } from "react";
 import ScenariosSelection from "./ScenarioSelection";
-import LoggerStatus from "./LoggerStatus";
-import WorldWaterStatus from "../stats/WorldWaterStatus";
+
 
 
 export default function StartPanel() {
   return (
     <div>
       <p className="mb-2 text-lg">
-        This is a evolution simulator. Define a simulation scenario and observe the evolution of creatures in real-time. 
+        This is an evolution simulator. Observe random created creatures evolving across generations.  
+        <br/><br/>
+        Start by selecting a scenario inspired on David R. Miller video. 
       </p>
       <div className="text-lg">
-      <ScenariosSelection></ScenariosSelection>
+      <ScenariosSelection/>
       </div>
-     <LoggerStatus/>
+      <p className="mb-2 text-lg">
+        Create your own scenario using Settings and Map tabs.
+        <br/><br/>
+        See About tab for more info.
+      </p>
     </div>
   );
 }

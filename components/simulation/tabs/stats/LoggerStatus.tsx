@@ -103,6 +103,7 @@ export default function LoggerStatus() {
 
   return (
     <div>
+      <h3 className="mb-1 text-2xl font-bold">Log status</h3>
       <p className="mb-2 text-lg">Log is: {logStatus()}</p>
       <p className="mb-2 text-lg">{(!worldController?.simData.constants.LOG_ENABLED || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
       <div>

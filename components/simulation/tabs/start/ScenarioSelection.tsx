@@ -2,29 +2,18 @@ import React from 'react';
 import {atom, useSetAtom, useAtom, useAtomValue} from 'jotai';
 import { simulationDataAtom,
   worldControllerAtom,
-  //worldControllerDataAtom,
-  //worldGenerationDataAtom,
-  //waterDataAtom,
-  //simulationConstantsDataAtom, 
-  //worldObjectsDataAtom,
   worldCanvasAtom
 } from "../../store";
 import {Dropdown} from "../../../global/inputs/Dropdown";
 import {Option} from "../../../global/inputs/Dropdown";
 import {scenarioObjects} from "./scenarioObjects";
 import {loadSavedSimulationAndStartRun, loadSavedWorldAndResumeRun } from "@/simulation/world/loadWorld";
-//import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
   
 export default function ScenariosSelection () {
     
   const worldCanvas = useAtomValue(worldCanvasAtom);
   const worldController = useAtomValue(worldControllerAtom);
-  //const setWorldGenerationData = useSetAtom(worldGenerationDataAtom);
-  //const setWorldControllerData = useSetAtom(worldControllerDataAtom);
-  //const setWaterData = useSetAtom(waterDataAtom);
   const setSimulationData = useSetAtom(simulationDataAtom);
-  //const setSimulationConstantsData = useSetAtom(simulationConstantsDataAtom);
-  //const setWorldObjectsData = useSetAtom(worldObjectsDataAtom)
   
   const scenariosOptions: Option[] = Array.from({ length: scenarioObjects.length }, (_, i) => ({ value: i.toString(), label: scenarioObjects[i].name }));
 
@@ -45,11 +34,6 @@ export default function ScenariosSelection () {
 
           worldCanvas.size = simulationData.worldControllerData.size;
           setSimulationData(simulationData);
-          //setWorldGenerationData(simulationData.worldGenerationsData);
-          //setWorldControllerData(simulationData.worldControllerData);
-          //setWaterData(simulationData.waterData);
-          //setSimulationConstantsData(simulationData.constants);
-          //setWorldObjectsData(simulationData.worldObjects);
         } catch (error) {
           console.error('Error reading file:', error);
       }
@@ -61,7 +45,7 @@ export default function ScenariosSelection () {
 
 return (
   <div className="mb-1">
-    <h2>Select simulation scenario: </h2>
+    <br/>
     <Dropdown options={scenariosOptions} onSelect={handleSelection} />
     <br/>
   </div>

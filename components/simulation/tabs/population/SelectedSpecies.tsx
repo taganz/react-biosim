@@ -119,7 +119,8 @@ export default function SelectedSpeciesPanel({
         </div>
       )}
       <div>
-        <SelectedCreaturedInfo creature={worldController!.generations.currentCreatures[0]}></SelectedCreaturedInfo>
+      <SelectedCreaturedInfo creature={worldController!.generations.currentCreatures[0]}></SelectedCreaturedInfo>
+
       </div>
     </>
   );

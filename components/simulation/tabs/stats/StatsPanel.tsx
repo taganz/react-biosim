@@ -8,6 +8,7 @@ import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
 import { TestStats } from "./TestStats";
 import WorldWaterStatus from "./WorldWaterStatus";
+import LoggerStatus from "./LoggerStatus";
 //import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
 
 function getter(data: SingleGeneration): [number, number] {
@@ -59,6 +60,7 @@ export default function StatsPanel() {
     <div>
     <div>
       <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.generations.selectionMethod.fitnessValueName}</h3>
+      <p>{ "maxFitnessValue: PENDING"}</p>
       <LinearGraph
         data={data}
         getter={getter}
@@ -75,7 +77,10 @@ export default function StatsPanel() {
      {/* TODO genus graph.... */ }
      {/* <TestStats></TestStats>   */}
      </div>
+      <LoggerStatus/>
+      <h3 className="mb-1 text-2xl font-bold">Under development features</h3>
     <WorldWaterStatus/>
-    </div>
+
+  </div>
   );
 }

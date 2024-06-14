@@ -1,9 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 
-# demos
+# assets work files
 /_simulation_examples_/
 /_scenarios/*.*
+/_temp/*.*
 
 #log files
 _scenarios/*.csv

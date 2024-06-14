@@ -160,7 +160,7 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
 
 export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   // initial values
-  populationStrategy: new RandomFixedGenePopulation(),
+  populationStrategy: new PlantHerbivorePopulation(),
   selectionMethod: new GreatestMassSelection(),
   initialPopulation: 500,       // 500
   initialGenomeSize: 4,         // 4

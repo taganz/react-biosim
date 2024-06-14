@@ -6,7 +6,7 @@ import PopulationStrategy from "./PopulationStrategy";
 import Genome from "../../creature/brain/Genome"
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import { selectGenusBasedOnProbability } from "./selectGenusBasedOnProbability"; 
-import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreaturesForGenus";
+import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreatures";
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class RandomFixedGenePopulation implements PopulationStrategy {
