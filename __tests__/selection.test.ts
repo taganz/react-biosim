@@ -6,7 +6,7 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
 import GreatestDistanceSelection from "@/simulation/generations/selection/GreatestDistanceSelection";
 import ContinuousSelection from "@/simulation/generations/selection/ContinuousSelection";
-import { selectionMethodFormatter } from "@/simulation/generations/selection/sssss";
+import { selectionMethodFormatter } from "@/simulation/generations/selection/selectionMethodFormatter";
 import GreatestMassSelection
  from "@/simulation/generations/selection/GreatestMassSelection";
 export type SavedPopulationStrategy = string;

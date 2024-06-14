@@ -1,6 +1,6 @@
 import { ActionName } from '../../creature/brain/CreatureActions';
 import { SensorName } from '../../creature/brain/CreatureSensors';
-import {SavedSelectionMethod} from "@/simulation/generations/selection/sssss";
+import {SavedSelectionMethod} from "@/simulation/generations/selection/selectionMethodFormatter";
 import {SavedPopulationStrategy} from "@/simulation/generations/population/populationStrategyFormatter";
 import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
