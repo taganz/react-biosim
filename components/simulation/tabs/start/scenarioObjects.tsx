@@ -2,8 +2,10 @@
 export type ScenarioObjects = {
   name: string,
   filename: string,
+  // startRun: start simulation from generation 1, resumeRun: continue from saved generation
   action : "startRun" | "resumeRun"
 }
+
 
 export const scenarioObjects : ScenarioObjects[] = [];
 
@@ -18,6 +20,6 @@ scenarioObjects.push({name: "Vertical boxes", filename: "vertical boxes.sim", ac
 scenarioObjects.push({name: "Turn right", filename: "turn right.sim", action: "startRun"});
 scenarioObjects.push({name: "Turn right generation 5574", filename: "turn right generation 5574.sim", 
   action: "resumeRun"});
-scenarioObjects.push({name: "Carlos' original", filename: "Carlos.sim", action: "startRun"});
+scenarioObjects.push({name: "Carlos' original", filename: "carlos.sim", action: "startRun"});
 //scenarioObjects.push({name: "Plants", filename: "plants_2024_05_19.sim", action: "startRun"});
 //scenarioObjects.push({name: "test", filename: "test.sim", action: "resumeRun"});
