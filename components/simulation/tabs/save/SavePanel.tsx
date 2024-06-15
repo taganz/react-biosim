@@ -45,6 +45,11 @@ export default function SavePanel() {
 
   return (
     <div>
+        <br/>
+        <p>Save current simulation state</p>
+        <Button onClick={handleSaveToFile}>Save to file</Button>
+        <CanvasToGIF></CanvasToGIF>
+      <br/>
       <p className="mb-2">
         Press the &quot;Save&quot; button below to generate a JSON code of worldController
         that you can back up somewhere else! If you want to load it, use the
@@ -62,10 +67,7 @@ export default function SavePanel() {
         <br/>
         <p>Display current simulation state for copy</p>
         <Button onClick={handleSave}>Save to copy</Button>
-        <br/>
-        <p>Save current simulation state</p>
-        <Button onClick={handleSaveToFile}>Save to file</Button>
-        <CanvasToGIF></CanvasToGIF>
+
       </div>
     </div>
   );

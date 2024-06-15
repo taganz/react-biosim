@@ -47,7 +47,14 @@ export default function LoadPanel() {
   
   return (
     <div>
-      <p className="mb-2">
+        <input 
+          className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:font-semibold"
+          type="file"
+          multiple={false}
+          onChange={handleLoadFile}></input>
+        <br/>
+        <br/>
+        <p className="mb-2">
         Paste below the JSON code of a previously saved worldController and load it with
         the &quot;Load&quot; button.
       </p>
@@ -62,12 +69,7 @@ export default function LoadPanel() {
       {/*<div className="mt-2 text-center">*/}
       <div className="mt-2">
         <Button onClick={handleLoadPasted}>Load</Button>
-        <br/><p>Beta:</p><br/>
-        <input 
-          className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:font-semibold"
-          type="file"
-          multiple={false}
-          onChange={handleLoadFile}></input>
+
       </div>
     </div>
   );

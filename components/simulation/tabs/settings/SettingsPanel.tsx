@@ -127,8 +127,9 @@ export default function SettingsPanel() {
       <div>
         <p className="mb-2">
           You can restart the simulation for these settings to work or you can update current simulation:
-          <UpdateParametersButton/>
         </p>
+        <UpdateParametersButton/>
+        <br/>
 
 
         <div className="flex flex-col gap-8">
@@ -186,6 +187,7 @@ export default function SettingsPanel() {
     {/*  === GENERATIONS === */}
 
         <div>
+        <br/>
           <h3 className="mb-1 text-2xl font-bold">Generations</h3>
           <p  className="mb-2">Metabolism is {simulationData.worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
 
@@ -258,7 +260,10 @@ export default function SettingsPanel() {
             </div>
           </div>
 
+    {/*  === Mutations ===  */}
+
           <div>
+          <br/>
             <h3 className="mb-1 text-2xl font-bold">Mutations</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <SelectInput atom={mutationModeAtom} label="Mutation mode">
@@ -323,7 +328,9 @@ export default function SettingsPanel() {
     {/*  sensors  */}
 
           <div>
+            <br/>
             <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
+            <p>Pain, mass, prey, predator sensors under development</p><br/>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                 {sensors.map((sensor) => (
                   <CheckboxInput
@@ -340,7 +347,9 @@ export default function SettingsPanel() {
   {/*  actions  */}
 
           <div>
+            <br/>
             <h3 className="mb-1 text-2xl font-bold">Actions</h3>
+            <p>Photysynthesis, reproduction and attack actions under development</p><br/>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
               {actions.map((actions) => (
                 <CheckboxInput

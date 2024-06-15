@@ -77,9 +77,14 @@ export default function StatsPanel() {
      {/* TODO genus graph.... */ }
      {/* <TestStats></TestStats>   */}
      </div>
-      <LoggerStatus/>
+     <br/><br/>
       <h3 className="mb-1 text-2xl font-bold">Under development features</h3>
-    <WorldWaterStatus/>
+      <br/>
+      <h3 className="mb-1 text-2xl font-bold">Logger</h3>
+      <p>Logger creates a .csv file. A powerbi report is available in github public folder</p><br/>
+      <LoggerStatus/>
+      <br/>
+      <WorldWaterStatus/>
 
   </div>
   );

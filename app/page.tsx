@@ -75,7 +75,7 @@ export default function Home() {
                 <TabPanel index={7}>
                   
                   <p>
-                      This is an environment to create <b>evolutionary simulations</b> inspired in the video&nbsp;
+                      This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
                       <a
                     href="https://www.youtube.com/watch?v=N3tRFayqVtk"
                     target="_blank"
@@ -89,6 +89,7 @@ export default function Home() {
                     How to use:
                     <p>
                     <li>Start by using one of the simulations based on the video in the &apos;Start&apos;&nbsp;panel.</li>
+                    <li>Adjust simulation speed and restart on the footer.</li>
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
@@ -97,21 +98,23 @@ export default function Home() {
                     </p>
                   </p>
                   <br/>
-                  Source code by taganz:&nbsp;{" "}
+                  Source code:&nbsp;{" "}
                   <a
                     href="https://github.com/taganz/react-biosim"
                     target="_blank"
                   >
                     https://github.com/taganz/react-biosim
                   </a>
+                  , by taganz. Feel free to leave your comments in the discussion section. 
                   <br/>
-                  <br></br>A fork from the original port to react and typescript by carlo697:{" "}
+                  <br></br>This is a fork from the original port to react and typescript by carlo697:{" "}
                   <a
                     href="https://github.com/carlo697/react-biosim"
                     target="_blank"
                   >
                     https://github.com/carlo697/react-biosim
                   </a>
+                  . Thanks to Carlos
                   <br/>
                 </TabPanel>
               </Tabs>
