@@ -8,6 +8,7 @@ import { WaterData } from "@/simulation/water/WaterData";
 import WorldController from "@/simulation/world/WorldController";
 import generationRegistryFormatter from "./generationRegistryFormatter";
 import serializeSpecies from "./speciesSerialization";
+import { deserializeSpecies } from "./speciesSerialization";
 import {serializeWaterData, deserializeWaterData} from "./waterDataSerialization";
 import {serializeWorldControllerData, deserializeWorldControllerData} from "./worldControllerDataSerialization";
 
@@ -26,7 +27,7 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
 }
 */
 
-export default function deserializeSimulationData(parsed: SavedSimulationData) : SimulationData {
+export default function deserializeSimulationData(worldController: WorldController, parsed: SavedSimulationData) : SimulationData {
   //TODO to be reviewed
   if (!parsed.species) {
     throw new Error("must have parsed.species");
@@ -39,7 +40,9 @@ export default function deserializeSimulationData(parsed: SavedSimulationData) :
         worldGenerationsData : deserializeWorldGenerationData(parsed),
         worldControllerData : deserializeWorldControllerData(parsed.worldControllerData),
         waterData : deserializeWaterData(parsed.waterData),
-        worldObjects : deserializeObjects(parsed.worldObjects)
+        worldObjects : deserializeObjects(parsed.worldObjects),
+        species : parsed.species === undefined ? undefined : deserializeSpecies(worldController, parsed.species),
+        stats : (parsed.stats === undefined || Object.keys(parsed.stats).length === 0) ? undefined : generationRegistryFormatter.deserialize(parsed.stats),
       // export function deserializeObjects
       //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
     }

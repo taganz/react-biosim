@@ -8,7 +8,7 @@ export function loadSavedWorldAndResumeRun(worldController: WorldController, dat
                : SimulationData {
   const parsed : SavedSimulationData = JSON.parse(data);
   worldController.pause();
-  const simulationData : SimulationData = deserializeSimulationData(parsed);
+  const simulationData : SimulationData = deserializeSimulationData(worldController, parsed);
   worldController.resumeRun(simulationData);
   return simulationData;
 }
@@ -17,7 +17,7 @@ export function loadSavedSimulationAndStartRun(worldController: WorldController,
               : SimulationData {
   const parsed = JSON.parse(data) as SavedSimulationData;
   worldController.pause();
-  const simulationData : SimulationData = deserializeSimulationData(parsed);
+  const simulationData : SimulationData = deserializeSimulationData(worldController, parsed);
   const simCode = worldController.startRun(simulationData);
   simulationData.worldControllerData.simCode = simCode;
   return simulationData;

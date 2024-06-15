@@ -1,10 +1,7 @@
 import { useAtomValue, useAtom } from "jotai";
 import { worldControllerAtom, selectedCreatureAtom } from "../../store";
-import { useEffect, useRef } from "react";
-import { Species } from "../../../../simulation/creature/Species";
+import {  useRef } from "react";
 import { useWindowSize } from "react-use";
-import { drawCreatureNeuronalNetwork } from "@/simulation/creature/brain/Helpers/drawCreatureNeuronalNetwork";
-import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import Creature from "@/simulation/creature/Creature";
 
 interface Props {

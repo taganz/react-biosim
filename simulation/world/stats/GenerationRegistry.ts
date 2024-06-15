@@ -35,4 +35,11 @@ export class GenerationRegistry {
       this.generations.push({ generation, survivorCount, startingPopulation, maxFitnessValue });
     }
   }
+
+  copyExceptWorldController(generationRegistry: GenerationRegistry) {
+      this.generations = [...generationRegistry.generations];
+      this.minSurvivorCount = generationRegistry.minSurvivorCount;
+      this.maxSurvivorCount = generationRegistry.maxSurvivorCount;
+      this.maxFitnessValue = generationRegistry.maxFitnessValue;
+  }
 }

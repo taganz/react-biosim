@@ -129,7 +129,7 @@ export default class WorldController {
     }
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, reviewedSpecies);
     if (sim.stats !== undefined) {
-      this.generationRegistry = sim.stats;
+      this.generationRegistry.copyExceptWorldController(sim.stats);
     }
     this.eventLogger.reset();
     this.initialPopulation = sim.worldGenerationsData.initialPopulation;

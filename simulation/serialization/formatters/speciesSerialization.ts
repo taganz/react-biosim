@@ -2,8 +2,10 @@ import WorldController from '@/simulation/world/WorldController';
 import SavedSpecies from "../data/SavedSpecies";
 import Creature from "@/simulation/creature/Creature";
 import Genome from "@/simulation/creature/brain/Genome";
+import { Species } from '@/simulation/creature/Species';
+import SavedCreature from '../data/SavedCreature';
 
-export default function serializeSpecies(worldController: WorldController) {
+export default function serializeSpecies(worldController: WorldController) : SavedSpecies[] {
     
     const creatureMap = new Map<string, SavedSpecies>();
   
@@ -42,8 +44,9 @@ export default function serializeSpecies(worldController: WorldController) {
     return species;
   }
   
-  export function deserializeSpecies(worldController: WorldController, species: SavedSpecies[]) : Creature[] {
-    const deserializedCreatures: Creature[] = [];
+  /*
+  export function deserializeSpecies(worldController: WorldController, species: SavedSpecies[]) : Species[] {
+    const deserializedSpecies: Species[] = [];
     species.forEach((savedSpecies) => {
       savedSpecies.creatures.forEach((savedCreature) => {
         const genome: Genome = new Genome(savedSpecies.genes);
@@ -52,9 +55,34 @@ export default function serializeSpecies(worldController: WorldController) {
         creature.lastPosition = savedCreature.lastPosition;
         creature.massAtBirth = savedCreature.massAtBirth;
   
-        deserializedCreatures.push(creature);
+        deserializedSpecies.push(creature);
       });
     });
   
-    return deserializedCreatures;
+    return deserializedSpecies;
+  }
+
+*/
+
+  export function deserializeSpecies(worldController: WorldController, savedSpeciesArray: SavedSpecies[]): Species[] {
+    return savedSpeciesArray.map(savedSpecies => {
+      // Create a Genome instance from the genes array
+      const genome = new Genome(savedSpecies.genes);
+  
+      // Deserialize each SavedCreature into a Creature
+      const creatures = savedSpecies.creatures.map(creature => deserializeCreature(worldController, genome, creature));
+  
+      // Create a new Species instance with the deserialized data
+      return new Species(genome, creatures);
+    });
+  }
+
+
+  function deserializeCreature(worldController: WorldController, genome: Genome, savedCreature: SavedCreature) : Creature {
+      const creature = new Creature(worldController.generations, savedCreature.position, false, genome);
+      creature.lastMovement = savedCreature.lastMovement;
+      creature.lastPosition = savedCreature.lastPosition;
+      creature.massAtBirth = savedCreature.massAtBirth;
+
+      return creature;
   }
