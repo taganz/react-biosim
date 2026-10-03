@@ -7,11 +7,11 @@ import ContinuousPopulation from "@/simulation/generations/population/Continuous
 import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 
 export const populationStrategyOptions: Option[] = [
-  {value: "1", label: "Asexual Random"},
-  {value: "2", label: "Asexual Zone"},
-  {value: "3", label: "Random Fixed Gene (in dev)"},
-  {value: "4", label: "Continuous (in dev)"},
-  {value: "5", label: "PlantHerbivorePopulation (in dev)"},
+  {value: "AsexualRandomPopulation", label: "Asexual Random"},
+  {value: "AsexualZonePopulation", label: "Asexual Zone"},
+  {value: "RandomFixedGenePopulation", label: "Random Fixed Gene (in dev)"},
+  {value: "ContinuousPopulation", label: "Continuous (in dev)"},
+  {value: "PlantHerbivorePopulation", label: "PlantHerbivorePopulation (in dev)"},
 ];
 
 // Mapping from values to constructor functions
