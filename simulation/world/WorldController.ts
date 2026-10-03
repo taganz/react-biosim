@@ -13,6 +13,9 @@ import generateRandomString from "@/helpers/generateRandomString";
 import WorldWater from "../water/WorldWater";
 import { SimulationData } from "../SimulationData";
 
+// max time (ms) spent computing steps before yielding to the browser
+const MAX_TICK_MS = 30;
+
 
 // Manages generation-step loop
 // ImmediateSteps for canvas redraw 
@@ -162,8 +165,31 @@ export default class WorldController {
   }
 
   // generations enters mainLoop() with currentCreatures already populated
+  // Runs several steps per timer tick: browsers clamp chained setTimeout calls
+  // to ~4ms, so one step per tick would cap the simulation at ~250 steps/s.
   private async mainLoop(): Promise<void> {
-          
+
+    const maxSteps = this.pauseBetweenSteps > 0 ? 1 : Math.max(1, this.immediateSteps);
+    const tickStart = performance.now();
+    let stepsDone = 0;
+
+    while (stepsDone < maxSteps && performance.now() - tickStart < MAX_TICK_MS) {
+      const result = await this.runStep();
+      stepsDone++;
+      if (result === "restarted") return;
+      if (result === "generationEnded") break;
+    }
+
+    // loop after pause
+    this._timeoutId = window.setTimeout(
+        this.mainLoop.bind(this),
+        this.pauseBetweenSteps
+      );
+
+  }
+
+  private async runStep(): Promise<"continue" | "generationEnded" | "restarted"> {
+
     if (this.currentStep === 1) {
       this.logStartGeneration();
       this.events.dispatchEvent(
@@ -192,22 +218,17 @@ export default class WorldController {
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
       this.startRun(this.simData);
-      return;
+      return "restarted";
     }
 
-    
+
     if (this.currentStep == this.stepsPerGen) {
       await this.endGeneration();
-    } else {
-      this.currentStep++;
+      return "generationEnded";
     }
+    this.currentStep++;
+    return "continue";
 
-    // loop after pause
-    this._timeoutId = window.setTimeout(
-        this.mainLoop.bind(this),
-        this.pauseBetweenSteps
-      );
-      
   }
 
   
@@ -305,6 +326,8 @@ export default class WorldController {
   }
 
   private logEndStep() {
+    // avoid filtering the whole population every step when nothing is recorded
+    if (this.eventLogger.isPaused) return;
     this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
     this.log(LogEvent.STEP_END, "population_plant", this.generations.currentCreatures.filter(crea => crea.genus === "plant").length);
     this.log(LogEvent.STEP_END, "population_attack_plant", this.generations.currentCreatures.filter(crea => crea.genus === "attack_plant").length);
