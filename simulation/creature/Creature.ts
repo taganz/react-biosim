@@ -356,6 +356,8 @@ export default class Creature {
         console.error("this.eventLogger not found");
         return;
       }
+      // skip building the event (and computing specie) when nothing is recorded
+      if (this.eventLogger.isPaused) return;
 
       // reduce trivial logs
 
