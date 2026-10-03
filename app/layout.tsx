@@ -1,5 +1,5 @@
 import JotaiProvider from "@/components/providers/JotaiProvider";
-import "@/styles/globals.scss";
+import "@/styles/globals.css";
 import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
 

@@ -15,7 +15,7 @@ export default function Button({
   icon,
   ...rest
 }: Props) {
-  const onlyIcon = icon && !children;
+  const onlyIcon = !!(icon && !children);
 
   const finalClassName = classNames(
     "flex-center gap-2 text-sm lg:text-base hover:brightness-90 rounded-md",

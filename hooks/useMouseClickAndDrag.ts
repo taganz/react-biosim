@@ -3,7 +3,7 @@ import { getEventRelativeMousePosition } from "@/helpers/mouse";
 import { MouseEvent, useEffect, useState } from "react";
 
 export default function useMouseClickAndDrag(
-  element: React.RefObject<HTMLElement>
+  element: React.RefObject<HTMLElement | null>
 ) {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [mousePositionWhenClicked, setNormalizedMouseWhenClicked] =
