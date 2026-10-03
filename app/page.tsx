@@ -94,7 +94,7 @@ export default function Home() {
                     <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Save&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation and load it again with &apos;Save&apos;and &apos;Load&apos;panels.</li>
+                    <li>Save a copy of current simulation and load it again with &apos;Save&apos;and &apos;Load&apos;&nbsp;panels.</li>
                     </p>
                   </p>
                   <br/>
