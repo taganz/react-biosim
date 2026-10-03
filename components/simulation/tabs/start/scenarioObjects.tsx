@@ -21,5 +21,6 @@ scenarioObjects.push({name: "Turn right", filename: "turn right.sim", action: "s
 scenarioObjects.push({name: "Turn right generation 5574", filename: "turn right generation 5574.sim", 
   action: "resumeRun"});
 scenarioObjects.push({name: "Carlos' original", filename: "carlos.sim", action: "startRun"});
+scenarioObjects.push({name: "NW7 generation 13780", filename: "sim NW7 generation 13780.sim", action: "resumeRun"});
 //scenarioObjects.push({name: "Plants", filename: "plants_2024_05_19.sim", action: "startRun"});
 //scenarioObjects.push({name: "test", filename: "test.sim", action: "resumeRun"});

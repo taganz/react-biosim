@@ -60,7 +60,7 @@ export default function StatsPanel() {
     <div>
     <div>
       <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.generations.selectionMethod.fitnessValueName}</h3>
-      <p>{ "maxFitnessValue: PENDING"}</p>
+      <p>{`maxFitnessValue: ${worldController == null ? "<error worldController == null>" : maxFitnessFormatter(worldController.generations.lastFitnessMaxValue)}`}</p>
       <LinearGraph
         data={data}
         getter={getter}
