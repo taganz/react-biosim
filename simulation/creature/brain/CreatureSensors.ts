@@ -14,6 +14,13 @@ const adjacentTilesLookup: [number, number][] = [
   [-1, 0],
 ];
 
+// Touch sensors: 1.0 if the tile holds a creature or a solid object.
+// Tiles outside the world count as solid (the border blocks movement too).
+function touchValue(creature: Creature, x: number, y: number): number {
+  const tile = creature.generations.grid.cell(x, y);
+  return tile.creature || tile.isSolid ? 1.0 : 0;
+}
+
 export type SensorName =
   | "HorizontalPosition"    // 0
   | "VerticalPosition"      // 1
@@ -351,7 +358,7 @@ export default class CreatureSensors {
     }
 
     // VerticalSpeed
-    if (this.data.VerticalPosition.enabled) {
+    if (this.data.VerticalSpeed.enabled) {
       values.push((creature.position[1] - creature.lastPosition[1] + 1) / 2);
     }
 
@@ -383,53 +390,38 @@ export default class CreatureSensors {
 
     //TouchNorth
     if (this.data.TouchNorth.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
+      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
       // Top
       let x = creature.position[0];
       let y = creature.position[1] - 1;
-      let tile;
-      if (y >= 0) {
-        tile = creature.generations.grid.cell(x,y);
-        values.push(tile.creature || tile.isSolid ? 1.0 : 0);
-      }
+      values.push(y >= 0 ? touchValue(creature, x, y) : 1.0);
     }
 
     //TouchEast
     if (this.data.TouchEast.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
+      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
       // Right
       let x = creature.position[0] + 1;
       let y = creature.position[1];
-      if (x < worldSize) {
-        let tile = creature.generations.grid.cell(x,y);
-        values.push(tile.creature || tile.isSolid ? 1.0 : 0);
-      }
-
+      values.push(x < worldSize ? touchValue(creature, x, y) : 1.0);
     }
 
     //TouchSouth
     if (this.data.TouchSouth.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
+      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
       // Bottom
       let x = creature.position[0];
       let y = creature.position[1] + 1;
-      if (y < worldSize) {
-        let tile = creature.generations.grid.cell(x,y);
-        values.push(tile.creature || tile.isSolid ? 1.0 : 0);
-      }
-
+      values.push(y < worldSize ? touchValue(creature, x, y) : 1.0);
     }
 
     //TouchWest
     if (this.data.TouchWest.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature or solid cell
+      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
       // Left
       let x = creature.position[0] - 1;
       let y = creature.position[1];
-      if (x >= 0) {
-        let tile = creature.generations.grid.cell(x,y);
-        values.push(tile.creature || tile.isSolid ? 1.0 : 0);
-      }
+      values.push(x >= 0 ? touchValue(creature, x, y) : 1.0);
     }
   
     // Pain/Health

@@ -158,12 +158,29 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
       //console.log(cs.calculateOutputs(joe).toString());
       expect(cs.calculateOutputs(joeAt11)[0]).toBeCloseTo(worldController.currentStep / worldController.stepsPerGen, 4);
     });
-    test('calculateOutputs() - TouchNorth: return 0 values if creature at 0,0', () => {
+    test('calculateOutputs() - TouchNorth: world border counts as touching (1) if creature at 0,0', () => {
       const enabledSensors : SensorName[] = [
          "TouchNorth"                
         ];
       cs.loadFromList(enabledSensors);
-      expect(cs.calculateOutputs(joeAt00).length).toBe(0);
+      expect(cs.calculateOutputs(joeAt00)).toEqual([1]);
+    });
+    test('calculateOutputs() - Touch sensors keep one value per sensor at the corner 0,0', () => {
+      const enabledSensors : SensorName[] = [
+         "TouchNorth", "TouchEast", "TouchSouth", "TouchWest", "Random"
+        ];
+      cs.loadFromList(enabledSensors);
+      const outputs = cs.calculateOutputs(joeAt00);
+      expect(outputs.length).toBe(cs.neuronsCount);
+      // outputs follow the internal sensor order: Random, North, East, South, West
+      expect(outputs[1]).toBe(1);   // north is world border
+      expect(outputs[4]).toBe(1);   // west is world border
+    });
+    test('calculateOutputs() - VerticalSpeed is controlled by its own enabled flag', () => {
+      cs.loadFromList(["VerticalSpeed"]);
+      expect(cs.calculateOutputs(joeAt11).length).toBe(1);
+      cs.loadFromList(["VerticalPosition"]);
+      expect(cs.calculateOutputs(joeAt11).length).toBe(1);
     });
     test('calculateOutputs() - TouchNorth: return 1 values if creature not at borders', () => {
       const enabledSensors : SensorName[] = [
