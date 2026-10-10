@@ -57,7 +57,7 @@ Notes:
 
 `deserializeSimulationData` **requires** `species` and `stats`, and throws if either is missing. To hand-write a scenario that starts from scratch, include `"species": []` and `"stats": {}`.
 
-When a run resumes, every saved creature is placed back on the grid. A creature whose cell is now an obstacle, or already taken, is dropped. Positions are not checked against the world size: a file whose creatures lie outside its own world will fail to load.
+When a run resumes, every saved creature is rebuilt for the new world (see [Architecture](architecture.md#ui--engine-applying-settings)). A creature whose cell is outside the world, an obstacle or already taken is dropped.
 
 ## Compatibility
 

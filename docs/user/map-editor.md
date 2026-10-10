@@ -27,7 +27,7 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 
 ## Applying the map
 
-- **Use Map** sends the map to the running simulation and keeps the generation count. It works like **Update simulation** in Settings, so it has the same [known issue](settings-and-stats.md#applying-changes): the running creatures are not kept.
+- **Use Map** sends the map to the running simulation. The creatures and the generation count are kept, so the population has to adapt to the new world. Creatures standing where a new obstacle is placed are removed.
 - **Reset Designer** throws away your edits and loads the map of the running simulation into the designer.
 
 The designer remembers your map in the browser's local storage, even after you close the page. It does **not** follow the scenario that is running.

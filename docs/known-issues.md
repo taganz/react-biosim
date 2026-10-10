@@ -10,7 +10,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 
 | Bug | Effect | Details |
 |---|---|---|
-| **Update simulation and Use Map lose the running creatures** | The population is replaced by the snapshot from when the simulation was loaded. With the startup scenario the world is left empty, and the run restarts from generation 1. | [Settings and stats](user/settings-and-stats.md#applying-changes), [Architecture](development/architecture.md#ui--engine-applying-settings) |
 | **Reproduction never succeeds without metabolism** | It needs more than 3 × birth mass, and without metabolism mass never changes. | [Creatures](model/creatures.md#reproduction) |
 | **PredatorDistance and PredatorDirection produce no value** | Enabling either one misaligns every sensor after it. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Health areas have no effect** | The call that applies them is commented out in `WorldGenerations.step()`, so the Pain sensor is always 0. | [World](model/world.md#objects-and-areas) |
@@ -18,8 +17,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Greatest Mass crashes without herbivores** | It reads `parents[0]` without checking that it exists. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
+| **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 | **Initial population = World size² is rejected** | The Settings field allows it, but the engine throws an error. | [Parameters](reference/parameters.md#world) |
-| **`Grid.isTileEmpty` does not check bounds** | Restoring a creature outside a smaller world indexes outside the grid. | [Save format](development/serialization.md#loading) |
 
 ### User interface
 
@@ -58,8 +57,9 @@ Checked against the code in October 2026. Each item links to the page that expla
 
 ## Done
 
-These items were on the old list and are now in the app:
+These items were on the old list, or found while writing these docs, and are now fixed:
 
+- **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
 - Selected creature information in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file

@@ -117,29 +117,24 @@ export default class WorldController {
 
   /**
    * Loads a previous simulation and runs from its state: generation, step,
-   * stats, and the creatures in sim.species (none if it is undefined)
+   * stats, and its creatures. The creatures come from `creatures` if given
+   * (hot change of the running simulation), otherwise from sim.species.
    */
-  public resumeRun(sim: SimulationData): void {
-    
+  public resumeRun(sim: SimulationData, creatures?: Creature[]): void {
+
+    const sourceCreatures : Creature[] = creatures ?? sim.species?.flatMap((species) => species.creatures) ?? [];
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
-    this.objects = sim.worldObjects; 
-    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);  
+    this.objects = sim.worldObjects;
+    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
-    // some creatures could be now at an occupied position in the new map
-    const reviewedSpecies : Creature[] = [];
-    if (sim.species != undefined) {
-      for (let i = 0; i < sim.species.length; i++) {
-        for (let j = 0;j < sim.species[i].creatures.length; j++) {
-          const added = this.grid.addCreature(sim.species[i].creatures[j]);
-          if (added) {
-            reviewedSpecies.push(sim.species[i].creatures[j]);
-          }
-        }
-      }
+    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, []);
+    // creatures are rebuilt so they use the new grid and settings;
+    // the ones now outside the world or on an occupied cell are dropped
+    for (const creature of sourceCreatures) {
+      this.generations.restoreCreature(creature);
     }
-    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, reviewedSpecies);
     if (sim.stats !== undefined) {
       this.generationRegistry.copyExceptWorldController(sim.stats);
     }

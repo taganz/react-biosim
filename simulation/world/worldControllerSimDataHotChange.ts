@@ -30,7 +30,8 @@ export default function worldControllerSimDataHotChange(worldController: WorldCo
         simulationData.worldControllerData.lastGenerationDuration = worldController.lastGenerationDuration;
         simulationData.worldControllerData.totalTime = worldController.totalTime;
         
-        worldController.resumeRun(simulationData);
+        // keep the creatures that are alive now, not the ones in simulationData.species
+        worldController.resumeRun(simulationData, worldController.generations.currentCreatures);
         
         if (isPaused) {
           worldController.pause();

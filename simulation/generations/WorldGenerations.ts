@@ -147,6 +147,30 @@ export default class WorldGenerations {
   }
 
   // copy all creatures without mutations for continuous simulation
+  // Recreates a creature of a previous run bound to this generations and grid, keeping its
+  // genome, position, mass and counters. Returns null if its cell is outside the world or not empty.
+  public restoreCreature(source: Creature) : Creature | null {
+    const [x, y] = source.position;
+    if (!this.grid.isTileInsideWorld(x, y) || !this.grid.isTileEmpty(x, y)) {
+      return null;
+    }
+    const creature = new Creature(this, [x, y], false, new Genome(source.brain.genome.genes.slice()));
+    creature.id = source.id;
+    creature.stepBirth = source.stepBirth;
+    creature._age = source._age;
+    creature.lastPosition = [source.lastPosition[0], source.lastPosition[1]];
+    creature.lastMovement = [source.lastMovement[0], source.lastMovement[1]];
+    creature.distancePartial = source.distancePartial;
+    creature.distanceCovered = source.distanceCovered;
+    creature.stepsStopped = source.stepsStopped;
+    creature.lastDirection = source.lastDirection;
+    creature.massAtBirth = source.massAtBirth;
+    creature._mass._mass = source.mass;
+    this.grid.addCreature(creature);
+    this.currentCreatures.push(creature);
+    return creature;
+  }
+
   public updateCreatures(creatures: Creature[]) {
     for (let i = 0; i < creatures.length;i++) {
       const creature = creatures[i];

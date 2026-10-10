@@ -97,15 +97,13 @@ The Settings tab shows "pending changes" when `simulationDataAtom` is a differen
 
 The map editor's **Use Map** does the same as Update simulation: it writes the objects into the draft and calls `worldControllerSimDataHotChange`.
 
-> **Known issue.** `resumeRun` rebuilds the population from `sim.species`. The running creatures are never copied into the draft, so the hot change loses them:
-> - **Draft without `species`** (the startup scenario): `WorldGenerations` is created with an empty creature list. The next step finds no living creature, and the loop restarts from generation 1 as an extinction.
-> - **Draft loaded from a file:** `species` still holds the `Creature` objects from load time, and those are put back instead of the current ones.
->
-> Two more problems in the same path:
-> - `Grid.isTileEmpty` does not check bounds, so restoring a creature outside a smaller world would index outside the grid.
-> - `worldControllerSimDataHotChange` mutates the draft object in place.
->
-> A fix should serialise the current creatures (as `serializeSpecies` does) into the data passed to `resumeRun`, and skip creatures that fall outside the new grid.
+`resumeRun(sim, creatures?)` takes its creatures from the `creatures` argument when one is given, and from `sim.species` otherwise. The hot change passes `worldController.generations.currentCreatures`, the creatures alive right now. Loading a file passes nothing, so the saved species are used.
+
+In both cases each creature is **rebuilt** with `WorldGenerations.restoreCreature()`. The rebuilt creature belongs to the new `WorldGenerations`, so it uses the new grid and the new sensor and action configuration. It keeps the genome, position, mass and counters of the original. Creatures that fall outside the new world, or on a cell that is now solid or taken, are dropped.
+
+Do not put the old `Creature` objects back on the new grid. They still point to the old `WorldGenerations`: they would move on the old grid and read the old settings.
+
+`worldControllerSimDataHotChange` writes the run state into the draft object in place. After the update, the draft *is* `worldController.simData`.
 
 Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parses and validates the file **before** touching the running simulation. A bad file therefore leaves the current run untouched. It then calls `resumeRun` or `startRun` and replaces the draft with the loaded data.
 
