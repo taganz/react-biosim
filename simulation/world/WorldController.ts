@@ -82,6 +82,7 @@ export default class WorldController {
     //console.log("*** worldController initialized ***");
   }
 
+  /** Starts a new run from generation 1 with sim as settings and map; returns the new simulation code */
   public startRun(sim: SimulationData): string {
 
     this.simData = sim;
@@ -114,7 +115,10 @@ export default class WorldController {
   
   }
 
-  // load a previous simulation and run from its state
+  /**
+   * Loads a previous simulation and runs from its state: generation, step,
+   * stats, and the creatures in sim.species (none if it is undefined)
+   */
   public resumeRun(sim: SimulationData): void {
     
     this.simData = sim;
