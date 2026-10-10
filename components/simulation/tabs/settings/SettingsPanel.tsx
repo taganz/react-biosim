@@ -1,456 +1,352 @@
 "use client";
 
-//import NumberInput from "@/components/global/inputs/NumberInput";
-import {Dropdown, Option} from "../../../global/inputs/Dropdown"; 
-import {selectionMethodOptions, selectSelectionMethod} from "../../../../simulation/generations/selection/selectionMethodOptions";
-import {populationStrategyOptions, selectPopulationStrategy} from "../../../../simulation/generations/population/populationStrategyOptions"
-import {
-  worldControllerAtom,
-  //restartCountAtom,
-  //worldGenerationDataAtom,
-  //worldControllerDataAtom,
-  simulationDataAtom,
-  //waterDataAtom,
-} from "../../store";
+import { ReactNode } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import classNames from "classnames";
+import { selectionMethodOptions, selectSelectionMethod } from "@/simulation/generations/selection/selectionMethodOptions";
+import { populationStrategyOptions, selectPopulationStrategy } from "@/simulation/generations/population/populationStrategyOptions";
+import { worldControllerAtom, simulationDataAtom } from "../../store";
+import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
-import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
-import {Sensor,SensorName} from "@/simulation/creature/brain/CreatureSensors";
-import {Action, ActionName} from "@/simulation/creature/brain/CreatureActions";
-import { ChangeEvent } from "react";
-import * as constants from "@/simulation/simulationDataDefault"
-
-import UpdateParametersButton from "../../UpdateParametersButton";
-import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
-import { SimulationData } from "@/simulation/SimulationData";
+import Button from "@/components/global/Button";
+import { Sensor, SensorName } from "@/simulation/creature/brain/CreatureSensors";
+import { Action, ActionName } from "@/simulation/creature/brain/CreatureActions";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
+import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
+import WorldControllerData from "@/simulation/world/WorldControllerData";
+import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
+import { WaterData } from "@/simulation/water/WaterData";
+import UpdateParametersButton from "../../UpdateParametersButton";
+import RestartButton from "../../RestartButton";
+import useWorldValue from "@/hooks/useWorldValue";
 
-// Keep the previous value when the input is empty or invalid, so NaN never reaches simulationData
-const validNumber = (value: number, previous: number) =>
-  Number.isNaN(value) ? previous : value;
+const getPrettyName = (name: string) => name.replace(/([A-Z])/g, " $1").trim();
 
+const getSensorLabel = (sensor: Sensor) =>
+  `${getPrettyName(sensor.name)} (${sensor.neuronCount} ${
+    sensor.neuronCount == 1 ? "neuron" : "neurons"
+  })`;
 
-// This should update only
-//  - worldControllerDataAtom 
-//  - worldGenerationDataAtom
+const getActionLabel = (action: Action) => `${getPrettyName(action.name)} (1 neuron)`;
 
+function Section({ title, description, children }: {
+  title: string;
+  description?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-2xl font-bold">{title}</h3>
+      {description && <p className="text-sm">{description}</p>}
+      {children}
+    </section>
+  );
+}
+
+const FIELDS_GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
+
+// Edits a draft (simulationDataAtom). The running simulation keeps its own
+// simulationData until the draft is applied with "Update simulation" or "Restart".
 export default function SettingsPanel() {
-
   const worldController = useAtomValue(worldControllerAtom);
+  const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
+  const appliedSimulationData = useWorldValue((world) => world.simData, null);
+  const hasPendingChanges =
+    appliedSimulationData !== null && appliedSimulationData !== simulationData;
+
+  const { worldControllerData, worldGenerationsData, waterData } = simulationData;
+  const { enabledSensors, enabledActions } = worldGenerationsData;
   const sensors = Object.values(worldController?.generations.sensors.data ?? {});
   const actions = Object.values(worldController?.generations.actions.data ?? {});
-  const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
-  const { enabledSensors, enabledActions } = simulationData.worldGenerationsData;
 
+  const setWorldValue = <K extends keyof WorldControllerData>(key: K, value: WorldControllerData[K]) =>
+    setSimulationData((prev) => ({
+      ...prev,
+      worldControllerData: { ...prev.worldControllerData, [key]: value },
+    }));
+
+  const setGenerationsValue = <K extends keyof WorldGenerationsData>(key: K, value: WorldGenerationsData[K]) =>
+    setSimulationData((prev) => ({
+      ...prev,
+      worldGenerationsData: { ...prev.worldGenerationsData, [key]: value },
+    }));
+
+  const setWaterValue = <K extends keyof WaterData>(key: K, value: WaterData[K]) =>
+    setSimulationData((prev) => ({
+      ...prev,
+      waterData: { ...prev.waterData, [key]: value },
+    }));
+
+  // at least one sensor and one action must stay enabled
   const handleSensorChange = (name: SensorName, checked: boolean) => {
     if (checked) {
-      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledSensors: [...prev.worldGenerationsData.enabledSensors, name]}}));
+      setGenerationsValue("enabledSensors", [...enabledSensors, name]);
     } else if (enabledSensors.length > 1) {
-      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledSensors: prev.worldGenerationsData.enabledSensors.filter((item) => item !== name)}}));
+      setGenerationsValue("enabledSensors", enabledSensors.filter((item) => item !== name));
     }
   };
 
   const handleActionChange = (name: ActionName, checked: boolean) => {
     if (checked) {
-      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledActions: [...prev.worldGenerationsData.enabledActions, name]}}));
+      setGenerationsValue("enabledActions", [...enabledActions, name]);
     } else if (enabledActions.length > 1) {
-      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledActions: prev.worldGenerationsData.enabledActions.filter((item) => item !== name)}}));
+      setGenerationsValue("enabledActions", enabledActions.filter((item) => item !== name));
     }
   };
 
-  const handleMutationMode = (value: string) => {
-    setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-      mutationMode: value as MutationMode}}));
+  const handleDiscard = () => {
+    if (appliedSimulationData) setSimulationData(appliedSimulationData);
   };
 
-    const getPrettyName = (name: string) =>
-      name.replace(/([A-Z])/g, " $1").trim();
-
-    const getSensorLabel = (sensor: Sensor) =>
-      `${getPrettyName(sensor.name)} (${sensor.neuronCount} ${
-        sensor.neuronCount == 1 ? "neuron" : "neurons"
-      })`;
-
-    const getActionLabel = (action: Action) =>
-      `${getPrettyName(action.name)} (1 neuron)`;
-    
-
-
-      const handleSelectionMethodOptions = (value: string) => {
-        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-          selectionMethod: selectSelectionMethod(value)}}));
-      }
-
-      const handleRainTypeOptions = (value: string) => {
-        setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-          rainType: value as RainType}}));
-      }
-    
-      const handlePopulationStrategy = (value: string) => {
-        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-          populationStrategy: selectPopulationStrategy(value)}}));
-      }
-
-        
-    const handleChangePopulation = (e: { target: { value: string; }; }) => {
-      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        initialPopulation: validNumber(parseInt(e.target.value), prev.worldGenerationsData.initialPopulation)}}));
-    }
-
-
-    //TODO - select combo
-    //const handlePhenotypeColorMode = (e: { target: { value: any; }; }) => {
-    //  setWorldGenerationData(prevState => ({ ...prevState, phenotypeColorMode: e.target.value }))
-    //}
-  
-    return (
-      <div>
-        <p className="mb-2">
-          You can restart the simulation for these settings to work or you can update current simulation:
+  return (
+    <div className="flex flex-col gap-8">
+      {/* === APPLY CHANGES === */}
+      <div
+        className={classNames(
+          "sticky top-0 z-10 flex flex-col gap-2 rounded-md p-3",
+          hasPendingChanges ? "bg-grey-mid" : "border border-grey-mid bg-grey-dark"
+        )}
+      >
+        <p className="font-bold">
+          {hasPendingChanges
+            ? "You have changes that are not applied yet."
+            : "These settings match the running simulation."}
         </p>
-        <UpdateParametersButton/>
-        <br/>
-
-
-        <div className="flex flex-col gap-8">
-
-    {/*  === WORLD CONTROLLER === */}
-
-          <div>
-            <h3 className="mb-1 text-2xl font-bold">WorldController</h3>
-            <p>Simulation code: {simulationData.worldControllerData.simCode}</p>
-            <p>Phenotype mode: {simulationData.worldGenerationsData.phenotypeColorMode}</p>
-            <div className="grid grid-cols-2 gap-4">
-
-    {/*  size  */}
-
-            <div className="flex flex-col">
-              <label className="grow">WorldController Size</label>
-              <input
-                  type="number"
-                  value={simulationData.worldControllerData.size.toString()}
-                  onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
-                                  size: validNumber(parseInt(e.target.value), prev.worldControllerData.size),}}))}}
-                  className="min-w-0 bg-grey-mid p-1"
-                >
-              </input>
-            </div>
-
-            {/*  initialPopulation  */}
-
-            <div className="flex flex-col">
-              <label className="grow">Initial population</label>
-              <input
-                  type="number"
-                  value={simulationData.worldGenerationsData.initialPopulation.toString()}
-                  onChange={handleChangePopulation}
-                  className="min-w-0 bg-grey-mid p-1"
-                >
-              </input>
-            </div>
-
-            {/*  stepsPerGen  */}
-
-            <div className="flex flex-col">
-              <label className="grow">Steps per generation</label>
-              <input
-                  type="number"
-                  value={simulationData.worldControllerData.stepsPerGen.toString()}
-                  onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
-                    stepsPerGen: validNumber(parseInt(e.target.value), prev.worldControllerData.stepsPerGen),}}))}}
-                  className="min-w-0 bg-grey-mid p-1"
-                >
-              </input>
-            </div>
+        {hasPendingChanges && (
+          <div className="flex flex-wrap gap-2">
+            <UpdateParametersButton />
+            <RestartButton />
+            <Button variant="dark" onClick={handleDiscard}>
+              Discard changes
+            </Button>
+          </div>
+        )}
+        <p className="text-xs">
+          &quot;Update simulation&quot; applies the changes and keeps the current creatures.
+          &quot;Restart&quot; starts again from generation 1.
+        </p>
       </div>
 
-    {/*  === GENERATIONS === */}
-
-        <div>
-        <br/>
-          <h3 className="mb-1 text-2xl font-bold">Generations</h3>
-          <p  className="mb-2">Metabolism is {simulationData.worldGenerationsData.metabolismEnabled ? "enabled" : "Not enabled"}</p>
-
-    {/*  populationStrategy  */}
-
-    <div>
-        <br/>
-          <p  className="mb-2">Population strategy: {worldController?.generations.populationStrategy.constructor.name} </p>
-              <Dropdown options={populationStrategyOptions}
-                        onSelect={handlePopulationStrategy} />
-            </div>
-          </div>
-
-    {/*  selectionMethod  */}
-
-            <div className="mb-1">
-              <p  className="mb-2">Selection method:  {worldController?.generations.selectionMethod.constructor.name} </p>
-              <Dropdown options={selectionMethodOptions} 
-                        onSelect={handleSelectionMethodOptions}/>
-              <br/>
-            </div>
-
-    {/*  === NEURONAL NETWORKS === */}
-
-        <div>
-            <h3 className="mb-1 text-2xl font-bold">Neuronal Networks</h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-    {/*  initialGenomeSize  */}
-
-              <div className="flex flex-col">
-                <label className="grow">Initial genome size</label>
-                <input
-                    type="number"
-                    value={simulationData.worldGenerationsData.initialGenomeSize.toString()}
-                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      initialGenomeSize: validNumber(parseInt(e.target.value), prev.worldGenerationsData.initialGenomeSize),}}))}}   
-                    className="min-w-0 bg-grey-mid p-1"
-                  >
-                </input>
-              </div>
-
-    {/*  maxGenomeSize  */}
-
-            <div className="flex flex-col">
-                <label className="grow">Max genome size</label>
-                <input
-                    type="number"
-                    value={simulationData.worldGenerationsData.maxGenomeSize.toString()}
-                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      maxGenomeSize: validNumber(parseInt(e.target.value), prev.worldGenerationsData.maxGenomeSize),}}))}}   
-                    className="min-w-0 bg-grey-mid p-1"
-                  >
-                </input>
-              </div>
-
-    {/*  maxNumberNeurons  */}
-
-            <div className="flex flex-col">
-                <label className="grow">Max neurons</label>
-                <input
-                    type="number"
-                    value={simulationData.worldGenerationsData.maxNumberNeurons.toString()}
-                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      maxNumberNeurons: validNumber(parseInt(e.target.value), prev.worldGenerationsData.maxNumberNeurons),}}))}}   
-                    className="min-w-0 bg-grey-mid p-1"
-                  >
-                </input>
-              </div>
-            </div>
-          </div>
-
-    {/*  === Mutations ===  */}
-
-          <div>
-          <br/>
-            <h3 className="mb-1 text-2xl font-bold">Mutations</h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <SelectInput
-                value={simulationData.worldGenerationsData.mutationMode}
-                onChange={handleMutationMode}
-                label="Mutation mode"
-              >
-                <option value="wholeGene">Whole Genes</option>
-                <option value="singleBit">Single Bits</option>
-                <option value="singleHexDigit">Single Hexadecimal Digits</option>
-              </SelectInput>
-
-    {/*  mutationProbability  */}
-
-            <div className="flex flex-col">
-                <label className="grow">Mutation probability (0 - 1)</label>
-                <input
-                    type="number"
-                    value={simulationData.worldGenerationsData.mutationProbability.toString()}
-                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      mutationProbability: validNumber(parseFloat(e.target.value), prev.worldGenerationsData.mutationProbability),}}))}}   
-                    step="0.01"
-                    className="min-w-0 bg-grey-mid p-1"
-                  >
-                </input>
-              </div>
-    
-    {/*  geneInsertionDeletionProbability  */}
-
-            <div className="flex flex-col">
-                <label className="grow">Insertion/Deletion probability (0 - 1)</label>
-                <input
-                    type="number"
-                    value={simulationData.worldGenerationsData.geneInsertionDeletionProbability.toString()}
-                    onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      geneInsertionDeletionProbability: validNumber(parseFloat(e.target.value), prev.worldGenerationsData.geneInsertionDeletionProbability),}}))}}   
-                    step="0.001"
-                    className="min-w-0 bg-grey-mid p-1"
-                  >
-                </input>
-              </div>
-            </div>
-          </div>
-
-            {/*  sensors  */}
-            {/*   TODO to be deleted ---- I was trying to remove enabledSensors atom 
-            <div>
-              <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
-              <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
-                    {sensors.map((sensor) => (
-                    <><input
-                        id={sensor.name}
-                        key={sensor.name}
-                        type="checkbox"
-                        checked={enabledSensors.includes(sensor.name)}
-                        onChange={(checked) => handleSensorChange(sensor.name, checked)}
-                        className="inline-block h-4 w-4 min-w-0 shrink-0 bg-grey-mid p-2" /><label className="grow text-sm" htmlFor={sensor.name}>
-                          {getSensorLabel(sensor)}
-                        </label>
-                      </>
-                    ))}
-              </div> 
-              */}
-
-          
-    {/*  sensors  */}
-
-          <div>
-            <br/>
-            <h3 className="mb-1 text-2xl font-bold">Sensors</h3>
-            <p>Pain, mass, prey, predator sensors under development</p><br/>
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                {sensors.map((sensor) => (
-                  <CheckboxInput
-                    id={sensor.name}
-                    key={sensor.name}
-                    label={getSensorLabel(sensor)}
-                    checked={enabledSensors.includes(sensor.name)}
-                    onChange={(checked) => handleSensorChange(sensor.name, checked)}
-                  />
-                ))}
-            </div>
-          </div>
-
-  {/*  actions  */}
-
-          <div>
-            <br/>
-            <h3 className="mb-1 text-2xl font-bold">Actions</h3>
-            <p>Photysynthesis, reproduction and attack actions under development</p><br/>
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-              {actions.map((actions) => (
-                <CheckboxInput
-                  id={actions.name}
-                  key={actions.name}
-                  label={getActionLabel(actions)}
-                  checked={enabledActions.includes(actions.name)}
-                  onChange={(checked) => handleActionChange(actions.name, checked)
-                  }
-                />
-              ))}
-            </div>
-          </div>
+      {/* === WORLD === */}
+      <Section title="World">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 text-sm">
+          <dt>Simulation code</dt>
+          <dd>{worldControllerData.simCode}</dd>
+          <dt>Phenotype mode</dt>
+          <dd>{worldGenerationsData.phenotypeColorMode}</dd>
+          <dt>Metabolism</dt>
+          <dd>{worldGenerationsData.metabolismEnabled ? "enabled" : "not enabled"}</dd>
+        </dl>
+        <div className={FIELDS_GRID}>
+          <NumberInput
+            label="World size"
+            value={worldControllerData.size}
+            onChange={(value) => setWorldValue("size", value)}
+            integer
+            min={10}
+            max={1000}
+          />
+          <NumberInput
+            label="Initial population"
+            value={worldGenerationsData.initialPopulation}
+            onChange={(value) => setGenerationsValue("initialPopulation", value)}
+            integer
+            min={1}
+            // every creature needs its own cell
+            max={worldControllerData.size * worldControllerData.size}
+          />
+          <NumberInput
+            label="Steps per generation"
+            value={worldControllerData.stepsPerGen}
+            onChange={(value) => setWorldValue("stepsPerGen", value)}
+            integer
+            min={1}
+          />
         </div>
+      </Section>
 
-      <div>
-        
-    {/*  === IN DEV OPTIONS === */}
+      {/* === GENERATIONS === */}
+      <Section title="Generations">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <SelectInput
+            label="Population strategy"
+            value={worldGenerationsData.populationStrategy.name}
+            onChange={(value: string) =>
+              setGenerationsValue("populationStrategy", selectPopulationStrategy(value))
+            }
+          >
+            {populationStrategyOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </SelectInput>
+          <SelectInput
+            label="Selection method"
+            value={worldGenerationsData.selectionMethod.name}
+            onChange={(value: string) =>
+              setGenerationsValue("selectionMethod", selectSelectionMethod(value))
+            }
+          >
+            {selectionMethodOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </SelectInput>
+        </div>
+      </Section>
 
-            <h3 className="mb-1 text-2xl font-bold">Under development options</h3>
-            <div className="grid grid-cols-2 gap-4">
+      {/* === NEURONAL NETWORKS === */}
+      <Section title="Neuronal networks">
+        <div className={FIELDS_GRID}>
+          <NumberInput
+            label="Initial genome size"
+            value={worldGenerationsData.initialGenomeSize}
+            onChange={(value) => setGenerationsValue("initialGenomeSize", value)}
+            integer
+            min={1}
+            max={worldGenerationsData.maxGenomeSize}
+          />
+          <NumberInput
+            label="Max genome size"
+            value={worldGenerationsData.maxGenomeSize}
+            onChange={(value) => setGenerationsValue("maxGenomeSize", value)}
+            integer
+            min={worldGenerationsData.initialGenomeSize}
+          />
+          <NumberInput
+            label="Max neurons"
+            value={worldGenerationsData.maxNumberNeurons}
+            onChange={(value) => setGenerationsValue("maxNumberNeurons", value)}
+            integer
+            min={1}
+          />
+        </div>
+      </Section>
 
-         {/*  water cell capacity   */}
+      {/* === MUTATIONS === */}
+      <Section title="Mutations">
+        <div className={FIELDS_GRID}>
+          <SelectInput
+            label="Mutation mode"
+            value={worldGenerationsData.mutationMode}
+            onChange={(value: string) => setGenerationsValue("mutationMode", value as MutationMode)}
+          >
+            <option value="wholeGene">Whole Genes</option>
+            <option value="singleBit">Single Bits</option>
+            <option value="singleHexDigit">Single Hexadecimal Digits</option>
+          </SelectInput>
+          <NumberInput
+            label="Mutation probability (0 - 1)"
+            value={worldGenerationsData.mutationProbability}
+            onChange={(value) => setGenerationsValue("mutationProbability", value)}
+            step={0.01}
+            min={0}
+            max={1}
+          />
+          <NumberInput
+            label="Insertion/Deletion probability (0 - 1)"
+            value={worldGenerationsData.geneInsertionDeletionProbability}
+            onChange={(value) => setGenerationsValue("geneInsertionDeletionProbability", value)}
+            step={0.001}
+            min={0}
+            max={1}
+          />
+        </div>
+      </Section>
 
-          <div className="flex flex-col">
-            <label className="grow">Cell water capacity</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterCellCapacity.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterCellCapacity: validNumber(parseFloat(e.target.value), prev.waterData.waterCellCapacity),}}))}}
-              step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
+      {/* === SENSORS === */}
+      <Section
+        title="Sensors"
+        description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development."
+      >
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {sensors.map((sensor) => (
+            <CheckboxInput
+              id={sensor.name}
+              key={sensor.name}
+              label={getSensorLabel(sensor)}
+              checked={enabledSensors.includes(sensor.name)}
+              onChange={(checked) => handleSensorChange(sensor.name, checked)}
+            />
+          ))}
+        </div>
+      </Section>
 
-        {/*  water total per cell  */}
+      {/* === ACTIONS === */}
+      <Section
+        title="Actions"
+        description="At least one action must stay enabled. Photosynthesis, reproduction and attack actions are under development."
+      >
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {actions.map((action) => (
+            <CheckboxInput
+              id={action.name}
+              key={action.name}
+              label={getActionLabel(action)}
+              checked={enabledActions.includes(action.name)}
+              onChange={(checked) => handleActionChange(action.name, checked)}
+            />
+          ))}
+        </div>
+      </Section>
 
-           <div className="flex flex-col">
-            <label className="grow">Total water (per cell)</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterTotalPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterTotalPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterTotalPerCell),}}))}}
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-          
-          {/*  rain max  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Rain max per cell</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterRainMaxPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterRainMaxPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterRainMaxPerCell),}}))}}                
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-          {/*  first rain per cell  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Initial water per cell</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterFirstRainPerCell.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterFirstRainPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterFirstRainPerCell),}}))}}     
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-          {/*  evaporation  */}
-
-          <div className="flex flex-col">
-            <label className="grow">Evaporation</label>
-            <input
-                type="number"
-                value={simulationData.waterData.waterEvaporationPerCellPerGeneration.toString()}
-                onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterEvaporationPerCellPerGeneration: validNumber(parseFloat(e.target.value), prev.waterData.waterEvaporationPerCellPerGeneration),}}))}}   
-                step="0.1"
-                className="min-w-0 bg-grey-mid p-1"
-              >
-            </input>
-          </div>
-
-          </div>
-
-           {/*  rainType  */}
-          <br/>
-          <div className="flex flex-col">
-            <label  className="grow">Rain type: {simulationData.waterData.rainType} </label>
-            <Dropdown options={rainTypeOptions} 
-                      onSelect={handleRainTypeOptions} />
-              <br/>
-            </div>
-
-          </div>
-
-      </div>
-
-
-      </div>
-    );
+      {/* === IN DEV OPTIONS === */}
+      <details className="flex flex-col gap-3">
+        <summary className="cursor-pointer text-2xl font-bold">
+          Under development: water
+        </summary>
+        <div className={classNames(FIELDS_GRID, "mt-3")}>
+          <NumberInput
+            label="Cell water capacity"
+            value={waterData.waterCellCapacity}
+            onChange={(value) => setWaterValue("waterCellCapacity", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Total water (per cell)"
+            value={waterData.waterTotalPerCell}
+            onChange={(value) => setWaterValue("waterTotalPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Rain max per cell"
+            value={waterData.waterRainMaxPerCell}
+            onChange={(value) => setWaterValue("waterRainMaxPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Initial water per cell"
+            value={waterData.waterFirstRainPerCell}
+            onChange={(value) => setWaterValue("waterFirstRainPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Evaporation"
+            value={waterData.waterEvaporationPerCellPerGeneration}
+            onChange={(value) => setWaterValue("waterEvaporationPerCellPerGeneration", value)}
+            step={0.1}
+            min={0}
+          />
+          <SelectInput
+            label="Rain type"
+            value={waterData.rainType}
+            onChange={(value: string) => setWaterValue("rainType", value as RainType)}
+          >
+            {rainTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </SelectInput>
+        </div>
+      </details>
+    </div>
+  );
 }
