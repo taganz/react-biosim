@@ -1,11 +1,14 @@
 import { useAtomValue } from "jotai";
-import { worldControllerAtom } from "../../store";
-import { useMemo } from "react";
+import { worldControllerAtom, selectedCreatureAtom } from "../../store";
+import { useMemo, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreaturedInfo from "./SelectedCreatureInfo";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
+import LiveNetworkDiagram from "./LiveNetworkDiagram";
+import { ToggleGroup } from "@/components/global/ToggleGroup";
+import Toggle from "@/components/global/Toggle";
 import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
 import { computeInfluences } from "@/simulation/creature/brain/Helpers/networkInfluence";
 import { initialNeuronOutput } from "@/simulation/creature/brain/CreatureBrain";
@@ -20,6 +23,8 @@ export default function SelectedSpeciesPanel({
   selectedSpecies,
 }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
+  const selectedCreature = useAtomValue(selectedCreatureAtom);
+  const [networkView, setNetworkView] = useState<"live" | "structure">("live");
 
   const actualSelectedSpecies =
     selectedSpecies &&
@@ -45,6 +50,15 @@ export default function SelectedSpeciesPanel({
       influences: computeInfluences(network, initialNeuronOutput),
     };
   }, [selectedSpecies]);
+
+  // live values are only available for a creature clicked on the canvas that belongs to this species
+  const liveCreature =
+    selectedCreature &&
+    selectedSpecies &&
+    selectedCreature.brain.genome.toDecimalString(false) === selectedSpecies.genomeKey
+      ? selectedCreature
+      : undefined;
+  const showLive = liveCreature !== undefined && networkView === "live";
 
   return (
     <>
@@ -80,13 +94,41 @@ export default function SelectedSpeciesPanel({
           {brainView && (
             <>
               <section className="flex flex-col gap-2">
-                <h4 className="text-xl font-bold">Neuronal network</h4>
-                <NetworkDiagram
-                  network={brainView.network}
-                  sensorLabels={brainView.labels.sensors}
-                  actionLabels={brainView.labels.actions}
-                />
-                <NetworkLegend />
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h4 className="text-xl font-bold">Neuronal network</h4>
+                  {liveCreature && (
+                    <ToggleGroup
+                      role="group"
+                      aria-label="Network view"
+                      value={networkView}
+                      onChange={setNetworkView}
+                    >
+                      <Toggle value="live">Live values</Toggle>
+                      <Toggle value="structure">Structure</Toggle>
+                    </ToggleGroup>
+                  )}
+                </div>
+                {!liveCreature && (
+                  <p className="text-xs">
+                    Click a creature of this species on the world to see its live network values.
+                  </p>
+                )}
+                {showLive ? (
+                  <LiveNetworkDiagram
+                    creature={liveCreature}
+                    sensorLabels={brainView.labels.sensors}
+                    actionLabels={brainView.labels.actions}
+                  />
+                ) : (
+                  <>
+                    <NetworkDiagram
+                      network={brainView.network}
+                      sensorLabels={brainView.labels.sensors}
+                      actionLabels={brainView.labels.actions}
+                    />
+                    <NetworkLegend />
+                  </>
+                )}
               </section>
 
               <section className="flex flex-col gap-2">

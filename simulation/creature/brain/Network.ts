@@ -7,6 +7,8 @@ import Neuron, { NeuronType } from "./Neuron";
 export class Network {
   outputs: number[] = [];
   neuronAccumulators: number[] = [];  // neurons stores value for next step
+  // sensor values of the last step, kept so the UI can show the network activity
+  inputs: number[] = [];
 
   constructor(
     public inputCount: number,
@@ -19,7 +21,9 @@ export class Network {
   }
 
   feedForward(inputs: number[]): number[] {
-    
+    // sensors create a new array every step, so keeping the reference is enough
+    this.inputs = inputs;
+
     // This container is used to return values for all the action outputs. This array
     // contains one value per action neuron, which is the sum of all its weighted
     // input connections. The sum has an arbitrary range. 

@@ -22,16 +22,37 @@ export const formatWeight = (value: number) => `${value > 0 ? "+" : ""}${value.t
 
 type NodeKey = string; // "s<sensor>", "n<neuron>" or "a<action>"
 
+// Values of one creature's network in the last step
+export type NetworkActivity = {
+  inputs: number[];   // sensor values
+  neurons: number[];  // internal neuron outputs (-1..1)
+  actions: number[];  // action outputs (-1..1)
+};
+
 interface Props {
   network: Network;
   sensorLabels: string[];
   actionLabels: string[];
+  // when set, nodes show their values and lines the signal they carry (value × weight)
+  activity?: NetworkActivity;
 }
 
+// brighter for values far from 0; values beyond ±1 are shown as fully bright
+const intensity = (value: number) => 0.2 + 0.8 * Math.min(1, Math.abs(value));
+const formatValue = (value: number) => value.toFixed(2);
+
 // Layered diagram: sensors on the left, internal neurons in the middle, actions on the right
-export default function NetworkDiagram({ network, sensorLabels, actionLabels }: Props) {
+export default function NetworkDiagram({ network, sensorLabels, actionLabels, activity }: Props) {
   const markerId = useId();
   const [highlighted, setHighlighted] = useState<NodeKey | null>(null);
+
+  const valueOf = (key: NodeKey): number | undefined => {
+    if (!activity) return undefined;
+    const id = parseInt(key.slice(1));
+    if (key[0] === "s") return activity.inputs[id];
+    if (key[0] === "n") return activity.neurons[id];
+    return activity.actions[id];
+  };
 
   const sensorIds = new Set<number>();
   const actionIds = new Set<number>();
@@ -141,54 +162,71 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels }: 
       </defs>
 
       {edges.map(({ index, from, to, path, weight, genes }) => {
-        const sign = weight >= 0 ? "positive" : "negative";
+        const sourceValue = valueOf(from);
+        // with activity, lines show the signal they carry in this step instead of the weight
+        const signal = sourceValue !== undefined ? sourceValue * weight : undefined;
+        const shown = signal ?? weight;
+        const sign = shown >= 0 ? "positive" : "negative";
+        const genesNote = genes > 1 ? ` (${genes} genes)` : "";
         return (
           <path
             key={index}
             d={path}
             fill="none"
             stroke={NETWORK_COLORS[sign]}
-            strokeWidth={1 + Math.abs(weight) * 1.2}
+            strokeWidth={1 + Math.min(Math.abs(shown), 4) * 1.2}
             // dashed negatives so the sign doesn't depend on color alone
             strokeDasharray={sign === "negative" ? "6 4" : undefined}
-            strokeOpacity={isDimmed(from, to) ? 0.1 : 0.85}
+            strokeOpacity={isDimmed(from, to) ? 0.1 : signal !== undefined ? intensity(signal) : 0.85}
             markerEnd={`url(#${markerId}-${sign})`}
           >
             <title>
-              {`${nodeName(from)} → ${nodeName(to)}: ${formatWeight(weight)}${genes > 1 ? ` (${genes} genes)` : ""}`}
+              {signal !== undefined
+                ? `${nodeName(from)} → ${nodeName(to)}: ${formatValue(sourceValue!)} × ${formatWeight(weight)} = ${formatWeight(signal)}${genesNote}`
+                : `${nodeName(from)} → ${nodeName(to)}: ${formatWeight(weight)}${genesNote}`}
             </title>
           </path>
         );
       })}
 
       {sensors.map((id) => {
-        const { x, y } = positions.get(`s${id}`)!;
+        const key = `s${id}`;
+        const { x, y } = positions.get(key)!;
+        const value = valueOf(key);
         return (
-          <g key={`s${id}`} {...nodeProps(`s${id}`)}>
-            <title>{`Sensor: ${nodeName(`s${id}`)}`}</title>
-            <circle cx={x} cy={y} r={RADIUS} fill={NETWORK_COLORS.sensor} />
-            <text x={x - RADIUS - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize={13} fill="currentColor">
-              {nodeName(`s${id}`)}
-            </text>
+          <g key={key} {...nodeProps(key)}>
+            <title>{`Sensor: ${nodeName(key)}${value !== undefined ? ` = ${formatValue(value)}` : ""}`}</title>
+            <circle
+              cx={x}
+              cy={y}
+              r={RADIUS}
+              fill={NETWORK_COLORS.sensor}
+              fillOpacity={value !== undefined ? intensity(value) : 1}
+              stroke={NETWORK_COLORS.sensor}
+            />
+            <NodeLabel x={x - RADIUS - 6} y={y} anchor="end" name={nodeName(key)} value={value} />
           </g>
         );
       })}
 
       {neurons.map((id) => {
-        const { x, y } = positions.get(`n${id}`)!;
+        const key = `n${id}`;
+        const { x, y } = positions.get(key)!;
         const constant = !network.neurons[id].driven;
+        const value = valueOf(key);
         return (
-          <g key={`n${id}`} {...nodeProps(`n${id}`)}>
+          <g key={key} {...nodeProps(key)}>
             <title>
-              {constant
+              {(constant
                 ? `Neuron N${id}: no inputs, constant output (works as a bias)`
-                : `Neuron N${id}`}
+                : `Neuron N${id}`) + (value !== undefined ? ` = ${formatValue(value)}` : "")}
             </title>
             <circle
               cx={x}
               cy={y}
               r={RADIUS}
               fill={constant ? "none" : NETWORK_COLORS.neuron}
+              fillOpacity={value !== undefined ? intensity(value) : 1}
               stroke={NETWORK_COLORS.neuron}
               strokeWidth={2}
               strokeDasharray={constant ? "3 2" : undefined}
@@ -203,19 +241,39 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels }: 
             >
               {`N${id}`}
             </text>
+            {value !== undefined && (
+              <text x={x} y={y + RADIUS + 11} textAnchor="middle" fontSize={10} fill="currentColor">
+                {formatValue(value)}
+              </text>
+            )}
           </g>
         );
       })}
 
       {actions.map((id) => {
-        const { x, y } = positions.get(`a${id}`)!;
+        const key = `a${id}`;
+        const { x, y } = positions.get(key)!;
+        const value = valueOf(key);
         return (
-          <g key={`a${id}`} {...nodeProps(`a${id}`)}>
-            <title>{`Action: ${nodeName(`a${id}`)}`}</title>
-            <circle cx={x} cy={y} r={RADIUS} fill={NETWORK_COLORS.action} />
-            <text x={x + RADIUS + 6} y={y} textAnchor="start" dominantBaseline="middle" fontSize={13} fill="currentColor">
-              {nodeName(`a${id}`)}
-            </text>
+          <g key={key} {...nodeProps(key)}>
+            <title>{`Action: ${nodeName(key)}${value !== undefined ? ` = ${formatValue(value)}` : ""}`}</title>
+            <circle
+              cx={x}
+              cy={y}
+              r={RADIUS}
+              fill={NETWORK_COLORS.action}
+              fillOpacity={value !== undefined ? intensity(value) : 1}
+              stroke={NETWORK_COLORS.action}
+            />
+            <NodeLabel
+              x={x + RADIUS + 6}
+              y={y}
+              anchor="start"
+              name={nodeName(key)}
+              value={value}
+              // positive outputs are the ones that make the creature act
+              valueColor={value !== undefined && value > 0 ? NETWORK_COLORS.positive : undefined}
+            />
           </g>
         );
       })}
@@ -223,7 +281,35 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels }: 
   );
 }
 
-export function NetworkLegend() {
+// node name, with its value on a second line when showing activity
+function NodeLabel({ x, y, anchor, name, value, valueColor }: {
+  x: number;
+  y: number;
+  anchor: "start" | "end";
+  name: string;
+  value?: number;
+  valueColor?: string;
+}) {
+  if (value === undefined) {
+    return (
+      <text x={x} y={y} textAnchor={anchor} dominantBaseline="middle" fontSize={13} fill="currentColor">
+        {name}
+      </text>
+    );
+  }
+  return (
+    <text x={x} y={y - 7} textAnchor={anchor} fontSize={13} fill="currentColor">
+      <tspan x={x} dominantBaseline="middle">{name}</tspan>
+      <tspan x={x} dy={15} fontSize={11} fill={valueColor ?? "currentColor"} fontWeight={valueColor ? "bold" : undefined}>
+        {formatValue(value)}
+      </tspan>
+    </text>
+  );
+}
+
+// showingActivity: lines show the signal of the current step instead of the weight
+export function NetworkLegend({ showingActivity = false }: { showingActivity?: boolean }) {
+  const lineMeaning = showingActivity ? "signal" : "weight";
   const swatch = (color: string, dashed = false) => (
     <svg width="28" height="10" aria-hidden="true">
       <line x1="0" y1="5" x2="28" y2="5" stroke={color} strokeWidth="3" strokeDasharray={dashed ? "6 4" : undefined} />
@@ -249,9 +335,14 @@ export function NetworkLegend() {
       <li className="flex items-center gap-1">{dot(NETWORK_COLORS.neuron)} Neuron</li>
       <li className="flex items-center gap-1">{dot(NETWORK_COLORS.neuron, true)} Constant neuron (bias)</li>
       <li className="flex items-center gap-1">{dot(NETWORK_COLORS.action)} Action</li>
-      <li className="flex items-center gap-1">{swatch(NETWORK_COLORS.positive)} Positive weight</li>
-      <li className="flex items-center gap-1">{swatch(NETWORK_COLORS.negative, true)} Negative weight</li>
-      <li>Thicker line = larger weight. Hover a node or line for details.</li>
+      <li className="flex items-center gap-1">{swatch(NETWORK_COLORS.positive)} Positive {lineMeaning}</li>
+      <li className="flex items-center gap-1">{swatch(NETWORK_COLORS.negative, true)} Negative {lineMeaning}</li>
+      <li>
+        {showingActivity
+          ? "Thicker, brighter line = stronger signal (value × weight); brighter node = value further from 0. Positive action values (green) make the creature act."
+          : "Thicker line = larger weight."}{" "}
+        Hover a node or line for details.
+      </li>
     </ul>
   );
 }

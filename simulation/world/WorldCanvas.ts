@@ -90,12 +90,45 @@ export default class WorldCanvas {
 
     // Draw generation #
     this.ctx.fillStyle = "#000";
-    this.ctx.fill();
     this.ctx.font = "18px Courier";
     this.ctx.fillText("Gen ".concat(this.worldController.currentGen.toString()), 10, 20);
     
 }
 
+
+// Draws a ring around the selected creature on a separate overlay canvas, so the mark
+// is never part of the world canvas (and of the GIFs or images saved from it).
+// The ring is much larger than the creature (one cell) and white with a black outline,
+// so it is visible on any creature or object color.
+public drawSelectionOverlay(overlay: HTMLCanvasElement, creature: Creature | null): void {
+  // same pixel size and on-screen size as the world canvas, so the ring lines up with the creature
+  overlay.width = this.canvas.width;
+  overlay.height = this.canvas.height;
+  overlay.style.width = `${this.canvas.clientWidth}px`;
+  overlay.style.height = `${this.canvas.clientHeight}px`;
+  const ctx = overlay.getContext("2d") as CanvasRenderingContext2D;
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+  if (!creature || !creature.isAlive) return;
+  // a creature from a previous generation or run is not in the world anymore
+  if (!this.worldController.generations.currentCreatures.includes(creature)) return;
+
+  // each axis has its own cell size: the world canvas may not be exactly square
+  const cellWidth = overlay.width / this.size;
+  const cellHeight = overlay.height / this.size;
+  const centerX = (creature.position[0] + 0.5) * cellWidth;
+  const centerY = (creature.position[1] + 0.5) * cellHeight;
+  const radius = Math.max(Math.min(cellWidth, cellHeight) * 2.5, 10);
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#000";
+  ctx.stroke();
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+}
 
 private generateWaterImage() {
   const grid = this.worldController.grid;
