@@ -39,4 +39,4 @@ How the code is organised and how to change it. Start with the [developer guide]
 
 ## Other
 
-- [To do and known issues](To%20do%20and%20known%20issues.md) (old list, to be revised)
+- [Known issues and to-do](known-issues.md): bugs found while writing these docs, and planned work

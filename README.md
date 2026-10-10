@@ -91,6 +91,6 @@ Built with TypeScript, React, Next.js, Jotai, Tailwind CSS, Chart.js and D3.
 - TypeScript/React port and original UI: [Carlos Peña, react-biosim](https://github.com/carlo697/react-biosim).
 - This fork, by [taganz](https://github.com/taganz/react-biosim), adds scenarios, a map editor, alternative selection and population methods, metabolism and genera, logging, GIF export and more.
 
-This is a hobby project under development. See [To do and known issues](docs/To%20do%20and%20known%20issues.md).
+This is a hobby project under development. See [Known issues and to-do](docs/known-issues.md).
 
 License: MIT, see [LICENSE](LICENSE).
