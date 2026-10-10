@@ -1,7 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
-import { tabsContext } from "./Tabs";
+import { useContext } from "react";
+import { getTabId, getTabPanelId, tabsContext } from "./Tabs";
 import classNames from "classnames";
 
 interface Props extends React.PropsWithChildren {
@@ -9,7 +9,7 @@ interface Props extends React.PropsWithChildren {
 }
 
 export default function Tab({ index, children }: Props) {
-  const { currentIndex, setCurrentIndex } = useContext(tabsContext);
+  const { currentIndex, setCurrentIndex, baseId } = useContext(tabsContext);
   const isActive = index === currentIndex;
 
   const handleClick = () => {
@@ -18,6 +18,12 @@ export default function Tab({ index, children }: Props) {
 
   return (
     <button
+      role="tab"
+      id={getTabId(baseId, index)}
+      aria-selected={isActive}
+      aria-controls={getTabPanelId(baseId, index)}
+      // only the active tab is in the tab order; arrow keys move between tabs
+      tabIndex={isActive ? 0 : -1}
       className={classNames(
         "border-b-2 px-4 py-2 transition-colors",
         isActive && "border-white",

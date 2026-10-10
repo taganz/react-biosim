@@ -21,12 +21,11 @@ export default function Toggle({
   const isActive = (value ?? currentAtomValue) === targetValue;
 
   const finalClassName = classNames(
-    "py-2 px-2 text-sm lg:text-sm !leading-none",
-    "hover:border-2 hover:border-white/50",
-    "first:rounded-tl-md first:rounded-bl-md",
-    "last:rounded-tr-md last:rounded-br-md",
-    isActive && "bg-grey-mid border-2",
-    !isActive && "bg-grey-dark border-2 border-grey-dark",
+    "py-2 px-2 text-sm !leading-none border-2",
+    "first:rounded-l-md last:rounded-r-md",
+    // selected option stands out from the grey footer and from the other options
+    isActive && "bg-white text-grey-dark border-white",
+    !isActive && "bg-grey-dark text-white border-grey-dark hover:border-white/50",
     className
   );
 
@@ -39,7 +38,13 @@ export default function Toggle({
   };
 
   return (
-    <button {...rest} className={finalClassName} onClick={handleClick}>
+    <button
+      type="button"
+      aria-pressed={isActive}
+      {...rest}
+      className={finalClassName}
+      onClick={handleClick}
+    >
       {children}
     </button>
   );

@@ -23,7 +23,7 @@ export default function UpdateParametersButton() {
   };
 
   return (
-    <Button variant="danger" onClick={handleClick}>
+    <Button variant="primary" onClick={handleClick}>
       Update simulation
     </Button>
   );

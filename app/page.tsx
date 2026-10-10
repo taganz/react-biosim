@@ -4,11 +4,10 @@ import TabPanel from "@/components/global/tabs/TabPanel";
 import Tabs from "@/components/global/tabs/Tabs";
 import Footer from "@/components/simulation/footer/Footer";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
-import LoadPanel from "@/components/simulation/tabs/load/LoadPanel";
+import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
 import MapPanel from "@/components/simulation/tabs/map/MapPanel";
 import StartPanel from "@/components/simulation/tabs/start/StartPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
-import SavePanel from "@/components/simulation/tabs/save/SavePanel";
 import SettingsPanel from "@/components/simulation/tabs/settings/SettingsPanel";
 import StatsPanel from "@/components/simulation/tabs/stats/StatsPanel";
 import { Metadata } from "next";
@@ -33,15 +32,14 @@ export default function Home() {
 
             <div>
               <Tabs>
-                <TabList>
+                <TabList label="Simulation panels">
                   <Tab index={0}>Start</Tab>
                   <Tab index={1}>Population</Tab>
                   <Tab index={2}>Stats</Tab>
                   <Tab index={3}>Settings</Tab>
                   <Tab index={4}>Map</Tab>
-                  <Tab index={5}>Save</Tab>
-                  <Tab index={6}>Load</Tab>
-                  <Tab index={7}>About</Tab>
+                  <Tab index={5}>Files</Tab>
+                  <Tab index={6}>About</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -65,14 +63,10 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={5}>
-                  <SavePanel />
+                  <FilesPanel />
                 </TabPanel>
 
                 <TabPanel index={6}>
-                  <LoadPanel />
-                </TabPanel>
-
-                <TabPanel index={7}>
                   
                   <p>
                       This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
@@ -92,8 +86,8 @@ export default function Home() {
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
-                    <li>Create a gif or save an image of current generation in &apos;Save&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation and load it again with &apos;Save&apos; and &apos;Load&apos;&nbsp;panels.</li>
+                    <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
+                    <li>Save a copy of current simulation and load it again in &apos;Files&apos;&nbsp;panel.</li>
                   </ul>
                   <br/>
                   Source code:&nbsp;{" "}

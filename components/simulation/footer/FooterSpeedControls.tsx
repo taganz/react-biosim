@@ -43,6 +43,8 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
       <div className="flex flex-col items-start gap-1">
         Pause between steps (ms):
         <ToggleGroup
+          role="group"
+          aria-label="Pause between steps (ms)"
           value={pauseBetweenSteps}
           onChange={(value) => setPauseBetweenSteps(value)}
         >
@@ -55,6 +57,8 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
       <div className="flex flex-col items-start gap-1">
         Pause between generations (ms):
         <ToggleGroup
+          role="group"
+          aria-label="Pause between generations (ms)"
           value={pauseBetweenGenerations}
           onChange={(value) => setPauseBetweenGenerations(value)}
         >
@@ -66,6 +70,8 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
       <div className="flex flex-col items-start gap-1">
         Immediate steps:
         <ToggleGroup
+          role="group"
+          aria-label="Immediate steps"
           value={immediateSteps}
           onChange={(value) => setImmediateSteps(value)}
         >

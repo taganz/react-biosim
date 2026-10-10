@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAtomValue } from "jotai";
+import { FaPause, FaPlay } from "react-icons/fa";
 import Button from "../global/Button";
 import { worldControllerAtom } from "./store";
 import useWorldValue from "@/hooks/useWorldValue";
@@ -20,7 +21,13 @@ export default function PlayPauseButton() {
   };
 
   return (
-    <Button variant="dark" onClick={handleClick}>
+    <Button
+      variant="primary"
+      // fixed width so the footer does not jump when the label changes
+      className="min-w-28"
+      icon={isPaused ? <FaPlay /> : <FaPause />}
+      onClick={handleClick}
+    >
       {isPaused ? "Play" : "Pause"}
     </Button>
   );

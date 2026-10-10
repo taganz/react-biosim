@@ -1,24 +1,46 @@
 "use client";
 
-import React, { useEffect } from "react";
-import {worldControllerAtom} from "../../store";
-import {atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import React, { useState } from "react";
+import { worldControllerAtom } from "../../store";
+import { atom, useAtom, useAtomValue } from "jotai";
 import Button from "@/components/global/Button";
+import NumberInput from "@/components/global/inputs/NumberInput";
 import { saveAs } from "file-saver";
 import useWorldValue from "@/hooks/useWorldValue";
-import Creature from "@/simulation/creature/Creature";
 
-
-
+// kept outside the component so the value survives switching tabs
 const logCreatureIdAtom = atom(0);
+
+function describeLoggedCreatures(creatureId: number): string {
+  switch (creatureId) {
+    case 0:
+      return "all creatures";
+    case -10:
+      return "creatures 0 to 9";
+    case -30:
+      return "creatures 0 to 29";
+    default:
+      return `creature id ${creatureId}`;
+  }
+}
 
 export default function LoggerStatus() {
   const worldController = useAtomValue(worldControllerAtom);
+  const logEnabled = useWorldValue((world) => Boolean(world.simData.constants.LOG_ENABLED), false);
   const logCount = useWorldValue((world) => world.eventLogger.logCount, 0);
-  const [logCreatureId, setLogCreatureId] = useAtom(logCreatureIdAtom)
+  const loggedCreatureId = useWorldValue((world) => world.eventLogger.creatureId, 0);
   const eventLoggerIsPaused = useWorldValue((world) => world.eventLoggerIsPaused, false);
+  const [logCreatureId, setLogCreatureId] = useAtom(logCreatureIdAtom);
+  const [creatureMessage, setCreatureMessage] = useState("");
 
-  const handleClick = () => {
+  // runs a logger action and lets the UI know, since it can happen while the simulation is paused
+  const runLoggerAction = (action: () => void) => {
+    if (!worldController) return;
+    action();
+    worldController.notifyStateChange();
+  };
+
+  const handleTogglePause = () => {
     if (!worldController) return;
     if (eventLoggerIsPaused) {
       worldController.resumeLog();
@@ -27,107 +49,82 @@ export default function LoggerStatus() {
     }
   };
 
-  function logStatus(): string {
-    if (!worldController?.simData.constants.LOG_ENABLED) {
-      return "off"
-    }
-    switch (worldController?.simData.constants.LOG_CREATURE_ID) {
-      case 0:
-        return "enabled for all creatures";
-      case -10:
-        return "enabled for creatures 0 to 9";
-      case -30:
-        return "enabled for creatures 0 to 29";
-      default:
-        return "enabled for creature id ".concat(worldController.eventLogger.creatureId.toString());
-    }
-  }
+  const handleSaveLog = () => {
+    if (!worldController) return;
+    const saveLog: Blob = worldController.eventLogger.getLogBlob();
+    saveAs(saveLog, `simlog ${worldController.currentGen}.csv`);
+  };
 
-  function handleSaveLog(): void {
-    if (worldController) {
-      const saveLog : Blob = worldController?.eventLogger.getLogBlob();
-      saveAs( saveLog, 'simlog '.concat(worldController.currentGen.toString()).concat(".csv") ); 
-    }
-    else {
-      console.error("worldController not found");
-    }
-  }
-  /*
-  function handleToggleLog() {
-    if (worldController) {
-        worldController.eventLogger.togglePause();
-    }
-  }
-  */
-  function handleDeleteLog() {
-    if (worldController) {
-        worldController.eventLogger.deleteLog();
-        worldController.notifyStateChange();
-    }
-  }
-  function handleRecordNextGenerationLog() {
-    if (worldController) {
-        worldController.eventLogger.recordNextGeneration();
-        worldController.notifyStateChange();
-    }
-  }
-  function handleRecordFromFirstGenerationLog() {
-    if (worldController) {
-        worldController.eventLogger.recordFromFirstGeneration();
-        worldController.notifyStateChange();
-    }
-  }
-  function handleRecordFirstGenerationLog() {
-    if (worldController) {
-        worldController.eventLogger.recordFirstGeneration();
-        worldController.notifyStateChange();
-    }
-  }
-  function handleLogCreatureId(e : any) {
-    if (worldController) {
-      const creatureId = parseInt(e.target.value);
-      console.log("selected creatureId = ", creatureId);
-      if (!Number.isNaN(creatureId)) {
-        worldController!.eventLogger.startLoggingCreatureId(creatureId);
-        worldController.notifyStateChange();
-        setLogCreatureId( (prevState) => creatureId);
+  const handleLogCreature = () => {
+    runLoggerAction(() => {
+      setCreatureMessage("");
+      try {
+        worldController!.eventLogger.startLoggingCreatureId(logCreatureId);
+      } catch (error) {
+        // the logger is already set to the new id; only the first record of the creature failed
+        setCreatureMessage(
+          `Creature ${logCreatureId} is not alive in this generation, it will be logged if it appears.`
+        );
       }
-     } else {
-      throw new Error("worldController not found");
-    }
-  }
+    });
+  };
 
   return (
-    <div>
-      <p className="mb-2 text-lg">Log is: {logStatus()}</p>
-      <p className="mb-2 text-lg">{(!worldController?.simData.constants.LOG_ENABLED || !worldController )  ? "" : "Log count: ".concat(logCount.toString()) }</p>
-      <div>
-        {
-        worldController?.simData.constants.LOG_ENABLED ? (
-            <div>
-              Log status: {eventLoggerIsPaused ? "Paused" : "Active"}
-              <div className="my-3"><Button onClick={handleClick}>{eventLoggerIsPaused ? "Resume log" : "Pause log"}</Button></div>
-              <div className="my-3"><Button onClick={handleRecordFirstGenerationLog}>Record first generation and pause</Button></div>
-              <div className="my-3"><Button onClick={handleRecordFromFirstGenerationLog}>Record from first generation</Button></div>
-              <div className="my-3"><Button onClick={handleRecordNextGenerationLog}>Record next generation</Button></div>
-              <div className="my-3"><Button onClick={handleSaveLog}>Save log</Button></div>
-              <div className="my-3"><Button onClick={handleDeleteLog}>Delete log</Button></div>
-            </div>
-        ) : (<p></p>)
-      }
-        </div>
-           {/*  creature id  */}
-           <div className="flex flex-col">
-          <label className="grow">Creature to log </label>
-          <input
-              type="text"
-              value={logCreatureId}
-              onChange={(e) => handleLogCreatureId(e)}
-              className="min-w-0 bg-grey-mid p-1"
-            >
-          </input>
-        </div>
+    <div className="flex flex-col gap-4">
+      <dl className="grid grid-cols-[auto_1fr] gap-x-4">
+        <dt>Log</dt>
+        <dd>{logEnabled ? `enabled for ${describeLoggedCreatures(loggedCreatureId)}` : "off"}</dd>
+        {logEnabled && (
+          <>
+            <dt>Status</dt>
+            <dd>{eventLoggerIsPaused ? "Paused" : "Recording"}</dd>
+            <dt>Events logged</dt>
+            <dd>{logCount}</dd>
+          </>
+        )}
+      </dl>
 
+      {logEnabled && (
+        <>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleTogglePause}>
+              {eventLoggerIsPaused ? "Resume log" : "Pause log"}
+            </Button>
+            <Button onClick={() => runLoggerAction(() => worldController!.eventLogger.recordFirstGeneration())}>
+              Record first generation and pause
+            </Button>
+            <Button onClick={() => runLoggerAction(() => worldController!.eventLogger.recordFromFirstGeneration())}>
+              Record from first generation
+            </Button>
+            <Button onClick={() => runLoggerAction(() => worldController!.eventLogger.recordNextGeneration())}>
+              Record next generation
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleSaveLog}>Save log</Button>
+            <Button variant="danger" onClick={() => runLoggerAction(() => worldController!.eventLogger.deleteLog())}>
+              Delete log
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-end gap-2">
+              <div className="w-40">
+                <NumberInput
+                  label="Creature to log"
+                  value={logCreatureId}
+                  onChange={setLogCreatureId}
+                  integer
+                />
+              </div>
+              <Button onClick={handleLogCreature}>Log this creature</Button>
+            </div>
+            <p className="text-xs">0 logs all creatures, -10 creatures 0 to 9, -30 creatures 0 to 29.</p>
+            {creatureMessage && <p role="status" className="text-sm">{creatureMessage}</p>}
+          </div>
+        </>
+      )}
     </div>
   );
 }

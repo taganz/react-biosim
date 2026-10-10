@@ -33,7 +33,7 @@ export default function deserializeSimulationData(worldController: WorldControll
     throw new Error("must have parsed.species");
   }
   if (!parsed.stats) {
-    throw new Error("must have parsed.species");
+    throw new Error("must have parsed.stats");
   }
     const simulationData : SimulationData = {
         constants : parsed.constants,

@@ -150,7 +150,7 @@ export default function MapDesignerLayerProperties() {
             <Button onClick={handleClone} variant="grey" icon={<FaClone />}>
               Clone
             </Button>
-            <Button onClick={handleDelete} icon={<FaTrash />}>
+            <Button variant="danger" onClick={handleDelete} icon={<FaTrash />}>
               Delete
             </Button>
           </div>

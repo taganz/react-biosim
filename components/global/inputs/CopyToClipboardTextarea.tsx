@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { PropsWithChildren, useRef } from "react";
 import { FaClipboard } from "react-icons/fa";
+import Button from "../Button";
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from "react-textarea-autosize";
@@ -40,17 +41,14 @@ export default function CopyToClipboardTextarea({
         ref={textarea}
         {...rest}
       />
-      <button
-        className={classNames(
-          "m-1 aspect-square rounded-md bg-blue px-2 leading-none text-white",
-          "absolute right-0 top-0",
-          "hover:brightness-75",
-          withScrollbar && "right-5"
-        )}
+      <Button
+        variant="dark"
+        icon={<FaClipboard className="inline-block" />}
+        aria-label="Copy to clipboard"
+        title="Copy to clipboard"
+        className={classNames("absolute right-0 top-0 m-1", withScrollbar && "right-5")}
         onClick={handleClick}
-      >
-        <FaClipboard className="inline-block" />
-      </button>
+      />
     </div>
   );
 }

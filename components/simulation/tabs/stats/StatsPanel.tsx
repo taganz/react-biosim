@@ -39,7 +39,7 @@ export default function StatsPanel() {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col gap-10">
     <div>
       <h3 className="mb-1 text-2xl font-bold">{fitnessValueName}</h3>
       <p>{`maxFitnessValue: ${maxFitnessFormatter(lastFitnessMaxValue)}`}</p>
@@ -58,15 +58,20 @@ export default function StatsPanel() {
       />
      {/* TODO genus graph.... */ }
      </div>
-     <br/><br/>
-      <h3 className="mb-1 text-2xl font-bold">Under development features</h3>
-      <br/>
-      <h3 className="mb-1 text-2xl font-bold">Logger</h3>
-      <p>Logger creates a .csv file. A powerbi report is available in github public folder</p><br/>
-      <LoggerStatus/>
-      <br/>
-      <WorldWaterStatus/>
 
+      <details>
+        <summary className="cursor-pointer text-2xl font-bold">
+          Under development: logger and water
+        </summary>
+        <div className="mt-4 flex flex-col gap-6">
+          <section className="flex flex-col gap-2">
+            <h3 className="text-xl font-bold">Logger</h3>
+            <p>Logger creates a .csv file. A powerbi report is available in github public folder</p>
+            <LoggerStatus/>
+          </section>
+          <WorldWaterStatus/>
+        </div>
+      </details>
   </div>
   );
 }

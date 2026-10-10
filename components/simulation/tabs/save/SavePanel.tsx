@@ -44,30 +44,29 @@ export default function SavePanel() {
   };
 
   return (
-    <div>
-        <br/>
-        <p>Save current simulation state</p>
-        <Button onClick={handleSaveToFile}>Save to file</Button>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <p>
+          Save the current simulation state to load it later with &quot;Load&quot; below,
+          or show it as JSON code to copy somewhere else.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={handleSaveToFile}>Save to file</Button>
+          <Button onClick={handleSave}>Show JSON to copy</Button>
+        </div>
+        {dataSavedWorld && (
+          <CopyToClipboardTextarea
+            value={dataSavedWorld}
+            maxRows={20}
+            minRows={5}
+            withScrollbar
+          />
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h3 className="text-xl font-bold">Images and GIFs</h3>
         <CanvasToGIF></CanvasToGIF>
-      <br/>
-      <p className="mb-2">
-        Press the &quot;Save&quot; button below to generate a JSON code of worldController
-        that you can back up somewhere else! If you want to load it, use the
-        &quot;Load&quot; tab.
-      </p>
-
-      <CopyToClipboardTextarea
-        value={dataSavedWorld}
-        maxRows={20}
-        minRows={20}
-        withScrollbar
-      />
-      {/*div className="mt-2 text-center">*/}
-      <div  className="mt-2">
-        <br/>
-        <p>Display current simulation state for copy</p>
-        <Button onClick={handleSave}>Save to copy</Button>
-
       </div>
     </div>
   );

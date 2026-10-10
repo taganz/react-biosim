@@ -64,7 +64,7 @@ export default function MapDesignerHeader() {
       <Button variant="grey" onClick={handleUseMap} icon={<TfiCheckBox />}>
         Use Map
       </Button>
-      <Button onClick={handleResetToWorldControllerMap} icon={<FaTrash />}>
+      <Button variant="danger" onClick={handleResetToWorldControllerMap} icon={<FaTrash />}>
         Reset Designer
       </Button>
 

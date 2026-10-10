@@ -193,21 +193,27 @@ const CanvasToGIF: React.FC = () => {
   };
 
 
+  const recordedSteps = Math.max(0, frames - 1);
+
   return (
-    <div>
-    <br/>
-    <h2> {stateInitial ? "Press Start to record a GIF for next generation" : ""}
-		{stateStartPending ? " Recording will start at next generation..." : " "}  
-		{stateRecording ? " Recording generation... ".concat((frames -1 as number).toString().concat(" steps ")) : " "}  
-		{stateSavePending ? " Ready to download  ".concat((frames -1 as number).toString().concat(" steps "), ". Can take some time to render...") : " " } </h2>
-    <div className="grid grid-cols-3 gap-4">
-      {/*<canvas ref={canvasRef} width={400} height={400}></canvas>*/}
-      <Button onClick={startRecording}>Record GIF</Button>
-      <Button onClick={downloadGIF}>Download GIF</Button>
-    </div>
-    <br/>
-    <p>Save a png image of canvas</p>
-        <Button onClick={handleSaveImage}>Save image</Button>
+    <div className="flex flex-col gap-2">
+      <p role="status">
+        {stateInitial && 'Press "Record GIF" to record the next generation.'}
+        {stateStartPending && "Recording will start at the next generation…"}
+        {stateRecording && `Recording generation… ${recordedSteps} steps`}
+        {stateSavePending && `Ready to download (${recordedSteps} steps). Rendering can take some time.`}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={startRecording} disabled={!(stateInitial || stateSavePending)}>
+          Record GIF
+        </Button>
+        <Button onClick={downloadGIF} disabled={!stateSavePending}>
+          Download GIF
+        </Button>
+        <Button onClick={handleSaveImage}>
+          Save PNG image
+        </Button>
+      </div>
     </div>
   );
 };

@@ -10,20 +10,18 @@ export default function WorldWaterStatus() {
   const waterInCreatures = useWorldValue((world) => world.worldWater.waterInCreatures, 0);
 
   return (
-<div className="bg-blue-100 p-4 rounded-lg shadow">
-  <h2 className="font-bold text-lg text-gray-800 mb-2">World Water Stats</h2>
-  <p className="text-gray-700">
-    <span className="font-semibold">Total Water:</span> {totalWater.toFixed(1)}
-  </p>
-  <p className="text-gray-700">
-    <span className="font-semibold">Water in Cloud:</span> {waterInCloud.toFixed(1)}
-  </p>
-  <p className="text-gray-700">
-    <span className="font-semibold">Water in Cells:</span> {waterInCells.toFixed(1)}
-  </p>
-  <p className="text-gray-700">
-    <span className="font-semibold">Water in Creatures:</span> {waterInCreatures.toFixed(1)}
-  </p>
-</div>
+    <section className="flex flex-col gap-2">
+      <h3 className="text-xl font-bold">Water</h3>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-4">
+        <dt>Total water</dt>
+        <dd>{totalWater.toFixed(1)}</dd>
+        <dt>Water in cloud</dt>
+        <dd>{waterInCloud.toFixed(1)}</dd>
+        <dt>Water in cells</dt>
+        <dd>{waterInCells.toFixed(1)}</dd>
+        <dt>Water in creatures</dt>
+        <dd>{waterInCreatures.toFixed(1)}</dd>
+      </dl>
+    </section>
   );
 }
