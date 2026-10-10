@@ -2,12 +2,14 @@ import { ReactNode, useState } from "react";
 import { PrimitiveAtom, atom as newAtom, useAtom } from "jotai";
 
 interface Props extends React.PropsWithChildren {
+  value?: any;
   onChange?: (value: any) => void;
   atom?: PrimitiveAtom<any>;
   label?: ReactNode;
 }
 
 export default function SelectInput({
+  value,
   onChange,
   atom,
   label,
@@ -20,7 +22,7 @@ export default function SelectInput({
     <div className="flex flex-col">
       {label && <label className="grow">{label}</label>}
       <select
-        value={currentValue.toString()}
+        value={(value ?? currentValue).toString()}
         onChange={(e) =>
           onChange ? onChange(e.target.value) : setCurrentValue(e.target.value)
         }

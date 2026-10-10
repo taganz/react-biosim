@@ -24,10 +24,11 @@ import * as constants from "@/simulation/simulationDataDefault"
 import UpdateParametersButton from "../../UpdateParametersButton";
 import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 import { SimulationData } from "@/simulation/SimulationData";
+import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 
-const enabledSensorsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledSensors);
-const enabledActionsAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.enabledActions);
-const mutationModeAtom = atom(constants.WORLD_GENERATIONS_DATA_DEFAULT.mutationMode);
+// Keep the previous value when the input is empty or invalid, so NaN never reaches simulationData
+const validNumber = (value: number, previous: number) =>
+  Number.isNaN(value) ? previous : value;
 
 
 // This should update only
@@ -39,42 +40,32 @@ export default function SettingsPanel() {
   const worldController = useAtomValue(worldControllerAtom);
   const sensors = Object.values(worldController?.generations.sensors.data ?? {});
   const actions = Object.values(worldController?.generations.actions.data ?? {});
-  const [enabledSensors, setEnabledSensors] = useAtom(enabledSensorsAtom);   
-  const [enabledActions, setEnabledActions] = useAtom(enabledActionsAtom);   
-  //const [worldGenerationsData, setWorldGenerationData] = useAtom(worldGenerationDataAtom);
-  //const [worldControllerData, setWorldControllerData] = useAtom(worldControllerDataAtom);
-  //const [waterData, setWaterData] = useAtom(waterDataAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
-    
-  setEnabledSensors(simulationData.worldGenerationsData.enabledSensors);
-  setEnabledActions(simulationData.worldGenerationsData.enabledActions);
+  const { enabledSensors, enabledActions } = simulationData.worldGenerationsData;
 
   const handleSensorChange = (name: SensorName, checked: boolean) => {
-
-    //const handleSensorChange = (name: SensorName, checked: ChangeEvent<HTMLInputElement>) => {
-      if (checked) {
-        setEnabledSensors([...enabledSensors, name]);
-        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-          enabledSensors: [...enabledSensors, name]}}));
-      } else if (enabledSensors.length > 1) {
-        setEnabledSensors(enabledSensors.filter((item) => item !== name));
-        setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-          enabledSensors: enabledSensors.filter((item) => item !== name)}}));
-      }
-    };
-
-                    
+    if (checked) {
+      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+        enabledSensors: [...prev.worldGenerationsData.enabledSensors, name]}}));
+    } else if (enabledSensors.length > 1) {
+      setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+        enabledSensors: prev.worldGenerationsData.enabledSensors.filter((item) => item !== name)}}));
+    }
+  };
 
   const handleActionChange = (name: ActionName, checked: boolean) => {
     if (checked) {
-      setEnabledActions([...enabledActions, name]);
       setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledActions: [...enabledActions, name]}}));
-  } else if (enabledActions.length > 1) {
-      setEnabledActions(enabledActions.filter((item) => item !== name));
+        enabledActions: [...prev.worldGenerationsData.enabledActions, name]}}));
+    } else if (enabledActions.length > 1) {
       setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        enabledActions: enabledActions.filter((item) => item !== name)}}));
+        enabledActions: prev.worldGenerationsData.enabledActions.filter((item) => item !== name)}}));
     }
+  };
+
+  const handleMutationMode = (value: string) => {
+    setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
+      mutationMode: value as MutationMode}}));
   };
 
     const getPrettyName = (name: string) =>
@@ -106,16 +97,10 @@ export default function SettingsPanel() {
       }
 
         
-    const handleChangePopulation = (e: { target: { value: any; }; }) => {
+    const handleChangePopulation = (e: { target: { value: string; }; }) => {
       setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-        initialPopulation: e.target.value}}));
-    //setWorldControllerData(prevState => ({ ...prevState, initialPopulation: e.target.value }))
+        initialPopulation: validNumber(parseInt(e.target.value), prev.worldGenerationsData.initialPopulation)}}));
     }
-
-    
-    const handleSize = (e: { target: { value: any; }; }) => {
-      setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
-           size: parseInt(e.target.value),}}))};
 
 
     //TODO - select combo
@@ -150,7 +135,7 @@ export default function SettingsPanel() {
                   type="number"
                   value={simulationData.worldControllerData.size.toString()}
                   onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
-                                  size: parseInt(e.target.value),}}))}}
+                                  size: validNumber(parseInt(e.target.value), prev.worldControllerData.size),}}))}}
                   className="min-w-0 bg-grey-mid p-1"
                 >
               </input>
@@ -177,7 +162,7 @@ export default function SettingsPanel() {
                   type="number"
                   value={simulationData.worldControllerData.stepsPerGen.toString()}
                   onChange={(e) => {setSimulationData(prev => ({...prev,worldControllerData: {...prev.worldControllerData,
-                    stepsPerGen: parseInt(e.target.value),}}))}}
+                    stepsPerGen: validNumber(parseInt(e.target.value), prev.worldControllerData.stepsPerGen),}}))}}
                   className="min-w-0 bg-grey-mid p-1"
                 >
               </input>
@@ -224,7 +209,7 @@ export default function SettingsPanel() {
                     type="number"
                     value={simulationData.worldGenerationsData.initialGenomeSize.toString()}
                     onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      initialGenomeSize: parseInt(e.target.value),}}))}}   
+                      initialGenomeSize: validNumber(parseInt(e.target.value), prev.worldGenerationsData.initialGenomeSize),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -238,7 +223,7 @@ export default function SettingsPanel() {
                     type="number"
                     value={simulationData.worldGenerationsData.maxGenomeSize.toString()}
                     onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      maxGenomeSize: parseInt(e.target.value),}}))}}   
+                      maxGenomeSize: validNumber(parseInt(e.target.value), prev.worldGenerationsData.maxGenomeSize),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -252,7 +237,7 @@ export default function SettingsPanel() {
                     type="number"
                     value={simulationData.worldGenerationsData.maxNumberNeurons.toString()}
                     onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      maxNumberNeurons: parseInt(e.target.value),}}))}}   
+                      maxNumberNeurons: validNumber(parseInt(e.target.value), prev.worldGenerationsData.maxNumberNeurons),}}))}}   
                     className="min-w-0 bg-grey-mid p-1"
                   >
                 </input>
@@ -266,7 +251,11 @@ export default function SettingsPanel() {
           <br/>
             <h3 className="mb-1 text-2xl font-bold">Mutations</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <SelectInput atom={mutationModeAtom} label="Mutation mode">
+              <SelectInput
+                value={simulationData.worldGenerationsData.mutationMode}
+                onChange={handleMutationMode}
+                label="Mutation mode"
+              >
                 <option value="wholeGene">Whole Genes</option>
                 <option value="singleBit">Single Bits</option>
                 <option value="singleHexDigit">Single Hexadecimal Digits</option>
@@ -280,7 +269,7 @@ export default function SettingsPanel() {
                     type="number"
                     value={simulationData.worldGenerationsData.mutationProbability.toString()}
                     onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      mutationProbability: parseFloat(e.target.value),}}))}}   
+                      mutationProbability: validNumber(parseFloat(e.target.value), prev.worldGenerationsData.mutationProbability),}}))}}   
                     step="0.01"
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -295,7 +284,7 @@ export default function SettingsPanel() {
                     type="number"
                     value={simulationData.worldGenerationsData.geneInsertionDeletionProbability.toString()}
                     onChange={(e) => {setSimulationData(prev => ({...prev,worldGenerationsData: {...prev.worldGenerationsData,
-                      geneInsertionDeletionProbability: parseFloat(e.target.value),}}))}}   
+                      geneInsertionDeletionProbability: validNumber(parseFloat(e.target.value), prev.worldGenerationsData.geneInsertionDeletionProbability),}}))}}   
                     step="0.001"
                     className="min-w-0 bg-grey-mid p-1"
                   >
@@ -380,7 +369,7 @@ export default function SettingsPanel() {
                 type="number"
                 value={simulationData.waterData.waterCellCapacity.toString()}
                 onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterCellCapacity: parseFloat(e.target.value),}}))}}
+                  waterCellCapacity: validNumber(parseFloat(e.target.value), prev.waterData.waterCellCapacity),}}))}}
               step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -395,7 +384,7 @@ export default function SettingsPanel() {
                 type="number"
                 value={simulationData.waterData.waterTotalPerCell.toString()}
                 onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterTotalPerCell: parseFloat(e.target.value),}}))}}
+                  waterTotalPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterTotalPerCell),}}))}}
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -410,7 +399,7 @@ export default function SettingsPanel() {
                 type="number"
                 value={simulationData.waterData.waterRainMaxPerCell.toString()}
                 onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterRainMaxPerCell: parseFloat(e.target.value),}}))}}                
+                  waterRainMaxPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterRainMaxPerCell),}}))}}                
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -425,7 +414,7 @@ export default function SettingsPanel() {
                 type="number"
                 value={simulationData.waterData.waterFirstRainPerCell.toString()}
                 onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterFirstRainPerCell: parseFloat(e.target.value),}}))}}     
+                  waterFirstRainPerCell: validNumber(parseFloat(e.target.value), prev.waterData.waterFirstRainPerCell),}}))}}     
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >
@@ -440,7 +429,7 @@ export default function SettingsPanel() {
                 type="number"
                 value={simulationData.waterData.waterEvaporationPerCellPerGeneration.toString()}
                 onChange={(e) => {setSimulationData(prev => ({...prev,waterData: {...prev.waterData,
-                  waterEvaporationPerCellPerGeneration: parseFloat(e.target.value),}}))}}   
+                  waterEvaporationPerCellPerGeneration: validNumber(parseFloat(e.target.value), prev.waterData.waterEvaporationPerCellPerGeneration),}}))}}   
                 step="0.1"
                 className="min-w-0 bg-grey-mid p-1"
               >

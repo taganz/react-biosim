@@ -47,7 +47,7 @@ export default function MapDesigner() {
   // Save the objects every 1 seconds
   useInterval(() => {
     setSavedMapDesignerObjects(mapDesignerObjects);
-    setWorldSize(worldSize);
+    setSavedWorldSize(worldSize);
   }, 1000);
 
   return (

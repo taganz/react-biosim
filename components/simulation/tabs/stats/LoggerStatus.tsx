@@ -7,7 +7,6 @@ import Button from "@/components/global/Button";
 import { saveAs } from "file-saver";
 import useEventLoggerPropertyValue from "@/hooks/useEventLoggerPropertyValue";
 import useWorldProperty from "@/hooks/useWorldProperty";
-import { error } from "console";
 import Creature from "@/simulation/creature/Creature";
 
 
@@ -40,7 +39,7 @@ export default function LoggerStatus() {
     if (!worldController?.simData.constants.LOG_ENABLED) {
       return "off"
     }
-    switch (worldController?.simData.constants.LOG_ENABLEDLOG_CREATURE_ID) {
+    switch (worldController?.simData.constants.LOG_CREATURE_ID) {
       case 0:
         return "enabled for all creatures";
       case -10:
@@ -92,7 +91,7 @@ export default function LoggerStatus() {
     if (worldController) {
       const creatureId = parseInt(e.target.value);
       console.log("selected creatureId = ", creatureId);
-      if (creatureId != Number.NaN) {
+      if (!Number.isNaN(creatureId)) {
         worldController!.eventLogger.startLoggingCreatureId(creatureId); 
         setLogCreatureId( (prevState) => creatureId);
       }

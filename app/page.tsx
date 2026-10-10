@@ -84,19 +84,17 @@ export default function Home() {
                   </a>
                   , by davidrandallmiller.
                   </p>
-                  <p>
-                    <br/>
-                    How to use:
-                    <p>
+                  <br/>
+                  <p>How to use:</p>
+                  <ul className="list-disc pl-6">
                     <li>Start by using one of the simulations based on the video in the &apos;Start&apos;&nbsp;panel.</li>
                     <li>Adjust simulation speed and restart on the footer.</li>
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Save&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation and load it again with &apos;Save&apos;and &apos;Load&apos;&nbsp;panels.</li>
-                    </p>
-                  </p>
+                    <li>Save a copy of current simulation and load it again with &apos;Save&apos; and &apos;Load&apos;&nbsp;panels.</li>
+                  </ul>
                   <br/>
                   Source code:&nbsp;{" "}
                   <a

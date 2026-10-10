@@ -22,7 +22,7 @@ export default function Button({
     !onlyIcon && "py-1 px-3 lg:py-2 lg:px-4",
     onlyIcon && "p-1 lg:p-2 aspect-square",
     variant === "dark" && "bg-grey-dark text-white",
-    variant === "danger" && "bg-red text-whitef",
+    variant === "danger" && "bg-red text-white",
     variant === "grey" && "bg-grey-mid text-white",
     className
   );

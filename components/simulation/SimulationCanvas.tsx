@@ -8,7 +8,6 @@ import React, { useCallback, useEffect, useRef } from "react";
 import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom} from "./store";
 import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
 import { startUpScenarioSimulationData } from "../../simulation/startupScenario";
-import { constants } from "buffer";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
 import { SimulationData } from "@/simulation/SimulationData";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
