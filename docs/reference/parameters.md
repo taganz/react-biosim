@@ -16,7 +16,7 @@ The **Startup** column below shows the values loaded when the app opens ([simula
 
 The **Settings** tab edits a draft. The running simulation keeps its own copy until you apply the draft with one of these buttons:
 
-- **Update simulation** applies the changes and keeps the current creatures, generation number and stats.
+- **Update simulation** applies the changes and keeps the generation number and stats. It does not currently keep the running creatures (see [Settings and stats](../user/settings-and-stats.md#applying-changes)).
 - **Restart** applies the changes and starts again from generation 1. All evolution so far is lost.
 - **Discard changes** puts the draft back to the values of the running simulation.
 

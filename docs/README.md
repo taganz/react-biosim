@@ -28,6 +28,15 @@ Exact lists of everything you can configure, taken from the code.
 - [Sensors, actions and genes](reference/sensors-and-actions.md): the brain's inputs and outputs, genera and gene encoding
 - [Population strategies and selection methods](reference/population-and-selection.md): how each generation is created and how survivors are chosen
 
+## Developer guide
+
+How the code is organised and how to change it. Start with the [developer guide](development/README.md) (setup and project layout).
+
+1. [Architecture](development/architecture.md): engine and UI, Jotai store, events, applying settings
+2. [Save format](development/serialization.md): the `.sim` file and loading
+3. [Extending](development/extending.md): new sensors, actions, strategies, selection methods, map objects, scenarios
+4. [Testing](development/testing.md): running and writing tests
+
 ## Other
 
 - [To do and known issues](To%20do%20and%20known%20issues.md) (old list, to be revised)

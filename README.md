@@ -45,7 +45,7 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 | Start | Load an included scenario |
 | Population | See the top species, a creature's genome and its neural network, live or as a diagram |
 | Stats | Plot fitness per generation, check the logger and water |
-| Settings | Change world, generations, neural networks, mutations, sensors and actions, then apply with **Update simulation** (keeps the creatures) or **Restart** |
+| Settings | Change world, generations, neural networks, mutations, sensors and actions, then apply with **Update simulation** or **Restart** |
 | Map | Draw obstacles and areas, then apply the map to the simulation |
 | Files | Save the simulation to a `.sim` file or as JSON, load one back, export images and GIFs |
 | About | Credits and links |
@@ -55,8 +55,9 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 - [User guide](docs/user/getting-started.md): how to use every tab
 - [Simulation model](docs/model/README.md): world, creatures, brain and genome, generations
 - [Reference](docs/README.md#reference): parameters, sensors and actions, population and selection
+- [Developer guide](docs/development/README.md): architecture, save format, extending, testing
 
-All pages are listed in [docs/](docs/README.md). The developer guide is being written.
+All pages are listed in [docs/](docs/README.md).
 
 ## Development
 

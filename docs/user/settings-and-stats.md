@@ -14,15 +14,20 @@ Your edits are a **draft**. The simulation keeps running with its old settings u
 
 | Button | Effect |
 |---|---|
-| **Update simulation** | Applies the changes and keeps the current creatures and generation. Use it to adjust a run that is in progress. |
+| **Update simulation** | Applies the changes while keeping the generation count and stats. It is meant to keep the current creatures too, but see the warning below. |
 | **Restart** | Applies the changes and starts again from generation 1. |
 | **Discard changes** | Goes back to the settings of the running simulation. |
 
-Some changes behave differently depending on how you apply them:
+> **Known issue: Update simulation does not keep the current creatures.** It rebuilds the world from the Settings draft. The draft only holds creatures if the simulation was loaded from a scenario or a file, and then they are the creatures *as they were when it was loaded*.
+> - After loading a scenario or file, the population jumps back to that snapshot.
+> - With the startup simulation, the world is left empty. A second later the simulation detects an extinction and restarts from generation 1.
+>
+> Until this is fixed, treat **Update simulation** as a soft restart. If you need to keep the evolved population, save it first in the [Files](files.md) tab. The speed controls in the footer are not affected: they always apply immediately.
 
-- **World size and map:** **Update simulation** rebuilds the world straight away. Creatures that no longer fit are removed: those outside a smaller world, or on a cell that is now an obstacle.
+Other things to know:
+
 - **Initial population** and the population strategy take effect when the next generation is created.
-- **Sensors and actions:** genes point to sensors and actions by their position in the list of enabled items. If you change the list and click **Update simulation**, existing brains are rewired. Use **Restart** unless that is what you want.
+- **Sensors and actions:** genes point to sensors and actions by their position in the list of enabled items. If you change the list, existing genomes are rewired.
 - **Invalid values:** a field rejects a value out of range and shows the allowed range. When you leave the field, it goes back to the last valid value.
 
 ### Ideas to try
