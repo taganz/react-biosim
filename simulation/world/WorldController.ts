@@ -59,7 +59,12 @@ export default class WorldController {
   _lastPauseDate: Date | undefined = new Date();
   _pauseTime: number = 0;
   _timeoutId?: number;
-  
+  // incremented when the world is replaced (start/resume run), so a loop from the previous run stops
+  private _runId = 0;
+  private _paused = true;
+  // a tick can be waiting inside an await (pause between generations, extinction restart)
+  private _tickInFlight = false;
+
   constructor(sim: SimulationData) {
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
@@ -103,7 +108,7 @@ export default class WorldController {
     );
 
     this.generations.populate();
-    this.mainLoop();
+    this.startLoop();
 
     return this.simCode;
   
@@ -149,8 +154,8 @@ export default class WorldController {
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
-    
-    this.mainLoop();
+
+    this.startLoop();
   }
 
   private loadWorldControllerInitialAndUserData(worldControllerData: WorldControllerData) : void {
@@ -169,26 +174,45 @@ export default class WorldController {
   // to ~4ms, so one step per tick would cap the simulation at ~250 steps/s.
   private async mainLoop(): Promise<void> {
 
+    const runId = this._runId;
+    this._timeoutId = undefined;
+    this._tickInFlight = true;
+
     const maxSteps = this.pauseBetweenSteps > 0 ? 1 : Math.max(1, this.immediateSteps);
     const tickStart = performance.now();
     let stepsDone = 0;
 
-    while (stepsDone < maxSteps && performance.now() - tickStart < MAX_TICK_MS) {
-      const result = await this.runStep();
+    while (!this._paused && stepsDone < maxSteps && performance.now() - tickStart < MAX_TICK_MS) {
+      const result = await this.runStep(runId);
+      // the world was restarted or reloaded while this step was running; the new run has its own loop
+      if (runId !== this._runId) return;
       stepsDone++;
-      if (result === "restarted") return;
       if (result === "generationEnded") break;
     }
 
+    this._tickInFlight = false;
+
     // loop after pause
-    this._timeoutId = window.setTimeout(
-        this.mainLoop.bind(this),
-        this.pauseBetweenSteps
-      );
+    if (!this._paused) {
+      this._timeoutId = window.setTimeout(
+          this.mainLoop.bind(this),
+          this.pauseBetweenSteps
+        );
+    }
 
   }
 
-  private async runStep(): Promise<"continue" | "generationEnded" | "restarted"> {
+  // stops any loop left from the previous run and starts a new one
+  private startLoop(): void {
+    window.clearTimeout(this._timeoutId);
+    this._timeoutId = undefined;
+    this._runId++;
+    this._tickInFlight = false;
+    this._paused = false;
+    this.mainLoop();
+  }
+
+  private async runStep(runId: number): Promise<"continue" | "generationEnded" | "restarted"> {
 
     if (this.currentStep === 1) {
       this.logStartGeneration();
@@ -217,13 +241,16 @@ export default class WorldController {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
-      this.startRun(this.simData);
+      // the user may have restarted or loaded another simulation during the wait
+      if (runId === this._runId) {
+        this.startRun(this.simData);
+      }
       return "restarted";
     }
 
 
     if (this.currentStep == this.stepsPerGen) {
-      await this.endGeneration();
+      await this.endGeneration(runId);
       return "generationEnded";
     }
     this.currentStep++;
@@ -232,15 +259,17 @@ export default class WorldController {
   }
 
   
-  private async endGeneration(): Promise<void> {
+  private async endGeneration(runId: number): Promise<void> {
 
     this.logEndGeneration();
-    
+
     // Small pause
     if (this.pauseBetweenGenerations > 0) {
       await new Promise((resolve) =>
         setTimeout(() => resolve(true), this.pauseBetweenGenerations)
       );
+      // don't touch the new world if it was restarted or reloaded during the pause
+      if (runId !== this._runId) return;
     }
     //this._immediateStepsCounter = this.immediateSteps;
 
@@ -289,7 +318,8 @@ export default class WorldController {
 
 
   pause(): void {
-    if (this._timeoutId) {
+    if (!this._paused) {
+      this._paused = true;
       window.clearTimeout(this._timeoutId);
       this._timeoutId = undefined;
       this._lastPauseDate = new Date();
@@ -298,12 +328,16 @@ export default class WorldController {
   }
 
   resume(): void {
-    if (!this._timeoutId) {
+    if (this._paused) {
+      this._paused = false;
       this._pauseTime += this._lastPauseDate
         ? new Date().getTime() - this._lastPauseDate.getTime()
         : 0;
 
-      this.mainLoop();
+      // a tick still waiting inside an await will schedule the next one itself
+      if (!this._tickInFlight) {
+        this.mainLoop();
+      }
     }
     this.notifyStateChange();
   }
@@ -328,7 +362,7 @@ export default class WorldController {
   }
 
   get isPaused(): boolean {
-    return !this._timeoutId;
+    return this._paused;
   }
 
 
