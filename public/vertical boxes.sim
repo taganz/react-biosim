@@ -44,7 +44,7 @@
         }
     },
     "worldGenerationsData": {
-        "populationStrategy": "AsexualRandomPopulation",
+        "populationStrategy": "AsexualZonePopulation",
         "selectionMethod": "InsideReproductionAreaSelection",
         "initialPopulation": 500,
         "initialGenomeSize": 4,
