@@ -11,6 +11,15 @@ How to use the app.
 5. [Files](user/files.md): save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
 
+## Simulation model
+
+How the simulation works: the rules the engine follows. Start with the [overview](model/README.md).
+
+1. [World](model/world.md): grid, obstacles and areas, water and rain
+2. [Creatures](model/creatures.md): one step of a creature, movement, mass and metabolism, genus, death
+3. [Brain and genome](model/brain.md): from genes to network, how it computes, mutation
+4. [Generations](model/generations.md): the loop, selection, repopulation, extinction
+
 ## Reference
 
 Exact lists of everything you can configure, taken from the code.
@@ -19,12 +28,6 @@ Exact lists of everything you can configure, taken from the code.
 - [Sensors, actions and genes](reference/sensors-and-actions.md): the brain's inputs and outputs, genera and gene encoding
 - [Population strategies and selection methods](reference/population-and-selection.md): how each generation is created and how survivors are chosen
 
-## Model notes (being rewritten)
+## Other
 
-These older pages describe the simulation model. They will be replaced by new user, model and developer guides.
-
-- [Running a simulation](Running%20a%20simulation.md) (replaced by the user guide)
-- [World](World.md)
-- [Creatures](Creatures.md)
-- [Generations](Generations.md)
-- [To do and known issues](To%20do%20and%20known%20issues.md)
+- [To do and known issues](To%20do%20and%20known%20issues.md) (old list, to be revised)

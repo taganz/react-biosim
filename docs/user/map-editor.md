@@ -13,7 +13,7 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 | Rectangle, Ellipse | **Obstacle.** Creatures cannot enter it. The touch sensors detect it. |
 | Rectangle Reproduction, Ellipse Reproduction | **Reproduction area** (blue). With the *Inside Reproduction Area* selection method, creatures standing here when the generation ends survive. |
 | Rectangle Spawn | **Spawn area** (yellow). With the *Asexual Zone* population strategy, new creatures are placed here. Use only one: only the first is used. |
-| Rectangle Health, Ellipse Health | **Health area.** Changes the health of creatures inside it by the **Health** value at every step: positive values heal (green) and negative values hurt (red). A creature dies when its health reaches 0. The *Pain* sensor reads health. |
+| Rectangle Health, Ellipse Health | **Health area.** Drawn green for a positive **Health** value and red for a negative one. **It currently has no effect:** the code that applies it is disabled (see [World](../model/world.md#objects-and-areas)). |
 
 ## Editing
 

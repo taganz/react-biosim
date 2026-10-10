@@ -30,7 +30,7 @@ The **Settings** tab edits a draft. The running simulation keeps its own copy un
 | Phenotype mode | `worldGenerationsData.phenotypeColorMode` | read-only: `genome`, `trophicLevel` | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores. Set by the scenario. |
 | Metabolism | `worldGenerationsData.metabolismEnabled` | read-only | `false` | When off, creature mass never changes. Set by the scenario. |
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
-| Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² | 1000 | Number of creatures created in each generation. Each creature needs its own cell. |
+| Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell. The field accepts size², but the engine refuses it (known issue). |
 | Steps per generation | `worldControllerData.stepsPerGen` | integer ≥ 1 | 300 | Steps that make up one generation. |
 
 ### Generations
@@ -109,8 +109,8 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `MASS_COST_PER_EXECUTE_ACTION` | 0.01 | Mass spent per step for each enabled action. |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome. |
 | `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass to reproduce (plus `REPRODUCTION_COST_PER_MASS_DO` with metabolism). |
-| `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Fraction of current mass lost by a failed reproduction attempt. |
-| `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Fraction of current mass lost by reproducing. The parent also gives its birth mass to the child. |
+| `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a failed reproduction attempt, as a multiple of birth mass. |
+| `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |
 | `MOVE_MULTIPLE_MASS_AT_BIRTH` | 2 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
 | `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. |
 | `MOVE_COST_PER_MASS_DO` | 0.6 | Extra mass lost by moving, as a multiple of birth mass. |

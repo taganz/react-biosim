@@ -37,10 +37,10 @@ Sensor outputs are mostly between 0 and 1. Genus columns: P = plant, H = herbivo
 | 11 | TouchEast | The same for the cell to the right. | ✓ | ✓ | ✓ |
 | 12 | TouchSouth | The same for the cell below. | ✓ | ✓ | ✓ |
 | 13 | TouchWest | The same for the cell to the left. | ✓ | ✓ | ✓ |
-| 14 | Pain | `(100 − health) / 100`. Health changes inside health areas. | ✓ | ✓ | ✓ |
+| 14 | Pain | `(100 − health) / 100`. Always 0 at present, because health areas are disabled. | ✓ | ✓ | ✓ |
 | 15 | PopulationDensity | Share of the 8 neighbouring cells that hold a creature. | ✓ | ✓ | ✓ |
 | 16 | Mass | The creature's mass. Not scaled to 0–1. | ✓ | ✓ | ✓ |
-| 17 | PreyDistance | Distance to the closest prey within `DETECT_RADIUS` cells (10). 999999 if there is none. | | ✓ | ✓ |
+| 17 | PreyDistance | Distance in cells to the closest prey within `DETECT_RADIUS` (10), with diagonal steps counting as 1. 999999 if there is none. Not scaled to 0–1. | | ✓ | ✓ |
 | 18 | PreyNorth | 1 if the closest prey is above. Otherwise 0. | | ✓ | ✓ |
 | 19 | PreyEast | 1 if the closest prey is to the right. | | ✓ | ✓ |
 | 20 | PreySouth | 1 if the closest prey is below. | | ✓ | ✓ |
@@ -96,4 +96,5 @@ So the same gene can mean different connections in simulations with different se
 ## Known issues
 
 - **PredatorDistance and PredatorDirection produce no value.** They are in the list and can be enabled, but `calculateOutputs` never computes them. If you enable one, the sensor values no longer line up with the sensor neurons. Keep them disabled.
-- **The genus of a carnivore is read from its actions only.** Sensors never set the genus, so the "compatible genus" lists of sensors only matter when genomes are built for a given genus.
+- **Reproduction never succeeds without metabolism.** It needs more than 3 × birth mass, and without metabolism mass never changes (see [Creatures → Reproduction](../model/creatures.md#reproduction)).
+- **The genus of a creature is read from its actions only.** Sensors never set the genus, so the "compatible genus" lists of sensors only matter when genomes are built for a given genus.
