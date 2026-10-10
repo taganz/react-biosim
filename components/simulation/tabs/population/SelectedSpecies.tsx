@@ -1,11 +1,14 @@
 import { useAtomValue } from "jotai";
 import { worldControllerAtom } from "../../store";
-import { useEffect, useRef } from "react";
+import { useMemo } from "react";
 import { Species } from "../../../../simulation/creature/Species";
-import { useWindowSize } from "react-use";
-import { drawCreatureNeuronalNetwork } from "@/simulation/creature/brain/Helpers/drawCreatureNeuronalNetwork";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreaturedInfo from "./SelectedCreatureInfo";
+import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
+import NetworkInfluenceTable from "./NetworkInfluenceTable";
+import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
+import { computeInfluences } from "@/simulation/creature/brain/Helpers/networkInfluence";
+import { initialNeuronOutput } from "@/simulation/creature/brain/CreatureBrain";
 
 interface Props {
   species: Species[];
@@ -17,8 +20,6 @@ export default function SelectedSpeciesPanel({
   selectedSpecies,
 }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
-  const graphCanvas = useRef<HTMLCanvasElement>(null);
-  const { width } = useWindowSize();
 
   const actualSelectedSpecies =
     selectedSpecies &&
@@ -33,19 +34,17 @@ export default function SelectedSpeciesPanel({
       : 0
   ).toFixed(2);
 
-  useEffect(() => {
-    if (graphCanvas.current && selectedSpecies) {
-      const creature = selectedSpecies.creatures[0];
-      const newGraph = drawCreatureNeuronalNetwork(
-        creature,
-        graphCanvas.current
-      );
-
-      return () => {
-        newGraph.stop();
-      };
-    }
-  }, [selectedSpecies, graphCanvas, width]);
+  // every creature of a species shares the genome, so any of them has the species network
+  const brainView = useMemo(() => {
+    const creature = selectedSpecies?.creatures[0];
+    if (!creature) return undefined;
+    const network = creature.brain.brain;
+    return {
+      network,
+      labels: getNetworkLabels(creature),
+      influences: computeInfluences(network, initialNeuronOutput),
+    };
+  }, [selectedSpecies]);
 
   return (
     <>
@@ -78,10 +77,28 @@ export default function SelectedSpeciesPanel({
             )}
           </div>
 
-          <canvas
-            className="aspect-[5/4] w-full bg-white"
-            ref={graphCanvas}
-          ></canvas>
+          {brainView && (
+            <>
+              <section className="flex flex-col gap-2">
+                <h4 className="text-xl font-bold">Neuronal network</h4>
+                <NetworkDiagram
+                  network={brainView.network}
+                  sensorLabels={brainView.labels.sensors}
+                  actionLabels={brainView.labels.actions}
+                />
+                <NetworkLegend />
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h4 className="text-xl font-bold">What drives each action</h4>
+                <NetworkInfluenceTable
+                  influences={brainView.influences}
+                  sensorLabels={brainView.labels.sensors}
+                  actionLabels={brainView.labels.actions}
+                />
+              </section>
+            </>
+          )}
 
           <div>
             <div>
