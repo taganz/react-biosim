@@ -52,7 +52,10 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 
 ## Documentation
 
-See [docs/](docs/README.md). The reference pages are up to date. The user, model and developer guides are being written.
+- [User guide](docs/user/getting-started.md): how to use every tab
+- [Reference](docs/README.md#reference): parameters, sensors and actions, population and selection
+
+All pages are listed in [docs/](docs/README.md). The model and developer guides are being written.
 
 ## Development
 
