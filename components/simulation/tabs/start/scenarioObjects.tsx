@@ -18,7 +18,9 @@ scenarioObjects.push({name: "davidrmiller example 4 generation 2600" , filename:
   action: "resumeRun"});
 scenarioObjects.push({name: "Vertical boxes", filename: "vertical boxes.sim", action: "startRun"});
 scenarioObjects.push({name: "Turn right", filename: "turn right.sim", action: "startRun"});
-scenarioObjects.push({name: "Turn right generation 5574", filename: "turn right generation 5574.sim", 
+scenarioObjects.push({name: "Turn right 3SF generation 1013", filename: "turn right 3SF generation 1013.sim",
+  action: "resumeRun"});
+scenarioObjects.push({name: "Turn right generation 5574", filename: "turn right generation 5574.sim",
   action: "resumeRun"});
 scenarioObjects.push({name: "Carlos' original", filename: "carlos.sim", action: "startRun"});
 scenarioObjects.push({name: "NW7 generation 13780", filename: "sim NW7 generation 13780.sim", action: "resumeRun"});
