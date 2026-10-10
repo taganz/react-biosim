@@ -294,6 +294,7 @@ export default class WorldController {
       this._timeoutId = undefined;
       this._lastPauseDate = new Date();
     }
+    this.notifyStateChange();
   }
 
   resume(): void {
@@ -304,6 +305,7 @@ export default class WorldController {
 
       this.mainLoop();
     }
+    this.notifyStateChange();
   }
 
   get eventLoggerIsPaused() : boolean {
@@ -311,9 +313,18 @@ export default class WorldController {
   }
   pauseLog() : void {
     this.eventLogger.pause();
+    this.notifyStateChange();
   }
   resumeLog() : void {
     this.eventLogger.resume();
+    this.notifyStateChange();
+  }
+
+  // lets the UI know about changes that happen while the simulation loop is not running
+  notifyStateChange() : void {
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.stateChange, { detail: { worldController: this } })
+    );
   }
 
   get isPaused(): boolean {

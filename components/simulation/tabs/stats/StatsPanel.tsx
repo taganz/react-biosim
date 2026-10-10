@@ -1,26 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { worldControllerAtom } from "../../store";
-import { useAtom, useAtomValue } from "jotai";
-import { WorldEvents } from "@/simulation/events/WorldEvents";
+import { useCallback } from "react";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
-import { TestStats } from "./TestStats";
 import WorldWaterStatus from "./WorldWaterStatus";
 import LoggerStatus from "./LoggerStatus";
-//import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
+import useWorldValue from "@/hooks/useWorldValue";
+
+const NO_GENERATIONS: SingleGeneration[] = [];
 
 function getter(data: SingleGeneration): [number, number] {
   return [data.generation, data.maxFitnessValue];
 }
 
 export default function StatsPanel() {
-  const worldController = useAtomValue(worldControllerAtom);
-  const [data, setData] = useState<SingleGeneration[]>([]);
-  const [updates, setUpdates] = useState(0);
-  //const restartCount = useAtom(restartCountAtom);
- // const currentGen = useAtomValue(currentGenAtom);
+  // generationRegistry is replaced on restart, so read it through the hook instead of caching it
+  const data = useWorldValue((world) => world.generationRegistry.generations, NO_GENERATIONS);
+  // generations are pushed into the same array, so use the generation number to trigger graph redraws
+  const currentGen = useWorldValue((world) => world.currentGen, 0);
+  const fitnessValueName = useWorldValue(
+    (world) => world.generations.selectionMethod.fitnessValueName,
+    ""
+  );
+  const lastFitnessMaxValue = useWorldValue(
+    (world) => world.generations.lastFitnessMaxValue,
+    0
+  );
 
   const maxFitnessFormatter = useCallback(
     (value: number) => {
@@ -33,38 +38,15 @@ export default function StatsPanel() {
     return "Generation #" + Math.round(value).toString();
   }, []);
 
-  const onStartGeneration = useCallback(() => {
-    setUpdates((value) => value + 1);
-  }, []);
-
-  // Bind worldController events - startGeneration
-  useEffect(() => {
-    if (worldController) {
-      setData(worldController.generationRegistry.generations);
-
-      worldController.events.addEventListener(
-        WorldEvents.startGeneration,
-        onStartGeneration
-      );
-      //console.log("worldController.selectionMethod.fitnessValueName", worldController.generations.selectionMethod.fitnessValueName);
-      return () => {
-        worldController.events.removeEventListener(
-          WorldEvents.startGeneration,
-          onStartGeneration
-        );
-      };
-    }
-  }, [onStartGeneration, worldController]);
-
   return (
     <div>
     <div>
-      <h3 className="mb-1 text-2xl font-bold">{worldController == null ? "<error worldController == null>" : worldController?.generations.selectionMethod.fitnessValueName}</h3>
-      <p>{`maxFitnessValue: ${worldController == null ? "<error worldController == null>" : maxFitnessFormatter(worldController.generations.lastFitnessMaxValue)}`}</p>
+      <h3 className="mb-1 text-2xl font-bold">{fitnessValueName}</h3>
+      <p>{`maxFitnessValue: ${maxFitnessFormatter(lastFitnessMaxValue)}`}</p>
       <LinearGraph
         data={data}
         getter={getter}
-        updateKey={updates}
+        updateKey={currentGen}
         preSmooth={true}
         preSmoothSamples={10}
         preSmoothRadius={1}
@@ -75,7 +57,6 @@ export default function StatsPanel() {
         className="aspect-[2/1] w-full bg-white"
       />
      {/* TODO genus graph.... */ }
-     {/* <TestStats></TestStats>   */}
      </div>
      <br/><br/>
       <h3 className="mb-1 text-2xl font-bold">Under development features</h3>

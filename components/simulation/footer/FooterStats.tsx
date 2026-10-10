@@ -1,19 +1,19 @@
 "use client";
 
-import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
+import useWorldValue from "@/hooks/useWorldValue";
 import React from "react";
 
 export default function FooterStats() {
-  const lastGenerationDuration = useWorldPropertyValue(
+  const lastGenerationDuration = useWorldValue(
     (worldController) => worldController.lastGenerationDuration,
     0
   );
-  const totalTime = useWorldPropertyValue((worldController) => worldController.totalTime, 0);
-  const lastSurvivorCount = useWorldPropertyValue(
+  const totalTime = useWorldValue((worldController) => worldController.totalTime, 0);
+  const lastSurvivorCount = useWorldValue(
     (worldController) => worldController.generations.lastSurvivorsCount,
     0
   );
-  const lastSurvivalRate = useWorldPropertyValue(
+  const lastSurvivalRate = useWorldValue(
     (worldController) => worldController.generations.lastSurvivalRate,
     0
   );

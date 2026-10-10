@@ -1,6 +1,7 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldCanvas from "@/simulation/world/WorldCanvas";
 import Creature from "@/simulation/creature/Creature";
+import { Species } from "@/simulation/creature/Species";
 import { atom } from "jotai";
 import {SIMULATION_DATA_DEFAULT}  from "@/simulation/simulationDataDefault"
 import EventLogger from "@/simulation/logger/EventLogger";
@@ -17,6 +18,7 @@ export const worldCreaturesAtom = atom(<Creature[]>[]);
 export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
+export const selectedSpeciesAtom = atom<Species | undefined>(undefined);
 
 export const simulationDataAtom = atom(SIMULATION_DATA_DEFAULT);
 //export const simulationConstantsDataAtom = atom(SIMULATION_DATA_DEFAULT.constants);

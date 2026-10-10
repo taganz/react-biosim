@@ -5,7 +5,8 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom} from "./store";
+import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom} from "./store";
+import { Species } from "@/simulation/creature/Species";
 import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
 import { startUpScenarioSimulationData } from "../../simulation/startupScenario";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
@@ -26,6 +27,8 @@ export default function SimulationCanvas({ className }: Props) {
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
   const setEventLogger = useSetAtom(eventLoggerAtom);
+  const setSelectedCreature = useSetAtom(selectedCreatureAtom);
+  const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
 
   useEffect(
@@ -98,6 +101,39 @@ export default function SimulationCanvas({ className }: Props) {
     }
 
   }, [worldController, worldCanvas, setEventLogger]);
-  
+
+  // Creature selection lives here (not in a tab) so it works whatever tab is open
+  useEffect(
+    function bindCanvasMouseEvents() {
+      if (!worldController || !worldCanvas) return;
+
+      const onClick = (e: MouseEvent) => {
+        const [worldX, worldY] = worldCanvas.mouseEventPosToWorld(e);
+        const creature = worldController.grid.cell(worldX, worldY).creature;
+        setSelectedCreature(creature ?? null);
+        setSelectedSpecies(
+          creature ? new Species(creature.brain.genome.clone(), [creature]) : undefined
+        );
+      };
+
+      // draw a small square at cursor position to help selecting a creature
+      const onMouseMove = (e: MouseEvent) => {
+        if (worldController.isPaused) {
+          const [worldX, worldY] = worldCanvas.mouseEventPosToWorld(e);
+          worldCanvas.redraw();
+          worldCanvas.drawRectStroke(worldX, worldY, 1, 1, "rgba(0,0,0,0.5)", 1.5);
+        }
+      };
+
+      worldCanvas.canvas.addEventListener("click", onClick);
+      worldCanvas.canvas.addEventListener("mousemove", onMouseMove);
+      return () => {
+        worldCanvas.canvas.removeEventListener("click", onClick);
+        worldCanvas.canvas.removeEventListener("mousemove", onMouseMove);
+      };
+    },
+    [worldController, worldCanvas, setSelectedCreature, setSelectedSpecies]
+  );
+
   return <canvas className={className} id="simCanvas" ref={canvasRef}></canvas>;
 }

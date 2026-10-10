@@ -8,14 +8,14 @@ import { FooterSpeedControls } from "./FooterSpeedControls";
 import { FaChevronUp } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import classNames from "classnames";
-import useWorldPropertyValue from "@/hooks/useWorldPropertyValue";
+import useWorldValue from "@/hooks/useWorldValue";
 
 export default function Footer() {
   const [extended, setExtended] = useState(false);
 
-  const currentStep = useWorldPropertyValue((worldController) => worldController.currentStep, 1);
-  const currentGeneration = useWorldPropertyValue((worldController) => worldController.currentGen, 0);
-  const stepsPerGeneration = useWorldPropertyValue((worldController) => worldController.stepsPerGen, 0);
+  const currentStep = useWorldValue((worldController) => worldController.currentStep, 1);
+  const currentGeneration = useWorldValue((worldController) => worldController.currentGen, 0);
+  const stepsPerGeneration = useWorldValue((worldController) => worldController.stepsPerGen, 0);
 
   return (
     <div className="sticky bottom-0 bg-grey-mid/80 shadow-sm backdrop-blur-sm">

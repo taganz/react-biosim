@@ -17,7 +17,6 @@ import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import {Sensor,SensorName} from "@/simulation/creature/brain/CreatureSensors";
 import {Action, ActionName} from "@/simulation/creature/brain/CreatureActions";
-//import useSyncAtomWithWorldProperty from "@/hooks/useSyncAtomWithWorldProperty";
 import { ChangeEvent } from "react";
 import * as constants from "@/simulation/simulationDataDefault"
 

@@ -5,34 +5,26 @@ import {worldControllerAtom} from "../../store";
 import {atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Button from "@/components/global/Button";
 import { saveAs } from "file-saver";
-import useEventLoggerPropertyValue from "@/hooks/useEventLoggerPropertyValue";
-import useWorldProperty from "@/hooks/useWorldProperty";
+import useWorldValue from "@/hooks/useWorldValue";
 import Creature from "@/simulation/creature/Creature";
 
 
 
 const logCreatureIdAtom = atom(0);
 
-//TODO refresh log count
 export default function LoggerStatus() {
   const worldController = useAtomValue(worldControllerAtom);
-  const logCount = useEventLoggerPropertyValue((eventLogger) => eventLogger.logCount, 0);
+  const logCount = useWorldValue((world) => world.eventLogger.logCount, 0);
   const [logCreatureId, setLogCreatureId] = useAtom(logCreatureIdAtom)
-
-  const [eventLoggerIsPaused, setEventLoggerIsPaused] = useWorldProperty(
-    (world) => world.eventLoggerIsPaused,
-    (world) => {
-      if (world.eventLoggerIsPaused) {
-        world.resumeLog();
-      } else {
-        world.pauseLog();
-      }
-    },
-    false
-  );
+  const eventLoggerIsPaused = useWorldValue((world) => world.eventLoggerIsPaused, false);
 
   const handleClick = () => {
-    setEventLoggerIsPaused(!eventLoggerIsPaused);
+    if (!worldController) return;
+    if (eventLoggerIsPaused) {
+      worldController.resumeLog();
+    } else {
+      worldController.pauseLog();
+    }
   };
 
   function logStatus(): string {
@@ -70,21 +62,25 @@ export default function LoggerStatus() {
   function handleDeleteLog() {
     if (worldController) {
         worldController.eventLogger.deleteLog();
+        worldController.notifyStateChange();
     }
   }
   function handleRecordNextGenerationLog() {
     if (worldController) {
         worldController.eventLogger.recordNextGeneration();
+        worldController.notifyStateChange();
     }
   }
   function handleRecordFromFirstGenerationLog() {
     if (worldController) {
         worldController.eventLogger.recordFromFirstGeneration();
+        worldController.notifyStateChange();
     }
   }
   function handleRecordFirstGenerationLog() {
     if (worldController) {
         worldController.eventLogger.recordFirstGeneration();
+        worldController.notifyStateChange();
     }
   }
   function handleLogCreatureId(e : any) {
@@ -92,7 +88,8 @@ export default function LoggerStatus() {
       const creatureId = parseInt(e.target.value);
       console.log("selected creatureId = ", creatureId);
       if (!Number.isNaN(creatureId)) {
-        worldController!.eventLogger.startLoggingCreatureId(creatureId); 
+        worldController!.eventLogger.startLoggingCreatureId(creatureId);
+        worldController.notifyStateChange();
         setLogCreatureId( (prevState) => creatureId);
       }
      } else {

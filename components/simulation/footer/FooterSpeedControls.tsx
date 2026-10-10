@@ -3,17 +3,16 @@ import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import classNames from "classnames";
 import {worldControllerAtom} from "../store";
-import {atom, useAtom, useAtomValue } from "jotai";
-import * as constants from "@/simulation/simulationDataDefault"
+import {
+  pauseBetweenStepsAtom,
+  pauseBetweenGenerationsAtom,
+  immediateStepsAtom,
+} from "../store/guiControlsAtoms";
+import { useAtom, useAtomValue } from "jotai";
 
 interface Props
   extends React.PropsWithChildren,
     React.ComponentPropsWithoutRef<"div"> {}
-
-    
-export const pauseBetweenStepsAtom = atom(0);
-export const pauseBetweenGenerationsAtom = atom(0);
-export const immediateStepsAtom = atom(1);
 
 export function FooterSpeedControls({ className, ...rest }: Props) {
   const [pauseBetweenSteps, setPauseBetweenSteps] = useAtom(pauseBetweenStepsAtom);
