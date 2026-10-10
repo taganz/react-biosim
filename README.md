@@ -1,113 +1,91 @@
+# react-biosim
 
+An environment for **evolutionary simulations** in the browser, inspired by David R. Miller's video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)".
 
-## What is this?
+Creatures live on a grid and are controlled by small neural networks built from their genes. At the end of each generation, the creatures that meet a goal survive and pass their genes, with occasional mutations, to the next generation. After a few generations, behaviour that looked random becomes purposeful.
 
-This is an environment to create **evolutionary simulations** inspired in the video "[I programmed some creatures. They Evolved.](https://www.youtube.com/watch?v=N3tRFayqVtk)" (by [David R. Miller](https://github.com/davidrmiller)). 
+![Creatures learning to turn right, generation 5583](docs/turn%20right%20generation%205583.gif)
 
-This video is one of the best ways I've seen to understand evolution basics.
+**Live demo:** <https://biosim.rdalmau.com>
 
-In the app you can play with this model. You can define a simulation scenario and observe the evolution of creatures in real-time. 
+## Quick start
 
-These tools are available to create and analyze the simulation:
-- Simulation settings configuration
-- Map editor
-- Creature's brain visualization
-- Fitness evolution graph
-- Save and load scenarios
-- GIF generation
-- Log stats
-- Simulation speed
+1. Open the **Start** tab and pick a scenario.
+2. Watch the fitness curve rise in the **Stats** tab.
+3. Click a species in the **Population** tab to see its brain.
+4. Change the rules in **Settings** or draw a new map in **Map**, then click **Restart**.
 
-This repo is a fork from [this original project](https://github.com/carlo697/react-biosim) by [Carlos Peña](https://github.com/carlo697) that created a Typescript/React version of Miller simulation and designed the GUI. Original David R.Miller respository is [here](https://github.com/davidrmiller/biosim4).
+Use the footer to pause the simulation or change its speed. Set **Immediate steps** to 200 to run at full speed.
 
-This is a hobby project under development. See [To do and know issues](https://github.com/taganz/react-biosim/blob/main/docs/To%20do%20and%20know%20issues.md)
+### Included scenarios
 
+| Scenario | What to watch |
+|---|---|
+| davidrmiller examples 1, 2 and 4 | The demos from the video, some resumed at a late generation |
+| Vertical boxes | Creatures learn to reach the right box |
+| Turn right / Turn right generation 5574 | Creatures learn to reach the bottom-left corner of the map |
+| Carlos' original | Creatures learn to stay in the centre |
+| NW7 generation 13780 | A long run resumed at generation 13780 |
 
-## Live Demo
+## How the simulation works
 
->  You can test this app [here](https://react-biosim.vercel.app/).
+- **World.** A square grid (100 × 100 cells by default) with obstacles and areas: spawn, reproduction and health.
+- **Creatures.** Each creature fills one cell. Its **genome** is a list of 32-bit genes, and each gene is one weighted connection in its brain.
+- **Brain.** **Sensors** (position, age, nearby obstacles, prey…) feed a small neural network that drives **actions** (move, reproduce, attack…).
+- **Generations.** A generation lasts a fixed number of steps. When it ends, a **selection method** picks the survivors, for example those standing inside a reproduction area.
+- **Inheritance.** A **population strategy** fills the next generation with copies of the survivors' genomes. A copy can mutate: a gene changes, or a gene is added or removed.
+- **Experimental.** Optional metabolism (mass and water) and genera (plants, herbivores, carnivores) for predator–prey experiments.
 
-Quick start
-- Select a predefined scenario.
-- Look how the survival % increases in the graph.
-- Look how the creature's brain complexity increases
-- And then, change settings and restart, change the map...
+Details: [sensors and actions](docs/reference/sensors-and-actions.md), [population strategies and selection methods](docs/reference/population-and-selection.md) and [all parameters](docs/reference/parameters.md).
 
+## App tabs
 
-**Predefined scenarios:**
+| Tab | Use it to |
+|---|---|
+| Start | Load an included scenario |
+| Population | See the top species, a creature's genome and its neural network, live or as a diagram |
+| Stats | Plot fitness per generation, check the logger and water |
+| Settings | Change world, generations, neural networks, mutations, sensors and actions, then apply with **Update simulation** (keeps the creatures) or **Restart** |
+| Map | Draw obstacles and areas, then apply the map to the simulation |
+| Files | Save the simulation to a `.sim` file or as JSON, load one back, export images and GIFs |
+| About | Credits and links |
 
-- Examples 1 to 3 are based on the demos shown in David's video. [Example 1 gif](https://github.com/taganz/react-biosim/blob/main/docs/Example%201%20generation%208.gif)
-- Vertical boxes: observe how creatures learn to go the right box
-- Turn right and Turn right generation 5574: observe how creatures find a way to learn how to get to the bottom left of the screen at generation 0 and after 5574 creatures.  [Example turn right generation 5574](https://github.com/taganz/react-biosim/blob/main/docs/turn%20right%20generation%205583.gif)
-- Carlos' original: creatures learn to stay at the center
-- Plants and animals: this is an experimental extension of the model where some creatures learn to prey others
+## Documentation
 
+See [docs/](docs/README.md). The reference pages are up to date. The user, model and developer guides are being written.
 
-## The simulation
+## Development
 
-The simulation consists of a **map** of 100x100 (by default) squares. Scattered over the map we can find **creatures**. A creature is a colored square that represents an organism in the simulation. Each creature has an int array that is used as its **genome**. Each int in that array is a **gene**. A creature could have a genome of size 4 (meaning it has 4 genes) while other creature in the same simulation could have one of size 16. The genome of a creature gives shape to a simple neural network which dictates how the creature will behave and react.
+Requirements: Node.js 20.9 or later (required by Next.js 16).
 
-![image](docs/images/tab_population.png)
-
-The simulation runs through **generations**. When a generation finishes, the next one will start executing, and so on. In the map there's a semi transparent blue square, that's a **reproduction zone**. If a creature is inside a reproduction zone by the end of a generation, it will **survive**. If a creature survives, it will have offspring, in other words, there will be creatures in the next generation that will share the genome of its parent.
-
-When the simulation starts at generation 0, an **initial population** (by default 1000) of creatures will be spawned, each one with a completely random genome and random position. Their behaviour is gonna be chaotic due to the random genome (and its resulting neural network). But some of the creatures will survive because they'll end up inside the reproduction zone by pure chance, and they'll have children that will populate the next generation. If 30% of the creatures survive (as an example), then **the survival rate** will be 30% for that generation. 
-
-Each time a new generation starts (after the generation 0), the map will be populated again with 1000 creatures, but these creatures will be children of the surviving creatures of the last generation.
-
-This is an example of the creatures at generation 0:
-
-![image](https://github.com/carlo697/react-biosim/assets/16585568/c770ebda-30b9-4b07-bd00-3522d2565a4b)
-
-But here's the catch: everytime a child of a creature is "born", the genome of the parent is copied, but there's a small chance that a random **mutation** will occur (this chance is called the **mutation probability** and it's 5% by default) to one if its genes. There're also mutations that will add or remove genes to the genome (0.5% by default).
-
-Due to these random mutations we are leaving room for natural selection to occur: a child of a creature could be better or worse at reaching the reproduction zone thanks to a random mutation in its genome. So, it could have better probabilities of having children and passing its genome to the next generation.
-
-This results in creatures becoming "smarter" with each passing generation to reach the reproduction zone, and the survival rate will keep increasing:
-
-![image](https://github.com/carlo697/react-biosim/assets/16585568/0c6c9fe4-e6b8-4e3c-8afc-79cf6930cedb)
-
-Example of a creature's neural network and genome after 945 generations:
-![image](https://github.com/carlo697/react-biosim/assets/16585568/8827116c-b9b4-476d-8918-29c4a47029cf)
-
-
-## Features
-
-The app has a full UI to change the settings for the simulation, you can edit things like:
-- **The map:** you can set the size and use an editor to add or remove objects like walls and zones.
-- **Population:** you can change the initial population and set the probability of mutations.
-- **Speed:** use controls to adjust the speed of the simulation or you can pause/resume it. **Note:** set **Immediate steps** to its maximun value to run the simulation at full speed.
-- You can watch the population over time in a line chart.
-- **Creatures:** you can enable and disable the sensors and actions.
-- **Save a JSON:** save a JSON containing the creatures, the settings, and the map of the current simulation.
-- **Load a JSON:** load a previously saved JSON to resume that simulation.
-
-
-# Doc - work in progress
-
-- [World](https://github.com/taganz/react-biosim/blob/main/docs/World.md)
-- [Generations](https://github.com/taganz/react-biosim/blob/main/docs/Generations.md)
-- [Creatures](https://github.com/taganz/react-biosim/blob/main/docs/Creatures.md)
-- [To do and known issues](https://github.com/taganz/react-biosim/blob/main/docs/To%20do%20and%20known%20issues.md)
-
-
-# Running
-
-In order to run this project locally, clone the repo and:
-
-1. Install the NPM dependencies:
-```
-    npm install
-```
-2. Run the development server:
-```
-    npm run dev
+```bash
+npm install
+npm run dev     # development server at http://localhost:3000
+npm test        # Jest unit tests (__tests__/)
+npm run build   # production build
+npm run lint
 ```
 
-## Built With
+Project layout:
 
-- TypeScript
-- React
-- Next.js
-- Jotai
-- Tailwind
+| Folder | Contents |
+|---|---|
+| `app/` | Next.js entry page and layout |
+| `components/` | React UI: tabs, footer, canvas and shared inputs |
+| `components/simulation/store/` | Jotai atoms that connect the UI to the simulation |
+| `simulation/` | The simulation engine, written in plain TypeScript with no React |
+| `hooks/` | React hooks |
+| `__tests__/` | Unit tests for the engine |
+| `public/` | Scenario files loaded by the Start tab |
+
+Built with TypeScript, React, Next.js, Jotai, Tailwind CSS, Chart.js and D3.
+
+## Credits
+
+- Original model and C++ simulator: [David R. Miller, biosim4](https://github.com/davidrmiller/biosim4).
+- TypeScript/React port and original UI: [Carlos Peña, react-biosim](https://github.com/carlo697/react-biosim).
+- This fork, by [taganz](https://github.com/taganz/react-biosim), adds scenarios, a map editor, alternative selection and population methods, metabolism and genera, logging, GIF export and more.
+
+This is a hobby project under development. See [To do and known issues](docs/To%20do%20and%20known%20issues.md).
+
+License: MIT, see [LICENSE](LICENSE).
