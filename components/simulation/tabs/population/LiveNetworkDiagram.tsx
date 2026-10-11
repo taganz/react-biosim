@@ -29,11 +29,16 @@ export default function LiveNetworkDiagram({ creature, sensorLabels, actionLabel
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm" aria-live="off">
-        {isInWorld
-          ? `Creature #${creature.id} at generation ${currentGen}, step ${currentStep}. Pause or slow down the simulation to follow it step by step.`
-          : `Creature #${creature.id} is no longer alive; showing the values of its last step.`}
-      </p>
+      {/* the status changes every step, so it stays on one line and the hint below is static:
+          otherwise the wrapping changes with the numbers and the page jumps up and down */}
+      <div className="text-sm">
+        <p className="truncate tabular-nums" aria-live="off">
+          {isInWorld
+            ? `Creature #${creature.id} at generation ${currentGen}, step ${currentStep}.`
+            : `Creature #${creature.id} is no longer alive; showing its last step.`}
+        </p>
+        <p>Pause or slow down the simulation to follow it step by step.</p>
+      </div>
       <NetworkDiagram
         network={network}
         sensorLabels={sensorLabels}
