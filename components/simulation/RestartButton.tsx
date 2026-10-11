@@ -23,7 +23,9 @@ export default function RestartButton() {
         `Save it first in the Files tab if you want to keep it.`
     );
     if (confirmed) {
-      worldController.startRun(simulationData);
+      // keep the code only if it was changed in Settings; otherwise this is a new run with a new code
+      const draftCode = simulationData.worldControllerData.simCode;
+      worldController.startRun(simulationData, draftCode !== worldController.simCode ? draftCode : undefined);
     }
   };
 

@@ -82,13 +82,18 @@ export default class WorldController {
     //console.log("*** worldController initialized ***");
   }
 
-  /** Starts a new run from generation 1 with sim as settings and map; returns the new simulation code */
-  public startRun(sim: SimulationData): string {
+  /**
+   * Starts a new run from generation 1 with sim as settings and map. Uses simCode
+   * if given, otherwise a new random code; the code is also written into
+   * sim.worldControllerData and returned.
+   */
+  public startRun(sim: SimulationData, simCode?: string): string {
 
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects; 
-    this.simCode = generateRandomString(sim.constants.SIM_CODE_LENGTH),
+    this.simCode = simCode ?? generateRandomString(sim.constants.SIM_CODE_LENGTH);
+    sim.worldControllerData.simCode = this.simCode;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);

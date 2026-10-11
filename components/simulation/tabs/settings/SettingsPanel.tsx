@@ -9,6 +9,7 @@ import { worldControllerAtom, simulationDataAtom } from "../../store";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
+import TextInput from "@/components/global/inputs/TextInput";
 import Button from "@/components/global/Button";
 import { Sensor, SensorName } from "@/simulation/creature/brain/CreatureSensors";
 import { Action, ActionName } from "@/simulation/creature/brain/CreatureActions";
@@ -131,27 +132,50 @@ export default function SettingsPanel() {
 
       {/* === WORLD === */}
       <Section title="World">
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 text-sm">
-          <dt>Simulation code</dt>
-          <dd>{worldControllerData.simCode}</dd>
-          <dt>Metabolism</dt>
-          <dd>{worldGenerationsData.metabolismEnabled ? "enabled" : "not enabled"}</dd>
-        </dl>
-        <div className="flex flex-col gap-1 sm:max-w-sm">
-          <SelectInput
-            label="Phenotype mode"
-            value={worldGenerationsData.phenotypeColorMode}
-            onChange={(value: string) =>
-              setGenerationsValue("phenotypeColorMode", value as PhenoTypeColorMode)
-            }
-          >
-            <option value="genome">Genome</option>
-            <option value="trophicLevel">Trophic level</option>
-          </SelectInput>
-          <ul className="text-xs">
-            <li><b>Genome:</b> the colour comes from the genome, so each species has its own colour.</li>
-            <li><b>Trophic level:</b> green for plants, blue for herbivores and red for carnivores. The shade comes from the genome.</li>
-          </ul>
+        <div className={FIELDS_GRID}>
+          <div className="flex flex-col gap-1">
+            <TextInput
+              label="Simulation code"
+              value={worldControllerData.simCode}
+              onChange={(value) => setWorldValue("simCode", value)}
+              maxLength={20}
+              // it goes into file names
+              disallowed={/[^A-Za-z0-9_-]/g}
+            />
+            <p className="text-xs">
+              A name for this run, used in the names of saved files and GIFs. Restart picks a
+              new random code unless you change it here.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <SelectInput
+              label="Phenotype mode"
+              value={worldGenerationsData.phenotypeColorMode}
+              onChange={(value: string) =>
+                setGenerationsValue("phenotypeColorMode", value as PhenoTypeColorMode)
+              }
+            >
+              <option value="genome">Genome</option>
+              <option value="trophicLevel">Trophic level</option>
+            </SelectInput>
+            <ul className="text-xs">
+              <li><b>Genome:</b> the colour comes from the genome, so each species has its own colour.</li>
+              <li><b>Trophic level:</b> green for plants, blue for herbivores and red for carnivores. The shade comes from the genome.</li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-1">
+            <CheckboxInput
+              id="metabolismEnabled"
+              label="Metabolism"
+              checked={worldGenerationsData.metabolismEnabled}
+              onChange={(checked) => setGenerationsValue("metabolismEnabled", checked)}
+            />
+            <p className="text-xs">
+              On: creatures gain mass by photosynthesis or by eating prey, and spend it every step
+              and when they move, attack or reproduce. They die when it reaches 0. Off: mass never
+              changes, so the Reproduction action never succeeds.
+            </p>
+          </div>
         </div>
         <div className={FIELDS_GRID}>
           <NumberInput

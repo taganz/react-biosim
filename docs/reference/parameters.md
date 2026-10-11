@@ -26,9 +26,9 @@ The **Settings** tab edits a draft. The running simulation keeps its own copy un
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Simulation code | `worldControllerData.simCode` | read-only | `SC1` | Assigned by the system. Used in file names. |
+| Simulation code | `worldControllerData.simCode` | 1–20 letters, digits, `-` or `_` | random, 3 characters | A name for the run, used in the names of saved files and GIFs. **Restart** picks a new random code unless you changed it in the draft. |
 | Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. **Update simulation** recolours the running creatures. |
-| Metabolism | `worldGenerationsData.metabolismEnabled` | read-only | `false` | When off, creature mass never changes. Set by the scenario. |
+| Metabolism | `worldGenerationsData.metabolismEnabled` | checkbox | `false` | When on, creatures gain mass by photosynthesis or by eating prey, and spend it every step and when they move, attack or reproduce; they die at 0. When off, mass never changes, so the Reproduction action never succeeds. See [Creatures → Mass and metabolism](../model/creatures.md#mass-and-metabolism). |
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
 | Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell. The field accepts size², but the engine refuses it (known issue). |
 | Steps per generation | `worldControllerData.stepsPerGen` | integer ≥ 1 | 300 | Steps that make up one generation. |

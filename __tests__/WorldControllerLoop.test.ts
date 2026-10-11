@@ -40,6 +40,17 @@ describe("WorldController main loop", () => {
     jest.restoreAllMocks();
   });
 
+  test("startRun uses the given simulation code, or a new random one", () => {
+    configure(10, 100000, 0);
+    expect(worldController.startRun(simulationData, "my-run")).toBe("my-run");
+    expect(worldController.simCode).toBe("my-run");
+    expect(simulationData.worldControllerData.simCode).toBe("my-run");
+
+    const randomCode = worldController.startRun(simulationData);
+    expect(randomCode).not.toBe("my-run");
+    expect(simulationData.worldControllerData.simCode).toBe(randomCode);
+  });
+
   test("restart while running does not start a second loop", async () => {
     configure(10, 100000, 0);
     worldController.startRun(simulationData);
