@@ -7,6 +7,8 @@ import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom} from "./store";
 import { Species } from "@/simulation/creature/Species";
+import Creature from "@/simulation/creature/Creature";
+import type { Gene } from "@/simulation/creature/brain/Genome";
 import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
 import { startUpScenarioSimulationData } from "../../simulation/startupScenario";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
@@ -137,6 +139,50 @@ export default function SimulationCanvas({ className }: Props) {
     [worldController, worldCanvas, setSelectedCreature, setSelectedSpecies]
   );
 
+  // the creatures are replaced at the start of each generation, so the selection moves to a
+  // creature of the same species. Offspring mutate often, so when no creature has the exact
+  // genome, the closest relative (most genes in common) and its species are selected instead
+  const selectedCreatureRef = useRef(selectedCreature);
+  selectedCreatureRef.current = selectedCreature;
+  useEffect(
+    function followSelectedSpecies() {
+      if (!worldController) return;
+
+      const onStartGeneration = () => {
+        const previous = selectedCreatureRef.current;
+        if (!previous) return;
+        const candidates = worldController.generations.currentCreatures.filter((creature) => creature.isAlive);
+
+        const genomeKey = previous.brain.genome.toDecimalString(false);
+        const sameSpecies = candidates.find(
+          (creature) => creature.brain.genome.toDecimalString(false) === genomeKey
+        );
+        if (sameSpecies) {
+          setSelectedCreature(sameSpecies);
+          return;
+        }
+
+        let closest: Creature | null = null;
+        let closestShared = 0;
+        for (const creature of candidates) {
+          const shared = sharedGenes(previous.brain.genome.genes, creature.brain.genome.genes);
+          if (shared > closestShared) {
+            closest = creature;
+            closestShared = shared;
+          }
+        }
+        setSelectedCreature(closest);
+        setSelectedSpecies(closest ? new Species(closest.brain.genome.clone(), [closest]) : undefined);
+      };
+
+      worldController.events.addEventListener(WorldEvents.startGeneration, onStartGeneration);
+      return () => {
+        worldController.events.removeEventListener(WorldEvents.startGeneration, onStartGeneration);
+      };
+    },
+    [worldController, setSelectedCreature, setSelectedSpecies]
+  );
+
   // ring around the selected creature, drawn on the overlay whenever the world is redrawn
   // and right away when the selection changes (also while the simulation is paused)
   useEffect(
@@ -168,4 +214,19 @@ export default function SimulationCanvas({ className }: Props) {
       ></canvas>
     </div>
   );
+}
+
+// number of genes two genomes have in common, counting repeated genes once per occurrence
+function sharedGenes(a: Gene[], b: Gene[]): number {
+  const counts = new Map<Gene, number>();
+  a.forEach((gene) => counts.set(gene, (counts.get(gene) ?? 0) + 1));
+  let shared = 0;
+  for (const gene of b) {
+    const count = counts.get(gene) ?? 0;
+    if (count > 0) {
+      shared++;
+      counts.set(gene, count - 1);
+    }
+  }
+  return shared;
 }

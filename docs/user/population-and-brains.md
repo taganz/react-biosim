@@ -16,7 +16,9 @@ Many species in the list have the same colour and the same count. Usually these 
 
 ## Selecting a creature
 
-Click a creature in the world. This selects its species and draws a ring around it.
+Click a creature in the world. This selects its species and draws a ring around it. Click an empty cell to clear the selection.
+
+When a new generation starts, the selection moves to a creature of the same species. Offspring often mutate, so the species may have no members in the new generation. In that case the creature that shares the most genes with the old one is selected, usually a descendant with a single mutation, and its species becomes the selected species.
 
 ![A selected creature](images/canvas_selected.png)
 
