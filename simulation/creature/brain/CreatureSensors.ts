@@ -337,9 +337,12 @@ export default class CreatureSensors {
       values.push(creature.position[1] / worldSize);
     }
 
-    // Age
+    // Age: generational runs, time since the start of the generation (0 to 1);
+    // continuous runs, the age of the creature over maxAge (0 to 1)
     if (this.data.Age.enabled) {
-      values.push(creature.generations.worldController.currentStep / creature.generations.worldController.stepsPerGen);
+      values.push(creature.generations.isContinuous
+        ? creature._age / creature.generations.maxAge
+        : creature.generations.worldController.currentStep / creature.generations.worldController.stepsPerGen);
     }
 
     // Oscillator

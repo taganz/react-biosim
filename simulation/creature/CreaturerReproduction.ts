@@ -29,9 +29,10 @@ export default class CreatureReproduction {
       }
       const offspringPosition = this._creature.generations.grid.getNearByAvailablePosition(this._creature.position[0], this._creature.position[1]);
       if (offspringPosition) {
-        this._creature.generations.newCreature(offspringPosition, false, this._creature.brain.genome);
+        const child = this._creature.generations.newCreature(offspringPosition, false, this._creature.brain.genome);
         this._creature._mass.consumeMassFraction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_DO);    //TODO only if isMetabolismEnabled
-        this._creature._mass.consume(this._creature.massAtBirth);
+        // the child's birth mass comes from the parent, so the total water is kept
+        child._mass._mass = this._creature._mass.giveToChild(child.massAtBirth);
         return true;
       }
       this._creature._mass.consumeMassFraction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY);    

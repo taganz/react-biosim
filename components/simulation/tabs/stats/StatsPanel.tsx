@@ -18,10 +18,16 @@ export default function StatsPanel() {
   const data = useWorldValue((world) => world.generationRegistry.generations, NO_GENERATIONS);
   // generations are pushed into the same array, so use the generation number to trigger graph redraws
   const currentGen = useWorldValue((world) => world.currentGen, 0);
+  const isContinuous = useWorldValue((world) => world.generations.isContinuous, false);
+  // continuous runs have no selection method: the plotted value is the population
   const fitnessValueName = useWorldValue(
-    (world) => world.generations.selectionMethod.fitnessValueName,
+    (world) => world.generations.isContinuous
+      ? "Population"
+      : world.generations.selectionMethod.fitnessValueName,
     ""
   );
+  const lastBirths = useWorldValue((world) => world.generations.lastBirths, 0);
+  const lastDeaths = useWorldValue((world) => world.generations.lastDeaths, 0);
   const lastFitnessMaxValue = useWorldValue(
     (world) => world.generations.lastFitnessMaxValue,
     0
@@ -42,7 +48,11 @@ export default function StatsPanel() {
     <div className="flex flex-col gap-10">
     <div>
       <h3 className="mb-1 text-2xl font-bold">{fitnessValueName}</h3>
-      <p>{`maxFitnessValue: ${maxFitnessFormatter(lastFitnessMaxValue)}`}</p>
+      {isContinuous ? (
+        <p>{`At the end of the last generation: ${lastFitnessMaxValue} creatures, ${lastBirths} births and ${lastDeaths} deaths during it.`}</p>
+      ) : (
+        <p>{`maxFitnessValue: ${maxFitnessFormatter(lastFitnessMaxValue)}`}</p>
+      )}
       <LinearGraph
         data={data}
         getter={getter}

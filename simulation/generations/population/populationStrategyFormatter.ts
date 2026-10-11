@@ -2,7 +2,6 @@ import PopulationStrategy from "./PopulationStrategy";
 import AsexualZonePopulation from "./AsexualZonePopulation";
 import AsexualRandomPopulation from "./AsexualRandomPopulation";
 import RandomFixedGenePopulation from "./RandomFixedGenePopulation";
-import ContinuousPopulation from "./ContinuousPopulation";
 import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 import { populationMap } from "./populationStrategyOptions";
 

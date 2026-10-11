@@ -99,16 +99,26 @@ describe('CreaturePhenotype', () => {
         expect(mass._worldWater.waterInCloud).toBe(194 + mass._basalConsumption);
         expect(mass._worldWater.waterInCells).toBe(50);
     });
-    test('addFromPrey - add mass without changing waterInCloud', ()=> {
+    test('eat - move the prey mass to the attacker, the water stays in creatures', ()=> {
         mass = joeAttackAnimal._mass;
         
-        mass.addFromPrey(1);
+        mass.eat(joeAttackPlant._mass);
         
-        expect(mass.mass).toBe(3 + 1);
+        expect(mass.mass).toBe(3 + 2);
+        expect(joeAttackPlant.mass).toBe(0);
         expect(mass._worldWater.totalWater).toBe(250);
         expect(mass._worldWater.waterInCreatures).toBe(6);
         expect(mass._worldWater.waterInCloud).toBe(194);
         expect(mass._worldWater.waterInCells).toBe(50);
+    });
+    test('eat - up to the maximum mass, the rest stays in the prey', ()=> {
+        mass = joeAttackAnimal._mass;
+        mass._mass = mass._maxMass - 0.5;
+        
+        mass.eat(joeAttackPlant._mass);
+        
+        expect(mass.mass).toBe(mass._maxMass);
+        expect(joeAttackPlant.mass).toBe(2 - 0.5);
     });
     test('addFromGrid - add mass from waterInGrid - enough mass in cell', ()=> {
         mass = joeAttackAnimal._mass;

@@ -22,6 +22,7 @@ Some changes behave differently depending on how you apply them:
 
 - **World size and map:** **Update simulation** rebuilds the world straight away. Creatures that no longer fit are removed: those outside a smaller world, or on a cell that is now an obstacle.
 - **Initial population** and the population strategy take effect when the next generation is created.
+- **Simulation type:** with **Update simulation**, the current creatures carry on in the new mode, and the change takes effect at the end of the current generation. In continuous mode, Settings warns you if no creature can be born: metabolism is off, or the Reproduction action is not enabled.
 - **Phenotype mode** only changes how creatures are coloured. **Update simulation** recolours them straight away.
 - **Metabolism:** with **Update simulation**, the creatures keep their current mass and start gaining or losing it from the next step.
 - **Simulation code:** **Update simulation** renames the running simulation. **Restart** keeps the code only if you changed it; otherwise it picks a new random one.
@@ -49,7 +50,8 @@ The chart plots the **fitness value** of every generation. The selection method 
 | Inside Reproduction Area | Survival rate (%) | Share of the population that survived |
 | Greatest Distance | Distance index | Longest distance covered |
 | Greatest Mass | Greatest mass | Heaviest herbivore |
-| Reproduction / Continuous | Reproduction / … | Number of survivors |
+| Reproduction | Reproduction | Number of survivors |
+| *(continuous runs)* | Population | Creatures alive at the end of the generation. The births and deaths of the last generation are shown above the chart. |
 
 **maxFitnessValue** above the chart is the value of the last generation. The curve is smoothed.
 

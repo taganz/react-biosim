@@ -35,10 +35,12 @@ The **Settings** tab edits a draft. The running simulation keeps its own copy un
 
 ### Generations
 
-| UI label | Key | Allowed values | Startup |
-|---|---|---|---|
-| Population strategy | `worldGenerationsData.populationStrategy` | see [Population strategies](population-and-selection.md#population-strategies) | Asexual Random |
-| Selection method | `worldGenerationsData.selectionMethod` | see [Selection methods](population-and-selection.md#selection-methods) | Inside Reproduction Area |
+| UI label | Key | Allowed values | Startup | Notes |
+|---|---|---|---|---|
+| Simulation type | `worldGenerationsData.simulationType` | `generational`, `continuous` | `generational` | Generational: selection and a new generation at the end of each one. Continuous: creatures carry on and a generation is only a time window (see [Continuous runs](../model/generations.md#continuous-runs)). |
+| Maximum age (steps) | `worldGenerationsData.maxAge` | integer ≥ 1 | 1000 | Continuous runs only, and only shown then. A creature older than this dies. |
+| Population strategy | `worldGenerationsData.populationStrategy` | see [Population strategies](population-and-selection.md#population-strategies) | Asexual Random | Continuous runs use it only for generation 1. |
+| Selection method | `worldGenerationsData.selectionMethod` | see [Selection methods](population-and-selection.md#selection-methods) | Inside Reproduction Area | Generational runs only; hidden in continuous runs. |
 
 ### Neural networks
 
@@ -73,7 +75,7 @@ The startup scenario enables the first 10 sensors (positions, age, oscillator, r
 |---|---|---|---|
 | Cell water capacity | `waterData.waterCellCapacity` | 400 | Maximum water one cell can hold. |
 | Total water (per cell) | `waterData.waterTotalPerCell` | 130 | Total water in the world, expressed per cell. |
-| Rain max per cell | `waterData.waterRainMaxPerCell` | 0 | Maximum rain one cell receives in one generation. |
+| Rain max per cell | `waterData.waterRainMaxPerCell` | 0 | Maximum rain one cell receives in one generation. Continuous runs spread it over the steps of the generation. |
 | Initial water per cell | `waterData.waterFirstRainPerCell` | 50 | Water in each cell when the simulation starts. |
 | Evaporation | `waterData.waterEvaporationPerCellPerGeneration` | 0 | Water lost by each cell in each generation. |
 | Rain type | `waterData.rainType` | `rainTypeUniform` | How rain is spread over the map: `rainTypeUniform`, `rainTypeUniformNE` or `rainTypeSinSin`. |
@@ -133,7 +135,7 @@ The simulation writes these values itself so that a saved file can resume where 
 | `DETECT_RADIUS` | 10 | Radius, in cells, of the prey sensors. |
 | `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Distance. |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
-| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Gene and Continuous strategies. |
+| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Gene strategy. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
 | `LOG_*` | — | Event logger settings: on/off switch, level, creature filter, event limit and event types. |
 | `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |

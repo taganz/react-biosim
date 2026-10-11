@@ -16,7 +16,6 @@ import AsexualZonePopulation from "@/simulation/generations/population/AsexualZo
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import WorldWater from "@/simulation/water/WorldWater";
 import { WaterData } from "@/simulation/water/WaterData";
 

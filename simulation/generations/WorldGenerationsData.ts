@@ -4,10 +4,16 @@ import SelectionMethod from "@/simulation/generations/selection/SelectionMethod"
 import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
+import { SimulationType } from "./SimulationType";
 
 export default interface WorldGenerationsData {
     // initial values
+    simulationType: SimulationType;
+    /** continuous runs only: a creature older than this, in steps, dies */
+    maxAge: number;
+    /** builds generation 1; in generational runs also the next generations */
     populationStrategy: PopulationStrategy;
+    /** generational runs only */
     selectionMethod: SelectionMethod;
     initialPopulation: number;
     initialGenomeSize: number;

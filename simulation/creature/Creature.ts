@@ -118,17 +118,18 @@ export default class Creature {
     return CreaturePhenothype.getColor(this.generations.phenotypeColorMode, this._genus, this.brain);
   }
 
-  // generations need to reset this for continuous population
-  resetAge() {
-    this._age = 0;
-    this.stepBirth = 0;
+  // in generational runs creatures are replaced before they get this old
+  get maxAge(): number {
+    return this.generations.isContinuous
+      ? this.generations.maxAge
+      : this.generations.worldController.stepsPerGen + 1;
   }
 
   computeStep(): void {
     
     if (!this.isAlive) return;
 
-    if (this._age > this.generations.worldController.stepsPerGen + 1) {
+    if (this._age > this.maxAge) {
       this.die("old");
       return;
     }
@@ -193,8 +194,8 @@ export default class Creature {
     this.log(LogEvent.ATTACK_TRY, "actionInputValue", Math.round(actionInputValue*100)/100);
     this.log(LogEvent.ATTACK_TRY, "targetDirection", 0, 0, <string>targetDirection);
     const preyMass = this._attack.attack(actionInputValue, targetDirection);
+    // the attack has already moved the prey's mass to this creature
     if (preyMass > 0) {
-      this._mass.addFromPrey(preyMass);
       this.log(LogEvent.ATTACK, "preyMass", preyMass);
     }
   }

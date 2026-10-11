@@ -15,8 +15,6 @@ import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import {LogEvent, AllowedLogEvents, LogLevel} from "@/simulation/logger/LogEvent"
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
-import ContinuousPopulation from "./generations/population/ContinuousPopulation";
-import ContinuousSelection from "./generations/selection/ContinuousSelection";
 import WorldGenerationsData from "./generations/WorldGenerationsData";
 import WorldControllerData from "./world/WorldControllerData";
 import { WaterData } from "./water/WaterData";
@@ -160,6 +158,8 @@ export const WORLD_CONTROLLER_DATA_DEFAULT : WorldControllerData = {
 
 export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
   // initial values
+  simulationType: "generational",
+  maxAge: 1000,                 // continuous runs only
   populationStrategy: new PlantHerbivorePopulation(),
   selectionMethod: new GreatestMassSelection(),
   initialPopulation: 500,       // 500

@@ -3,14 +3,12 @@ import PopulationStrategy from "@/simulation/generations/population/PopulationSt
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 
 export const populationStrategyOptions: Option[] = [
   {value: "AsexualRandomPopulation", label: "Asexual Random"},
   {value: "AsexualZonePopulation", label: "Asexual Zone"},
   {value: "RandomFixedGenePopulation", label: "Random Fixed Gene (in dev)"},
-  {value: "ContinuousPopulation", label: "Continuous (in dev)"},
   {value: "PlantHerbivorePopulation", label: "PlantHerbivorePopulation (in dev)"},
 ];
 
@@ -19,7 +17,6 @@ export const populationMap: { [key: string]: () => PopulationStrategy } = {
   "AsexualRandomPopulation": () => new AsexualRandomPopulation(),
   "AsexualZonePopulation": () => new AsexualZonePopulation(),
   "RandomFixedGenePopulation": () => new RandomFixedGenePopulation(),
-  "ContinuousPopulation": () => new ContinuousPopulation(),
   "PlantHerbivorePopulation": () => new PlantHerbivorePopulation(),
 };
 

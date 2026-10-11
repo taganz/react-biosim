@@ -17,7 +17,6 @@ import ReproductionSelection from "@/simulation/generations/selection/Reproducti
 import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
-import ContinuousPopulation from "@/simulation/generations/population/ContinuousPopulation";
 import { SimulationData } from "@/simulation/SimulationData";
 import PlantHerbivorePopulation from "@/simulation/generations/population/PlantHerbivorePopulation";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
@@ -54,24 +53,20 @@ describe('populationStrategy', () => {
                 const arp = new AsexualRandomPopulation();
                 const azp = new AsexualZonePopulation();
                 const rfgp = new RandomFixedGenePopulation();
-                const cpp = new ContinuousPopulation();
                 const php = new PlantHerbivorePopulation();
                 expect(populationStrategyFormatter.serialize(arp)).toEqual("AsexualRandomPopulation");
                 expect(populationStrategyFormatter.serialize(azp)).toEqual("AsexualZonePopulation");
                 expect(populationStrategyFormatter.serialize(rfgp)).toEqual("RandomFixedGenePopulation");
-                expect(populationStrategyFormatter.serialize(cpp)).toEqual("ContinuousPopulation");
                 expect(populationStrategyFormatter.serialize(php)).toEqual("PlantHerbivorePopulation");
         });
         test('populationStrategyFormatter deserialize all strategiess', () => {
                 const arp = new AsexualRandomPopulation();
                 const azp = new AsexualZonePopulation();
                 const rfgp = new RandomFixedGenePopulation();
-                const cpp = new ContinuousPopulation();
                 const php = new PlantHerbivorePopulation();
                 expect(populationStrategyFormatter.deserialize("AsexualRandomPopulation")).toEqual(arp);
                 expect(populationStrategyFormatter.deserialize("AsexualZonePopulation")).toEqual(azp);
                 expect(populationStrategyFormatter.deserialize("RandomFixedGenePopulation")).toEqual(rfgp);
-                expect(populationStrategyFormatter.deserialize("ContinuousPopulation")).toEqual(cpp);
                 expect(populationStrategyFormatter.deserialize("PlantHerbivorePopulation")).toEqual(php);
         });
         test('AsexualZonePopulation(): 1st generation without zone', ()=> {

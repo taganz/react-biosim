@@ -8,6 +8,7 @@
 {
   "constants": { ... },              // SimulationData.constants, as is
   "worldGenerationsData": {          // SavedWorldGenerationData
+    "simulationType": "generational", "maxAge": 1000,     // missing in older files
     "populationStrategy": "AsexualZonePopulation",        // class name
     "selectionMethod": "InsideReproductionAreaSelection", // class name
     "initialPopulation": 500,
@@ -32,7 +33,7 @@
                        "lastMovement": [dx, dy], "mass": 1, "massAtBirth": 1 } ] }
   ],
   "stats": {                         // SavedGenerationRegistry
-    "generations": [ { "g": 1, "sC": 120, "sP": 500, "fV": 24 } ],  // generation, survivors, population, fitness
+    "generations": [ { "g": 1, "sC": 120, "sP": 500, "fV": 24, "b": 0, "d": 0 } ],  // generation, survivors, population, fitness, births, deaths
     "minSurvivorCount": 0, "maxSurvivorCount": 0, "maxFitnessValue": 0
   }
 }
@@ -41,8 +42,9 @@
 Notes:
 
 - **Strategies and methods** are saved by their `name`, and loading looks the name up in `populationMap` / `selectionMap`. An unknown name falls back to *Asexual Random* or *Inside Reproduction Area*, with a console warning.
+- **Older files** have no `simulationType` or `maxAge`. They load as generational runs with a maximum age of 1000. A file with the removed `ContinuousPopulation` or `ContinuousSelection` loads as a continuous run, with *Random Fixed Gene* and *Inside Reproduction Area* in their place ([worldGenerationDataSerialization.ts](../../simulation/serialization/formatters/worldGenerationDataSerialization.ts)).
 - **Map objects** are saved by class name. Each type needs an entry in `objectFormatters` in [objectsSerialization.ts](../../simulation/serialization/formatters/objectsSerialization.ts): `RectangleObject`, `EllipseObject`, the reproduction and health areas in both shapes, and `RectangleSpawnArea`.
-- **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement and mass are saved for each creature. Ids, age, health and `distanceCovered` are not saved: they restart when the file is loaded.
+- **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement and mass are saved for each creature. Ids, age, health and `distanceCovered` are not saved: they restart when the file is loaded. In a continuous run this means every creature starts again at age 0.
 - `constants` is copied as is, so a file keeps its own `LOG_*`, `DETECT_RADIUS` and other constants.
 - Indentation is controlled by `PRETTIFY_OUTPUT_TO_FILE` and `PRETTIFY_OUTPUT_TO_COPY`.
 

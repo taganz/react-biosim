@@ -15,11 +15,13 @@ const generationRegistryFormatter: DataFormatter<
   }: GenerationRegistry) {
     return {
       generations: generations.map(
-        ({ generation: g, startingPopulation: sP, survivorCount: sC, maxFitnessValue: fV }) => ({
+        ({ generation: g, startingPopulation: sP, survivorCount: sC, maxFitnessValue: fV, births: b, deaths: d }) => ({
           g,
           sP,
           sC,
-          fV
+          fV,
+          b,
+          d
         })
       ),
       maxSurvivorCount,
@@ -32,11 +34,13 @@ const generationRegistryFormatter: DataFormatter<
     result.maxSurvivorCount = data.maxSurvivorCount;
     result.minSurvivorCount = data.minSurvivorCount;
     result.generations = data.generations.map(
-      ({ g: generation, sP: startingPopulation, sC: survivorCount, fV: maxFitnessValue }) => ({
+      ({ g: generation, sP: startingPopulation, sC: survivorCount, fV: maxFitnessValue, b: births, d: deaths }) => ({
         generation,
         startingPopulation,
         survivorCount,
-        maxFitnessValue
+        maxFitnessValue,
+        births,
+        deaths
       })
     );
     return result;

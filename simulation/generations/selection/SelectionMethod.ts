@@ -7,7 +7,11 @@ export default interface SelectionMethod {
   /** Class name; saved in files and used as key in selectionMap */
   name: string;
   prettyName: string;
-  /** If true, creatures reproduce during the generation and the water is not reset between generations */
+  /**
+   * If true, creatures reproduce during the generation and the water is not reset between
+   * generations. Not related to continuous runs (WorldGenerationsData.simulationType),
+   * where no selection method is used.
+   */
   isContinuous: boolean;
   /** Title of the fitness chart in the Stats tab */
   fitnessValueName: string;

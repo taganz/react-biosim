@@ -73,6 +73,8 @@ const startUpScenarioConstants = {
 };
 
 const startupScenarioWorldGenerationsData : WorldGenerationsData = {
+    simulationType: "generational",
+    maxAge: 1000,
     populationStrategy: new AsexualRandomPopulation,
     selectionMethod: new InsideReproductionAreaSelection,
     initialPopulation: 1000,

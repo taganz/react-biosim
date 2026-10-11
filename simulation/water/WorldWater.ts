@@ -92,17 +92,18 @@ export default class WorldWater {
     }
 
     // water from cloud go to cells
+    // fraction scales the rain: continuous runs rain every step with 1 / steps per generation
     //TODO functions....
-    rain(grid: Grid) {
+    rain(grid: Grid, fraction: number = 1) {
 
+        const rainValue = this.waterData.waterRainMaxPerCell * fraction;
         // if not enough water to do uniform rain, don't do rain at all
-        if (this.waterData.waterRainMaxPerCell * this._worldSize * this._worldSize 
+        if (rainValue * this._worldSize * this._worldSize 
             > this.waterInCloud ) {
                 return;
         }
 
         let rf : ((x: number, y:number)=> number);
-        const rainValue = this.waterData.waterRainMaxPerCell;
         switch(this.waterData.rainType) {
             case "rainTypeSinSin":
                 rf = ((x: number, y: number) => 

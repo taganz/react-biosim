@@ -24,7 +24,7 @@ A creature is created by the population strategy, or by another creature through
 
 At every step, each living creature runs `computeStep()`, in this order:
 
-1. **Age.** If its age is above *Steps per generation* + 1, it dies of old age. This only matters in continuous runs, where creatures live across generations.
+1. **Age.** In continuous runs, if its age is above **Maximum age**, it dies of old age. In generational runs the limit is *Steps per generation* + 1, so it never applies: creatures are replaced first.
 2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE × number of genes`, so bigger genomes cost more.
 3. **Think and act.** It reads its sensors, runs its network and executes the actions (see [Brain and genome](brain.md)). Movement actions only add to an *urge to move*. Photosynthesis, Reproduction and the attacks happen straight away.
 4. **Action cost.** It spends `MASS_COST_PER_EXECUTE_ACTION × number of actions enabled in the simulation`. Every creature pays the same, whatever its own brain uses.
@@ -68,12 +68,12 @@ When it is on, mass is the creature's energy:
 
 | Gains mass | Loses mass |
 |---|---|
-| **Photosynthesis:** takes `MASS_WATER_TO_MASS_PER_STEP × action output` of water from its cell. | Basal metabolism and action cost, every step |
-| **Attack:** a successful attack adds the prey's mass. | Moving, attacking, reproducing (see [parameters](../reference/parameters.md#metabolism-constants-worldcontrollerdata)) |
+| **Photosynthesis:** takes `MASS_WATER_TO_MASS_PER_STEP × action output` of water from its cell, or less if it would go over its maximum mass. | Basal metabolism and action cost, every step |
+| **Attack:** a successful attack takes the prey's mass, up to the maximum mass. The rest returns to the prey's cell when it dies. | Moving, attacking, reproducing (see [parameters](../reference/parameters.md#metabolism-constants-worldcontrollerdata)) |
 
 - Mass is capped at `MASS_MAX_MULTIPLE_MASS_AT_BIRT × birth mass`.
 - A creature with no mass left dies.
-- All mass is water, so it is conserved (see [World → Water](world.md#water)).
+- All mass is water, so it is conserved (see [World → Water](world.md#water)). A child's birth mass comes from its parent; in generational runs, the mass of each new generation comes from the cloud.
 
 ### Reproduction
 
@@ -119,6 +119,6 @@ A creature dies when:
 - its mass reaches 0 (metabolism only);
 - its health reaches 0. Nothing lowers health at present, because health areas are disabled;
 - it is killed by an attack;
-- it gets too old (continuous runs only).
+- it is older than **Maximum age** (continuous runs only).
 
 When it dies, its remaining mass goes back to its cell as water, and it is removed from the grid. In the classic model creatures do not die during a generation: they simply fail to be selected at the end.

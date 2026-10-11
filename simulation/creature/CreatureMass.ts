@@ -63,18 +63,21 @@ export default class CreatureMass {
     }
 
     
-    addFromPrey(mass: number) {
+    // takes the prey's mass, up to the maximum mass; the water stays inside creatures.
+    // Called before the prey dies, so whatever is left returns to its cell
+    eat(prey: CreatureMass) {
         if (!this._metabolismEnabled) {return}
-        this._mass += mass;
-        this._mass = this._mass < this._maxMass 
-                    ? this._mass 
-                    : this._maxMass;
+        const eaten = Math.max(0, Math.min(prey._mass, this._maxMass - this._mass));
+        prey._mass -= eaten;
+        this._mass += eaten;
     }
 
     addFromGrid(cell: GridCell, massWanted: number) {
 
         if (!this._metabolismEnabled) {return 0}
-        const waterGotFromCell = this._worldWater.getWaterFromCell(cell, massWanted);
+        // never take more water than fits, or it would be lost
+        const room = Math.max(0, this._maxMass - this._mass);
+        const waterGotFromCell = this._worldWater.getWaterFromCell(cell, Math.min(massWanted, room));
         this._mass += waterGotFromCell;
         this._mass = this._mass < this._maxMass 
                     ? this._mass 
@@ -91,11 +94,17 @@ export default class CreatureMass {
         return massConsumed;
     }
 
-   // fraction of massAtBirth!
+   // fraction of massAtBirth! Like consume, it never takes more than the creature has
    consumeMassFraction(massFraction: number) {
-        if (!this._metabolismEnabled) {return}
-        this._mass -= this._massAtBirth * massFraction;
-        this._worldWater.dissipateWater(this._massAtBirth * massFraction);
+        this.consume(this._massAtBirth * massFraction);
+    }
+
+    // gives mass to a newborn child: the water stays inside creatures. Returns the mass given
+    giveToChild(mass: number): number {
+        if (!this._metabolismEnabled) {return mass}
+        const given = Math.min(mass, this._mass);
+        this._mass -= given;
+        return given;
     }
     
     die() {

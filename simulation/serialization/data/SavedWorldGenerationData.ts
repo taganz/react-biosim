@@ -4,9 +4,13 @@ import {SavedSelectionMethod} from "@/simulation/generations/selection/selection
 import {SavedPopulationStrategy} from "@/simulation/generations/population/populationStrategyFormatter";
 import {SavedMutationMode} from "@/simulation/creature/brain/MutationMode"
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
+import { SimulationType } from "@/simulation/generations/SimulationType";
 
 export default interface SavedWorldGenerationData {
   // initial values
+  // missing in files saved before continuous runs were a simulation type
+  simulationType?: SimulationType;
+  maxAge?: number;
   populationStrategy: SavedPopulationStrategy;
   selectionMethod: SavedSelectionMethod;
   initialPopulation: number;

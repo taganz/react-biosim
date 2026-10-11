@@ -56,11 +56,11 @@ The total amount of water is fixed and is split between three stores ([WorldWate
 - **Photosynthesis** moves water from the creature's cell into the creature.
 - **Spending mass** (moving, metabolism, reproducing…) sends that water back to the cloud.
 - **Death** returns the creature's remaining mass to its cell, up to the cell's capacity. The rest goes to the cloud.
-- **Rain**, at the end of every generation, adds water to every cell using the **Rain type** pattern, with **Rain max per cell** as the maximum. It only rains if the cloud can cover the maximum everywhere.
+- **Rain**, at the end of every generation, adds water to every cell using the **Rain type** pattern, with **Rain max per cell** as the maximum. It only rains if the cloud can cover the maximum everywhere. In continuous runs it rains every step instead, `1 ÷ steps per generation` of that amount each time.
   - `rainTypeUniform`: the same amount everywhere.
   - `rainTypeUniformNE`: the full amount in the top-right quarter and half elsewhere.
   - `rainTypeSinSin`: most in the centre, falling to zero at the edges.
 - **Evaporation**, at the end of every generation and before the rain, takes up to **Evaporation** units from each cell back to the cloud. (The call is hidden inside the end-of-generation logging function, `logEndGeneration`.)
-- With the classic (non-continuous) selection methods, all water is **reset** at the end of every generation, followed by a new first rain. Only continuous runs carry water over between generations.
+- In generational runs with the classic selection methods, all water is **reset** at the end of every generation, followed by a new first rain. Continuous runs, and the Reproduction selection method, carry water over between generations.
 
 The **Water** box in *Stats → Under development* shows the three stores. Their sum should stay constant.

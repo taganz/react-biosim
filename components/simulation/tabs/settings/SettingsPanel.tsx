@@ -15,6 +15,7 @@ import { Sensor, SensorName } from "@/simulation/creature/brain/CreatureSensors"
 import { Action, ActionName } from "@/simulation/creature/brain/CreatureActions";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 import { PhenoTypeColorMode } from "@/simulation/creature/PhenoTypeColorMode";
+import { SimulationType } from "@/simulation/generations/SimulationType";
 import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
@@ -59,6 +60,13 @@ export default function SettingsPanel() {
 
   const { worldControllerData, worldGenerationsData, waterData } = simulationData;
   const { enabledSensors, enabledActions } = worldGenerationsData;
+  const isContinuous = worldGenerationsData.simulationType === "continuous";
+  // in continuous runs, new creatures only come from the Reproduction action
+  const continuousWarnings = !isContinuous ? [] : [
+    !worldGenerationsData.metabolismEnabled &&
+      "Metabolism is off, so mass never changes and the Reproduction action never succeeds.",
+    !enabledActions.includes("Reproduction") && "The Reproduction action is not enabled.",
+  ].filter((warning): warning is string => Boolean(warning));
   const sensors = Object.values(worldController?.generations.sensors.data ?? {});
   const actions = Object.values(worldController?.generations.actions.data ?? {});
 
@@ -208,33 +216,74 @@ export default function SettingsPanel() {
       {/* === GENERATIONS === */}
       <Section title="Generations">
         <div className="grid gap-4 sm:grid-cols-2">
-          <SelectInput
-            label="Population strategy"
-            value={worldGenerationsData.populationStrategy.name}
-            onChange={(value: string) =>
-              setGenerationsValue("populationStrategy", selectPopulationStrategy(value))
-            }
-          >
-            {populationStrategyOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </SelectInput>
-          <SelectInput
-            label="Selection method"
-            value={worldGenerationsData.selectionMethod.name}
-            onChange={(value: string) =>
-              setGenerationsValue("selectionMethod", selectSelectionMethod(value))
-            }
-          >
-            {selectionMethodOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </SelectInput>
+          <div className="flex flex-col gap-1">
+            <SelectInput
+              label="Simulation type"
+              value={worldGenerationsData.simulationType}
+              onChange={(value: string) => setGenerationsValue("simulationType", value as SimulationType)}
+            >
+              <option value="generational">Generational</option>
+              <option value="continuous">Continuous (in dev)</option>
+            </SelectInput>
+            <ul className="text-xs">
+              <li><b>Generational:</b> at the end of each generation the selection method picks the survivors, and the next generation is made of their children.</li>
+              <li><b>Continuous:</b> creatures carry on from one generation to the next. They are born with the Reproduction action and die of hunger, attacks or old age. A generation is only a time window for the stats.</li>
+            </ul>
+          </div>
+          {isContinuous && (
+            <div className="flex flex-col gap-1">
+              <NumberInput
+                label="Maximum age (steps)"
+                value={worldGenerationsData.maxAge}
+                onChange={(value) => setGenerationsValue("maxAge", value)}
+                integer
+                min={1}
+              />
+              <p className="text-xs">A creature older than this dies.</p>
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <SelectInput
+              label="Population strategy"
+              value={worldGenerationsData.populationStrategy.name}
+              onChange={(value: string) =>
+                setGenerationsValue("populationStrategy", selectPopulationStrategy(value))
+              }
+            >
+              {populationStrategyOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </SelectInput>
+            {isContinuous && (
+              <p className="text-xs">Continuous runs use it only to create generation 1.</p>
+            )}
+          </div>
+          {!isContinuous && (
+            <SelectInput
+              label="Selection method"
+              value={worldGenerationsData.selectionMethod.name}
+              onChange={(value: string) =>
+                setGenerationsValue("selectionMethod", selectSelectionMethod(value))
+              }
+            >
+              {selectionMethodOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </SelectInput>
+          )}
         </div>
+        {continuousWarnings.length > 0 && (
+          <div className="bg-red p-2 text-sm">
+            <p>No creature can be born in this continuous run:</p>
+            <ul className="list-disc pl-5">
+              {continuousWarnings.map((warning) => <li key={warning}>{warning}</li>)}
+            </ul>
+          </div>
+        )}
       </Section>
 
       {/* === NEURONAL NETWORKS === */}

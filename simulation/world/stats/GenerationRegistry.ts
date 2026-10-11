@@ -5,6 +5,9 @@ export type SingleGeneration = {
   survivorCount: number;
   startingPopulation: number;
   maxFitnessValue : number;
+  /** creatures born and dead during the generation (missing in older saved files) */
+  births?: number;
+  deaths?: number;
 };
 
 export class GenerationRegistry {
@@ -22,6 +25,8 @@ export class GenerationRegistry {
       const survivorCount = this.worldController.generations.lastSurvivorsCount;
       const startingPopulation = this.worldController.generations.lastCreatureCount;
       const maxFitnessValue = this.worldController.generations.lastFitnessMaxValue;
+      const births = this.worldController.generations.lastBirths;
+      const deaths = this.worldController.generations.lastDeaths;
 
       if (survivorCount > this.maxSurvivorCount) {
         this.maxSurvivorCount = survivorCount;
@@ -32,7 +37,7 @@ export class GenerationRegistry {
       }
 
       //console.log("gen registry: ", this.worldController.currentGen, ".", this.worldController.currentStep," ----", generation, survivorCount, startingPopulation, maxFitnessValue )      ;
-      this.generations.push({ generation, survivorCount, startingPopulation, maxFitnessValue });
+      this.generations.push({ generation, survivorCount, startingPopulation, maxFitnessValue, births, deaths });
     }
   }
 

@@ -7,6 +7,10 @@ export type SavedSingleGeneration = {
   sP: number;
   /** Max Fitness value */
   fV: number;
+  /** Births (missing in older files) */
+  b?: number;
+  /** Deaths (missing in older files) */
+  d?: number;
 };
 
 export default interface SavedGenerationRegistry {

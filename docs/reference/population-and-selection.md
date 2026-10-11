@@ -7,6 +7,8 @@ A simulation runs in **generations**. Each generation lasts **Steps per generati
 
 Both are chosen in **Settings → Generations**. Options marked *(in dev)* in the UI are experimental.
 
+This applies to **generational** runs. In [continuous runs](../model/generations.md#continuous-runs) the population strategy only creates generation 1, and there is no selection method.
+
 ## Population strategies
 
 Source: [simulation/generations/population/](../../simulation/generations/population/). The UI label is listed first and the class name, which is also the value stored in saved files, in brackets.
@@ -28,13 +30,6 @@ Works like Asexual Random, but places creatures inside the first **spawn area** 
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.
 - **Next generations:** every survivor has `ceil(initial population ÷ survivors)` children, so the population can end up slightly above the target.
 
-### Continuous (`ContinuousPopulation`) *(in dev)*
-
-Makes each generation a continuation of the previous one. Use it with the Continuous selection method.
-
-- **Generation 1:** creates creatures with a genus taken from `constants.POPULATION_DEFAULT_GENUS` and 4-gene genomes.
-- **Next generations:** keeps the creatures that were born during the previous generation, in the same place.
-
 ### Plant/Herbivore (`PlantHerbivorePopulation`) *(in dev)*
 
 A predator–prey experiment. Use it with the Greatest Mass selection method.
@@ -53,9 +48,10 @@ Source: [simulation/generations/selection/](../../simulation/generations/selecti
 | Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of creatures that travelled furthest during the generation (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`). | Largest distance covered |
 | Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no herbivores left there are no survivors. | Largest mass |
 | Reproduction *(in dev)* | `ReproductionSelection` | Living creatures that were born during the generation. | Number of survivors |
-| Continuous *(in dev)* | `ContinuousSelection` | All current creatures. | Number of creatures |
 
-Reproduction and Continuous are *continuous* methods: creatures reproduce during the generation with the **Reproduction** action, instead of only at the end.
+With Reproduction, creatures reproduce during the generation with the **Reproduction** action, instead of only at the end, and the water is not reset between generations.
+
+The old **Continuous** strategy and selection method were replaced by the *Continuous* simulation type. Files that use them load as continuous runs.
 
 ## Combinations that work
 
@@ -64,7 +60,7 @@ Reproduction and Continuous are *continuous* methods: creatures reproduce during
 | Learn to reach a zone (as in the video) | Asexual Random or Asexual Zone | Inside Reproduction Area |
 | Learn to travel far | Asexual Random | Greatest Distance |
 | Plants and herbivores | Plant/Herbivore | Greatest Mass |
-| Open-ended, no generations | Continuous | Continuous |
+| Open-ended, no generations | Continuous simulation type, any strategy for generation 1 | — |
 
 ## Adding a new strategy or method
 
@@ -73,8 +69,7 @@ Reproduction and Continuous are *continuous* methods: creatures reproduce during
 
 ## Known issues
 
-- **Continuous population is broken in generation 1.** It passes a whole `{genus, probability}` entry where a genus name is expected ([ContinuousPopulation.ts](../../simulation/generations/population/ContinuousPopulation.ts)), so the genomes it builds are not valid.
 - **Plant/Herbivore throws an error if it receives parents that are not herbivores,** so use it only with Greatest Mass.
 - **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
 - **Asexual Zone ignores the spawn area when there are more survivors than Initial population.** In that case it places children in random cells.
-- **Random Fixed Gene and Continuous** depend on `POPULATION_DEFAULT_GENUS`, which is empty in the startup scenario.
+- **Random Fixed Gene** depends on `POPULATION_DEFAULT_GENUS`, which is empty in the startup scenario.

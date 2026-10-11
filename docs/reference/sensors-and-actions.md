@@ -15,7 +15,7 @@ Every creature belongs to a **genus** (its trophic level), worked out from the a
 | `plant` | plant | otherwise, has a gene connected to **Photosynthesis** | green |
 | `unknown` | — | none of the above | black |
 
-Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Gene, Continuous and Plant/Herbivore. Random genomes can connect any sensor to any action.
+Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Gene and Plant/Herbivore. Random genomes can connect any sensor to any action.
 
 ## Sensors
 
@@ -25,7 +25,7 @@ Sensor outputs are mostly between 0 and 1. Genus columns: P = plant, H = herbivo
 |---|---|---|---|---|---|
 | 0 | HorizontalPosition | x position ÷ world size. 0 at the left edge, 1 at the right edge. | ✓ | ✓ | ✓ |
 | 1 | VerticalPosition | y position ÷ world size. 0 at the top, 1 at the bottom. | ✓ | ✓ | ✓ |
-| 2 | Age | Current step ÷ steps per generation. All creatures share it: it measures time in the generation, not the age of the creature. | ✓ | ✓ | ✓ |
+| 2 | Age | Generational runs: current step ÷ steps per generation. All creatures share it: it measures time in the generation, not the age of the creature. Continuous runs: the creature's age ÷ **Maximum age**. | ✓ | ✓ | ✓ |
 | 3 | Oscillator | `(sin(step / 10) + 1) / 2`, a wave with a period of about 63 steps. | ✓ | ✓ | ✓ |
 | 4 | Random | A new random number in [0, 1) every step. | ✓ | ✓ | ✓ |
 | 5 | HorizontalSpeed | Last horizontal move: 0 = left, 0.5 = still, 1 = right. | | ✓ | ✓ |
@@ -63,7 +63,7 @@ Each action reads the output of its neuron once per step. Unless stated otherwis
 | 4 | RandomMove | Adds an urge to move in a random direction. | | ✓ | ✓ |
 | 5 | MoveForward | Repeats the last move. | | ✓ | ✓ |
 | 6 | Photosynthesis | Turns water from the creature's cell into mass. | ✓ | | |
-| 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. Used by the continuous strategies. | ✓ | ✓ | ✓ |
+| 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
 | 8 | AttackPlant | Only when the output is above `ACTION_REPRODUCTION_OFFSET` (0.6). Attacks a creature in one of the 4 neighbouring cells. | | ✓ | ✓ |
 | 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
 

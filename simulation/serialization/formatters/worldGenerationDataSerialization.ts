@@ -23,6 +23,8 @@ export function serializeWorldGenerationData(worldController: WorldController)
 
     return {
     // initial values
+    simulationType: wg.simulationType,
+    maxAge: wg.maxAge,
     populationStrategy: populationStrategyFormatter.serialize(worldController.generations.populationStrategy),  
     selectionMethod: selectionMethodFormatter.serialize(worldController.generations.selectionMethod),
     initialPopulation: wg.initialPopulation,
@@ -48,12 +50,31 @@ export function serializeWorldGenerationData(worldController: WorldController)
 }
 
 
+// Older files had a Continuous population strategy and a Continuous selection method
+// instead of a simulation type. They load as a continuous run; Random Fixed Gene builds
+// generation 1 as the old Continuous strategy did.
+const LEGACY_CONTINUOUS_POPULATION = "ContinuousPopulation";
+const LEGACY_CONTINUOUS_SELECTION = "ContinuousSelection";
+const DEFAULT_MAX_AGE = 1000;
+
 export function deserializeWorldGenerationData(parsed: SavedSimulationData) : WorldGenerationsData{
-        
+
+  const saved = parsed.worldGenerationsData;
+  const isLegacyContinuous = saved.populationStrategy === LEGACY_CONTINUOUS_POPULATION
+    || saved.selectionMethod === LEGACY_CONTINUOUS_SELECTION;
+  const populationStrategy = saved.populationStrategy === LEGACY_CONTINUOUS_POPULATION
+    ? "RandomFixedGenePopulation"
+    : saved.populationStrategy;
+  const selectionMethod = saved.selectionMethod === LEGACY_CONTINUOUS_SELECTION
+    ? "InsideReproductionAreaSelection"
+    : saved.selectionMethod;
+
   const worldGenerationsData : WorldGenerationsData = {
       // initial values
-      populationStrategy: populationStrategyFormatter.deserialize(parsed.worldGenerationsData.populationStrategy),
-      selectionMethod: selectionMethodFormatter.deserialize(parsed.worldGenerationsData.selectionMethod),
+      simulationType: saved.simulationType ?? (isLegacyContinuous ? "continuous" : "generational"),
+      maxAge: saved.maxAge ?? DEFAULT_MAX_AGE,
+      populationStrategy: populationStrategyFormatter.deserialize(populationStrategy),
+      selectionMethod: selectionMethodFormatter.deserialize(selectionMethod),
       initialPopulation: parsed.worldGenerationsData.initialPopulation,
       initialGenomeSize: parsed.worldGenerationsData.initialGenomeSize,
       maxGenomeSize: parsed.worldGenerationsData.maxGenomeSize,

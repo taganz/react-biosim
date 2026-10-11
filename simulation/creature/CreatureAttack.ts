@@ -42,6 +42,7 @@ export default class CreatureAttack {
                 return 0;
             }
             const preyMass = prey.mass;
+            this.creature._mass.eat(prey._mass);
             prey.killedByAttack(this.creature.specie);
             this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_DO);    
             return preyMass;

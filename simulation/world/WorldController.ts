@@ -229,6 +229,11 @@ export default class WorldController {
       new CustomEvent(WorldEvents.startStep, { detail: { worldController: this } })
     );
 
+    // continuous runs spread the rain of a generation over its steps
+    if (this.generations.isContinuous) {
+      this.worldWater.rain(this.grid, 1 / this.stepsPerGen);
+    }
+
     // Compute step of every creature
     const numberOfSurvivorsThisStep : number = this.generations.step();
     
@@ -287,13 +292,21 @@ export default class WorldController {
     this.currentStep = 1;
     this.currentGen++;
     
-    this.generations.selectionAndRepopulate();
+    if (this.generations.isContinuous) {
+      // the creatures carry on; the water is kept and rains every step
+      this.generations.endTimeWindow();
+    } else {
+      this.generations.selectionAndRepopulate();
 
-    if (this.generations.selectionMethod.isContinuous == false) {
-      this.worldWater.reset();   
-      this.worldWater.firstRain(this.grid);
+      if (this.generations.selectionMethod.isContinuous == false) {
+        this.worldWater.reset();   
+        // the mass of the new generation comes from the cloud, as in generation 1
+        const creaturesMass = this.generations.currentCreatures.reduce((total, creature) => total + creature.mass, 0);
+        this.worldWater.getWaterFromCloud(creaturesMass);
+        this.worldWater.firstRain(this.grid);
+      }
+      this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     }
-    this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     this.generationRegistry.startGeneration();
 
     this.logStartGeneration();

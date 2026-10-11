@@ -16,6 +16,7 @@ import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 import WorldGenerationsData from "./WorldGenerationsData";
 import { SensorName } from "../creature/brain/CreatureSensors";
 import { ActionName } from "../creature/brain/CreatureActions";
+import { SimulationType } from "./SimulationType";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -31,6 +32,8 @@ export default class WorldGenerations {
   //TODO following data is repeated in worldGenerationsData
 
   // initial values
+  simulationType: SimulationType;
+  maxAge: number;
   populationStrategy:   PopulationStrategy; 
   selectionMethod: SelectionMethod;  
   initialPopulation: number = 0;
@@ -55,6 +58,11 @@ export default class WorldGenerations {
   lastSurvivorsCount: number = 0;
   lastFitnessMaxValue : number = 0;
   lastSurvivalRate : number = 0;
+  // births and deaths during the current generation, and during the last one
+  birthsThisGeneration: number = 0;
+  deathsThisGeneration: number = 0;
+  lastBirths: number = 0;
+  lastDeaths: number = 0;
   
 
 
@@ -67,7 +75,9 @@ export default class WorldGenerations {
     this.grid = grid;
     
     // initial values
-    this.populationStrategy = worldGenerationsData.populationStrategy;;
+    this.simulationType = worldGenerationsData.simulationType;
+    this.maxAge = worldGenerationsData.maxAge;
+    this.populationStrategy = worldGenerationsData.populationStrategy;
     this.selectionMethod = worldGenerationsData.selectionMethod;
     this.initialPopulation = worldGenerationsData.initialPopulation;
     this.initialGenomeSize = worldGenerationsData.initialGenomeSize;
@@ -118,9 +128,15 @@ export default class WorldGenerations {
   }
 
   
+  get isContinuous(): boolean {
+    return this.simulationType === "continuous";
+  }
+
   public populate() {
       this.populationStrategy.populate(this);
       this.lastCreatureCount = this.currentCreatures.length;
+      // the initial population are not births
+      this.birthsThisGeneration = 0;
   }
 
 
@@ -143,10 +159,10 @@ export default class WorldGenerations {
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
     this.lastCreatureIdCreated += 1;  
+    this.birthsThisGeneration++;
     return creature;
   }
 
-  // copy all creatures without mutations for continuous simulation
   // Recreates a creature of a previous run bound to this generations and grid, keeping its
   // genome, position, mass and counters. Returns null if its cell is outside the world or not empty.
   public restoreCreature(source: Creature) : Creature | null {
@@ -171,15 +187,6 @@ export default class WorldGenerations {
     return creature;
   }
 
-  public updateCreatures(creatures: Creature[]) {
-    for (let i = 0; i < creatures.length;i++) {
-      const creature = creatures[i];
-      creature.resetAge();
-    }
-    this.grid.updateCreatures(creatures);
-    this.currentCreatures = [];
-    this.currentCreatures = creatures;
-  }
 
   
   
@@ -207,6 +214,7 @@ public step(): number {
       if (!creature.isAlive) {
         this.grid.removeCreature(creature);
         this.currentCreatures.splice(i, 1);
+        this.deathsThisGeneration++;
       }
     }
 
@@ -214,6 +222,24 @@ public step(): number {
   
   }
 
+
+// continuous runs: the generation is only a time window, so the creatures carry on
+// and only the stats of the window are recorded. The population is the plotted value.
+public endTimeWindow(): void {
+  this.lastSurvivorsCount = this.currentCreatures.length;
+  this.lastSurvivalRate = this.lastCreatureCount > 0 ? this.lastSurvivorsCount / this.lastCreatureCount : 0;
+  this.lastFitnessMaxValue = this.currentCreatures.length;
+  this.closeBirthAndDeathCounts();
+  // the population at the start of the next window
+  this.lastCreatureCount = this.currentCreatures.length;
+}
+
+private closeBirthAndDeathCounts(): void {
+  this.lastBirths = this.birthsThisGeneration;
+  this.lastDeaths = this.deathsThisGeneration;
+  this.birthsThisGeneration = 0;
+  this.deathsThisGeneration = 0;
+}
 
 public selectionAndRepopulate(): void {
 
@@ -228,8 +254,12 @@ public selectionAndRepopulate(): void {
   }
 
   
+  this.closeBirthAndDeathCounts();
+
   // Repopulate with survivors
   this.populationStrategy.populate(this, survivors);
+  // the new generation are not births
+  this.birthsThisGeneration = 0;
 
   // update generation stats
   this.lastSurvivorsCount = survivors.length;

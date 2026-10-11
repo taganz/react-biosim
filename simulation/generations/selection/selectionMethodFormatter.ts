@@ -2,7 +2,6 @@ import SelectionMethod from "./SelectionMethod";
 import GreatestDistanceSelection from "./GreatestDistanceSelection";
 import ReproductionSelection from "./ReproductionSelection";
 import InsideReproductionAreaSelection from "./InsideReproductionAreaSelection";
-import ContinuousSelection from "./ContinuousSelection";
 import GreatestMassSelection from "./GreatestMassSelection";
 import { selectionMap } from "./selectionMethodOptions";
 
