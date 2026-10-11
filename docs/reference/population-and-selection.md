@@ -51,7 +51,7 @@ Source: [simulation/generations/selection/](../../simulation/generations/selecti
 |---|---|---|---|
 | Inside Reproduction Area | `InsideReproductionAreaSelection` | Living creatures standing inside a **reproduction area** when the generation ends. | Survival rate: survivors ÷ initial population × 100 |
 | Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of creatures that travelled furthest during the generation (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`). | Largest distance covered |
-| Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). | Largest mass |
+| Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no herbivores left there are no survivors. | Largest mass |
 | Reproduction *(in dev)* | `ReproductionSelection` | Living creatures that were born during the generation. | Number of survivors |
 | Continuous *(in dev)* | `ContinuousSelection` | All current creatures. | Number of creatures |
 
@@ -74,7 +74,7 @@ Reproduction and Continuous are *continuous* methods: creatures reproduce during
 ## Known issues
 
 - **Continuous population is broken in generation 1.** It passes a whole `{genus, probability}` entry where a genus name is expected ([ContinuousPopulation.ts](../../simulation/generations/population/ContinuousPopulation.ts)), so the genomes it builds are not valid.
-- **Greatest Mass crashes without herbivores.** It reads `parents[0]` for a log message without checking that there is one ([GreatestMassSelection.ts](../../simulation/generations/selection/GreatestMassSelection.ts)). Plant/Herbivore throws an error if it receives parents that are not herbivores.
+- **Plant/Herbivore throws an error if it receives parents that are not herbivores,** so use it only with Greatest Mass.
 - **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
 - **Asexual Zone ignores the spawn area when there are more survivors than Initial population.** In that case it places children in random cells.
 - **Random Fixed Gene and Continuous** depend on `POPULATION_DEFAULT_GENUS`, which is empty in the startup scenario.

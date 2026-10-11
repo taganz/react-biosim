@@ -49,6 +49,16 @@ describe('selection methods', () => {
                 expect(selectionMethodFormatter.deserialize("GreatestMassSelection")).toEqual(gms);
                 expect(selectionMethodFormatter.deserialize("ContinuousSelection")).toEqual(cs);
         });
+        test('GreatestMassSelection returns no survivors when there are no herbivores', () => {
+                const generations = {
+                        worldController: { simData: { constants: { GREATEST_MASS_SELECTION_TOP_SURVIVORS: 0.05 } } },
+                        currentCreatures: [...new Array(40)].map(() => ({ _genus: "plant", mass: 1 })),
+                        currentGen: 2,
+                } as any;
+                const result = new GreatestMassSelection().getSurvivors(generations);
+                expect(result.survivors).toEqual([]);
+                expect(result.fitnessMaxValue).toBe(0);
+        });
 });
 
 

@@ -14,7 +14,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **PredatorDistance and PredatorDirection produce no value** | Enabling either one misaligns every sensor after it. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Health areas have no effect** | The call that applies them is commented out in `WorldGenerations.step()`, so the Pain sensor is always 0. | [World](model/world.md#objects-and-areas) |
 | **Continuous population is broken in generation 1** | It passes a `{genus, probability}` object where a genus name is expected. | [Population and selection](reference/population-and-selection.md#known-issues) |
-| **Greatest Mass crashes without herbivores** | It reads `parents[0]` without checking that it exists. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
@@ -66,6 +65,7 @@ These items were on the old list, or found while writing these docs, and are now
 - Logging a single creature (*Stats → Logger → Creature to log*)
 - Consistent styling and status messages for log, save, load and GIF
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
+- Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 
 ## Ideas
 
