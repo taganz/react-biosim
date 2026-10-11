@@ -27,7 +27,7 @@ The **Settings** tab edits a draft. The running simulation keeps its own copy un
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
 | Simulation code | `worldControllerData.simCode` | read-only | `SC1` | Assigned by the system. Used in file names. |
-| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | read-only: `genome`, `trophicLevel` | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores. Set by the scenario. |
+| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. **Update simulation** recolours the running creatures. |
 | Metabolism | `worldGenerationsData.metabolismEnabled` | read-only | `false` | When off, creature mass never changes. Set by the scenario. |
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
 | Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell. The field accepts size², but the engine refuses it (known issue). |

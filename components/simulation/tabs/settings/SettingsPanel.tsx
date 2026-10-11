@@ -13,6 +13,7 @@ import Button from "@/components/global/Button";
 import { Sensor, SensorName } from "@/simulation/creature/brain/CreatureSensors";
 import { Action, ActionName } from "@/simulation/creature/brain/CreatureActions";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
+import { PhenoTypeColorMode } from "@/simulation/creature/PhenoTypeColorMode";
 import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
@@ -133,11 +134,25 @@ export default function SettingsPanel() {
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 text-sm">
           <dt>Simulation code</dt>
           <dd>{worldControllerData.simCode}</dd>
-          <dt>Phenotype mode</dt>
-          <dd>{worldGenerationsData.phenotypeColorMode}</dd>
           <dt>Metabolism</dt>
           <dd>{worldGenerationsData.metabolismEnabled ? "enabled" : "not enabled"}</dd>
         </dl>
+        <div className="flex flex-col gap-1 sm:max-w-sm">
+          <SelectInput
+            label="Phenotype mode"
+            value={worldGenerationsData.phenotypeColorMode}
+            onChange={(value: string) =>
+              setGenerationsValue("phenotypeColorMode", value as PhenoTypeColorMode)
+            }
+          >
+            <option value="genome">Genome</option>
+            <option value="trophicLevel">Trophic level</option>
+          </SelectInput>
+          <ul className="text-xs">
+            <li><b>Genome:</b> the colour comes from the genome, so each species has its own colour.</li>
+            <li><b>Trophic level:</b> green for plants, blue for herbivores and red for carnivores. The shade comes from the genome.</li>
+          </ul>
+        </div>
         <div className={FIELDS_GRID}>
           <NumberInput
             label="World size"
