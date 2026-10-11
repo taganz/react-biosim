@@ -193,8 +193,7 @@ export const WORLD_GENERATIONS_DATA_DEFAULT : WorldGenerationsData = {
     , "PreyEast"      // 19
     , "PreySouth"     // 20
     , "PreyWest"      // 21
-    , "PredatorDistance" // 22   
-    , "PredatorDirection"  // 23
+    // PredatorDistance (22) and PredatorDirection (23) are not implemented yet
   ],
   enabledActions: [
        "MoveNorth",        // 0

@@ -11,7 +11,7 @@ Checked against the code in October 2026. Each item links to the page that expla
 | Bug | Effect | Details |
 |---|---|---|
 | **Reproduction never succeeds without metabolism** | It needs more than 3 × birth mass, and without metabolism mass never changes. | [Creatures](model/creatures.md#reproduction) |
-| **PredatorDistance and PredatorDirection produce no value** | Enabling either one misaligns every sensor after it. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
+| **PredatorDistance and PredatorDirection produce no value** | They are disabled by default. If you enable them, genes that read them make the brain compute `NaN`. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Health areas have no effect** | The call that applies them is commented out in `WorldGenerations.step()`, so the Pain sensor is always 0. | [World](model/world.md#objects-and-areas) |
 | **Continuous population is broken in generation 1** | It passes a `{genus, probability}` object where a genus name is expected. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |

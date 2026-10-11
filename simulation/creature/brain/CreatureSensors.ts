@@ -224,14 +224,14 @@ export default class CreatureSensors {
 
     PredatorDistance: {
       name: "PredatorDistance",
-      enabled: true,
+      enabled: false,   // not implemented yet: calculateOutputs pushes no value
       neuronCount: 1,
       compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     PredatorDirection: {
       name: "PredatorDirection",
-      enabled: true,
+      enabled: false,   // not implemented yet: calculateOutputs pushes no value
       neuronCount: 1,
       compatibleGenus: ["attack_plant"],
       mainGenus: null,

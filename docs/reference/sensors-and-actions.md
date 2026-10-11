@@ -95,6 +95,6 @@ So the same gene can mean different connections in simulations with different se
 
 ## Known issues
 
-- **PredatorDistance and PredatorDirection produce no value.** They are in the list and can be enabled, but `calculateOutputs` never computes them. If you enable one, the sensor values no longer line up with the sensor neurons. Keep them disabled.
+- **PredatorDistance and PredatorDirection produce no value.** `calculateOutputs` never computes them, so they are disabled by default. They can still be enabled in Settings: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.
 - **Reproduction never succeeds without metabolism.** It needs more than 3 × birth mass, and without metabolism mass never changes (see [Creatures → Reproduction](../model/creatures.md#reproduction)).
 - **The genus of a creature is read from its actions only.** Sensors never set the genus, so the "compatible genus" lists of sensors only matter when genomes are built for a given genus.
