@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
-import Creature, { maxHealth } from "@/simulation/creature/Creature";
+import Creature, { DeathCause, maxHealth } from "@/simulation/creature/Creature";
 import useWorldValue from "@/hooks/useWorldValue";
 import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
 import { GENUS_LABELS } from "./genusLabels";
@@ -52,6 +52,26 @@ function YesNo({ value }: { value: boolean }) {
 
 const formatMass = (value: number) => value.toFixed(2);
 
+const DEATH_CAUSES: Record<DeathCause, string> = {
+  old: "old age",
+  basalConsumption: "ran out of mass (basal consumption)",
+  actionsExecutionConsumption: "ran out of mass (cost of its actions)",
+  attacked: "eaten",
+  health: "health reached 0",
+  unknown: "unknown cause",
+};
+
+function deathText(creature: Creature): string {
+  if (creature.deathCause === null) {
+    // generational runs replace the creatures without killing them
+    return "Not in the world anymore: it was replaced by a new generation or run.";
+  }
+  const killer = creature.deathCause === "attacked" && creature.killedBySpecies
+    ? ` by a creature of species ${creature.killedBySpecies}`
+    : "";
+  return `Died of ${DEATH_CAUSES[creature.deathCause]}${killer} at generation ${creature.deathGen}, step ${creature.deathStep}. The values are from its last step.`;
+}
+
 // Everything about one creature, read again on every step so the values stay live
 export default function SelectedCreatureInfo({ creature }: Props) {
   // these subscriptions only make the component re-render as the simulation advances
@@ -80,9 +100,7 @@ export default function SelectedCreatureInfo({ creature }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {!isInWorld && (
-        <p className="bg-red p-2 text-sm">
-          This creature is no longer alive; the values are from its last step.
-        </p>
+        <p className="bg-red p-2 text-sm">{deathText(creature)}</p>
       )}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-4">
@@ -96,6 +114,11 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           <Field label="Genus">{GENUS_LABELS[genus]}</Field>
           {preyGenus && <Field label="Eats">{GENUS_LABELS[preyGenus]}s</Field>}
           {predatorGenus && <Field label="Eaten by">{GENUS_LABELS[predatorGenus]}s</Field>}
+          <Field label="Parent">
+            {creature.parentId !== null
+              ? `#${creature.parentId}, born in generation ${creature.parentBirthGen}`
+              : "none (first generation, or loaded from a file)"}
+          </Field>
         </Group>
 
         <Group title="Life">
@@ -106,7 +129,9 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           <Field label="Age">
             <Meter value={creature._age} max={creature.maxAge} text={`${creature._age} / ${creature.maxAge} steps`} />
           </Field>
-          <Field label="Birth step">{creature.stepBirth}</Field>
+          <Field label="Born">
+            generation {creature.birthGen}, step {creature.stepBirth}
+          </Field>
         </Group>
 
         <Group title="Body">
@@ -153,6 +178,19 @@ export default function SelectedCreatureInfo({ creature }: Props) {
                 text={`${cell.water.toFixed(2)} / ${cell.waterCapacity.toFixed(2)}`}
               />
             </Field>
+          )}
+        </Group>
+
+        <Group title="Activity">
+          <Field label="Children">{creature.childrenCount}</Field>
+          {preyGenus && (
+            <>
+              <Field label="Attacks">{creature.attackCount}</Field>
+              <Field label="Kills">{creature.killCount}</Field>
+            </>
+          )}
+          {metabolismEnabled && (
+            <Field label="Water from photosynthesis">{formatMass(creature.waterFromPhotosynthesis)}</Field>
           )}
         </Group>
 

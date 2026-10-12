@@ -140,8 +140,9 @@ export default class WorldGenerations {
   }
 
 
-  // creates a new creature, add to currentCreatures, add to grid, mutate genome
-  public newCreature(position : GridPosition, firstGeneration: boolean, genome?: Genome) : Creature {
+  // creates a new creature, add to currentCreatures, add to grid, mutate genome.
+  // parent is the creature the genome comes from, recorded for the lineage
+  public newCreature(position : GridPosition, firstGeneration: boolean, genome?: Genome, parent?: Creature) : Creature {
     if (genome && !firstGeneration) {
       let genomeOffspring = genome.clone(
         true,
@@ -155,6 +156,11 @@ export default class WorldGenerations {
     }
     else {
       var creature = new Creature(this, position, firstGeneration, genome);
+    }
+    if (parent) {
+      creature.parentId = parent.id;
+      creature.parentBirthGen = parent.birthGen;
+      parent.childrenCount++;
     }
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
@@ -173,6 +179,13 @@ export default class WorldGenerations {
     const creature = new Creature(this, [x, y], false, new Genome(source.brain.genome.genes.slice()));
     creature.id = source.id;
     creature.stepBirth = source.stepBirth;
+    creature.birthGen = source.birthGen;
+    creature.parentId = source.parentId;
+    creature.parentBirthGen = source.parentBirthGen;
+    creature.childrenCount = source.childrenCount;
+    creature.attackCount = source.attackCount;
+    creature.killCount = source.killCount;
+    creature.waterFromPhotosynthesis = source.waterFromPhotosynthesis;
     creature._age = source._age;
     creature.lastPosition = [source.lastPosition[0], source.lastPosition[1]];
     creature.lastMovement = [source.lastMovement[0], source.lastMovement[1]];

@@ -8,7 +8,8 @@ A creature has:
 - a **genome** and the **brain** built from it (see [Brain and genome](brain.md));
 - a **genus** derived from the genome;
 - **mass** (only changes with metabolism) and **health**;
-- an **id**, its birth step and its age, plus counters used by the selection methods (`distanceCovered`).
+- an **id**, its birth step and its age, plus counters used by the selection methods (`distanceCovered`);
+- a **life history**, used only to show it in the Population tab (see [Life history](#life-history)).
 
 ## Birth
 
@@ -122,3 +123,19 @@ A creature dies when:
 - it is older than **Maximum age** (continuous runs only).
 
 When it dies, its remaining mass goes back to its cell as water, and it is removed from the grid. In the classic model creatures do not die during a generation: they simply fail to be selected at the end.
+
+## Life history
+
+Each creature keeps these values. Nothing in the simulation reads them; they are shown in the [Population tab](../user/population-and-brains.md#selected-creature).
+
+| Field | Meaning |
+|---|---|
+| `parentId`, `parentBirthGen` | The creature its genome was copied from, and the generation that parent was born in. Both are set by `newCreature()` when it gets a parent: through the Reproduction action, or by the population strategy at the start of a generation. They are `null` for random genomes of generation 1. Most selection methods restart the ids at 1 every generation, so the id alone does not identify the parent. |
+| `birthGen` | The generation it was born in. `stepBirth` is the step within that generation. |
+| `childrenCount` | How many creatures got their genome from it. |
+| `attackCount`, `killCount` | Attack actions executed (including the ones without enough mass) and prey killed. |
+| `waterFromPhotosynthesis` | Total water taken from its cell by Photosynthesis. |
+| `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` or `actionsExecutionConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
+| `killedBySpecies` | For `attacked`, the species of the attacker. |
+
+**Update simulation** and **Use Map** keep these values. Save files do not store them, so creatures loaded from a file start with an empty history.

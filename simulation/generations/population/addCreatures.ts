@@ -26,7 +26,7 @@ export function addCreaturesFromGenus(worldGenerations: WorldGenerations, genus:
     for (let i = 0; i < total; i++) {
       let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
       if (position != null) {
-          worldGenerations.newCreature(position, false, parent.brain.genome );
+          worldGenerations.newCreature(position, false, parent.brain.genome, parent);
       }
       else {
         console.warn("no free position found");

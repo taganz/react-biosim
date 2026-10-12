@@ -16,6 +16,9 @@ import WorldControllerData from "../world/WorldControllerData";
 
 export const maxHealth = 100;
 
+// the reasons passed to die()
+export type DeathCause = "old" | "basalConsumption" | "actionsExecutionConsumption" | "attacked" | "health" | "unknown";
+
 const distanceStraightMin = 35;   // <--- ajustar, passar a parametres de la simulacio?
 const distanceStraightMax = 120;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
 const stepsStoppedPenalization = 100;
@@ -52,6 +55,19 @@ export default class Creature {
   brain : CreatureBrain;
   _genus : Genus;
   _age : number = 0;
+
+  // Life history, shown in the Population tab
+  parentId : number | null = null;   // null for creatures of the first generation
+  parentBirthGen : number | null = null;  // ids can restart every generation, so the id alone is ambiguous
+  birthGen : number;
+  childrenCount : number = 0;
+  attackCount : number = 0;          // every attack action, including the ones without enough mass
+  killCount : number = 0;
+  waterFromPhotosynthesis : number = 0;
+  deathCause : DeathCause | null = null;
+  deathStep : number | null = null;
+  deathGen : number | null = null;
+  killedBySpecies : string | null = null;
   //_worldWater : WorldWater;
   
   private _health: number = maxHealth;
@@ -65,6 +81,7 @@ export default class Creature {
 
     this.id = generations.lastCreatureIdCreated + 1;
     this.stepBirth = generations.worldController.currentStep;
+    this.birthGen = generations.worldController.currentGen;
     
     // Position
     this.position = position;
@@ -193,9 +210,11 @@ export default class Creature {
   attack(actionInputValue: number, targetDirection: Direction4) {
     this.log(LogEvent.ATTACK_TRY, "actionInputValue", Math.round(actionInputValue*100)/100);
     this.log(LogEvent.ATTACK_TRY, "targetDirection", 0, 0, <string>targetDirection);
+    this.attackCount++;
     const preyMass = this._attack.attack(actionInputValue, targetDirection);
     // the attack has already moved the prey's mass to this creature
     if (preyMass > 0) {
+      this.killCount++;
       this.log(LogEvent.ATTACK, "preyMass", preyMass);
     }
   }
@@ -311,12 +330,14 @@ export default class Creature {
     const cell = this.generations.grid.cell(this.position[0], this.position[1]);
     const waterWanted = this.worldControllerData.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
     const waterGotFromCell = this._mass.addFromGrid(cell, waterWanted);
+    this.waterFromPhotosynthesis += waterGotFromCell;
     this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
     this.log(LogEvent.PHOTOSYNTHESIS, "waterGotFromCell", waterGotFromCell);
 
  }
 
  killedByAttack(killerSpecie: string) {
+  this.killedBySpecies = killerSpecie;
   this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", Math.round(this.position[0]), Math.round(this.position[1]), killerSpecie);
   this.die("attacked");
  }
@@ -382,7 +403,13 @@ export default class Creature {
     }
 
   //TODO review
-  private die (cause: string = "unknown") {
+  private die (cause: DeathCause = "unknown") {
+    // keep the first cause if die() is reached twice
+    if (this.deathCause === null) {
+      this.deathCause = cause;
+      this.deathStep = this.generations.worldController.currentStep;
+      this.deathGen = this.generations.worldController.currentGen;
+    }
     this._mass.die();
     this.log(LogEvent.DEAD, "cause", undefined, undefined, cause);
     this.logBasicData("dead");
