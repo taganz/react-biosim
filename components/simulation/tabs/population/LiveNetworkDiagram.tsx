@@ -10,14 +10,11 @@ interface Props {
   actionLabels: string[];
 }
 
-// Network of one creature with the values of the last step; re-renders as the simulation advances
+// Network of one creature with the values of the last step. It follows the simulation step by
+// step only when Immediate steps is 1; with more, it shows the values from when it was rendered
 export default function LiveNetworkDiagram({ creature, sensorLabels, actionLabels }: Props) {
-  const currentGen = useWorldValue((world) => world.currentGen, 0);
-  const currentStep = useWorldValue((world) => world.currentStep, 0);
-  const isInWorld = useWorldValue(
-    (world) => creature.isAlive && world.generations.currentCreatures.includes(creature),
-    false
-  );
+  // the value is only read to re-render on every step; it stays 0 when Immediate steps is not 1
+  useWorldValue((world) => (world.immediateSteps === 1 ? world.currentStep : 0), 0);
 
   // the network updates these values in place every step, so read them on each render
   const network = creature.brain.brain;
@@ -29,14 +26,7 @@ export default function LiveNetworkDiagram({ creature, sensorLabels, actionLabel
 
   return (
     <div className="flex flex-col gap-2">
-      {/* the status changes every step, so it stays on one line and the hint below is static:
-          otherwise the wrapping changes with the numbers and the page jumps up and down */}
       <div className="text-sm">
-        <p className="truncate tabular-nums" aria-live="off">
-          {isInWorld
-            ? `Creature #${creature.id} at generation ${currentGen}, step ${currentStep}.`
-            : `Creature #${creature.id} is no longer alive; showing its last step.`}
-        </p>
         <p>Pause or slow down the simulation to follow it step by step.</p>
       </div>
       <NetworkDiagram

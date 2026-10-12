@@ -86,6 +86,8 @@ Hover over a node or a line to see its exact value.
 
 When a creature of the selected species is selected (clicking a species box selects one), a **Live values** / **Structure** switch appears. **Live values** shows what the brain of that creature is doing at the current step.
 
+The view follows the simulation step by step only when **Immediate steps** (in **Speed**) is 1. With 20 or 200 it keeps the values of the step when it was shown, and refreshes when you select another creature or switch views.
+
 ![Live network values](images/population_network_live.png)
 
 - The value under each sensor is its current reading.
