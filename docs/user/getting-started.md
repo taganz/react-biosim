@@ -34,7 +34,7 @@ In the first generations creatures move almost at random. After tens or hundreds
 | Control | What it does |
 |---|---|
 | Generation / Step | Current generation, and the current step out of the steps per generation. |
-| Survivors | Survivors of the last generation, and their share of the population. |
+| Survivors | Share of the population that survived the last generation. |
 | Pause between steps (ms) | Slows the simulation down. Use 50 or 200 to follow individual creatures. |
 | Pause between generations (ms) | Holds the last step of each generation on screen so you can see who survived. |
 | Immediate steps | Steps computed before the world is redrawn. **200 runs at full speed.** |

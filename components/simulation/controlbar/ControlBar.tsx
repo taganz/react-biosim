@@ -28,6 +28,10 @@ export default function ControlBar() {
     (worldController) => worldController.generations.lastSurvivalRate,
     0
   );
+  // the generation and the step keep a fixed width, so the counters after them do not shift
+  // while the numbers grow. "ch" is the width of a digit, and the digits are tabular.
+  // The survivors are last, so their width does not move anything
+  const stepWidth = `${String(stepsPerGeneration).length}ch`;
 
   return (
     <header className="sticky top-0 z-30 h-(--control-bar-height) border-b border-grey-mid bg-grey-dark">
@@ -36,24 +40,25 @@ export default function ControlBar() {
           Evolution Simulation
         </h1>
 
-        {/* tabular numbers so the text does not jump while the counters change */}
+        {/* tabular numbers and fixed widths so the text does not jump while the counters change */}
         <p className="flex gap-4 text-sm whitespace-nowrap tabular-nums">
           <span>
             <span className="hidden sm:inline">Generation </span>
-            <strong>#{currentGeneration}</strong>
+            <strong className="inline-block min-w-[6ch]">{currentGeneration}</strong>
           </span>
           <span>
             <span className="hidden sm:inline">Step </span>
             <strong>
-              {currentStep}/{stepsPerGeneration}
+              <span className="inline-block text-right" style={{ minWidth: stepWidth }}>
+                {currentStep}
+              </span>
+              /{stepsPerGeneration}
             </strong>
           </span>
           <span className="hidden lg:inline">
             Survivors{" "}
             <strong>
-              {lastSurvivorCount
-                ? `${lastSurvivorCount} (${(lastSurvivalRate * 100).toFixed(1)}%)`
-                : "-"}
+              {lastSurvivorCount ? `${(lastSurvivalRate * 100).toFixed(1)}%` : "-"}
             </strong>
           </span>
         </p>
