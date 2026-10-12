@@ -282,7 +282,7 @@ export default class Creature {
   }
 
   // consume 
-  private hasEnoughMassToMove() : boolean {
+  hasEnoughMassToMove() : boolean {
     if (!this._mass._metabolismEnabled) {
       return true;
     }

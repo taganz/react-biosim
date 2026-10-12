@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { Species } from "../../../../simulation/creature/Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
+import PopulationSummary from "./PopulationSummary";
 
 export default function PopulationPanel() {
   const worldController = useAtomValue(worldControllerAtom);
@@ -68,22 +69,12 @@ export default function PopulationPanel() {
     }
   }, [onStartGeneration, worldController]);
 
-  const totalAliveCreatures = worldController?.generations.currentCreatures.length ?? 0;
-  const totalSpeciesAlive = species.length;
-
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <div className="lg:text-lg">
-          <strong>Total alive creatures:</strong> {totalAliveCreatures}
-        </div>
-        <div className="lg:text-lg">
-          <strong>Total species alive:</strong> {totalSpeciesAlive}
-        </div>
-      </div>
+      <PopulationSummary speciesCount={species.length} />
 
       <div className="flex gap-4">
-        <div className="grow">
+        <div className="min-w-0 grow">
           <SelectedSpecies
             species={species}
             selectedSpecies={selectedSpecies}

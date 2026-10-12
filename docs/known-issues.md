@@ -57,7 +57,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 These items were on the old list, or found while writing these docs, and are now fixed:
 
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
-- Selected creature information in the Population tab
+- Selected creature information in the Population tab: identity, life, body, movement and brain, updated at every step, in collapsible sections
+- The population percentage of a species was divided by Initial population instead of the creatures alive
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file
 - Logging a single creature (*Stats → Logger → Creature to log*)
