@@ -19,6 +19,8 @@ export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
 export const selectedSpeciesAtom = atom<Species | undefined>(undefined);
+// the "Creature to log" field of the logger; also set from the Population tab
+export const logCreatureIdAtom = atom(0);
 
 export const simulationDataAtom = atom(SIMULATION_DATA_DEFAULT);
 //export const simulationConstantsDataAtom = atom(SIMULATION_DATA_DEFAULT.constants);

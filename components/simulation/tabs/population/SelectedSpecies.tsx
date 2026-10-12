@@ -8,6 +8,7 @@ import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
 import CollapsibleSection from "./CollapsibleSection";
+import CreatureToolbar from "./CreatureToolbar";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
@@ -119,6 +120,8 @@ export default function SelectedSpeciesPanel({
 
       {selectedCreature && (
         <CollapsibleSection title={`Creature #${selectedCreature.id}`} defaultOpen>
+          {/* remounted for each creature, so a log message does not carry over */}
+          <CreatureToolbar key={`${selectedCreature.birthGen}-${selectedCreature.id}`} creature={selectedCreature} />
           <SelectedCreatureInfo creature={selectedCreature} />
         </CollapsibleSection>
       )}

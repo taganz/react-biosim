@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { worldControllerAtom } from "../../store";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { logCreatureIdAtom, worldControllerAtom } from "../../store";
+import { useAtom, useAtomValue } from "jotai";
 import Button from "@/components/global/Button";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import { saveAs } from "file-saver";
 import useWorldValue from "@/hooks/useWorldValue";
-
-// kept outside the component so the value survives switching tabs
-const logCreatureIdAtom = atom(0);
 
 function describeLoggedCreatures(creatureId: number): string {
   switch (creatureId) {

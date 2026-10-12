@@ -42,7 +42,13 @@ A section you close stays closed when you select another species.
 
 ## Selected creature
 
-The **Creature** section is updated at every step:
+At the top of the **Creature** section there are some buttons:
+
+- **◀ ▶** select the previous or next living creature of the same species (ordered by id). The text between them says which one you are looking at, for example "2 of 5 in its species".
+- **Select parent** selects the creature its genome was copied from, and that creature's species, since a mutation may have made the child a new species. It is only enabled while the parent is alive. In generational runs the parents are replaced when the generation ends, so this is mostly useful in continuous runs or for children born by the Reproduction action.
+- **Log this creature** (only when the logger is enabled) sets the logger to this creature, like **Creature to log** in *Stats → Logger*, and starts recording. Most selection methods restart the ids every generation, so in later generations the logger records whichever creature has that id.
+
+The section is updated at every step:
 
 - **Identity**: id, species, genus, which genus it eats and is eaten by, and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
