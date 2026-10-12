@@ -59,6 +59,7 @@ These items were on the old list, or found while writing these docs, and are now
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
 - Selected creature information in the Population tab: identity, life, body, movement and brain, updated at every step, in collapsible sections
 - The population percentage of a species was divided by Initial population instead of the creatures alive
+- The default `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` was 300 instead of 3. It was above the maximum mass (10 × birth mass), so the Reproduction action could never succeed with the default settings
 - Life history of each creature (parent, children, attacks, kills, photosynthesis, cause of death), shown in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file

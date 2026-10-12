@@ -40,14 +40,9 @@ describe('creature history', () => {
     });
 
     test('reproduction records the parent', () => {
-        // the default needs 300 times the birth mass, more than the maximum mass
-        const data = worldController.simData.worldControllerData;
-        const multiple = data.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH;
-        data.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = 3;
         parent._mass._mass = parent._mass._maxMass;
         const before = worldController.generations.currentCreatures.length;
         parent.reproduce(1);
-        data.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH = multiple;
         const creatures = worldController.generations.currentCreatures;
         expect(creatures.length).toBe(before + 1);
         expect(creatures[creatures.length - 1].parentId).toBe(parent.id);
