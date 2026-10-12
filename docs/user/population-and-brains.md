@@ -13,7 +13,7 @@ The line at the top shows the generation and step, how many creatures are alive 
 Creatures with exactly the same genome belong to the same **species**. Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus.
 
 - The coloured boxes on the right are the 42 largest species, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus and size.
-- Click a box to select that species. Click it again to clear the selection.
+- Click a box to select that species. One of its living creatures is selected too, with a ring around it in the world, so the live values of its network are shown. If the selected creature already belongs to that species, it stays selected. Click the box again to clear both the species and the creature.
 
 Many species in the list have the same colour (in `trophicLevel` mode, species of the same genus have similar shades) and the same count. Usually these are close relatives that differ by one mutation.
 
@@ -25,7 +25,7 @@ When a new generation starts, the selection moves to a creature of the same spec
 
 ![A selected creature](images/canvas_selected.png)
 
-Pause the simulation, or set **Pause between steps** to 200, before you click. The creature you click is the one whose live values appear below. To clear only the creature and keep the species, use the **×** next to its name at the top of the panel.
+Pause the simulation, or set **Pause between steps** to 200, before you click. The creature you click is the one whose live values appear below. To choose a specific creature of a species, click it in the world instead of the species box. To clear only the creature and keep the species, use the **×** next to its name at the top of the panel.
 
 ## Layout of the panel
 
@@ -78,7 +78,7 @@ Hover over a node or a line to see its exact value.
 
 ### Neuronal network: Live values view
 
-When you have clicked a creature of the selected species, a **Live values** / **Structure** switch appears. **Live values** shows what the brain of that creature is doing at the current step.
+When a creature of the selected species is selected (clicking a species box selects one), a **Live values** / **Structure** switch appears. **Live values** shows what the brain of that creature is doing at the current step.
 
 ![Live network values](images/population_network_live.png)
 
