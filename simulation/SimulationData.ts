@@ -4,6 +4,7 @@ import WorldControllerData from "./world/WorldControllerData";
 import WorldObject from "./world/objects/WorldObject";
 import { GenerationRegistry } from "./world/stats/GenerationRegistry";
 import { WaterData } from "./water/WaterData";
+import Genome from "./creature/brain/Genome";
 
 /**
  * Everything that defines a simulation: settings, map and, for a resumed run,
@@ -19,5 +20,7 @@ export type SimulationData = {
     /** Creatures to restore in resumeRun(); undefined for a new run */
     species?: Species[];
     /** Fitness history to restore in resumeRun() */
-    stats?: GenerationRegistry
+    stats?: GenerationRegistry;
+    /** Creatures of the generation to start in startGeneration(), one genome each */
+    startGenomes?: Genome[];
 }

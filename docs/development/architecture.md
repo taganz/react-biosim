@@ -36,7 +36,7 @@ The engine is a plain, mutable object graph. React does not own its state. React
 4. It creates a `WorldCanvas` for the `<canvas>` element and stores it in `worldCanvasAtom`.
 5. It listens to the `redraw` and `startGeneration` events to repaint, and to canvas clicks to select creatures.
 
-Loading a scenario or a file does **not** create a new controller. It calls `startRun()` or `resumeRun()` on the existing one, which rebuilds the grid, the generations and the water inside it.
+Loading a scenario or a file does **not** create a new controller. It calls `startRun()`, `resumeRun()` or `startGeneration()` on the existing one, which rebuilds the grid, the generations and the water inside it.
 
 ## The store
 
@@ -59,7 +59,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 
 | Event | When |
 |---|---|
-| `initializeWorld` | After `startRun()` or `resumeRun()` rebuilds the world |
+| `initializeWorld` | After `startRun()`, `resumeRun()` or `startGeneration()` rebuilds the world |
 | `startGeneration` | At step 1 of every generation |
 | `startStep`, `endStep` | Around every step. `endStep` can fire thousands of times per second. |
 | `redraw` | Every *Immediate steps* steps |

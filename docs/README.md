@@ -8,7 +8,7 @@ How to use the app.
 2. [Population and brains](user/population-and-brains.md): species, selecting creatures, reading neural networks
 3. [Settings and stats](user/settings-and-stats.md): changing the rules, applying changes, reading the fitness chart
 4. [Map editor](user/map-editor.md): obstacles and areas
-5. [Files](user/files.md): save, load, PNG and GIF export
+5. [Files](user/files.md): your own scenarios, save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
 
 ## Simulation model

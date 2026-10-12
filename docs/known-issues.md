@@ -53,12 +53,13 @@ Checked against the code in October 2026. Each item links to the page that expla
   - Complete the Power BI report that analyses the log (`public/analyze simlog.pbix`)
 - Other
   - Remove the Google Analytics and Clarity tags
-  - Option to save a simulation without its creatures
 
 ## Done
 
 These items were on the old list, or found while writing these docs, and are now fixed:
 
+- Saving a simulation without its creatures: **My scenarios** in the Files tab saves the setup, or the genomes at the start of a generation.
+- **Save to file** wrote the generation, step and simulation code from load time instead of the current ones. It also saved each creature's position from the previous step, and loading ignored the saved mass.
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
 - Selected creature information in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
