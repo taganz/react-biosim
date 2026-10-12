@@ -41,7 +41,7 @@ In the first generations creatures move almost at random. After tens or hundreds
 | Restart | Starts again from generation 1. It asks for confirmation, because all evolution so far is lost. |
 | Play / Pause | Stops and resumes the simulation. |
 
-On screens narrower than 1280 px the speed controls are hidden behind the **Speed** button. Click it to open them over the page, and click anywhere else to close them. On phones the Restart and Speed buttons show only their icons, and the Survivors count is hidden.
+The speed controls open from the **Speed** button, in a panel over the page. Click anywhere else to close it. Survivors is shown on screens at least 1024 px wide. On phones the Speed and Restart buttons show only their icons.
 
 The time spent running the simulation is shown in the **Stats** tab.
 

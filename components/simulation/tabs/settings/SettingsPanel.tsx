@@ -114,7 +114,7 @@ export default function SettingsPanel() {
       {/* === APPLY CHANGES === */}
       <div
         className={classNames(
-          "sticky top-0 z-10 flex flex-col gap-2 rounded-md p-3",
+          "sticky top-(--control-bar-height) z-10 flex flex-col gap-2 rounded-md p-3",
           hasPendingChanges ? "bg-grey-mid" : "border border-grey-mid bg-grey-dark"
         )}
       >

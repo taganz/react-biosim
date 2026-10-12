@@ -84,7 +84,7 @@ Water only matters when metabolism is on and creatures use the **Photosynthesis*
 
 ## Control bar: speed controls
 
-These controls change the running simulation immediately. They are saved with the simulation.
+They open from the **Speed** button in the control bar. They change the running simulation immediately and are saved with the simulation.
 
 | Control | Key | Options | Startup | Effect |
 |---|---|---|---|---|
