@@ -99,6 +99,8 @@ The map editor's **Use Map** does the same as Update simulation: it writes the o
 
 `resumeRun(sim, creatures?)` takes its creatures from the `creatures` argument when one is given, and from `sim.species` otherwise. The hot change passes `worldController.generations.currentCreatures`, the creatures alive right now. Loading a file passes nothing, so the saved species are used.
 
+The stats history follows the same rule. A hot change keeps the history of the running simulation, because `sim.stats` in the draft is the history from load time. Loading a file replaces it with the file's `stats`, or with an empty history.
+
 In both cases each creature is **rebuilt** with `WorldGenerations.restoreCreature()`. The rebuilt creature belongs to the new `WorldGenerations`, so it uses the new grid and the new sensor and action configuration. It keeps the genome, position, mass and counters of the original. Creatures that fall outside the new world, or on a cell that is now solid or taken, are dropped.
 
 Do not put the old `Creature` objects back on the new grid. They still point to the old `WorldGenerations`: they would move on the old grid and read the old settings.

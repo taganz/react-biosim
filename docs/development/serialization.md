@@ -46,6 +46,7 @@ Notes:
 - **Strategies and methods** are saved by their `name`, and loading looks the name up in `populationMap` / `selectionMap`. An unknown name falls back to *Asexual Random* or *Inside Reproduction Area*, with a console warning.
 - **Map objects** are saved by class name. Each type needs an entry in `objectFormatters` in [objectsSerialization.ts](../../simulation/serialization/formatters/objectsSerialization.ts): `RectangleObject`, `EllipseObject`, the reproduction and health areas in both shapes, and `RectangleSpawnArea`.
 - **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement and mass are saved for each creature. Ids, age, health and `distanceCovered` are not saved: they restart when the file is loaded.
+- `stats` is left out when **Include the stats history** is unchecked (`serializeSimulationData(worldController, false)`).
 - The run state in `worldControllerData` (`simCode`, `currentGen`, `currentStep`, times and speed) is read from the controller when saving, so a file records where the run is now.
 - `constants` is copied as is, so a file keeps its own `LOG_*`, `DETECT_RADIUS` and other constants.
 - Indentation is controlled by `PRETTIFY_OUTPUT_TO_FILE` and `PRETTIFY_OUTPUT_TO_COPY`.
@@ -61,7 +62,7 @@ Notes:
 
 `loadSavedWorldAndResumeRun` checks for `startGenomes` first: a file that has them calls `startGeneration()` instead of `resumeRun()` (see below).
 
-`species`, `stats` and `startGenomes` are optional. A hand-written scenario that starts from scratch can leave them out.
+`species`, `stats` and `startGenomes` are optional. A hand-written scenario that starts from scratch can leave them out. A file without `stats` starts an empty history; it does not keep the history of the run that was running before.
 
 When a run resumes, every saved creature is rebuilt for the new world (see [Architecture](architecture.md#ui--engine-applying-settings)). A creature whose cell is outside the world, an obstacle or already taken is dropped.
 

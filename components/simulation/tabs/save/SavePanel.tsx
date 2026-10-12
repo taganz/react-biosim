@@ -3,6 +3,8 @@
 import Button from "@/components/global/Button";
 import { simulationDataAtom, worldControllerAtom } from "../../store";
 import { useAtomValue } from "jotai";
+import CheckboxInput from "@/components/global/inputs/CheckboxInput";
+import type WorldController from "@/simulation/world/WorldController";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import { useState } from "react";
 import { saveAs } from "file-saver";
@@ -14,28 +16,22 @@ export default function SavePanel() {
   const simulationData = useAtomValue(simulationDataAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
+  const [includeStats, setIncludeStats] = useState(true);
+
+  const toJson = (worldController: WorldController, prettify: boolean) => {
+    const savedWorld : SavedSimulationData = serializeSimulationData(worldController, includeStats);
+    return prettify ? JSON.stringify(savedWorld, null, 2) : JSON.stringify(savedWorld);
+  };
 
   const handleSave = () => {
     if (worldController) {
-      const savedWorld : SavedSimulationData = serializeSimulationData(worldController);
-      if (simulationData.constants.PRETTIFY_OUTPUT_TO_COPY) {
-        var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
-      } else {
-        var jsonSavedWorld = JSON.stringify(savedWorld);
-      }
-      setDataSavedWorld(jsonSavedWorld);
+      setDataSavedWorld(toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_COPY));
     }
   };
 
-
   const handleSaveToFile = () => {
     if (worldController) {
-      const savedWorld : SavedSimulationData = serializeSimulationData(worldController);
-      if (simulationData.constants.PRETTIFY_OUTPUT_TO_FILE) {
-        var jsonSavedWorld = JSON.stringify(savedWorld, null, 2);  // spacing level = 1
-      } else {
-        var jsonSavedWorld = JSON.stringify(savedWorld);
-      }
+      const jsonSavedWorld = toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_FILE);
       setDataSavedWorld(jsonSavedWorld);
 
       const blob = new Blob ([jsonSavedWorld]  , { type: 'text/plain;charset=utf-8'})
@@ -50,6 +46,12 @@ export default function SavePanel() {
           Save the current simulation state to load it later with &quot;Load&quot; below,
           or show it as JSON code to copy somewhere else.
         </p>
+        <CheckboxInput
+          id="save-include-stats"
+          checked={includeStats}
+          onChange={setIncludeStats}
+          label="Include the stats history (larger for long runs)"
+        />
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleSaveToFile}>Save to file</Button>
           <Button onClick={handleSave}>Show JSON to copy</Button>

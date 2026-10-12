@@ -59,6 +59,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 These items were on the old list, or found while writing these docs, and are now fixed:
 
 - Saving a simulation without its creatures: **My scenarios** in the Files tab saves the setup, or the genomes at the start of a generation.
+- **Update simulation** after loading a file set the stats history back to the one in the file. Loading a file without stats kept the history of the previous run.
+- **Save to file** can leave out the stats history.
 - **Save to file** wrote the generation, step and simulation code from load time instead of the current ones. It also saved each creature's position from the previous step, and loading ignored the saved mass.
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
 - Selected creature information in the Population tab

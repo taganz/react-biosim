@@ -174,8 +174,13 @@ export default class WorldController {
       this.generations.restoreCreature(creature);
     }
     this.generations.startGenomes = startGenomes;
-    if (sim.stats !== undefined) {
-      this.generationRegistry.copyExceptWorldController(sim.stats);
+    // a hot change keeps the history of the running simulation; sim.stats is the one from load time.
+    // A file without stats starts an empty history.
+    if (!creatures) {
+      this.generationRegistry = new GenerationRegistry(this);
+      if (sim.stats !== undefined) {
+        this.generationRegistry.copyExceptWorldController(sim.stats);
+      }
     }
     this.eventLogger.reset();
     this.initialPopulation = sim.worldGenerationsData.initialPopulation;

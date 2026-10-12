@@ -11,6 +11,7 @@ import {
 import { loadSavedSimulationAndStartRun, loadSavedWorldAndResumeRun } from "@/simulation/world/loadWorld";
 import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
+import worldControllerSimDataHotChange from "@/simulation/world/worldControllerSimDataHotChange";
 
 // every creature survives, so each generation is full
 const everybodySurvives: SelectionMethod = {
@@ -155,5 +156,36 @@ describe("user scenarios", () => {
     const savedPositions = saved.species!.flatMap((s) => s.creatures.map((c) => c.position.join(","))).sort();
     const positions = worldController.generations.currentCreatures.map((c) => c.position.join(",")).sort();
     expect(savedPositions).toEqual(positions);
+  });
+
+  test("Save to file can leave out the stats history", async () => {
+    await endGeneration(worldController);
+    expect(serializeSimulationData(worldController).stats!.generations).toHaveLength(1);
+    expect(serializeSimulationData(worldController, false).stats).toBeUndefined();
+  });
+
+  test("loading a file without stats starts an empty history, not the previous run's", async () => {
+    await endGeneration(worldController);
+    const json = JSON.stringify(serializeSimulationData(worldController, false));
+    await endGeneration(worldController);
+    expect(worldController.generationRegistry.generations).toHaveLength(2);
+
+    loadSavedWorldAndResumeRun(worldController, json);
+    worldController.pause();
+
+    expect(worldController.currentGen).toBe(2);
+    expect(worldController.generationRegistry.generations).toEqual([]);
+  });
+
+  test("Update simulation after loading a file keeps the history recorded since the load", async () => {
+    const draft = loadSavedWorldAndResumeRun(worldController, JSON.stringify(serializeSimulationData(worldController)));
+    worldController.pause();
+    await endGeneration(worldController);
+    await endGeneration(worldController);
+
+    worldControllerSimDataHotChange(worldController, draft);
+    worldController.pause();
+
+    expect(worldController.generationRegistry.generations.map((g) => g.generation)).toEqual([1, 2]);
   });
 });

@@ -47,7 +47,8 @@ export default function deserializeSimulationData(worldController: WorldControll
 }
     
 
-export function serializeSimulationData(worldController: WorldController) : SavedSimulationData {
+// includeStats: false leaves out the stats history, which is most of the size of a long run
+export function serializeSimulationData(worldController: WorldController, includeStats: boolean = true) : SavedSimulationData {
   const sim = worldController.simData;  
   const serializedSimulationData : SavedSimulationData = {
         constants : sim.constants, // JSON.stringify(sim.constants),
@@ -56,7 +57,7 @@ export function serializeSimulationData(worldController: WorldController) : Save
         waterData : deserializeWaterData(sim.waterData),
         worldObjects : serializeObjects(sim.worldObjects),
         species: serializeSpecies(worldController),
-        stats: generationRegistryFormatter.serialize(worldController.generationRegistry)
+        ...(includeStats ? { stats: generationRegistryFormatter.serialize(worldController.generationRegistry) } : {}),
        
       // export function deserializeObjects
       //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
@@ -66,7 +67,7 @@ export function serializeSimulationData(worldController: WorldController) : Save
 
 // settings and map only: loading it starts a new run from generation 1
 export function serializeSetup(worldController: WorldController) : SavedSimulationData {
-  const { species, stats, ...setup } = serializeSimulationData(worldController);
+  const { species, ...setup } = serializeSimulationData(worldController, false);
   return {
     ...setup,
     worldControllerData: { ...setup.worldControllerData, currentGen: 1, currentStep: 1, lastGenerationDuration: 0, totalTime: 0 },
@@ -79,11 +80,10 @@ export function serializeSetup(worldController: WorldController) : SavedSimulati
  * most of the size of a long run.
  */
 export function serializeGenerationStart(worldController: WorldController, includeStats: boolean) : SavedSimulationData {
-  const { species, stats, ...setup } = serializeSimulationData(worldController);
+  const { species, ...setup } = serializeSimulationData(worldController, includeStats);
   return {
     ...setup,
     worldControllerData: { ...setup.worldControllerData, currentStep: 1 },
-    ...(includeStats ? { stats } : {}),
     startGenomes: serializeStartGenomes(worldController.generations.startGenomes),
   };
 }
