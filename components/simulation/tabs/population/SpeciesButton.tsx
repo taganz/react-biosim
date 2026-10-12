@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function SpeciesButton({ species, isSelected, onClick }: Props) {
-  const { genome, creatures } = species;
+  const { creatures } = species;
 
   return (
     <div className={classNames("p-0.5", isSelected && "bg-white")}>
@@ -17,7 +17,7 @@ export default function SpeciesButton({ species, isSelected, onClick }: Props) {
           "h-10 w-10",
           isSelected && "border-2 border-white"
         )}
-        style={{ backgroundColor: genome.getColor() }}
+        style={{ backgroundColor: species.getColor() }}
         onClick={() => onClick && onClick(species)}
       >
         <span className="text-shadow-sm">{creatures.length}</span>

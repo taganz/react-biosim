@@ -6,13 +6,13 @@ The **Population** tab shows what is alive and how it thinks.
 
 ## Species
 
-Creatures with exactly the same genome belong to the same **species**. Each species has a colour taken from its genome.
+Creatures with exactly the same genome belong to the same **species**. Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus.
 
 - **Total alive creatures** and **Total species alive** are counted at the start of each generation.
 - The coloured boxes on the right are the 42 largest species. Each box shows how many creatures the species has.
 - Click a box to select that species. Click it again to clear the selection.
 
-Many species in the list have the same colour and the same count. Usually these are close relatives that differ by one mutation.
+Many species in the list have the same colour (in `trophicLevel` mode, species of the same genus have similar shades) and the same count. Usually these are close relatives that differ by one mutation.
 
 ## Selecting a creature
 
