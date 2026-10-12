@@ -31,7 +31,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 
 ### Older reports, not re-checked
 
-- Strange behaviour of the speed controls after a restart. A likely cause: the control bar keeps its own values in Jotai atoms, and loading a file does not update them.
 - Tabs not refreshing on a simulation restart.
 - A `removeCreature` error on restart.
 

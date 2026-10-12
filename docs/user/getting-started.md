@@ -37,7 +37,7 @@ In the first generations creatures move almost at random. After tens or hundreds
 | Survivors | Share of the population that survived the last generation. |
 | Pause between steps (ms) | Slows the simulation down. Use 50 or 200 to follow individual creatures. |
 | Pause between generations (ms) | Holds the last step of each generation on screen so you can see who survived. |
-| Immediate steps | Steps computed before the world is redrawn. **200 runs at full speed.** |
+| Immediate steps | Steps computed before the world is redrawn. **200 runs at full speed.** Choosing 20 or 200 sets both pauses to 0. |
 | Restart | Starts again from generation 1. It asks for confirmation, because all evolution so far is lost. |
 | Play / Pause | Stops and resumes the simulation. |
 

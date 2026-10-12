@@ -84,13 +84,13 @@ Water only matters when metabolism is on and creatures use the **Photosynthesis*
 
 ## Control bar: speed controls
 
-They open from the **Speed** button in the control bar. They change the running simulation immediately and are saved with the simulation.
+They open from the **Speed** button in the control bar. They change the running simulation immediately and are saved with the simulation. They are a viewer preference: Restart, loading a file or scenario, and **Update simulation** keep the values chosen in the control bar, and the values saved in a file are not used.
 
 | Control | Key | Options | Startup | Effect |
 |---|---|---|---|---|
 | Pause between steps (ms) | `worldControllerData.pauseBetweenSteps` | 0, 10, 50, 200 | 10 | Wait after each batch of steps. |
 | Pause between generations (ms) | `worldControllerData.pauseBetweenGenerations` | 0, 1000, 4000 | 0 | Wait at the end of each generation. |
-| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. |
+| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. Choosing 20 or 200 sets both pauses to 0. |
 
 ## Not in the UI
 

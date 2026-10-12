@@ -213,14 +213,19 @@ export default class WorldController {
     this.stepsPerGen = worldControllerData.stepsPerGen;
     this.pauseBetweenSteps = worldControllerData.pauseBetweenSteps;
     this.immediateSteps = worldControllerData.immediateSteps;
+    this._immediateStepsCounter = this.immediateSteps;
     this.pauseBetweenGenerations = worldControllerData.pauseBetweenGenerations;
 
   }
 
-  // speed controls of the footer; they apply from the next step
+  // speed controls of the control bar; they apply from the next step
   public setSpeed(pauseBetweenSteps: number, pauseBetweenGenerations: number, immediateSteps: number) : void {
     this.pauseBetweenSteps = pauseBetweenSteps;
     this.pauseBetweenGenerations = pauseBetweenGenerations;
+    // restart the count, otherwise going from 200 to 20 waits for the rest of the 200 steps
+    if (immediateSteps !== this.immediateSteps) {
+      this._immediateStepsCounter = immediateSteps;
+    }
     this.immediateSteps = immediateSteps;
   }
 

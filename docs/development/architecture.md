@@ -49,7 +49,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `simulationDataAtom` | The **draft** `SimulationData` edited in the Settings tab. It is not the running configuration: that lives in `worldController.simData`. |
 | `selectedCreatureAtom`, `selectedSpeciesAtom` | The selection made on the canvas or in the Population tab. |
 | `eventLoggerAtom` | The controller's `EventLogger`. |
-| `pauseBetweenStepsAtom`, `pauseBetweenGenerationsAtom`, `immediateStepsAtom` | Speed controls in the control bar. `useSpeedSync()`, called by `ControlBar`, passes them to `worldController.setSpeed()`. |
+| `pauseBetweenStepsAtom`, `pauseBetweenGenerationsAtom`, `immediateStepsAtom` | Speed controls in the control bar. `useSpeedSync()`, called by `ControlBar`, passes them to `worldController.setSpeed()` when they change and again on every `initializeWorld`, because starting or loading a run reads the speed from the simulation data. |
 | `mapDesigner*Atom` | Map editor state (objects, selection, fullscreen). |
 | `gif.ts` atoms | GIF recorder state. |
 
