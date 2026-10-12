@@ -82,7 +82,7 @@ The startup scenario enables the first 10 sensors (positions, age, oscillator, r
 
 Water only matters when metabolism is on and creatures use the **Photosynthesis** action.
 
-## Footer: speed controls
+## Control bar: speed controls
 
 These controls change the running simulation immediately. They are saved with the simulation.
 

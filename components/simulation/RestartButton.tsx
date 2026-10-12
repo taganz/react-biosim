@@ -30,8 +30,8 @@ export default function RestartButton() {
   };
 
   return (
-    <Button variant="danger" icon={<FaRedo />} onClick={handleClick}>
-      Restart
+    <Button variant="danger" icon={<FaRedo />} aria-label="Restart" title="Restart" onClick={handleClick}>
+      <span className="hidden sm:inline">Restart</span>
     </Button>
   );
 }

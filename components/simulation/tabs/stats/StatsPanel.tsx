@@ -5,6 +5,7 @@ import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
 import WorldWaterStatus from "./WorldWaterStatus";
 import LoggerStatus from "./LoggerStatus";
+import RunTimes from "./RunTimes";
 import useWorldValue from "@/hooks/useWorldValue";
 
 const NO_GENERATIONS: SingleGeneration[] = [];
@@ -66,6 +67,7 @@ export default function StatsPanel() {
         yLabelFormatter={maxFitnessFormatter}
         className="aspect-[2/1] w-full bg-white"
       />
+      <RunTimes />
      {/* TODO genus graph.... */ }
      </div>
 

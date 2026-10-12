@@ -23,7 +23,7 @@ export default function Toggle({
   const finalClassName = classNames(
     "py-2 px-2 text-sm !leading-none border-2",
     "first:rounded-l-md last:rounded-r-md",
-    // selected option stands out from the grey footer and from the other options
+    // selected option stands out from the grey control bar and from the other options
     isActive && "bg-white text-grey-dark border-white",
     !isActive && "bg-grey-dark text-white border-grey-dark hover:border-white/50",
     className
