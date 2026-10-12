@@ -1,17 +1,20 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom } from "jotai";
 import { worldControllerAtom, selectedCreatureAtom } from "../../store";
 import { useMemo, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
-import SelectedCreaturedInfo from "./SelectedCreatureInfo";
+import SelectedCreatureInfo from "./SelectedCreatureInfo";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
+import CollapsibleSection from "./CollapsibleSection";
+import CreatureToolbar from "./CreatureToolbar";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
 import { computeInfluences } from "@/simulation/creature/brain/Helpers/networkInfluence";
 import { initialNeuronOutput } from "@/simulation/creature/brain/CreatureBrain";
+import { GENUS_LABELS } from "./genusLabels";
 
 interface Props {
   species: Species[];
@@ -23,20 +26,20 @@ export default function SelectedSpeciesPanel({
   selectedSpecies,
 }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
-  const selectedCreature = useAtomValue(selectedCreatureAtom);
+  const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const [networkView, setNetworkView] = useState<"live" | "structure">("live");
 
   const actualSelectedSpecies =
     selectedSpecies &&
     species.find((item) => item.genomeKey === selectedSpecies.genomeKey);
 
-  const aliveCreatures =
-    (actualSelectedSpecies && actualSelectedSpecies.creatures.length) ?? 0;
+  const aliveCreatures = actualSelectedSpecies?.creatures.length ?? 0;
 
+  // the species list is grouped at the start of the generation, so the percentage uses
+  // the creatures alive at that moment
+  const totalCreatures = species.reduce((total, item) => total + item.creatures.length, 0);
   const populationPercentage = (
-    actualSelectedSpecies && worldController
-      ? (actualSelectedSpecies.creatures.length / worldController.initialPopulation) * 100
-      : 0
+    totalCreatures > 0 ? (aliveCreatures / totalCreatures) * 100 : 0
   ).toFixed(2);
 
   // every creature of a species shares the genome, so any of them has the species network
@@ -60,127 +63,134 @@ export default function SelectedSpeciesPanel({
       : undefined;
   const showLive = liveCreature !== undefined && networkView === "live";
 
+  const genus = selectedSpecies?.creatures[0]?.genus ?? "unknown";
+
+  if (!worldController || (!selectedSpecies && !selectedCreature)) {
+    return (
+      <div className="flex max-w-md flex-col gap-6 text-lg">
+        <p className="mb-2">
+          The colorful boxes to the right are the top species on the current
+          generation. The list is ordered by population.
+        </p>
+        <p>
+          Click one of the boxes to see more information about that species
+          (genes, neuronal network, etc). Click a creature on the world to see
+          its own state.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {selectedSpecies && worldController ? (
-        <div className="flex flex-col gap-3">
-          <h3 className="text-center text-2xl font-bold">
-            Selected species{" "}
+    <div className="flex flex-col gap-3">
+      {/* what is selected, at a glance */}
+      <div className="flex flex-wrap items-center gap-2">
+        {selectedSpecies && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border border-grey-mid p-2">
             <span
-              className="text-shadow-sm inline-block p-1"
+              className="text-shadow-sm px-1 text-lg font-bold"
               style={{ backgroundColor: selectedSpecies.getColor() }}
             >
               {selectedSpecies.genome.getHexColor()}
             </span>
-          </h3>
-
-          <div>
+            {genus !== "unknown" && <span>{GENUS_LABELS[genus]}</span>}
             {actualSelectedSpecies ? (
-              <>
-                <div>
-                  <strong>Alive creatures:</strong> {aliveCreatures}
-                </div>
-
-                <div>
-                  <strong>Population percentage:</strong> {populationPercentage}
-                  %
-                </div>
-              </>
+              <span className="tabular-nums">
+                {aliveCreatures} alive · {populationPercentage}%
+              </span>
             ) : (
-              <p className="bg-red p-4">This species went extinct.</p>
+              <span className="bg-red px-1">Extinct</span>
             )}
           </div>
+        )}
+        {selectedCreature && (
+          <div className="flex items-center gap-2 border border-grey-mid p-2">
+            <span>Creature #{selectedCreature.id}</span>
+            <button
+              className="px-1 hover:bg-grey-mid"
+              aria-label="Clear the selected creature"
+              title="Clear the selected creature"
+              onClick={() => setSelectedCreature(null)}
+            >
+              ×
+            </button>
+          </div>
+        )}
+      </div>
 
-          {brainView && (
-            <>
-              <section className="flex flex-col gap-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h4 className="text-xl font-bold">Neuronal network</h4>
-                  {liveCreature && (
-                    <ToggleGroup
-                      role="group"
-                      aria-label="Network view"
-                      value={networkView}
-                      onChange={setNetworkView}
-                    >
-                      <Toggle value="live">Live values</Toggle>
-                      <Toggle value="structure">Structure</Toggle>
-                    </ToggleGroup>
-                  )}
-                </div>
-                {!liveCreature && (
-                  <p className="text-xs">
-                    Click a creature of this species on the world to see its live network values.
-                  </p>
-                )}
-                {showLive ? (
-                  <LiveNetworkDiagram
-                    creature={liveCreature}
-                    sensorLabels={brainView.labels.sensors}
-                    actionLabels={brainView.labels.actions}
-                  />
-                ) : (
-                  <>
-                    <NetworkDiagram
-                      network={brainView.network}
-                      sensorLabels={brainView.labels.sensors}
-                      actionLabels={brainView.labels.actions}
-                    />
-                    <NetworkLegend />
-                  </>
-                )}
-              </section>
+      {selectedCreature && (
+        <CollapsibleSection title={`Creature #${selectedCreature.id}`} defaultOpen>
+          {/* remounted for each creature, so a log message does not carry over */}
+          <CreatureToolbar key={`${selectedCreature.birthGen}-${selectedCreature.id}`} creature={selectedCreature} />
+          <SelectedCreatureInfo creature={selectedCreature} />
+        </CollapsibleSection>
+      )}
 
-              <section className="flex flex-col gap-2">
-                <h4 className="text-xl font-bold">What drives each action</h4>
-                <NetworkInfluenceTable
-                  influences={brainView.influences}
+      {selectedSpecies && brainView && (
+        <>
+          <CollapsibleSection title="Neuronal network" defaultOpen>
+            {liveCreature ? (
+              <ToggleGroup
+                role="group"
+                aria-label="Network view"
+                value={networkView}
+                onChange={setNetworkView}
+              >
+                <Toggle value="live">Live values</Toggle>
+                <Toggle value="structure">Structure</Toggle>
+              </ToggleGroup>
+            ) : (
+              <p className="text-xs">
+                Click a creature of this species on the world to see its live network values.
+              </p>
+            )}
+            {showLive ? (
+              <LiveNetworkDiagram
+                creature={liveCreature}
+                sensorLabels={brainView.labels.sensors}
+                actionLabels={brainView.labels.actions}
+              />
+            ) : (
+              <>
+                <NetworkDiagram
+                  network={brainView.network}
                   sensorLabels={brainView.labels.sensors}
                   actionLabels={brainView.labels.actions}
                 />
-              </section>
-            </>
-          )}
+                <NetworkLegend />
+              </>
+            )}
+          </CollapsibleSection>
+
+          <CollapsibleSection title="What drives each action" defaultOpen>
+            <NetworkInfluenceTable
+              influences={brainView.influences}
+              sensorLabels={brainView.labels.sensors}
+              actionLabels={brainView.labels.actions}
+            />
+          </CollapsibleSection>
+        </>
+      )}
+
+      {selectedSpecies && (
+        <CollapsibleSection title="Genome">
+          <div>
+            <strong>Genome size:</strong> {selectedSpecies.genome.genes.length}
+          </div>
 
           <div>
-            <div>
-              <strong>Genome size:</strong>{" "}
-              {selectedSpecies.genome.genes.length}
-            </div>
-
-            <div>
-              <strong>Hexadecimal genome:</strong>
-              <br />
-              <CopyToClipboardTextarea
-                value={selectedSpecies.genome.toHexadecimalString()}
-              />
-            </div>
-
-            <div>
-              <strong>Binary genome:</strong>
-              <br />
-              <CopyToClipboardTextarea
-                value={selectedSpecies.genome.toBitString()}
-              />
-            </div>
+            <strong>Hexadecimal genome:</strong>
+            <br />
+            <CopyToClipboardTextarea value={selectedSpecies.genome.toHexadecimalString()} />
           </div>
-        </div>
-      ) : (
-        <div className="flex max-w-md flex-col gap-6 text-lg">
-          <p className="mb-2">
-            The colorful boxes to the right are the top species on the current
-            generation. The list is ordered by population.
-          </p>
-          <p>
-            Click one of the boxes to see more information about that species
-            (genes, neuronal network, etc).
-          </p>
-        </div>
-      )}
-      <div>
-      <SelectedCreaturedInfo creature={worldController!.generations.currentCreatures[0]}></SelectedCreaturedInfo>
 
-      </div>
-    </>
+          <div>
+            <strong>Binary genome:</strong>
+            <br />
+            <CopyToClipboardTextarea value={selectedSpecies.genome.toBitString()} />
+          </div>
+        </CollapsibleSection>
+      )}
+    </div>
   );
 }

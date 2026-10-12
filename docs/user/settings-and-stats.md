@@ -65,5 +65,5 @@ Typical shapes:
 
 Expand this section to see:
 
-- **Logger.** Records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.
+- **Logger.** Records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.
 - **Water.** Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled.

@@ -49,7 +49,7 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
           const parent = shuffledParents[parentIdx];
           let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
           if (position != null) {
-            worldGenerations.newCreature(position, false, parent.brain.genome);
+            worldGenerations.newCreature(position, false, parent.brain.genome, parent);
           }
           else {
             console.warn("no free position found 2");
@@ -70,7 +70,7 @@ export default class AsexualRandomPopulation implements PopulationStrategy {
             }
             let position : GridPosition | null = worldGenerations.grid.getRandomAvailablePosition();
             if (position != null) {
-              worldGenerations.newCreature(position, false, parent.brain.genome);
+              worldGenerations.newCreature(position, false, parent.brain.genome, parent);
             }
             else {
               console.warn("no free position found 2");
