@@ -173,6 +173,13 @@ export default class WorldController {
 
   }
 
+  // speed controls of the footer; they apply from the next step
+  public setSpeed(pauseBetweenSteps: number, pauseBetweenGenerations: number, immediateSteps: number) : void {
+    this.pauseBetweenSteps = pauseBetweenSteps;
+    this.pauseBetweenGenerations = pauseBetweenGenerations;
+    this.immediateSteps = immediateSteps;
+  }
+
   // generations enters mainLoop() with currentCreatures already populated
   // Runs several steps per timer tick: browsers clamp chained setTimeout calls
   // to ~4ms, so one step per tick would cap the simulation at ~250 steps/s.

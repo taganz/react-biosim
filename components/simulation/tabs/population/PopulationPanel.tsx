@@ -2,7 +2,7 @@
 
 import { useAtomValue, useAtom } from "jotai";
 import { worldControllerAtom, selectedSpeciesAtom } from "../../store";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
 import { Species } from "../../../../simulation/creature/Species";
@@ -12,14 +12,14 @@ import SpeciesButton from "./SpeciesButton";
 export default function PopulationPanel() {
   const worldController = useAtomValue(worldControllerAtom);
 
-  const [species, setSpecies] = useState<Species[]>([]);
+  // bumped at the start of each generation, so the species are computed again
+  const [generationKey, setGenerationKey] = useState(0);
   // shared with SimulationCanvas, which selects the species of the clicked creature
   const [selectedSpecies, setSelectedSpecies] = useAtom(selectedSpeciesAtom);
-  const renderedSpecies = species.slice(0, 42);
 
-  // create species[], order by population and set to atom
-  const onStartGeneration = useCallback(() => {
-    if (!worldController) return;
+  // create species[], order by population
+  const species = useMemo(() => {
+    if (!worldController) return [];
 
     const creatureMap = new Map<string, Species>();
 
@@ -46,13 +46,16 @@ export default function PopulationPanel() {
       (a, b) => b.creatures.length - a.creatures.length
     );
 
-    setSpecies(newSpecies);
-  }, [worldController]);
+    return newSpecies;
+    // generationKey is not read, but a new generation has new creatures
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [worldController, generationKey]);
+  const renderedSpecies = species.slice(0, 42);
 
   // Bind worldController events
   useEffect(() => {
     if (worldController) {
-      onStartGeneration();
+      const onStartGeneration = () => setGenerationKey((key) => key + 1);
 
       worldController.events.addEventListener(
         WorldEvents.startGeneration,
@@ -66,7 +69,7 @@ export default function PopulationPanel() {
         );
       };
     }
-  }, [onStartGeneration, worldController]);
+  }, [worldController]);
 
   const totalAliveCreatures = worldController?.generations.currentCreatures.length ?? 0;
   const totalSpeciesAlive = species.length;

@@ -6,7 +6,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 
 - `npm run dev`: dev server on http://localhost:3000
 - `npm test`: Jest. `EventLogger.test.ts` has 16 known failures, and every other suite must pass.
-- `npx tsc --noEmit`: type check. `npm run lint`: ESLint CLI with `eslint.config.mjs` (18 known warnings from the React Compiler rules).
+- `npx tsc --noEmit`: type check. `npm run lint`: ESLint CLI with `eslint.config.mjs`, must report nothing.
 
 ## Layout
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { worldControllerAtom } from "../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { useWindowSize } from "react-use";
@@ -33,21 +33,12 @@ export default function MapDesignerCanvas() {
   const selectedObject =
     selectedObjectIndex != undefined ? objects[selectedObjectIndex] : undefined;
 
-  // Mouse interaction
-  const { events, normalizedMousePosition, isClicking, isDragging } =
-    useMouseClickAndDrag(canvas);
-
-  // Mouse dragging
-  const [isDraggingObject, setIsDraggingObject] = useState(false);
-  const [startDragMousePos, setStartDragMousePos] = useState<
-    Coordinates | undefined
+  // The object being dragged: the handle (undefined to move it), and where the
+  // mouse and the object were when the drag started
+  const drag = useRef<
+    | { handle: number | undefined; startMouse: Coordinates; startTarget: Coordinates }
+    | undefined
   >(undefined);
-  const [startDragTargetPos, setStartDragTargetPos] = useState<
-    Coordinates | undefined
-  >(undefined);
-  const [draggedHandle, setDraggedHandle] = useState<number | undefined>(
-    undefined
-  );
 
   // Draw the objects, outlines and handles
   const draw = useCallback(() => {
@@ -72,164 +63,138 @@ export default function MapDesignerCanvas() {
     }
   }, [objects, selectedObjectIndex, worldSize]);
 
-  const updateObjects = useCallback(() => {
-    setObjects((value) => value.map((obj) => obj.clone()));
-  }, [setObjects]);
-
-  // Move objecs
-  useEffect(() => {
-    if (!canvas.current) return;
-
-    let startedDragging = false;
-
-    if (isDragging && selectedObject) {
-      if (isDraggingObject) {
-        if (!startDragMousePos || !startDragTargetPos) {
-          // Save the start position of the mouse and the object
-          setStartDragMousePos({
-            x: normalizedMousePosition.x,
-            y: normalizedMousePosition.y,
-          });
-          setStartDragTargetPos({ x: selectedObject.x, y: selectedObject.y });
-        } else {
-          if (draggedHandle != undefined) {
-            const mousePosition = roundCoordinates(
-              normalizedMousePosition,
-              worldSize
-            );
-            const normalizedHandles = getHandles(selectedObject);
-
-            let anchor1 = { x: 0, y: 0 };
-            let anchor2 = { x: 0, y: 0 };
-
-            if (draggedHandle === 0) {
-              anchor1 = { x: mousePosition.x, y: mousePosition.y };
-              anchor2 = {
-                x: normalizedHandles[2].x,
-                y: normalizedHandles[2].y,
-              };
-            } else if (draggedHandle === 1) {
-              anchor1 = { x: normalizedHandles[0].x, y: mousePosition.y };
-              anchor2 = { x: mousePosition.x, y: normalizedHandles[2].y };
-            } else if (draggedHandle === 2) {
-              anchor1 = {
-                x: normalizedHandles[0].x,
-                y: normalizedHandles[0].y,
-              };
-              anchor2 = { x: mousePosition.x, y: mousePosition.y };
-            } else if (draggedHandle === 3) {
-              anchor1 = { x: mousePosition.x, y: normalizedHandles[0].y };
-              anchor2 = { x: normalizedHandles[2].x, y: mousePosition.y };
-            }
-
-            const newPosition = { x: anchor1.x, y: anchor1.y };
-            const newSize = {
-              x: anchor2.x - anchor1.x,
-              y: anchor2.y - anchor1.y,
-            };
-
-            if (
-              selectedObject.x !== newPosition.x ||
-              selectedObject.y !== newPosition.y ||
-              selectedObject.width !== newSize.x ||
-              selectedObject.height !== newSize.y
-            ) {
-              selectedObject.x = newPosition.x;
-              selectedObject.y = newPosition.y;
-              selectedObject.width = newSize.x;
-              selectedObject.height = newSize.y;
-              updateObjects();
-            }
-          } else {
-            const mousePosition = roundCoordinates(
-              {
-                x:
-                  startDragTargetPos.x +
-                  (normalizedMousePosition.x - startDragMousePos.x),
-                y:
-                  startDragTargetPos.y +
-                  (normalizedMousePosition.y - startDragMousePos.y),
-              },
-              worldSize
-            );
-
-            if (
-              selectedObject.x !== mousePosition.x ||
-              selectedObject.y !== mousePosition.y
-            ) {
-              // Only apply it if there were any change
-              selectedObject.x = mousePosition.x;
-              selectedObject.y = mousePosition.y;
-              updateObjects();
-            }
-          }
+  // the objects are atom state: apply the change to a clone of the selected one
+  const updateSelectedObject = (x: number, y: number, width: number, height: number) => {
+    setObjects((value) =>
+      value.map((obj, index) => {
+        const copy = obj.clone();
+        if (index === selectedObjectIndex) {
+          copy.x = x;
+          copy.y = y;
+          copy.width = width;
+          copy.height = height;
         }
-      } else {
-        // Check if mouse is inside a handle
-        let targetHandle: undefined | number = undefined;
-        const normalizedHandles = getHandles(selectedObject);
-        const handleNormalizedSize = HANDLE_SIZE / canvas.current.width;
-        for (let index = 0; index < normalizedHandles.length; index++) {
-          const handle = normalizedHandles[index];
-          const xDistance = Math.abs(normalizedMousePosition.x - handle.x);
-          const yDistance = Math.abs(normalizedMousePosition.y - handle.y);
+        return copy;
+      })
+    );
+  };
 
-          if (
-            xDistance < handleNormalizedSize &&
-            yDistance < handleNormalizedSize
-          ) {
-            targetHandle = index;
-            break;
-          }
-        }
+  const onDragStart = (mousePosition: Coordinates) => {
+    if (!selectedObject || !canvas.current) return;
 
-        if (targetHandle != undefined) {
-          setDraggedHandle(targetHandle);
-          setIsDraggingObject(true);
-          startedDragging = true;
-        } else if (
-          areCoordinatesInsideObject(normalizedMousePosition, selectedObject)
-        ) {
-          // Start dragging an object
-          setIsDraggingObject(true);
-          startedDragging = true;
-        }
+    // Check if mouse is inside a handle
+    let targetHandle: undefined | number = undefined;
+    const normalizedHandles = getHandles(selectedObject);
+    const handleNormalizedSize = HANDLE_SIZE / canvas.current.width;
+    for (let index = 0; index < normalizedHandles.length; index++) {
+      const handle = normalizedHandles[index];
+      const xDistance = Math.abs(mousePosition.x - handle.x);
+      const yDistance = Math.abs(mousePosition.y - handle.y);
+
+      if (xDistance < handleNormalizedSize && yDistance < handleNormalizedSize) {
+        targetHandle = index;
+        break;
+      }
+    }
+
+    if (
+      targetHandle != undefined ||
+      areCoordinatesInsideObject(mousePosition, selectedObject)
+    ) {
+      // Save the start position of the mouse and the object
+      drag.current = {
+        handle: targetHandle,
+        startMouse: { x: mousePosition.x, y: mousePosition.y },
+        startTarget: { x: selectedObject.x, y: selectedObject.y },
+      };
+    }
+  };
+
+  const onDrag = (normalizedMousePosition: Coordinates) => {
+    if (!drag.current || !selectedObject) return;
+    const { handle, startMouse, startTarget } = drag.current;
+
+    if (handle != undefined) {
+      // Resize the object: the handle follows the mouse, the opposite corner stays
+      const mousePosition = roundCoordinates(normalizedMousePosition, worldSize);
+      const normalizedHandles = getHandles(selectedObject);
+
+      let anchor1 = { x: 0, y: 0 };
+      let anchor2 = { x: 0, y: 0 };
+
+      if (handle === 0) {
+        anchor1 = { x: mousePosition.x, y: mousePosition.y };
+        anchor2 = { x: normalizedHandles[2].x, y: normalizedHandles[2].y };
+      } else if (handle === 1) {
+        anchor1 = { x: normalizedHandles[0].x, y: mousePosition.y };
+        anchor2 = { x: mousePosition.x, y: normalizedHandles[2].y };
+      } else if (handle === 2) {
+        anchor1 = { x: normalizedHandles[0].x, y: normalizedHandles[0].y };
+        anchor2 = { x: mousePosition.x, y: mousePosition.y };
+      } else if (handle === 3) {
+        anchor1 = { x: mousePosition.x, y: normalizedHandles[0].y };
+        anchor2 = { x: normalizedHandles[2].x, y: mousePosition.y };
+      }
+
+      const newSize = { x: anchor2.x - anchor1.x, y: anchor2.y - anchor1.y };
+
+      if (
+        selectedObject.x !== anchor1.x ||
+        selectedObject.y !== anchor1.y ||
+        selectedObject.width !== newSize.x ||
+        selectedObject.height !== newSize.y
+      ) {
+        updateSelectedObject(anchor1.x, anchor1.y, newSize.x, newSize.y);
       }
     } else {
-      setIsDraggingObject(false);
-      setStartDragMousePos(undefined);
-      setStartDragTargetPos(undefined);
-      setDraggedHandle(undefined);
-    }
+      // Move the object
+      const mousePosition = roundCoordinates(
+        {
+          x: startTarget.x + (normalizedMousePosition.x - startMouse.x),
+          y: startTarget.y + (normalizedMousePosition.y - startMouse.y),
+        },
+        worldSize
+      );
 
-    if (isClicking && !isDraggingObject && !startedDragging) {
-      const reversedObjects = [...objects].reverse();
-      for (let index = 0; index < reversedObjects.length; index++) {
-        const obj = reversedObjects[index];
-
-        if (
-          obj !== selectedObject &&
-          areCoordinatesInsideObject(normalizedMousePosition, obj)
-        ) {
-          setSelectedObjectIndex(objects.indexOf(obj));
-          break;
-        }
+      // Only apply it if there were any change
+      if (selectedObject.x !== mousePosition.x || selectedObject.y !== mousePosition.y) {
+        updateSelectedObject(
+          mousePosition.x,
+          mousePosition.y,
+          selectedObject.width,
+          selectedObject.height
+        );
       }
     }
-  }, [
-    draggedHandle,
-    isClicking,
-    isDragging,
-    isDraggingObject,
-    normalizedMousePosition,
-    objects,
-    selectedObject,
-    setSelectedObjectIndex,
-    startDragMousePos,
-    startDragTargetPos,
-    updateObjects,
-    worldSize,
-  ]);
+  };
+
+  const onDragEnd = () => {
+    drag.current = undefined;
+  };
+
+  // Select the top object under the mouse, other than the selected one
+  const onClick = (normalizedMousePosition: Coordinates) => {
+    const reversedObjects = [...objects].reverse();
+    for (let index = 0; index < reversedObjects.length; index++) {
+      const obj = reversedObjects[index];
+
+      if (
+        obj !== selectedObject &&
+        areCoordinatesInsideObject(normalizedMousePosition, obj)
+      ) {
+        setSelectedObjectIndex(objects.indexOf(obj));
+        break;
+      }
+    }
+  };
+
+  // Mouse interaction
+  const { events } = useMouseClickAndDrag(canvas, {
+    onClick,
+    onDragStart,
+    onDrag,
+    onDragEnd,
+  });
 
   // Draw the map
   useEffect(() => {

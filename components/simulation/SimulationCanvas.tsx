@@ -143,7 +143,9 @@ export default function SimulationCanvas({ className }: Props) {
   // creature of the same species. Offspring mutate often, so when no creature has the exact
   // genome, the closest relative (most genes in common) and its species are selected instead
   const selectedCreatureRef = useRef(selectedCreature);
-  selectedCreatureRef.current = selectedCreature;
+  useEffect(() => {
+    selectedCreatureRef.current = selectedCreature;
+  }, [selectedCreature]);
   useEffect(
     function followSelectedSpecies() {
       if (!worldController) return;

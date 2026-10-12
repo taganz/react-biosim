@@ -9,6 +9,7 @@ import {
 import Button from "@/components/global/Button";
 import { useCallback, useEffect } from "react";
 import { HealthArea } from "@/simulation/world/areas/health/HealthArea";
+import WorldObject from "@/simulation/world/objects/WorldObject";
 import { FaClone, FaTrash } from "react-icons/fa";
 
 export default function MapDesignerLayerProperties() {
@@ -28,42 +29,44 @@ export default function MapDesignerLayerProperties() {
       ? castedHealthArea
       : undefined;
 
-  const update = () => {
-    setObjects(objects.map((obj) => obj.clone()));
+  // the objects are atom state: change a clone of the selected one
+  const update = (change: (obj: WorldObject) => void) => {
+    setObjects(
+      objects.map((obj, index) => {
+        const copy = obj.clone();
+        if (index === selectedObjectIndex) change(copy);
+        return copy;
+      })
+    );
   };
 
   const updateX = (value: number) => {
     if (selectedObject && !isNaN(value)) {
-      selectedObject.x = value;
-      update();
+      update((obj) => (obj.x = value));
     }
   };
 
   const updateY = (value: number) => {
     if (selectedObject && !isNaN(value)) {
-      selectedObject.y = value;
-      update();
+      update((obj) => (obj.y = value));
     }
   };
 
   const updateWidth = (value: number) => {
     if (selectedObject && !isNaN(value)) {
-      selectedObject.width = value;
-      update();
+      update((obj) => (obj.width = value));
     }
   };
 
   const updateHeight = (value: number) => {
     if (selectedObject && !isNaN(value)) {
-      selectedObject.height = value;
-      update();
+      update((obj) => (obj.height = value));
     }
   };
 
   const updateHealth = (value: number) => {
     if (selectedHealthArea && !isNaN(value)) {
-      selectedHealthArea.health = value;
-      update();
+      update((obj) => ((obj as HealthArea).health = value));
     }
   };
 

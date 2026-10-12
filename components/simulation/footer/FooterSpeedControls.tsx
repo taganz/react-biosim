@@ -27,9 +27,7 @@ export function FooterSpeedControls({ className, ...rest }: Props) {
 
   useEffect(()=>{
     if (worldController) {
-      worldController.pauseBetweenSteps = pauseBetweenSteps;
-      worldController.pauseBetweenGenerations = pauseBetweenGenerations;
-      worldController.immediateSteps = immediateSteps;
+      worldController.setSpeed(pauseBetweenSteps, pauseBetweenGenerations, immediateSteps);
       //console.log("FooterSpeedControls - updated immediateSteps:", immediateSteps, worldController.immediateSteps);
     }
     else {

@@ -1,89 +1,75 @@
 import { Coordinates } from "@/helpers/coordinates";
 import { getEventRelativeMousePosition } from "@/helpers/mouse";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useRef } from "react";
+
+// Positions passed to the callbacks are normalized (0 - 1) to the element
+interface Callbacks {
+  onClick?: (position: Coordinates) => void;
+  // called once the mouse moves more than 6px with the button down;
+  // position is where the button was pressed
+  onDragStart?: (position: Coordinates) => void;
+  onDrag?: (position: Coordinates) => void;
+  onDragEnd?: () => void;
+}
 
 export default function useMouseClickAndDrag(
-  element: React.RefObject<HTMLElement | null>
+  element: React.RefObject<HTMLElement | null>,
+  { onClick, onDragStart, onDrag, onDragEnd }: Callbacks
 ) {
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const [mousePositionWhenClicked, setNormalizedMouseWhenClicked] =
-    useState<Coordinates>({
-      x: 0,
-      y: 0,
-    });
-  const [normalizedMousePosition, setNormalizedMousePosition] =
-    useState<Coordinates>({
-      x: 0,
-      y: 0,
-    });
-  const [isClicking, setIsClicking] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const isMouseDown = useRef(false);
+  const isDragging = useRef(false);
+  // in pixels, to measure the distance to the first click
+  const pixelPositionWhenClicked = useRef<Coordinates>({ x: 0, y: 0 });
+  const normalizedPositionWhenClicked = useRef<Coordinates>({ x: 0, y: 0 });
 
   const onPointerMove = (e: MouseEvent) => {
     if (!element.current) return;
     e.preventDefault();
 
-    if (element.current) {
-      // Get the normalized position
-      const normalizedPosition = getEventRelativeMousePosition(
-        element.current,
-        e,
-        true
+    if (!isMouseDown.current) return;
+    const normalizedPosition = getEventRelativeMousePosition(element.current, e, true);
+
+    if (!isDragging.current) {
+      // Get position in pixels
+      const position = getEventRelativeMousePosition(element.current, e, false);
+
+      // Measure the distance to the fist click
+      const distanceFromFirstClick = Math.sqrt(
+        Math.pow(position.x - pixelPositionWhenClicked.current.x, 2) +
+          Math.pow(position.y - pixelPositionWhenClicked.current.y, 2)
       );
-      setNormalizedMousePosition(normalizedPosition);
+      if (distanceFromFirstClick <= 6) return;
 
-      if (isMouseDown) {
-        // Get position in pixels
-        const position = getEventRelativeMousePosition(
-          element.current,
-          e,
-          false
-        );
-
-        // Measure the distance to the fist click
-        const distanceFromFirstClick = Math.sqrt(
-          Math.pow(position.x - mousePositionWhenClicked.x, 2) +
-            Math.pow(position.y - mousePositionWhenClicked.y, 2)
-        );
-
-        if (distanceFromFirstClick > 6) {
-          setIsDragging(true);
-        }
-      }
+      isDragging.current = true;
+      onDragStart?.(normalizedPositionWhenClicked.current);
     }
+    onDrag?.(normalizedPosition);
   };
 
   const onPointerDown = (e: MouseEvent) => {
     if (!element.current) return;
     e.preventDefault();
 
-    setIsMouseDown(true);
-    const mousePosition = getEventRelativeMousePosition(element.current, e);
-    setNormalizedMouseWhenClicked(mousePosition);
+    isMouseDown.current = true;
+    pixelPositionWhenClicked.current = getEventRelativeMousePosition(element.current, e, false);
+    normalizedPositionWhenClicked.current = getEventRelativeMousePosition(element.current, e, true);
   };
 
   const onPointerUp = (e: MouseEvent) => {
     if (!element.current) return;
     e.preventDefault();
 
-    if (!isDragging) {
-      setIsClicking(true);
+    if (isDragging.current) {
+      onDragEnd?.();
+    } else if (isMouseDown.current) {
+      onClick?.(getEventRelativeMousePosition(element.current, e, true));
     }
 
-    setIsMouseDown(false);
-    setIsDragging(false);
+    isMouseDown.current = false;
+    isDragging.current = false;
   };
 
-  useEffect(() => {
-    setIsClicking(false);
-  }, [isClicking]);
-
   return {
-    isMouseDown,
-    mousePositionWhenClicked,
-    normalizedMousePosition,
-    isClicking,
-    isDragging,
     events: {
       onPointerMove,
       onPointerDown,

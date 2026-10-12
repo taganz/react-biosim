@@ -37,11 +37,11 @@ export default function MapDesignerHeader() {
   const handleUseMap = () => {
     if (worldController) {
       const worldObjectsData = mapDesignerObjects.map((obj) => obj.clone());
-      simulationData.worldObjects = worldObjectsData;
+      const newSimulationData = { ...simulationData, worldObjects: worldObjectsData };
       //setWorldObjectsData(worldObjectsData)
       //setWorldControllerData(worldControllerData);
-      setSimulationData(simulationData);
-      worldControllerSimDataHotChange(worldController, simulationData);
+      setSimulationData(newSimulationData);
+      worldControllerSimDataHotChange(worldController, newSimulationData);
     }
     else {
       throw new Error ("worldController not found");

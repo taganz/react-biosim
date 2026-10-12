@@ -20,7 +20,7 @@ npm run lint       # ESLint
 npm run build      # production build
 ```
 
-`npm run lint` runs the ESLint CLI with `eslint.config.mjs` (Next.js 16 removed `next lint`). The React Compiler rules are set to warnings, because existing UI code still breaks them. ESLint does not type-check, so also run `npx tsc --noEmit`.
+`npm run lint` runs the ESLint CLI with `eslint.config.mjs` (Next.js 16 removed `next lint`) and should report nothing. It includes the React Compiler rules: don't mutate state, props or atom values (change a clone), don't read or write refs during render, and don't call `setState` synchronously in an effect. ESLint does not type-check, so also run `npx tsc --noEmit`.
 
 ### Environment variables (optional)
 
