@@ -200,8 +200,8 @@ export default function SettingsPanel() {
             onChange={(value) => setGenerationsValue("initialPopulation", value)}
             integer
             min={1}
-            // every creature needs its own cell
-            max={worldControllerData.size * worldControllerData.size}
+            // every creature needs its own cell, and the engine refuses a full world
+            max={worldControllerData.size * worldControllerData.size - 1}
           />
           <NumberInput
             label="Steps per generation"

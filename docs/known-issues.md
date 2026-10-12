@@ -16,7 +16,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
-| **Initial population = World size² is rejected** | The Settings field allows it, but the engine throws an error. | [Parameters](reference/parameters.md#world) |
 
 ### User interface
 
@@ -29,7 +28,7 @@ Checked against the code in October 2026. Each item links to the page that expla
 | Bug | Effect | Details |
 |---|---|---|
 | **16 tests fail in `EventLogger.test.ts`** | The logger records fewer events than the tests expect. The cause has not been investigated. | [Testing](development/testing.md#current-status) |
-| **`npm run lint` fails** | It calls `next lint`, which Next.js 16 removed. | [Developer guide](development/README.md#setup) |
+| **`npm run lint` reports 18 warnings** | The React Compiler rules of `eslint-config-next` 16 (`react-hooks/refs`, `immutability`, `set-state-in-effect`) flag existing UI code. They are set to warnings until the code is rewritten. | [Developer guide](development/README.md#setup) |
 
 ### Older reports, not re-checked
 
@@ -66,6 +65,8 @@ These items were on the old list, or found while writing these docs, and are now
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
 - Water accounting with metabolism. Several leaks made `waterInCreatures` drift until the simulation stopped with a `dissipateWater` error: failed attempts could take more mass than the creature had, the child's mass on reproduction went to the cloud, photosynthesis lost the water above the maximum mass, attackers gained mass that also went back to the cell, and new generations had mass that was not counted.
 - Continuous runs are now a **Simulation type** instead of a population strategy and a selection method. This fixes the old Continuous strategy: it broke in generation 1, it dropped every creature not born in the current generation, and old age never applied.
+- The Initial population field no longer accepts World size², which the engine refuses. Its maximum is size² − 1.
+- `npm run lint` works again. It runs the ESLint CLI with `eslint.config.mjs`, because Next.js 16 removed `next lint`.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 
 ## Ideas

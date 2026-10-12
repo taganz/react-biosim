@@ -7,7 +7,7 @@
     "test": "jest",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@next/third-parties": "^16.3.8",

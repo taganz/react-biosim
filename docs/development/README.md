@@ -16,10 +16,11 @@ npm install
 npm run dev        # http://localhost:3000
 npm test           # Jest
 npx tsc --noEmit   # type check
+npm run lint       # ESLint
 npm run build      # production build
 ```
 
-`npm run lint` is broken: it calls `next lint`, which was removed in Next.js 16. Until the script is migrated to the ESLint CLI, use `npx tsc --noEmit` for static checks.
+`npm run lint` runs the ESLint CLI with `eslint.config.mjs` (Next.js 16 removed `next lint`). The React Compiler rules are set to warnings, because existing UI code still breaks them. ESLint does not type-check, so also run `npx tsc --noEmit`.
 
 ### Environment variables (optional)
 

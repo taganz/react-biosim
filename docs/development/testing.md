@@ -6,7 +6,8 @@ The tests use [Jest](https://jestjs.io/) with `ts-jest` in a Node environment ([
 npm test                              # all tests
 npx jest __tests__/genome.test.ts     # one file
 npx jest -t "geneToConnection"        # tests whose name matches
-npx tsc --noEmit                      # type check (there is no working lint script)
+npx tsc --noEmit                      # type check
+npm run lint                          # ESLint
 ```
 
 ## What is covered
