@@ -9,12 +9,16 @@ export function deserializeWorldControllerData(parsed: SavedWorldControllerData)
     
 
 export function serializeWorldControllerData(worldController: WorldController) : SavedWorldControllerData {
-  const worldControllerData = worldController.simData.worldControllerData;
-  worldControllerData.simCode = worldControllerData.simCode;
-  worldControllerData.currentGen = worldControllerData.currentGen;
-  worldControllerData.currentStep = worldControllerData.currentStep;
-  worldControllerData.lastGenerationDuration = worldControllerData.lastGenerationDuration;
-  worldControllerData.totalTime = worldControllerData.totalTime;
-  const parsed : SavedWorldControllerData = worldControllerData;
-  return parsed;
+  // settings come from the running configuration, run state from the controller
+  return {
+    ...worldController.simData.worldControllerData,
+    pauseBetweenSteps: worldController.pauseBetweenSteps,
+    immediateSteps: worldController.immediateSteps,
+    pauseBetweenGenerations: worldController.pauseBetweenGenerations,
+    simCode: worldController.simCode,
+    currentGen: worldController.currentGen,
+    currentStep: worldController.currentStep,
+    lastGenerationDuration: worldController.lastGenerationDuration,
+    totalTime: worldController.totalTime,
+  };
 }

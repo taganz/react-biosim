@@ -121,6 +121,42 @@ export default class WorldController {
   }
 
   /**
+   * Starts generation sim.worldControllerData.currentGen of a saved run, with
+   * sim.startGenomes as its creatures (no mutation) and sim.stats as its history.
+   * Keeps the simulation code of the saved run.
+   */
+  public startGeneration(sim: SimulationData): void {
+
+    this.simData = sim;
+    this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
+    this.objects = sim.worldObjects;
+    this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
+    this.worldWater = new WorldWater(this.size, sim.waterData);
+    this.worldWater.firstRain(this.grid);
+    this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
+    this.generationRegistry = new GenerationRegistry(this);
+    if (sim.stats !== undefined) {
+      this.generationRegistry.copyExceptWorldController(sim.stats);
+    }
+    this.eventLogger.reset();
+    this.initialPopulation = sim.worldGenerationsData.initialPopulation;
+
+    // state data
+    this.simCode = sim.worldControllerData.simCode;
+    this.currentGen = sim.worldControllerData.currentGen;
+    this.currentStep = 1;
+    this.lastGenerationDuration = sim.worldControllerData.lastGenerationDuration;
+    this.totalTime = sim.worldControllerData.totalTime;
+
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
+    );
+
+    this.generations.populateWithGenomes(sim.startGenomes ?? []);
+    this.startLoop();
+  }
+
+  /**
    * Loads a previous simulation and runs from its state: generation, step,
    * stats, and its creatures. The creatures come from `creatures` if given
    * (hot change of the running simulation), otherwise from sim.species.
@@ -128,6 +164,8 @@ export default class WorldController {
   public resumeRun(sim: SimulationData, creatures?: Creature[]): void {
 
     const sourceCreatures : Creature[] = creatures ?? sim.species?.flatMap((species) => species.creatures) ?? [];
+    // a hot change stays in the same generation, so it keeps its start genomes
+    const startGenomes = creatures ? this.generations.startGenomes : sourceCreatures.map((creature) => creature.brain.genome);
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects;
@@ -140,6 +178,7 @@ export default class WorldController {
     for (const creature of sourceCreatures) {
       this.generations.restoreCreature(creature);
     }
+    this.generations.startGenomes = startGenomes;
     if (sim.stats !== undefined) {
       this.generationRegistry.copyExceptWorldController(sim.stats);
     }

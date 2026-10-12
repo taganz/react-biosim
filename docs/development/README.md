@@ -46,7 +46,7 @@ components/
     store/                 Jotai atoms
     tabs/                  One folder per tab: start, population, stats, settings, map, save, load, files
 hooks/                   useWorldValue, useSimulationLoader, mouse and scroll helpers
-helpers/                 Coordinates, map-object geometry, random strings
+helpers/                 Coordinates, map-object geometry, random strings, user scenario storage
 simulation/              The engine: plain TypeScript, no React
   world/                   WorldController (loop), Grid, WorldCanvas, objects and areas, stats
   generations/             WorldGenerations, population strategies, selection methods

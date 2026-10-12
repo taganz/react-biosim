@@ -4,6 +4,7 @@ import SavedWorldObject from "./SavedWorldObject";
 import SavedGenerationRegistry from "./SavedGenerationRegistry";
 import SavedSpecies from "./SavedSpecies";
 import { SavedWaterData } from "./SavedWaterData";
+import SavedStartGenome from "./SavedStartGenome";
 
 export type SavedSimulationData = {
     constants: string;
@@ -12,5 +13,7 @@ export type SavedSimulationData = {
     worldObjects: SavedWorldObject[];
     waterData: SavedWaterData;
     species?: SavedSpecies[];
-    stats?: SavedGenerationRegistry
+    stats?: SavedGenerationRegistry;
+    /** Saved at the start of a generation: its genomes. Loading starts that generation with them */
+    startGenomes?: SavedStartGenome[];
 }

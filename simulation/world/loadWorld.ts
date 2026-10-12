@@ -10,7 +10,12 @@ export function loadSavedWorldAndResumeRun(worldController: WorldController, dat
   const parsed : SavedSimulationData = JSON.parse(data);
   const simulationData : SimulationData = deserializeSimulationData(worldController, parsed);
   worldController.pause();
-  worldController.resumeRun(simulationData);
+  // a file saved at the start of a generation has genomes instead of creatures
+  if (simulationData.startGenomes) {
+    worldController.startGeneration(simulationData);
+  } else {
+    worldController.resumeRun(simulationData);
+  }
   return simulationData;
 }
 

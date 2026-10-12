@@ -54,5 +54,5 @@ Click any creature in the world. A ring marks it, and the **Population** tab sho
 - [Population and brains](population-and-brains.md): species, neural networks, genomes
 - [Settings and stats](settings-and-stats.md): change the rules and measure the results
 - [Map editor](map-editor.md): draw your own world
-- [Files](files.md): save, load, export images and GIFs
+- [Files](files.md): your own scenarios, save, load, export images and GIFs
 - [Scenarios](scenarios.md): what each included scenario shows

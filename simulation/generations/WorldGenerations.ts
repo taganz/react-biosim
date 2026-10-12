@@ -63,6 +63,8 @@ export default class WorldGenerations {
   deathsThisGeneration: number = 0;
   lastBirths: number = 0;
   lastDeaths: number = 0;
+  // genomes of the creatures placed at the start of the current generation, for "save generation start"
+  startGenomes : Genome[] = [];
   
 
 
@@ -137,6 +139,39 @@ export default class WorldGenerations {
       this.lastCreatureCount = this.currentCreatures.length;
       // the initial population are not births
       this.birthsThisGeneration = 0;
+      this.recordStartGenomes();
+  }
+
+  /**
+   * Starts the generation with the given genomes, one creature each, without mutation.
+   * They are placed like generation 1: around the spawn area if there is one, otherwise at random.
+   */
+  public populateWithGenomes(genomes: Genome[]) {
+    const spawnArea = this.grid.objects.find((obj) => obj.areaType === 2);
+    for (const genome of genomes) {
+      let position : GridPosition | null;
+      if (spawnArea) {
+        const [x, y] = this.grid.clamp((spawnArea.x + spawnArea.width/2) * this.grid.size, (spawnArea.y + spawnArea.height/2) * this.grid.size);
+        position = this.grid.getCenteredAvailablePosition(x, y, spawnArea.width/2 * this.grid.size, spawnArea.height/2 * this.grid.size, genomes.length);
+      } else {
+        position = this.grid.getRandomAvailablePosition();
+      }
+      if (position != null) {
+        this.newCreature(position, true, new Genome(genome.genes.slice()));
+      }
+      else {
+        console.warn("no position for creature");
+      }
+    }
+    this.lastCreatureCount = this.currentCreatures.length;
+    // the initial population are not births
+    this.birthsThisGeneration = 0;
+    this.recordStartGenomes();
+  }
+
+  // genomes are not changed after birth, so keeping the references is enough
+  private recordStartGenomes() {
+    this.startGenomes = this.currentCreatures.map((creature) => creature.brain.genome);
   }
 
 
@@ -273,6 +308,7 @@ public selectionAndRepopulate(): void {
   this.populationStrategy.populate(this, survivors);
   // the new generation are not births
   this.birthsThisGeneration = 0;
+  this.recordStartGenomes();
 
   // update generation stats
   this.lastSurvivorsCount = survivors.length;

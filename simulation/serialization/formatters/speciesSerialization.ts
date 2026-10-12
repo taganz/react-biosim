@@ -30,7 +30,7 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       species.creatures.push({
         lastMovement: creature.lastMovement,
         lastPosition: creature.lastPosition,
-        position: creature.lastPosition,
+        position: creature.position,
         mass: creature.mass,
         massAtBirth: creature.massAtBirth
       });
@@ -83,6 +83,10 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       creature.lastMovement = savedCreature.lastMovement;
       creature.lastPosition = savedCreature.lastPosition;
       creature.massAtBirth = savedCreature.massAtBirth;
+      // files from older versions may not have it
+      if (savedCreature.mass !== undefined) {
+        creature._mass._mass = savedCreature.mass;
+      }
 
       return creature;
   }
