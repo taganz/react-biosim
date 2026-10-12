@@ -68,7 +68,7 @@ export default function SelectedSpeciesPanel({
             Selected species{" "}
             <span
               className="text-shadow-sm inline-block p-1"
-              style={{ backgroundColor: selectedSpecies.genome.getColor() }}
+              style={{ backgroundColor: selectedSpecies.getColor() }}
             >
               {selectedSpecies.genome.getHexColor()}
             </span>
