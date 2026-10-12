@@ -55,6 +55,8 @@ The chart plots the **fitness value** of every generation. The selection method 
 
 **maxFitnessValue** above the chart is the value of the last generation. The curve is smoothed.
 
+Below the chart, **Total time** is the time spent running the simulation, and **Last generation duration** is how long the last generation took to compute.
+
 Typical shapes:
 
 - **A long flat start, then a jump.** The population found a strategy by chance and it spread. In the screenshot, the jump is where the loaded run reached generation 5574.

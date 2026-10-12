@@ -6,7 +6,12 @@ import { FaRedo } from "react-icons/fa";
 import { useAtom, useAtomValue } from "jotai";
 import { simulationDataAtom, worldControllerAtom, worldCanvasAtom} from "./store";
 
-export default function RestartButton() {
+interface Props {
+  // icon only on narrow screens, for the control bar
+  compact?: boolean;
+}
+
+export default function RestartButton({ compact = false }: Props) {
   //const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const simulationData = useAtomValue(simulationDataAtom);
@@ -30,8 +35,8 @@ export default function RestartButton() {
   };
 
   return (
-    <Button variant="danger" icon={<FaRedo />} onClick={handleClick}>
-      Restart
+    <Button variant="danger" icon={<FaRedo />} aria-label="Restart" title="Restart" onClick={handleClick}>
+      {compact ? <span className="hidden sm:inline">Restart</span> : "Restart"}
     </Button>
   );
 }

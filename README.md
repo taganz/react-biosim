@@ -15,7 +15,7 @@ Creatures live on a grid and are controlled by small neural networks built from 
 3. Click a species in the **Population** tab to see its brain.
 4. Change the rules in **Settings** or draw a new map in **Map**, then click **Restart**.
 
-Use the footer to pause the simulation or change its speed. Set **Immediate steps** to 200 to run at full speed.
+Use the control bar at the top to pause the simulation or change its speed. Set **Immediate steps** to 200 to run at full speed.
 
 ### Included scenarios
 
@@ -76,7 +76,7 @@ Project layout:
 | Folder | Contents |
 |---|---|
 | `app/` | Next.js entry page and layout |
-| `components/` | React UI: tabs, footer, canvas and shared inputs |
+| `components/` | React UI: tabs, control bar, canvas and shared inputs |
 | `components/simulation/store/` | Jotai atoms that connect the UI to the simulation |
 | `simulation/` | The simulation engine, written in plain TypeScript with no React |
 | `hooks/` | React hooks |

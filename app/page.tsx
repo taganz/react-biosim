@@ -2,7 +2,7 @@ import Tab from "@/components/global/tabs/Tab";
 import TabList from "@/components/global/tabs/TabList";
 import TabPanel from "@/components/global/tabs/TabPanel";
 import Tabs from "@/components/global/tabs/Tabs";
-import Footer from "@/components/simulation/footer/Footer";
+import ControlBar from "@/components/simulation/controlbar/ControlBar";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
 import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
 import MapPanel from "@/components/simulation/tabs/map/MapPanel";
@@ -21,12 +21,10 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="bg-grey-dark text-white">
+      <ControlBar />
+
       <div className="min-h-screen">
         <div className="section-container py-5">
-          <h1 className="mb-10 text-center text-4xl lg:text-5xl">
-            Evolution Simulation
-          </h1>
-
           <div className="grid gap-8 lg:grid-cols-2">
             <SimulationCanvas className="aspect-square w-full bg-grey-light" />
 
@@ -82,7 +80,7 @@ export default function Home() {
                   <p>How to use:</p>
                   <ul className="list-disc pl-6">
                     <li>Start by using one of the simulations based on the video in the &apos;Start&apos;&nbsp;panel.</li>
-                    <li>Adjust simulation speed and restart on the footer.</li>
+                    <li>Adjust simulation speed and restart in the control bar at the top.</li>
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
@@ -114,8 +112,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }

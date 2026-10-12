@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";
 import classNames from "classnames";
-import {worldControllerAtom} from "../store";
+import { worldControllerAtom } from "../store";
 import {
   pauseBetweenStepsAtom,
   pauseBetweenGenerationsAtom,
@@ -10,31 +10,31 @@ import {
 } from "../store/guiControlsAtoms";
 import { useAtom, useAtomValue } from "jotai";
 
+// Passes the speed atoms to the world controller. It lives in the control bar, which is always
+// mounted, because the SpeedControls panel is not mounted on narrow screens until it is opened.
+export function useSpeedSync() {
+  const pauseBetweenSteps = useAtomValue(pauseBetweenStepsAtom);
+  const pauseBetweenGenerations = useAtomValue(pauseBetweenGenerationsAtom);
+  const immediateSteps = useAtomValue(immediateStepsAtom);
+  const worldController = useAtomValue(worldControllerAtom);
+
+  useEffect(() => {
+    if (worldController) {
+      worldController.setSpeed(pauseBetweenSteps, pauseBetweenGenerations, immediateSteps);
+    }
+  }, [worldController, pauseBetweenSteps, pauseBetweenGenerations, immediateSteps]);
+}
+
 interface Props
   extends React.PropsWithChildren,
     React.ComponentPropsWithoutRef<"div"> {}
 
-export function FooterSpeedControls({ className, ...rest }: Props) {
+export function SpeedControls({ className, ...rest }: Props) {
   const [pauseBetweenSteps, setPauseBetweenSteps] = useAtom(pauseBetweenStepsAtom);
   const [pauseBetweenGenerations, setPauseBetweenGenerations] = useAtom(pauseBetweenGenerationsAtom);
   const [immediateSteps, setImmediateSteps] = useAtom(immediateStepsAtom);
-  const worldController = useAtomValue(worldControllerAtom);
 
-  const finalClassName = classNames(
-    "flex flex-wrap gap-4 text-xs lg:text-sm",
-    className
-  );
-
-  useEffect(()=>{
-    if (worldController) {
-      worldController.setSpeed(pauseBetweenSteps, pauseBetweenGenerations, immediateSteps);
-      //console.log("FooterSpeedControls - updated immediateSteps:", immediateSteps, worldController.immediateSteps);
-    }
-    else {
-      console.log("FooterSpeedControls - worldController not found!");
-    }
-  }, [worldController, pauseBetweenSteps, pauseBetweenGenerations, immediateSteps]);
-
+  const finalClassName = classNames("flex flex-wrap gap-4 text-xs", className);
 
   return (
     <div className={finalClassName} {...rest}>

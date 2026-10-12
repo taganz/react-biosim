@@ -42,7 +42,7 @@ components/
   providers/             JotaiProvider
   simulation/            Everything tied to the simulation
     SimulationCanvas.tsx   Creates the WorldController and draws the world
-    footer/                Generation counter, stats, speed controls
+    controlbar/            Top bar: generation counter, survivors, speed controls, Restart, Play / Pause
     store/                 Jotai atoms
     tabs/                  One folder per tab: start, population, stats, settings, map, save, load, files
 hooks/                   useWorldValue, useSimulationLoader, mouse and scroll helpers

@@ -14,7 +14,7 @@ A saved file is plain JSON. You can open it in a text editor to change values th
 - **Choose File** loads a `.sim`, `.txt` or `.json` file saved with **Save to file**. Files from older versions of the app, such as those in `_scenarios/`, may not load: if one fails, the message explains why.
 - **Or paste the JSON code** loads text you copied with **Show JSON to copy**. Click **Load**.
 
-Loading **resumes** the saved run: it continues from the saved generation with the saved creatures. The Settings draft and the footer controls are updated to match. A message tells you whether the load worked or why it failed.
+Loading **resumes** the saved run: it continues from the saved generation with the saved creatures. The Settings draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
 
 ## Images and GIFs
 

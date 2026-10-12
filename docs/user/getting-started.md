@@ -6,9 +6,9 @@ react-biosim runs in the browser. Open the [live demo](https://biosim.rdalmau.co
 
 The screen has three parts:
 
+- **The control bar** (top). Shows progress and holds the speed controls, Restart and Play / Pause. It stays at the top of the screen when you scroll.
 - **The world** (left). Each coloured square is a creature. Shaded rectangles are areas: blue for reproduction, yellow for spawn, green or red for health. Dark grey rectangles are obstacles. The top-left corner shows the current generation.
 - **The tabs** (right). Use them to load scenarios, inspect creatures, read stats, change settings, edit the map and save your work.
-- **The footer** (bottom). Shows progress and holds the speed controls.
 
 ## 1. Load a scenario
 
@@ -29,20 +29,21 @@ In the first generations creatures move almost at random. After tens or hundreds
 
 ## 3. Control the speed
 
-![Footer](images/footer.png)
+![Control bar](images/control_bar.png)
 
 | Control | What it does |
 |---|---|
 | Generation / Step | Current generation, and the current step out of the steps per generation. |
 | Survivors | Survivors of the last generation, and their share of the population. |
-| Total time / Last generation duration | Time spent running the simulation. |
 | Pause between steps (ms) | Slows the simulation down. Use 50 or 200 to follow individual creatures. |
 | Pause between generations (ms) | Holds the last step of each generation on screen so you can see who survived. |
 | Immediate steps | Steps computed before the world is redrawn. **200 runs at full speed.** |
 | Restart | Starts again from generation 1. It asks for confirmation, because all evolution so far is lost. |
 | Play / Pause | Stops and resumes the simulation. |
 
-On narrow screens the speed controls are hidden. Click the arrow at the top of the footer to show them.
+The speed controls open from the **Speed** button, in a panel over the page. Click anywhere else to close it. Survivors is shown on screens at least 1024 px wide. On phones the Speed and Restart buttons show only their icons.
+
+The time spent running the simulation is shown in the **Stats** tab.
 
 ## 4. Look inside a creature
 

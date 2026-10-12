@@ -23,7 +23,7 @@ export default function PlayPauseButton() {
   return (
     <Button
       variant="primary"
-      // fixed width so the footer does not jump when the label changes
+      // fixed width so the control bar does not jump when the label changes
       className="min-w-28"
       icon={isPaused ? <FaPlay /> : <FaPause />}
       onClick={handleClick}
