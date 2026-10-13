@@ -30,7 +30,7 @@ Works like Asexual Random, but places creatures inside the first **spawn area** 
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.
 - **Next generations:** every survivor has `ceil(initial population ÷ survivors)` children, so the population can end up slightly above the target.
 
-When you choose this strategy in Settings and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list from `simulationDataDefault.ts` is copied into the settings: plant 0.7, attack_plant 0.3, attack_animal 0. The list is saved with the simulation.
+When you choose this strategy in Settings and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list from `simulationDataDefault.ts` is copied into the settings: plant 0.7, attack_plant 0.3, attack_animal 0. The list is saved with the simulation. The main action of each genus with a probability above 0 is also enabled (see below).
 
 ### Plant/Herbivore (`PlantHerbivorePopulation`) *(in dev)*
 
@@ -39,6 +39,8 @@ A predator–prey experiment. Use it with the Greatest Mass selection method.
 - Every generation is 80% plants and 20% herbivores.
 - **Generation 1:** both groups are built from their genus.
 - **Next generations:** herbivores are children of the surviving herbivores. Plants are created again from scratch, so only herbivores evolve.
+
+Choosing Random Fixed Gene or Plant/Herbivore in Settings enables the main action of every genus the strategy creates, because a creature of that genus cannot be built without it: **Photosynthesis** for plant, **Attack Plant** for attack_plant and **Attack Animal** for attack_animal. **Reproduction** is enabled too, since every genus needs it. It also turns **metabolism** on, since those actions only change mass when it is on. Other actions stay as they were, and you can still turn any of this off afterwards.
 
 ## Selection methods
 

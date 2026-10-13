@@ -24,6 +24,8 @@ import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
 import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
+import { Genus } from "@/simulation/creature/CreatureGenus";
+import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
 
 const getPrettyName = (name: string) => name.replace(/([A-Z])/g, " $1").trim();
 
@@ -107,23 +109,46 @@ export default function SettingsPanel() {
   };
 
   // Random Fixed Gene needs a genus list; older files and the startup scenario have none,
-  // so the default list is copied into the draft (and saved with it)
+  // so the default list is copied into the draft (and saved with it).
+  // Strategies that build creatures from a genus also need the main action of each genus
+  // (the one that defines it), so those actions are enabled, and metabolism with them.
   const handlePopulationStrategyChange = (value: string) =>
     setSimulationData((prev) => {
-      const next = {
+      let constants = prev.constants;
+      const genusList: GenusProbability[] | undefined = constants?.POPULATION_DEFAULT_GENUS;
+      if (value === "RandomFixedGenePopulation" && !genusList?.length) {
+        constants = {
+          ...constants,
+          POPULATION_DEFAULT_GENUS: CONSTANTS_DEFAULT.POPULATION_DEFAULT_GENUS.map((item) => ({ ...item })),
+        };
+      }
+
+      const genera: Genus[] =
+        value === "RandomFixedGenePopulation"
+          ? (constants.POPULATION_DEFAULT_GENUS as GenusProbability[])
+              .filter((item) => item.probability > 0)
+              .map((item) => item.genus)
+          : value === "PlantHerbivorePopulation"
+          ? ["plant", "attack_plant"]
+          : [];
+      // kept in table order, which is the order genes use to address actions
+      const enabledActions = actions
+        .filter((action) =>
+          prev.worldGenerationsData.enabledActions.includes(action.name) ||
+          (action.mainGenus !== null && genera.includes(action.mainGenus)) ||
+          // every genus needs to reproduce
+          (action.name === "Reproduction" && genera.length > 0))
+        .map((action) => action.name);
+
+      return {
         ...prev,
+        constants,
         worldGenerationsData: {
           ...prev.worldGenerationsData,
           populationStrategy: selectPopulationStrategy(value),
-        },
-      };
-      const genusList = prev.constants?.POPULATION_DEFAULT_GENUS;
-      if (value !== "RandomFixedGenePopulation" || genusList?.length) return next;
-      return {
-        ...next,
-        constants: {
-          ...prev.constants,
-          POPULATION_DEFAULT_GENUS: CONSTANTS_DEFAULT.POPULATION_DEFAULT_GENUS.map((item) => ({ ...item })),
+          enabledActions: actions.length ? enabledActions : prev.worldGenerationsData.enabledActions,
+          // genus actions (Photosynthesis, attacks) only change mass with metabolism on
+          metabolismEnabled: genera.length > 0 || prev.worldGenerationsData.metabolismEnabled,
         },
       };
     });

@@ -21,7 +21,7 @@ Your edits are a **draft**. The simulation keeps running with its old settings u
 Some changes behave differently depending on how you apply them:
 
 - **World size and map:** **Update simulation** rebuilds the world straight away. Creatures that no longer fit are removed: those outside a smaller world, or on a cell that is now an obstacle.
-- **Initial population** and the population strategy take effect when the next generation is created.
+- **Initial population** and the population strategy take effect when the next generation is created. Choosing *Random Fixed Gene* or *Plant/Herbivore* also enables the actions their genera need (Photosynthesis, Attack Plant, Attack Animal, and Reproduction for all of them) and turns metabolism on, so use **Restart** after choosing them (see Sensors and actions below).
 - **Simulation type:** with **Update simulation**, the current creatures carry on in the new mode, and the change takes effect at the end of the current generation. In continuous mode, Settings warns you if no creature can be born: metabolism is off, or the Reproduction action is not enabled.
 - **Phenotype mode** only changes how creatures are coloured. **Update simulation** recolours them straight away.
 - **Metabolism:** with **Update simulation**, the creatures keep their current mass and start gaining or losing it from the next step.
