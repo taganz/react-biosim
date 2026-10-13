@@ -7,6 +7,9 @@ import { RainType } from "./RainType";
     stores water stats
 */
 
+// thousands of creatures adding and taking water accumulate rounding errors
+// (around 1e-7 after 25 generations of 1000 creatures); real accounting errors are much larger
+const WATER_ROUNDING_TOLERANCE = 1e-4;
 
 export default class WorldWater {
 
@@ -63,12 +66,22 @@ export default class WorldWater {
         }
     }
 
+    // the creatures were replaced without resetting the world water: the water of the old ones
+    // goes back to the cloud and the mass of the new ones is taken from it
+    replaceCreaturesWater(creaturesMass: number) {
+        this.waterInCloud += this.waterInCreatures - creaturesMass;
+        this.waterInCreatures = creaturesMass;
+        if (this.waterInCloud < 0 ) {
+            throw new Error (`replaceCreaturesWater - not enough waterInCloud for the new creatures ${creaturesMass.toFixed(2)}`)
+        }
+    }
+
     // creatures dissipate energy every step
     dissipateWater(water: number) {
         this.waterInCreatures -= water;
         this.waterInCloud += water;
-        // rounding leaves a tiny negative value when creatures use up all their mass
-        if (this.waterInCreatures < 0 && this.waterInCreatures > -1e-9) {
+        // rounding leaves a small negative value when creatures use up all their mass
+        if (this.waterInCreatures < 0 && this.waterInCreatures > -WATER_ROUNDING_TOLERANCE) {
             this.waterInCloud += this.waterInCreatures;
             this.waterInCreatures = 0;
         }

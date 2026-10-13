@@ -354,12 +354,15 @@ export default class WorldController {
     } else {
       this.generations.selectionAndRepopulate();
 
+      const creaturesMass = this.generations.currentCreatures.reduce((total, creature) => total + creature.mass, 0);
       if (this.generations.selectionMethod.isContinuous == false) {
-        this.worldWater.reset();   
+        this.worldWater.reset();
         // the mass of the new generation comes from the cloud, as in generation 1
-        const creaturesMass = this.generations.currentCreatures.reduce((total, creature) => total + creature.mass, 0);
         this.worldWater.getWaterFromCloud(creaturesMass);
         this.worldWater.firstRain(this.grid);
+      } else {
+        // the cells keep their water, but the creatures were replaced
+        this.worldWater.replaceCreaturesWater(creaturesMass);
       }
       this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     }
