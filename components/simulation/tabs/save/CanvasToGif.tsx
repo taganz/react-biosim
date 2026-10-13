@@ -186,7 +186,9 @@ const CanvasToGIF: React.FC = () => {
     link.href = dataURL;
 
     // Set the download attribute to specify the filename
-    link.download = 'sim'.concat(worldController==null ? "" : worldController.currentGen.toString(), '.png'); 
+    link.download = worldController
+      ? `sim ${worldController.simCode} generation ${worldController.currentGen.toString()}.png`
+      : "sim.png";
 
     // Simulate a click on the link to trigger the download
     link.click();

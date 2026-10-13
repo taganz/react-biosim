@@ -34,7 +34,7 @@ Loading **resumes** the saved run: it continues from the saved generation with t
 
 ## Images and GIFs
 
-- **Save PNG image** downloads the current picture of the world as `sim<generation>.png`.
+- **Save PNG image** downloads the current picture of the world as `sim <code> generation <generation>.png`, the same pattern as the GIF and `.sim` files.
 - **Record GIF** records the **next** generation, from its first step to its last. While it records, the button shows how many steps have been captured. When the generation ends, click **Download GIF**. Rendering a long generation can take a while.
 
 Tip: set **Pause between steps** to 0 and **Immediate steps** to 1 while recording. Every step is then a frame, and the GIF does not take longer to record than it needs to.
