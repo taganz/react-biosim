@@ -85,4 +85,15 @@ describe("WorldController hot change", () => {
     expect(positions(worldController)).not.toContain("15,15");
     expect(positions(worldController)).not.toContain("2,2");
   });
+  test("turning metabolism on keeps the water of the restored creatures counted", () => {
+    const draft = { ...simulationData, worldGenerationsData: { ...simulationData.worldGenerationsData, metabolismEnabled: true } };
+    worldControllerSimDataHotChange(worldController, draft);
+    worldController.pause();
+
+    const water = worldController.worldWater;
+    const totalWater = water.totalWater;
+    for (let i = 0; i < 50; i++) worldController.generations.step();
+    expect(water.waterInCreatures).toBeGreaterThanOrEqual(0);
+    expect(water.totalWater).toBeCloseTo(totalWater, 6);
+  });
 });

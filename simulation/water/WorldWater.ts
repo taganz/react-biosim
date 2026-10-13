@@ -67,7 +67,12 @@ export default class WorldWater {
     dissipateWater(water: number) {
         this.waterInCreatures -= water;
         this.waterInCloud += water;
-        if (this.waterInCreatures < 0) {  
+        // rounding leaves a tiny negative value when creatures use up all their mass
+        if (this.waterInCreatures < 0 && this.waterInCreatures > -1e-9) {
+            this.waterInCloud += this.waterInCreatures;
+            this.waterInCreatures = 0;
+        }
+        if (this.waterInCreatures < 0) {
             throw new Error (`dissipateWater - waterInCreatures < 0: ${water.toFixed(2)}`);
         }
     }

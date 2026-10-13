@@ -72,6 +72,7 @@ These items were on the old list, or found while writing these docs, and are now
 - Continuous runs are now a **Simulation type** instead of a population strategy and a selection method. This fixes the old Continuous strategy: it broke in generation 1, it dropped every creature not born in the current generation, and old age never applied.
 - The Initial population field no longer accepts World size², which the engine refuses. Its maximum is size² − 1.
 - `npm run lint` works again and reports nothing. It runs the ESLint CLI with `eslint.config.mjs`, because Next.js 16 removed `next lint`. The UI code now follows the React Compiler rules of `eslint-config-next` 16: for example, the map designer drags objects from pointer events instead of an effect, and edits clones instead of the objects in the atom.
+- Water accounting on resume. **Update simulation** and resuming a file rebuild the world water, but the restored creatures kept their mass without counting it, so with metabolism on the simulation stopped with a `dissipateWater` error. Restored creatures now take their mass from the cloud, and the rounding error left when creatures use up all their mass is ignored.
 - Plant/Herbivore no longer stops the simulation when it receives survivors that are not herbivores (selection methods other than Greatest Mass). It ignores them and logs a warning.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 
