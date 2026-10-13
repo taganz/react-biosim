@@ -23,6 +23,7 @@ import { WaterData } from "@/simulation/water/WaterData";
 import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
+import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
 
 const getPrettyName = (name: string) => name.replace(/([A-Z])/g, " $1").trim();
 
@@ -104,6 +105,28 @@ export default function SettingsPanel() {
       setGenerationsValue("enabledActions", enabledActions.filter((item) => item !== name));
     }
   };
+
+  // Random Fixed Gene needs a genus list; older files and the startup scenario have none,
+  // so the default list is copied into the draft (and saved with it)
+  const handlePopulationStrategyChange = (value: string) =>
+    setSimulationData((prev) => {
+      const next = {
+        ...prev,
+        worldGenerationsData: {
+          ...prev.worldGenerationsData,
+          populationStrategy: selectPopulationStrategy(value),
+        },
+      };
+      const genusList = prev.constants?.POPULATION_DEFAULT_GENUS;
+      if (value !== "RandomFixedGenePopulation" || genusList?.length) return next;
+      return {
+        ...next,
+        constants: {
+          ...prev.constants,
+          POPULATION_DEFAULT_GENUS: CONSTANTS_DEFAULT.POPULATION_DEFAULT_GENUS.map((item) => ({ ...item })),
+        },
+      };
+    });
 
   const handleDiscard = () => {
     if (appliedSimulationData) setSimulationData(appliedSimulationData);
@@ -246,9 +269,7 @@ export default function SettingsPanel() {
             <SelectInput
               label="Population strategy"
               value={worldGenerationsData.populationStrategy.name}
-              onChange={(value: string) =>
-                setGenerationsValue("populationStrategy", selectPopulationStrategy(value))
-              }
+              onChange={handlePopulationStrategyChange}
             >
               {populationStrategyOptions.map((option) => (
                 <option key={option.value} value={option.value}>

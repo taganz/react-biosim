@@ -30,6 +30,8 @@ Works like Asexual Random, but places creatures inside the first **spawn area** 
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.
 - **Next generations:** every survivor has `ceil(initial population ÷ survivors)` children, so the population can end up slightly above the target.
 
+When you choose this strategy in Settings and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list from `simulationDataDefault.ts` is copied into the settings: plant 0.7, attack_plant 0.3, attack_animal 0. The list is saved with the simulation.
+
 ### Plant/Herbivore (`PlantHerbivorePopulation`) *(in dev)*
 
 A predator–prey experiment. Use it with the Greatest Mass selection method.
@@ -69,7 +71,7 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 
 ## Known issues
 
-- **Plant/Herbivore throws an error if it receives parents that are not herbivores,** so use it only with Greatest Mass.
+- **Plant/Herbivore ignores survivors that are not herbivores** and logs a warning in the console. Only Greatest Mass selects herbivores alone; with other methods the surviving plants are dropped, and if no herbivore survives the next generation has only plants.
 - **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
 - **Asexual Zone ignores the spawn area when there are more survivors than Initial population.** In that case it places children in random cells.
-- **Random Fixed Gene** depends on `POPULATION_DEFAULT_GENUS`, which is empty in the startup scenario.
+- **Random Fixed Gene** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in Settings, so a file saved with this strategy and an empty list still starts with no genus to pick from.

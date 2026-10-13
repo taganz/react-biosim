@@ -33,11 +33,11 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
     else {
       if (!attackPlantParents) {throw new Error ("generations > 0 should have parents");}
 
-      // only herbivore parents will be taken into account 
+      // only herbivore parents will be taken into account; other selection methods
+      // than Greatest Mass also let plants survive, and those are dropped
       const parents = attackPlantParents.filter(item => item._genus == "attack_plant");
       if (parents.length != attackPlantParents.length) {
-        //TODO should be a warning
-        throw new Error("PlantHerbivorePopulation is receiving non expected parent genus");
+        console.warn(`PlantHerbivorePopulation ignored ${attackPlantParents.length - parents.length} survivors that are not herbivores`);
       }
 
       let totalNeededCreatures = worldGenerations.initialPopulation*HERBIVORES_PROPORTION - parents.length;
