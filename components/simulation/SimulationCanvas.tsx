@@ -6,6 +6,7 @@ import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom} from "./store";
+import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";
 import Creature from "@/simulation/creature/Creature";
 import type { Gene } from "@/simulation/creature/brain/Genome";
@@ -34,6 +35,7 @@ export default function SimulationCanvas({ className }: Props) {
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
+  const showWater = useAtomValue(showWaterAtom);
 
   useEffect(
     function instantiateWorld() {
@@ -105,6 +107,14 @@ export default function SimulationCanvas({ className }: Props) {
     }
 
   }, [worldController, worldCanvas, setEventLogger]);
+
+  // the water layer is a viewer option from Stats → Water; redraws at once, also while paused
+  useEffect(
+    function syncShowWater() {
+      worldCanvas?.setShowWater(showWater);
+    },
+    [worldCanvas, showWater]
+  );
 
   // Creature selection lives here (not in a tab) so it works whatever tab is open
   useEffect(

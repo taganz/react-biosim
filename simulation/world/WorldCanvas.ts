@@ -10,6 +10,7 @@ export default class WorldCanvas {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   size: number;  // world size (not canvas size!), used for conversion
+  showWater: boolean = false;  // paint the water of the empty cells under the creatures
     
   constructor(worldController: WorldController, canvas: HTMLCanvasElement)  {
     this.worldController = worldController;
@@ -54,7 +55,7 @@ export default class WorldCanvas {
     // RD
     this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color - ok gif
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
-    //this.generateWaterImage();
+    if (this.showWater) this.drawWater();
 
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
@@ -130,31 +131,42 @@ public drawSelectionOverlay(overlay: HTMLCanvasElement, creature: Creature | nul
   ctx.stroke();
 }
 
-private generateWaterImage() {
+public setShowWater(showWater: boolean): void {
+  this.showWater = showWater;
+  this.redraw();
+}
+
+// Paints each empty cell from the grey background (no water) to blue (full),
+// by its water as a fraction of its capacity. The image has one pixel per cell
+// and is scaled up to the canvas, so it is cheap even for large worlds.
+private drawWater(): void {
   const grid = this.worldController.grid;
-  const WATER_MAX = 400;   //TODO put constant value
-  //const canvas = document.getElementById('waterCanvas');
-  const context = this.ctx;
+  const size = this.size;
+  const image = new ImageData(size, size);
+  const data = image.data;
+  const [r0, g0, b0] = [200, 200, 200];  // background grey
+  const [r1, g1, b1] = [30, 90, 220];    // full cell
 
-  const rows = this.worldController.size;
-  const cols = this.worldController.size;
-
-  this.canvas.width = cols;
-  this.canvas.height = rows;
-
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const cell = grid.cell(col,row);
-      //const brightness = 0.8 + 0.2*Math.min(cell.water / WATER_MAX, 1); // Ensure brightness is within [0, 1]
-      const brightness = row / rows;
-      const color = `rgb(0, ${brightness * 255}, ${brightness * 255}, 1)`; // Cyan color with brightness
-      
-      context.fillStyle = color;
-      const x = col * this.size/rows;
-      const y = row * this.size/cols;
-      context.fillRect(x, y, 1, 1);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const cell = grid.cell(x, y);
+      const ratio = cell.creature || cell.waterCapacity <= 0
+        ? 0
+        : Math.min(Math.max(cell.water / cell.waterCapacity, 0), 1);
+      const i = (y * size + x) * 4;
+      data[i] = r0 + (r1 - r0) * ratio;
+      data[i + 1] = g0 + (g1 - g0) * ratio;
+      data[i + 2] = b0 + (b1 - b0) * ratio;
+      data[i + 3] = 255;
     }
   }
+
+  const waterCanvas = document.createElement("canvas");
+  waterCanvas.width = size;
+  waterCanvas.height = size;
+  (waterCanvas.getContext("2d") as CanvasRenderingContext2D).putImageData(image, 0, 0);
+  this.ctx.imageSmoothingEnabled = false;
+  this.ctx.drawImage(waterCanvas, 0, 0, this.canvas.width, this.canvas.height);
 }
 
 
