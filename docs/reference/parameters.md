@@ -75,9 +75,9 @@ The startup scenario enables the first 10 sensors (positions, age, oscillator, r
 |---|---|---|---|
 | Cell water capacity | `waterData.waterCellCapacity` | 400 | Maximum water one cell can hold. |
 | Total water (per cell) | `waterData.waterTotalPerCell` | 130 | Total water in the world, expressed per cell. |
-| Rain max per cell | `waterData.waterRainMaxPerCell` | 0 | Maximum rain one cell receives in one generation. Continuous runs spread it over the steps of the generation. |
+| Rain max per cell | `waterData.waterRainMaxPerCell` | 50 | Maximum rain one cell receives in one generation. Continuous runs spread it over the steps of the generation. |
 | Initial water per cell | `waterData.waterFirstRainPerCell` | 50 | Water in each cell when the simulation starts. |
-| Evaporation | `waterData.waterEvaporationPerCellPerGeneration` | 0 | Water lost by each cell in each generation. |
+| Evaporation | `waterData.waterEvaporationPerCellPerGeneration` | 10 | Water lost by each cell in each generation. |
 | Rain type | `waterData.rainType` | `rainTypeUniform` | How rain is spread over the map: `rainTypeUniform`, `rainTypeUniformNE` or `rainTypeSinSin`. |
 
 Water only matters when metabolism is on and creatures use the **Photosynthesis** action.

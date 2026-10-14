@@ -169,9 +169,9 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 const startUpScenarioWaterData : WaterData = {
   waterFirstRainPerCell: 50,              // 10
   waterCellCapacity: 400,     // 20
-  waterRainMaxPerCell:  0,             // 2
+  waterRainMaxPerCell:  50,            // 2
   waterTotalPerCell: 130,       // 
-  waterEvaporationPerCellPerGeneration: 0,  // 0
+  waterEvaporationPerCellPerGeneration: 10, // 0
   rainType: "rainTypeUniform"
 };
 
