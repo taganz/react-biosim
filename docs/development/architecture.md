@@ -34,7 +34,7 @@ The engine is a plain, mutable object graph. React does not own its state. React
 2. It runs `new WorldController(simData)` and then `startRun(simData)`, which starts the loop.
 3. It stores the controller in `worldControllerAtom` and the settings in `simulationDataAtom`.
 4. It creates a `WorldCanvas` for the `<canvas>` element and stores it in `worldCanvasAtom`.
-5. It listens to the `redraw` and `startGeneration` events to repaint, and to canvas clicks to select creatures.
+5. It listens to the `redraw` and `startGeneration` events to repaint, and to canvas clicks to select creatures or empty cells (`selectedCellAtom`).
 
 Loading a scenario or a file does **not** create a new controller. It calls `startRun()`, `resumeRun()` or `startGeneration()` on the existing one, which rebuilds the grid, the generations and the water inside it.
 

@@ -107,7 +107,7 @@ export default class WorldCanvas {
 // is never part of the world canvas (and of the GIFs or images saved from it).
 // The ring is much larger than the creature (one cell) and white with a black outline,
 // so it is visible on any creature or object color.
-public drawSelectionOverlay(overlay: HTMLCanvasElement, creature: Creature | null): void {
+public drawSelectionOverlay(overlay: HTMLCanvasElement, creature: Creature | null, cell: GridPosition | null = null): void {
   // same pixel size and on-screen size as the world canvas, so the ring lines up with the creature
   overlay.width = this.canvas.width;
   overlay.height = this.canvas.height;
@@ -116,13 +116,29 @@ public drawSelectionOverlay(overlay: HTMLCanvasElement, creature: Creature | nul
   const ctx = overlay.getContext("2d") as CanvasRenderingContext2D;
   ctx.clearRect(0, 0, overlay.width, overlay.height);
 
+  // each axis has its own cell size: the world canvas may not be exactly square
+  const cellWidth = overlay.width / this.size;
+  const cellHeight = overlay.height / this.size;
+
+  if (cell && this.worldController.grid.isTileInsideWorld(cell[0], cell[1])) {
+    // a square a bit larger than the cell, so it can be seen on small cells
+    const margin = Math.max(Math.min(cellWidth, cellHeight), 4);
+    const rect: [number, number, number, number] = [
+      cell[0] * cellWidth - margin, cell[1] * cellHeight - margin,
+      cellWidth + 2 * margin, cellHeight + 2 * margin,
+    ];
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#000";
+    ctx.strokeRect(...rect);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(...rect);
+  }
+
   if (!creature || !creature.isAlive) return;
   // a creature from a previous generation or run is not in the world anymore
   if (!this.worldController.generations.currentCreatures.includes(creature)) return;
 
-  // each axis has its own cell size: the world canvas may not be exactly square
-  const cellWidth = overlay.width / this.size;
-  const cellHeight = overlay.height / this.size;
   const centerX = (creature.position[0] + 0.5) * cellWidth;
   const centerY = (creature.position[1] + 0.5) * cellHeight;
   const radius = Math.max(Math.min(cellWidth, cellHeight) * 2.5, 10);

@@ -11,7 +11,7 @@ interface Props {
   creature: Creature;
 }
 
-function Group({ title, children }: { title: string; children: ReactNode }) {
+export function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
       <h5 className="mb-1 font-bold">{title}</h5>
@@ -20,7 +20,7 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <>
       <dt className="text-grey-light">{label}</dt>
@@ -30,7 +30,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 // a value with a bar that shows how full it is
-function Meter({ value, max, text }: { value: number; max: number; text: string }) {
+export function Meter({ value, max, text }: { value: number; max: number; text: string }) {
   const fraction = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
   return (
     <span className="flex items-center gap-2">

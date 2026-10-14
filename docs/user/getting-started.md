@@ -47,7 +47,7 @@ The time spent running the simulation is shown in the **Stats** tab.
 
 ## 4. Look inside a creature
 
-Click any creature in the world. A ring marks it, and the **Population** tab shows its species and its neural network. Pause first, or slow the simulation down, so the creature stays still while you click. See [Population and brains](population-and-brains.md).
+Click any creature in the world. A ring marks it, and the **Population** tab shows its species and its neural network. Pause first, or slow the simulation down, so the creature stays still while you click. Click an empty cell to see its water and the map objects on it. See [Population and brains](population-and-brains.md).
 
 ## Next steps
 

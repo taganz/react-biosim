@@ -1,9 +1,10 @@
 import { useAtomValue, useAtom } from "jotai";
-import { worldControllerAtom, selectedCreatureAtom } from "../../store";
+import { worldControllerAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
 import { useMemo, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreatureInfo from "./SelectedCreatureInfo";
+import SelectedCellInfo from "./SelectedCellInfo";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
@@ -27,6 +28,7 @@ export default function SelectedSpeciesPanel({
 }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
+  const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
   const [networkView, setNetworkView] = useState<"live" | "structure">("live");
 
   const actualSelectedSpecies =
@@ -65,7 +67,7 @@ export default function SelectedSpeciesPanel({
 
   const genus = selectedSpecies?.creatures[0]?.genus ?? "unknown";
 
-  if (!worldController || (!selectedSpecies && !selectedCreature)) {
+  if (!worldController || (!selectedSpecies && !selectedCreature && !selectedCell)) {
     return (
       <div className="flex max-w-md flex-col gap-6 text-lg">
         <p className="mb-2">
@@ -75,7 +77,7 @@ export default function SelectedSpeciesPanel({
         <p>
           Click one of the boxes to see more information about that species
           (genes, neuronal network, etc). Click a creature on the world to see
-          its own state.
+          its own state, or an empty cell to see its water and map objects.
         </p>
       </div>
     );
@@ -116,7 +118,26 @@ export default function SelectedSpeciesPanel({
             </button>
           </div>
         )}
+        {selectedCell && (
+          <div className="flex items-center gap-2 border border-grey-mid p-2">
+            <span>Cell ({selectedCell[0]}, {selectedCell[1]})</span>
+            <button
+              className="px-1 hover:bg-grey-mid"
+              aria-label="Clear the selected cell"
+              title="Clear the selected cell"
+              onClick={() => setSelectedCell(null)}
+            >
+              ×
+            </button>
+          </div>
+        )}
       </div>
+
+      {selectedCell && (
+        <CollapsibleSection title={`Cell (${selectedCell[0]}, ${selectedCell[1]})`} defaultOpen>
+          <SelectedCellInfo position={selectedCell} />
+        </CollapsibleSection>
+      )}
 
       {selectedCreature && (
         <CollapsibleSection title={`Creature #${selectedCreature.id}`} defaultOpen>

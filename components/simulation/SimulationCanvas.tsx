@@ -5,7 +5,7 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom} from "./store";
+import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom} from "./store";
 import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";
 import Creature from "@/simulation/creature/Creature";
@@ -34,6 +34,7 @@ export default function SimulationCanvas({ className }: Props) {
   const setEventLogger = useSetAtom(eventLoggerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
+  const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
   const showWater = useAtomValue(showWaterAtom);
 
@@ -128,6 +129,8 @@ export default function SimulationCanvas({ className }: Props) {
         setSelectedSpecies(
           creature ? new Species(creature.brain.genome.clone(), [creature]) : undefined
         );
+        // an empty cell (or an obstacle) is selected instead, to show its water and objects
+        setSelectedCell(creature ? null : [worldX, worldY]);
       };
 
       // draw a small square at cursor position to help selecting a creature
@@ -146,7 +149,7 @@ export default function SimulationCanvas({ className }: Props) {
         worldCanvas.canvas.removeEventListener("mousemove", onMouseMove);
       };
     },
-    [worldController, worldCanvas, setSelectedCreature, setSelectedSpecies]
+    [worldController, worldCanvas, setSelectedCreature, setSelectedSpecies, setSelectedCell]
   );
 
   // the creatures are replaced at the start of each generation, so the selection moves to a
@@ -195,14 +198,14 @@ export default function SimulationCanvas({ className }: Props) {
     [worldController, setSelectedCreature, setSelectedSpecies]
   );
 
-  // ring around the selected creature, drawn on the overlay whenever the world is redrawn
-  // and right away when the selection changes (also while the simulation is paused)
+  // ring around the selected creature, or square around the selected cell, drawn on the overlay
+  // whenever the world is redrawn and right away when the selection changes (also while paused)
   useEffect(
     function highlightSelectedCreature() {
       const overlay = overlayRef.current;
       if (!worldController || !worldCanvas || !overlay) return;
 
-      const drawSelection = () => worldCanvas.drawSelectionOverlay(overlay, selectedCreature);
+      const drawSelection = () => worldCanvas.drawSelectionOverlay(overlay, selectedCreature, selectedCell);
       const events = [WorldEvents.redraw, WorldEvents.startGeneration, WorldEvents.initializeWorld];
 
       drawSelection();
@@ -211,7 +214,7 @@ export default function SimulationCanvas({ className }: Props) {
         events.forEach((event) => worldController.events.removeEventListener(event, drawSelection));
       };
     },
-    [worldController, worldCanvas, selectedCreature]
+    [worldController, worldCanvas, selectedCreature, selectedCell]
   );
 
   return (

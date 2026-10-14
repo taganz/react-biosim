@@ -1,7 +1,7 @@
 "use client";
 
-import { useAtomValue, useAtom } from "jotai";
-import { worldControllerAtom, selectedSpeciesAtom, selectedCreatureAtom } from "../../store";
+import { useAtomValue, useAtom, useSetAtom } from "jotai";
+import { worldControllerAtom, selectedSpeciesAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
 import { useEffect, useMemo, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
@@ -18,6 +18,7 @@ export default function PopulationPanel() {
   // shared with SimulationCanvas, which selects the species of the clicked creature
   const [selectedSpecies, setSelectedSpecies] = useAtom(selectedSpeciesAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
+  const setSelectedCell = useSetAtom(selectedCellAtom);
 
   // selecting a species also selects one of its creatures, so its live values and ring are
   // shown. The current creature is kept when it already belongs to the species
@@ -26,6 +27,7 @@ export default function PopulationPanel() {
       selectedCreature?.isAlive &&
       selectedCreature.brain.genome.toDecimalString(false) === clicked.genomeKey;
     setSelectedSpecies(clicked);
+    setSelectedCell(null);
     if (!keepCurrent) {
       setSelectedCreature(clicked.creatures.find((creature) => creature.isAlive) ?? null);
     }

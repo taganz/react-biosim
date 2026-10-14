@@ -19,7 +19,7 @@ Many species in the list have the same colour (in `trophicLevel` mode, species o
 
 ## Selecting a creature
 
-Click a creature in the world. This selects its species and draws a ring around it. Click an empty cell to clear the selection.
+Click a creature in the world. This selects its species and draws a ring around it. Clicking an empty cell clears the creature and species and [selects the cell](#selected-cell) instead.
 
 When a new generation starts, the selection moves to a creature of the same species. Offspring often mutate, so the species may have no members in the new generation. In that case the creature that shares the most genes with the old one is selected, usually a descendant with a single mutation, and its species becomes the selected species.
 
@@ -29,11 +29,12 @@ Pause the simulation, or set **Pause between steps** to 200, before you click. T
 
 ## Layout of the panel
 
-The top of the panel shows what is selected: the species (colour code, genus, alive creatures and percentage) and the creature. Below it, the information is grouped in sections that you can open and close by clicking their title:
+The top of the panel shows what is selected: the species (colour code, genus, alive creatures and percentage) and the creature, or the cell. Below it, the information is grouped in sections that you can open and close by clicking their title:
 
 | Section | Shown when | Open at first |
 |---|---|---|
 | **Creature #id** | a creature is selected | yes |
+| **Cell (x, y)** | an empty cell is selected | yes |
 | **Neuronal network** | a species is selected | yes |
 | **What drives each action** | a species is selected | yes |
 | **Genome** | a species is selected | no |
@@ -60,6 +61,16 @@ The section is updated at every step:
 If the creature dies, the section says why (old age, out of mass, eaten and by which species, or health), when, and keeps the values of its last step. In generational runs most creatures do not die: they are replaced when the generation ends, and the section says so.
 
 See [Life history](../model/creatures.md#life-history) for what each value counts.
+
+## Selected cell
+
+Click an empty cell, or an obstacle, in the world to select it. A square marks it, and the **Cell (x, y)** section shows, updated at every step:
+
+- **Contents**: empty, obstacle, or the creature that has moved into it since. Click the creature to select it.
+- **Map objects**: the obstacles and areas (reproduction, health, spawn) that cover the cell.
+- **Water**: the water in the cell against its capacity ([World](../model/world.md)).
+
+Selecting a creature or a species box clears the cell. To clear it yourself, use the **×** next to its name at the top of the panel.
 
 ## Selected species
 

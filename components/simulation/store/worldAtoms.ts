@@ -5,6 +5,7 @@ import { Species } from "@/simulation/creature/Species";
 import { atom } from "jotai";
 import {SIMULATION_DATA_DEFAULT}  from "@/simulation/simulationDataDefault"
 import EventLogger from "@/simulation/logger/EventLogger";
+import { GridPosition } from "@/simulation/world/grid/Grid";
 
 
 
@@ -19,6 +20,8 @@ export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
 export const selectedSpeciesAtom = atom<Species | undefined>(undefined);
+// an empty cell clicked on the world; null while a creature is selected
+export const selectedCellAtom = atom<GridPosition | null>(null);
 // the "Creature to log" field of the logger; also set from the Population tab
 export const logCreatureIdAtom = atom(0);
 
