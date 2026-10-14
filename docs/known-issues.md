@@ -15,6 +15,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Health areas have no effect** | The call that applies them is commented out in `WorldGenerations.step()`, so the Pain sensor is always 0. | [World](model/world.md#objects-and-areas) |
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
+| **The prey sensors never see the last row and column** | The search area is clamped to `size − 1` and then used as an exclusive end, so a prey at `x = size − 1` or `y = size − 1` is not detected. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
+| **Plants with prey sensors detect any creature** | Plants have no prey genus, so for them the prey sensors return the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 
 ### User interface
@@ -75,6 +77,7 @@ These items were on the old list, or found while writing these docs, and are now
 - Water accounting with the Reproduction selection method. It does not reset the world water between generations, so the water of the replaced creatures stayed counted and the mass of the new ones was not, and the simulation stopped with a `dissipateWater` error. The creatures' water is now recounted after repopulating.
 - Water accounting on resume. **Update simulation** and resuming a file rebuild the world water, but the restored creatures kept their mass without counting it, so with metabolism on the simulation stopped with a `dissipateWater` error. Restored creatures now take their mass from the cloud, and the rounding error left when creatures use up all their mass is ignored.
 - Plant/Herbivore no longer stops the simulation when it receives survivors that are not herbivores (selection methods other than Greatest Mass). It ignores them and logs a warning.
+- The prey sensors were the slowest part of a step in crowded worlds: each creature listed every creature within `DETECT_RADIUS`, twice. They now share one search that goes ring by ring and stops at the closest match. With 8000 creatures a step went from about 145 ms to 12 ms. They detect exactly the same creatures as before.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 
 ## Ideas

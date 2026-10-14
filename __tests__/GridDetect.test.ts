@@ -6,7 +6,7 @@ import { SimulationData } from "@/simulation/SimulationData";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
 import { detectAll, gridDistance, detectClosest, DetectedCreature } from "@/simulation/world/grid/GridDetect";
 import Genome from '@/simulation/creature/brain/Genome';
-import CreatureGenus  from '@/simulation/creature/CreatureGenus';
+import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import WorldGenerations from '@/simulation/generations/WorldGenerations';
 import CreatureMass from '@/simulation/creature/CreatureMass';
 
@@ -206,6 +206,40 @@ describe('gridDetect', () => {
         //console.log("yyyyyy\n\n", detectClosest(grid, [2,0], 3));
         //console.log("xxxxxxx\n\n", detectClosest(grid, [2,0], 3, "attack_plant"));
         expect(detectClosest(grid, [2, 0], 3, "attack_plant")).toBeNull();
+    });
+
+    // the previous detectClosest: every creature around, then the last one with the minimum distance
+    function detectClosestReference(origin: [number, number], radius: number, genus?: Genus): DetectedCreature | null {
+        const creatures = detectAll(grid, origin, radius).filter(creat => genus === undefined || creat.genus === genus);
+        if (creatures.length === 0) return null;
+        return creatures.reduce((closest, creature) => (closest.distance < creature.distance) ? closest : creature);
+    }
+
+    test('grid.detectClosest(): same result as searching every creature around', () => {
+        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        simulationData.worldObjects = [];
+        simulationData.worldControllerData.size = 30;
+        simulationData.worldGenerationsData.initialPopulation = 0;
+        const genomes = [genomePlant, genomeAttackPlant, genomeAttackAnimal];
+        const genera: (Genus | undefined)[] = [undefined, "plant", "attack_plant", "attack_animal"];
+
+        for (const density of [0.01, 0.05, 0.3, 0.8]) {
+            worldController = new WorldController(simulationData);
+            grid = worldController.generations.grid;
+            for (let x = 0; x < grid.size; x++) {
+                for (let y = 0; y < grid.size; y++) {
+                    if (Math.random() < density) {
+                        worldController.generations.newCreature([x, y], true, genomes[Math.floor(Math.random() * 3)]);
+                    }
+                }
+            }
+            for (let n = 0; n < 300; n++) {
+                const origin: [number, number] = [Math.floor(Math.random() * grid.size), Math.floor(Math.random() * grid.size)];
+                const radius = [0, 1, 3, 10, 40][n % 5];
+                const genus = genera[Math.floor(n / 5) % 4];
+                expect(detectClosest(grid, origin, radius, genus)).toEqual(detectClosestReference(origin, radius, genus));
+            }
+        }
     });
 
 

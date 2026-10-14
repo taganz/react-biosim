@@ -97,4 +97,6 @@ So the same gene can mean different connections in simulations with different se
 
 - **PredatorDistance and PredatorDirection produce no value.** `calculateOutputs` never computes them, so they are disabled by default. They can still be enabled in Settings: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.
 - **Reproduction never succeeds without metabolism.** It needs more than 3 × birth mass, and without metabolism mass never changes (see [Creatures → Reproduction](../model/creatures.md#reproduction)).
+- **The prey sensors never see the last row and column of the world.** `detectClosest` clamps the search area to `size − 1` and uses it as an exclusive end. It is kept so that existing simulations behave the same.
+- **Plants with prey sensors detect any creature.** Plants have no prey genus (`preyGenus` is `undefined`), and `detectClosest` without a genus returns the closest creature of any genus.
 - **The genus of a creature is read from its actions only.** Sensors never set the genus, so the "compatible genus" lists of sensors only matter when genomes are built for a given genus.

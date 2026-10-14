@@ -464,23 +464,24 @@ export default class CreatureSensors {
       values.push(creature.mass);
     }
 
+    // the distance and direction sensors share one search, the most expensive part of a step
+    const preyDirectionEnabled = this.data.PreyNorth.enabled || this.data.PreyEast.enabled ||
+       this.data.PreySouth.enabled || this.data.PreyWest.enabled;
+    const prey = this.data.PreyDistance.enabled || preyDirectionEnabled
+      ? detectClosest(creature.generations.grid, creature.position,
+          creature.generations.worldController.simData.constants.DETECT_RADIUS,
+          creature.preyGenus)
+      : null;
+
     // PreyDistance
     if (this.data.PreyDistance.enabled) {
-      const closestPrey = detectClosest(creature.generations.grid, creature.position, 
-        creature.generations.worldController.simData.constants.DETECT_RADIUS,
-        creature.preyGenus);
-      values.push(closestPrey?.distance ?? 999999);
-      //console.log("creature.preyGenus ", creature.preyGenus, "closestPrey.genus ", closestPrey?.genus);
+      values.push(prey?.distance ?? 999999);
       }
     
     // PreyDirection
     let preyDirection : Direction4[] = [];
 
-    if (this.data.PreyNorth.enabled || this.data.PreyEast.enabled ||
-       this.data.PreySouth.enabled || this.data.PreyWest.enabled) {
-      const prey = detectClosest(creature.generations.grid, creature.position, 
-        creature.generations.worldController.simData.constants.DETECT_RADIUS,
-        creature.preyGenus);
+    if (preyDirectionEnabled) {
       if (prey) {
         if (prey?.position[0] < creature.position[0]) preyDirection.push("W");
         if (prey?.position[0] > creature.position[0]) preyDirection.push("E");
