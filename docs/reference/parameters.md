@@ -90,7 +90,7 @@ They open from the **Speed** button in the control bar. They change the running 
 |---|---|---|---|---|
 | Pause between steps (ms) | `worldControllerData.pauseBetweenSteps` | 0, 10, 50, 200 | 10 | Wait after each batch of steps. |
 | Pause between generations (ms) | `worldControllerData.pauseBetweenGenerations` | 0, 1000, 4000 | 0 | Wait at the end of each generation. |
-| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. Choosing 20 or 200 sets both pauses to 0. |
+| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. Choosing 20 or 200 sets both pauses to 0. A batch of steps also ends after 30 ms, so when steps are slow (large worlds or populations) 20 and 200 run at the same speed. Compare them with **Steps per second** in Stats. |
 
 ## Not in the UI
 

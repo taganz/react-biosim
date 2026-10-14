@@ -55,7 +55,7 @@ The chart plots the **fitness value** of every generation. The selection method 
 
 **maxFitnessValue** above the chart is the value of the last generation. The curve is smoothed.
 
-Below the chart, **Total time** is the time spent running the simulation, and **Last generation duration** is how long the last generation took to compute.
+Below the chart, **Total time** is the time spent running the simulation, **Last generation duration** is how long the last generation took to compute, and **Steps per second** is how many steps were computed during the last second. Use it to compare the speed controls: the step counter of the control bar is redrawn at most once per frame, so it looks the same at very different speeds.
 
 Typical shapes:
 
