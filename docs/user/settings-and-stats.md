@@ -6,7 +6,7 @@ Use **Settings** to change the rules of a simulation and **Stats** to see whethe
 
 ![Settings tab](images/tab_settings.png)
 
-The tab is grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and an **Under development: water** panel. Every field is described in the [parameters reference](../reference/parameters.md).
+The tab is grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
 
 ### Applying changes
 
@@ -63,9 +63,10 @@ Typical shapes:
 - **A plateau below 100%.** The current brains have hit their limit. More genes or neurons, or more time, may help.
 - **A sudden drop.** A change to the settings or the map made the old strategy useless.
 
-### Under development: logger and water
+### Water
 
-Expand this section to see:
+Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled. **Show water in cells** paints every empty cell of the world from grey (no water) to blue (full), by its water as a percentage of the cell's capacity. It is a viewer option: it is off when the app opens, it is not saved with the simulation, and it redraws the world at once, also while paused. Because it is drawn on the world canvas, GIFs recorded while it is on show the water too.
 
-- **Logger.** Records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.
-- **Water.** Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled. **Show water in cells** paints every empty cell of the world from grey (no water) to blue (full), by its water as a percentage of the cell's capacity. It is a viewer option: it is off when the app opens, it is not saved with the simulation, and it redraws the world at once, also while paused. Because it is drawn on the world canvas, GIFs recorded while it is on show the water too.
+### Under development: logger
+
+Expand this section to see the **logger**. It records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.

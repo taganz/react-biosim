@@ -427,12 +427,9 @@ export default function SettingsPanel() {
         </div>
       </Section>
 
-      {/* === IN DEV OPTIONS === */}
-      <details className="flex flex-col gap-3">
-        <summary className="cursor-pointer text-2xl font-bold">
-          Under development: water
-        </summary>
-        <div className={classNames(FIELDS_GRID, "mt-3")}>
+      {/* === WATER === */}
+      <Section title="Water">
+        <div className={FIELDS_GRID}>
           <NumberInput
             label="Cell water capacity"
             value={waterData.waterCellCapacity}
@@ -480,7 +477,7 @@ export default function SettingsPanel() {
             ))}
           </SelectInput>
         </div>
-      </details>
+      </Section>
     </div>
   );
 }

@@ -6,7 +6,7 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 |---|---|---|
 | `worldControllerData` | [WorldControllerData](../../simulation/world/WorldControllerData.ts) | World size, generation length, speed, metabolism constants, run state |
 | `worldGenerationsData` | [WorldGenerationsData](../../simulation/generations/WorldGenerationsData.ts) | Population, selection, genome, mutations, sensors, actions |
-| `waterData` | [WaterData](../../simulation/water/WaterData.ts) | Water and rain (under development) |
+| `waterData` | [WaterData](../../simulation/water/WaterData.ts) | Water and rain |
 | `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the Map tab) |
 | `constants` | object | Advanced options that are not shown in the UI |
 
@@ -69,7 +69,7 @@ The startup scenario enables the first 10 sensors (positions, age, oscillator, r
 
 > **Changing sensors or actions changes the meaning of existing genes.** Genes point to sensors and actions by their position in the list of enabled items. If you enable or disable one and click **Update simulation**, the creatures keep their genes, but those genes now connect different inputs and outputs.
 
-### Under development: water
+### Water
 
 | UI label | Key | Startup | Notes |
 |---|---|---|---|

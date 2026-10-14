@@ -34,7 +34,7 @@ Use the control bar at the top to pause the simulation or change its speed. Set 
 - **Brain.** **Sensors** (position, age, nearby obstacles, prey…) feed a small neural network that drives **actions** (move, reproduce, attack…).
 - **Generations.** A generation lasts a fixed number of steps. When it ends, a **selection method** picks the survivors, for example those standing inside a reproduction area.
 - **Inheritance.** A **population strategy** fills the next generation with copies of the survivors' genomes. A copy can mutate: a gene changes, or a gene is added or removed.
-- **Experimental.** Optional metabolism (mass and water) and genera (plants, herbivores, carnivores) for predator–prey experiments.
+- **Metabolism and genera.** Optional mass and water, and genera (plants, herbivores, carnivores) for predator–prey experiments.
 
 Details: [sensors and actions](docs/reference/sensors-and-actions.md), [population strategies and selection methods](docs/reference/population-and-selection.md) and [all parameters](docs/reference/parameters.md).
 
