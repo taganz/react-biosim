@@ -84,9 +84,15 @@ export default class WorldCanvas {
 
     //this.selectionMethod?.onDrawAfterCreatures?.(this);
 
-    // Draw objects
+    // Draw objects. Reproduction areas (areaType 0) only matter to InsideReproductionAreaSelection,
+    // and continuous runs never call the selection method
+    const generations = this.worldController.generations;
+    const showReproductionAreas = !generations.isContinuous
+      && generations.selectionMethod.name === "InsideReproductionAreaSelection";
     for (let i = 0; i < this.worldController.objects.length; i++) {
-      this.worldController.objects[i].draw(this.ctx, this.size);
+      const obj = this.worldController.objects[i];
+      if (obj.areaType === 0 && !showReproductionAreas) continue;
+      obj.draw(this.ctx, this.size);
     }
 
     // Draw generation #
