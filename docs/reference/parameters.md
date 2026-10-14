@@ -137,6 +137,6 @@ The simulation writes these values itself so that a saved file can resume where 
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
 | `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Gene strategy. Choosing that strategy in Settings fills an empty list with the default one. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
-| `LOG_*` | — | Event logger settings: on/off switch, level, creature filter, event limit and event types. |
+| `LOG_*` | — | Event logger settings: on/off switch, level (default `STEP`), creature filter, event limit, number locale and event types. All but the creature filter can be changed in *Stats → Logger options*. |
 | `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |
 | `SIM_CODE_LENGTH` | 3 | Length of the generated simulation code. |

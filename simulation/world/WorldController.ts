@@ -7,7 +7,7 @@ import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "../generations/WorldGenerations";
 import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
-import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
+import EventLogger, {LogOptions, SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import WorldWater from "../water/WorldWater";
@@ -428,6 +428,19 @@ export default class WorldController {
   resumeLog() : void {
     this.eventLogger.resume();
     this.notifyStateChange();
+  }
+
+  /**
+   * Changes logger constants of the running simulation, so they are saved with it.
+   * simData is replaced, not mutated: the Settings draft may share its constants.
+   * Returns the new simData.
+   */
+  setLogOptions(options: Partial<LogOptions>) : SimulationData {
+    this.simData = {...this.simData, constants: {...this.simData.constants, ...options}};
+    if (options.LOG_LEVEL !== undefined) this.eventLogger.setLogLevel(options.LOG_LEVEL);
+    if (options.LOG_EVENTLOGGER_MAX_EVENTS !== undefined) this.eventLogger.setMaxEvents(options.LOG_EVENTLOGGER_MAX_EVENTS);
+    this.notifyStateChange();
+    return this.simData;
   }
 
   // lets the UI know about changes that happen while the simulation loop is not running

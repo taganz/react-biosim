@@ -40,7 +40,6 @@ Checked against the code in October 2026. Each item links to the page that expla
   - Genus evolution graph
   - Fitness values for continuous simulation
 - Log
-  - Choose log settings from the UI
   - Complete the Power BI report that analyses the log (`public/analyze simlog.pbix`)
 - Other
   - Remove the Google Analytics and Clarity tags
@@ -73,6 +72,8 @@ These items were on the old list, or found while writing these docs, and are now
 - Plant/Herbivore no longer stops the simulation when it receives survivors that are not herbivores (selection methods other than Greatest Mass). It ignores them and logs a warning.
 - The prey sensors were the slowest part of a step in crowded worlds: each creature listed every creature within `DETECT_RADIUS`, twice. They now share one search that goes ring by ring and stops at the closest match. With 8000 creatures a step went from about 145 ms to 12 ms. They detect exactly the same creatures as before.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
+- The logger settings can be changed from the UI (*Stats → Logger options*).
+- With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
 - 16 tests failed in `EventLogger.test.ts`. The logger was fine: the test never applied its own constants, so it ran with the default `LOG_LEVEL` (`STEP`), which drops creature events. It also changed `SIMULATION_DATA_DEFAULT` in place.
 
 ## Ideas

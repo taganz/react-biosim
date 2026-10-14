@@ -70,3 +70,13 @@ Shows how the world's water is split between the cloud, the cells and the creatu
 ### Under development: logger
 
 Expand this section to see the **logger**. It records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.
+
+**Logger options**, below it, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
+
+- **Enable logger** turns the logger on or off. When it is off, the rest of the section is hidden.
+- **Level** chooses which rows go into the file. *Creature events and all totals* writes one row per creature event plus the totals. *Step totals…* writes, for each step, how many times each creature event happened, plus the generation totals and the world events. *Generation totals…* writes only the counts per generation and the world events. *World events only* writes only the population and water rows of the world. The totals count only the creatures that pass **Creature to log**.
+- **Maximum events** is the number of rows at which the logger pauses.
+- **Number format (locale)** sets the decimal separator of the values, for example `es-ES` (1,5) or `en-US` (1.5). Unknown locales are ignored.
+- **Events to record** turns each event type on or off. A creature event that is off is not counted in the totals either.
+
+**Log this creature** sets the level to *Creature events* for the logger only: the saved setting does not change until you choose a level here.

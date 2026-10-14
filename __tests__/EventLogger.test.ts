@@ -259,6 +259,48 @@ describe('EventLogger', () => {
     });
 
 
+    test('logEvent() - STEP level records step totals but not creature rows', () => {
+        logger.setLogLevel(LogLevel.STEP);
+        logger.resume();
+        worldControllerMock.currentGen = 2;
+        logger.logEvent({...mockEvent, creatureId: 1});
+        logger.logEvent({...mockEvent, creatureId: 2});
+        worldControllerMock.currentStep = 2;
+        logger.logEvent({...mockEvent, creatureId: 3});
+
+        const log = logger.getLog();
+        expect(log.includes("CREATURE;")).toBeFalsy();
+        expect(log.includes("STEP TOTALS;1;2;1;;;;BIRTH;massAtBirth sum;2;;")).toBeTruthy();
+    });
+
+    test('logEvent() - GENERATION level records generation totals only', () => {
+        logger.setLogLevel(LogLevel.GENERATION);
+        logger.resume();
+        worldControllerMock.currentGen = 2;
+        logger.logEvent({...mockEvent, creatureId: 1});
+        worldControllerMock.currentStep = 2;
+        logger.logEvent({...mockEvent, creatureId: 2});
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 1;
+        logger.logEvent({...mockEvent, creatureId: 3});
+
+        const log = logger.getLog();
+        expect(log.includes("CREATURE;")).toBeFalsy();
+        expect(log.includes("STEP TOTALS;")).toBeFalsy();
+        expect(log.includes("GENERATION TOTALS;2;2;;;;;BIRTH;massAtBirth sum;2;;")).toBeTruthy();
+    });
+
+    test('setLogOptions() - replaces simData and updates the logger', () => {
+        const previous = worldControllerMock.simData;
+        const updated = worldControllerMock.setLogOptions({LOG_LEVEL: LogLevel.WORLD, LOG_EVENTLOGGER_MAX_EVENTS: 5});
+        expect(updated).not.toBe(previous);
+        expect(worldControllerMock.simData).toBe(updated);
+        expect(updated.constants.LOG_LEVEL).toBe(LogLevel.WORLD);
+        expect(previous.constants.LOG_LEVEL).toBe(LogLevel.CREATURE);
+        expect(worldControllerMock.eventLogger.logLevel).toBe(LogLevel.WORLD);
+        expect(worldControllerMock.eventLogger.maxEvents).toBe(5);
+    });
+
     test('recordNextGeneration() - should log one generation after current', () => {
         logger.resume();
         

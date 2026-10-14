@@ -1,5 +1,5 @@
 import WorldController from '../world/WorldController';
-import {LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
+import {AllowedLogEvents, LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
 
 export interface SimulationCallEvent {
   logLevel: LogLevel;
@@ -11,6 +11,15 @@ export interface SimulationCallEvent {
   paramValue: number;
   paramValue2: number;
   paramString: string;
+}
+
+// the LOG_* constants that can be changed while the simulation runs
+export interface LogOptions {
+  LOG_ENABLED: boolean;
+  LOG_LEVEL: LogLevel;
+  LOG_EVENTLOGGER_MAX_EVENTS: number;
+  LOG_LOCALE_STRING: string;
+  LOG_ALLOWED_EVENTS: AllowedLogEvents;
 }
 
 interface SimulationEvent {
@@ -32,7 +41,7 @@ interface SimulationEvent {
 export default class EventLogger {
   _csvHeaders = 'LogLevel;StepIndex;CurrentGen;CurrentStep;SpeciesId;GenusId;CreatureId;EventType;ParamName;ParamValue;ParamValue2;ParamString\n';
   private worldController : WorldController;
-  private readonly logThreshold: number;
+  private logThreshold: number;
   private log: SimulationEvent[] = [];
   private stepTotals : [LogEvent, string][]=[];
   private genTotals : [LogEvent, string][]=[];
@@ -75,6 +84,19 @@ export default class EventLogger {
   }
   get creatureId() : number {
     return this.logCreatureId;
+  }
+  get logLevel() : LogLevel {
+    return this.currentLogLevel;
+  }
+  get maxEvents() : number {
+    return this.logThreshold;
+  }
+
+  public setLogLevel(level: LogLevel) {
+    this.currentLogLevel = level;
+  }
+  public setMaxEvents(maxEvents: number) {
+    this.logThreshold = maxEvents;
   }
 
   // reset should not reset log because we want to keep previous log if first generation had problems
@@ -206,15 +228,15 @@ export default class EventLogger {
 
   }
 
+  // levels from the most detailed; a log level records its own rows and the ones after it
+  private static readonly LEVEL_ORDER = [LogLevel.CREATURE, LogLevel.STEP, LogLevel.GENERATION, LogLevel.WORLD];
+
+  private levelIsRecorded(level: LogLevel): boolean {
+    return EventLogger.LEVEL_ORDER.indexOf(level) >= EventLogger.LEVEL_ORDER.indexOf(this.currentLogLevel);
+  }
+
   private logReceivedEvent(eventValues:SimulationCallEvent) {
-    
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.STEP)) return ;
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.GENERATION)) return;
-      if ((eventValues.logLevel == LogLevel.CREATURE) && (this.currentLogLevel == LogLevel.WORLD)) return ;
-      if ((eventValues.logLevel == LogLevel.STEP) && (this.currentLogLevel == LogLevel.GENERATION)) return;
-      if ((eventValues.logLevel == LogLevel.STEP) && (this.currentLogLevel == LogLevel.WORLD)) return ;
-      if ((eventValues.logLevel == LogLevel.GENERATION) && (this.currentLogLevel == LogLevel.WORLD)) return;
-  
+
       // if logging creature log, check id range
       if (eventValues.logLevel == LogLevel.CREATURE) {
         if (!(this.logCreatureId == 0 
@@ -224,9 +246,13 @@ export default class EventLogger {
           )) {
         return;
         }
+        // counted for the step and generation totals even when creature rows are not recorded
+        this.stepTotals.push([eventValues.eventType, eventValues.paramName])
+        this.genTotals.push([eventValues.eventType, eventValues.paramName])
       }
-  
- 
+
+      if (!this.levelIsRecorded(eventValues.logLevel)) return;
+
     const simulationEvent : SimulationEvent = {
       logLevel : eventValues.logLevel,
       stepIndex : this.stepIndex.toString(),
@@ -243,12 +269,6 @@ export default class EventLogger {
     }
 
     this.pushEventToLog(simulationEvent);
-
-    if (eventValues.logLevel == LogLevel.CREATURE) {
-      this.stepTotals.push([eventValues.eventType, eventValues.paramName])      
-      this.genTotals.push([eventValues.eventType, eventValues.paramName])      
-
-    }
   }
   
   // get events data in blog format to write to file 
@@ -283,6 +303,10 @@ export default class EventLogger {
   }
 
   private aggregateAtStepLevel(eventValues:SimulationCallEvent) {
+      if (!this.levelIsRecorded(LogLevel.STEP)) {
+        this.stepTotals = [];
+        return;
+      }
 
       // sum paramValue # 1 
       const aggregatedAtStepLevel = this.countEvents(this.stepTotals.map(item => [item[0], item[1]]));
@@ -307,6 +331,10 @@ export default class EventLogger {
   }
 
   private aggregateAtGenerationLevel(eventValues:SimulationCallEvent) {
+    if (!this.levelIsRecorded(LogLevel.GENERATION)) {
+      this.genTotals = [];
+      return;
+    }
 
     const aggregatedAtGenerationLevel = this.countEvents(this.genTotals.map(item => [item[0], item[1]]));
     aggregatedAtGenerationLevel.map(item => {
