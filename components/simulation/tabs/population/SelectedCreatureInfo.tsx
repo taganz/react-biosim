@@ -192,6 +192,9 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           {metabolismEnabled && (
             <Field label="Water from photosynthesis">{formatMass(creature.waterFromPhotosynthesis)}</Field>
           )}
+          {metabolismEnabled && preyGenus && (
+            <Field label="Water from prey">{formatMass(creature.waterFromPrey)}</Field>
+          )}
         </Group>
 
         <Group title="Brain">

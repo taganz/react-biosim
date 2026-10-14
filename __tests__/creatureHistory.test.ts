@@ -93,6 +93,7 @@ describe('creature history', () => {
         parent.attackCount = 5;
         parent.killCount = 1;
         parent.waterFromPhotosynthesis = 3.5;
+        parent.waterFromPrey = 2.5;
         worldController.generations.grid.removeCreature(parent);
         const restored = worldController.generations.restoreCreature(parent);
         expect(restored).not.toBeNull();
@@ -103,5 +104,6 @@ describe('creature history', () => {
         expect(restored!.attackCount).toBe(5);
         expect(restored!.killCount).toBe(1);
         expect(restored!.waterFromPhotosynthesis).toBe(3.5);
+        expect(restored!.waterFromPrey).toBe(2.5);
     });
 });

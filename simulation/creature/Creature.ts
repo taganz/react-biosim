@@ -64,6 +64,7 @@ export default class Creature {
   attackCount : number = 0;          // every attack action, including the ones without enough mass
   killCount : number = 0;
   waterFromPhotosynthesis : number = 0;
+  waterFromPrey : number = 0;        // the prey's mass it kept, up to its maximum mass
   deathCause : DeathCause | null = null;
   deathStep : number | null = null;
   deathGen : number | null = null;

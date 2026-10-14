@@ -135,6 +135,7 @@ Each creature keeps these values. Nothing in the simulation reads them; they are
 | `childrenCount` | How many creatures got their genome from it. |
 | `attackCount`, `killCount` | Attack actions executed (including the ones without enough mass) and prey killed. |
 | `waterFromPhotosynthesis` | Total water taken from its cell by Photosynthesis. |
+| `waterFromPrey` | Total mass taken from the prey it killed. It only counts what fitted below its maximum mass: the rest of the prey returns to the prey's cell. |
 | `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` or `actionsExecutionConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
 | `killedBySpecies` | For `attacked`, the species of the attacker. |
 

@@ -55,7 +55,7 @@ The section is updated at every step:
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
 - **Body**: mass against the maximum mass, mass at birth and basal consumption per step. "Enough mass to move / reproduce / attack" tell whether the creature has the mass that each action needs ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
-- **Activity**: children, attacks and kills (for herbivores and carnivores), and the water it got from photosynthesis (with metabolism).
+- **Activity**: children, attacks and kills (for herbivores and carnivores), and the water it got from photosynthesis and from its prey (with metabolism).
 - **Brain**: genes, neurons and connections, and the action with the highest output in this step.
 
 If the creature dies, the section says why (old age, out of mass, eaten and by which species, or health), when, and keeps the values of its last step. In generational runs most creatures do not die: they are replaced when the generation ends, and the section says so.

@@ -221,6 +221,7 @@ export default class WorldGenerations {
     creature.attackCount = source.attackCount;
     creature.killCount = source.killCount;
     creature.waterFromPhotosynthesis = source.waterFromPhotosynthesis;
+    creature.waterFromPrey = source.waterFromPrey;
     creature._age = source._age;
     creature.lastPosition = [source.lastPosition[0], source.lastPosition[1]];
     creature.lastMovement = [source.lastMovement[0], source.lastMovement[1]];

@@ -102,8 +102,9 @@ describe('CreaturePhenotype', () => {
     test('eat - move the prey mass to the attacker, the water stays in creatures', ()=> {
         mass = joeAttackAnimal._mass;
         
-        mass.eat(joeAttackPlant._mass);
+        const eaten = mass.eat(joeAttackPlant._mass);
         
+        expect(eaten).toBe(2);
         expect(mass.mass).toBe(3 + 2);
         expect(joeAttackPlant.mass).toBe(0);
         expect(mass._worldWater.totalWater).toBe(250);
@@ -115,8 +116,9 @@ describe('CreaturePhenotype', () => {
         mass = joeAttackAnimal._mass;
         mass._mass = mass._maxMass - 0.5;
         
-        mass.eat(joeAttackPlant._mass);
+        const eaten = mass.eat(joeAttackPlant._mass);
         
+        expect(eaten).toBe(0.5);
         expect(mass.mass).toBe(mass._maxMass);
         expect(joeAttackPlant.mass).toBe(2 - 0.5);
     });

@@ -64,12 +64,13 @@ export default class CreatureMass {
 
     
     // takes the prey's mass, up to the maximum mass; the water stays inside creatures.
-    // Called before the prey dies, so whatever is left returns to its cell
-    eat(prey: CreatureMass) {
-        if (!this._metabolismEnabled) {return}
+    // Called before the prey dies, so whatever is left returns to its cell. Returns the mass taken
+    eat(prey: CreatureMass): number {
+        if (!this._metabolismEnabled) {return 0}
         const eaten = Math.max(0, Math.min(prey._mass, this._maxMass - this._mass));
         prey._mass -= eaten;
         this._mass += eaten;
+        return eaten;
     }
 
     addFromGrid(cell: GridCell, massWanted: number) {
