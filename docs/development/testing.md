@@ -25,9 +25,7 @@ Everything is in [__tests__/](../../__tests__/) and tests the engine. There are 
 
 ## Current status
 
-At the time of writing (October 2026), 22 of the 23 suites pass, and 6 tests are skipped. **`EventLogger.test.ts` has 16 failing tests:** the logger records fewer events than the tests expect. The cause has not been investigated.
-
-Fix the logger or its tests before relying on `npm test` as a gate. Until then, check that no *other* suite fails.
+At the time of writing (October 2026), all 29 suites pass, and 6 tests are skipped. `npm test` must pass before a change is committed.
 
 ## Writing a test
 

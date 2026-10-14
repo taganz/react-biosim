@@ -60,8 +60,10 @@ describe('EventLogger', () => {
         }
         //const worldControllerData = testWorldControllerData;
         //const worldGenerationsData = testWorldGenerationsData;
-        simulationData = SIMULATION_DATA_DEFAULT;
-        simulationData.constants.mockSimulationDataConstants;
+        simulationData = {
+            ...SIMULATION_DATA_DEFAULT,
+            constants: {...SIMULATION_DATA_DEFAULT.constants, ...mockSimulationDataConstants},
+        };
         worldControllerMock = new WorldController(simulationData);
         logger = new EventLogger(worldControllerMock, 10);
         worldControllerMock.currentGen = 1;
