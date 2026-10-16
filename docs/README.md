@@ -27,6 +27,7 @@ Exact lists of everything you can configure, taken from the code.
 - [Parameters](reference/parameters.md): every setting, its allowed values and its startup value
 - [Sensors, actions and genes](reference/sensors-and-actions.md): the brain's inputs and outputs, genera and gene encoding
 - [Population strategies and selection methods](reference/population-and-selection.md): how each generation is created and how survivors are chosen
+- [The log file](reference/log-file.md): the columns, events and rows of the logger's CSV
 
 ## Developer guide
 

@@ -69,7 +69,7 @@ Shows how the world's water is split between the cloud, the cells and the creatu
 
 ### Under development: logger
 
-Expand this section to see the **logger**. It records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`.
+Expand this section to see the **logger**. It records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`. What the file contains, row by row, is in [The log file](../reference/log-file.md).
 
 **Logger options**, below it, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
 

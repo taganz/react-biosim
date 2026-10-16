@@ -19,6 +19,15 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Plants with prey sensors detect any creature** | Plants have no prey genus, so for them the prey sensors return the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 
+### Logger
+
+| Bug | Effect | Details |
+|---|---|---|
+| **Totals of events with `_` in the name are mislabelled** | `REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY` and `DEAD_ATTACKED` totals come out as `REPRODUCE;TRY sum` and so on. The counts are right. | [The log file](reference/log-file.md#known-issues) |
+| **`GENERATION_START` is written twice** | From generation 2 on, once when the generation is created and once at its step 1. | [The log file](reference/log-file.md#known-issues) |
+| **`BIRTH` is never written** | Births are logged as `INFO birth …` rows, so its checkbox has no effect. | [The log file](reference/log-file.md#known-issues) |
+| **`MOVE position x + 100y` is written for failed moves** | It does not mean that the creature moved. | [The log file](reference/log-file.md#known-issues) |
+
 ### User interface
 
 | Bug | Effect | Details |

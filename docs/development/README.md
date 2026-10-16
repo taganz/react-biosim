@@ -77,3 +77,4 @@ The reference pages are lists taken from the code. Update them in the same chang
 | A tab or a button | the matching page in [docs/user/](../user/), and its screenshot if the layout changed |
 | The scenarios in `public/` | [scenarios.md](../user/scenarios.md) |
 | The save format | [serialization.md](serialization.md) |
+| A logged event, or the logger's columns and levels | [log-file.md](../reference/log-file.md) |
