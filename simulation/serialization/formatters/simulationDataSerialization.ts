@@ -13,6 +13,7 @@ import {serializeWaterData, deserializeWaterData} from "./waterDataSerialization
 import SavedStartGenome from "../data/SavedStartGenome";
 import Genome from "@/simulation/creature/brain/Genome";
 import {serializeWorldControllerData, deserializeWorldControllerData} from "./worldControllerDataSerialization";
+import WorldWater from "@/simulation/water/WorldWater";
 
 /*
 function loadGenerationRegistry(worldController: WorldController, parsed: SavedWorld) : void {
@@ -40,6 +41,7 @@ export default function deserializeSimulationData(worldController: WorldControll
         species : parsed.species === undefined ? undefined : deserializeSpecies(worldController, parsed.species),
         stats : (parsed.stats === undefined || Object.keys(parsed.stats).length === 0) ? undefined : generationRegistryFormatter.deserialize(parsed.stats),
         startGenomes : parsed.startGenomes === undefined ? undefined : deserializeStartGenomes(parsed.startGenomes),
+        cellWater : parsed.cellWater,
       // export function deserializeObjects
       //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
     }
@@ -57,6 +59,8 @@ export function serializeSimulationData(worldController: WorldController, includ
         waterData : deserializeWaterData(sim.waterData),
         worldObjects : serializeObjects(sim.worldObjects),
         species: serializeSpecies(worldController),
+        // rounded: 3 decimals are far below what a creature takes in a step, and keep the file small
+        cellWater: WorldWater.cellWater(worldController.grid).map((water) => Math.round(water * 1000) / 1000),
         ...(includeStats ? { stats: generationRegistryFormatter.serialize(worldController.generationRegistry) } : {}),
        
       // export function deserializeObjects
@@ -67,7 +71,7 @@ export function serializeSimulationData(worldController: WorldController, includ
 
 // settings and map only: loading it starts a new run from generation 1
 export function serializeSetup(worldController: WorldController) : SavedSimulationData {
-  const { species, ...setup } = serializeSimulationData(worldController, false);
+  const { species, cellWater, ...setup } = serializeSimulationData(worldController, false);
   return {
     ...setup,
     worldControllerData: { ...setup.worldControllerData, currentGen: 1, currentStep: 1, lastGenerationDuration: 0, totalTime: 0 },
@@ -80,7 +84,8 @@ export function serializeSetup(worldController: WorldController) : SavedSimulati
  * most of the size of a long run.
  */
 export function serializeGenerationStart(worldController: WorldController, includeStats: boolean) : SavedSimulationData {
-  const { species, ...setup } = serializeSimulationData(worldController, includeStats);
+  // a generation starts with the first rain, so the cell water is not saved either
+  const { species, cellWater, ...setup } = serializeSimulationData(worldController, includeStats);
   return {
     ...setup,
     worldControllerData: { ...setup.worldControllerData, currentStep: 1 },

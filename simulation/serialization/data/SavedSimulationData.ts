@@ -16,4 +16,6 @@ export type SavedSimulationData = {
     stats?: SavedGenerationRegistry;
     /** Saved at the start of a generation: its genomes. Loading starts that generation with them */
     startGenomes?: SavedStartGenome[];
+    /** Water of each cell, row by row (y, then x), saved with the creatures. Older files do not have it */
+    cellWater?: number[];
 }

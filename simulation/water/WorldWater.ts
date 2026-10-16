@@ -109,6 +109,35 @@ export default class WorldWater {
         this.waterInCells += waterAdded;
     }
 
+    // the water of every cell, row by row: what cellWater() saves and restoreCells() puts back
+    static cellWater(grid: Grid): number[] {
+        const water: number[] = [];
+        for (let y = 0; y < grid._size; y++) {
+            for (let x = 0; x < grid._size; x++) {
+                water.push(grid.cell(x, y).water);
+            }
+        }
+        return water;
+    }
+
+    // instead of firstRain() when a run resumes: puts back the water the cells had, taken from the cloud.
+    // Returns false and changes nothing if it does not fit this world (other size, or less water in total)
+    restoreCells(grid: Grid, cellWater: number[]): boolean {
+        if (cellWater.length !== grid._size * grid._size) return false;
+        let total = 0;
+        for (let i = 0; i < cellWater.length; i++) {
+            total += Math.min(Math.max(0, cellWater[i]), grid.cell(i % grid._size, Math.floor(i / grid._size)).waterCapacity);
+        }
+        if (total > this.waterInCloud) return false;
+        for (let i = 0; i < cellWater.length; i++) {
+            const cell = grid.cell(i % grid._size, Math.floor(i / grid._size));
+            cell.water = Math.min(Math.max(0, cellWater[i]), cell.waterCapacity);
+        }
+        this.waterInCloud -= total;
+        this.waterInCells += total;
+        return true;
+    }
+
     // water from cloud go to cells
     // fraction scales the rain: continuous runs rain every step with 1 / steps per generation
     //TODO functions....

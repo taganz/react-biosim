@@ -51,7 +51,7 @@ The total amount of water is fixed and is split between three stores ([WorldWate
 ```
 
 - **Total water** is `World size² × Total water (per cell)`. It all starts in the cloud.
-- **First rain:** at the start of a run, each cell receives **Initial water per cell**, as far as the cloud allows.
+- **First rain:** at the start of a run, each cell receives **Initial water per cell**, as far as the cloud allows. A resumed run (a loaded file, or **Update simulation**) gets back the water each cell had instead; only files saved before October 2026 get a new first rain.
 - **Creatures of generation 1** take their birth mass from the cloud.
 - **Photosynthesis** moves water from the creature's cell into the creature.
 - **Spending mass** (moving, metabolism, reproducing…) sends that water back to the cloud.

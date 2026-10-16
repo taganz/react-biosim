@@ -30,8 +30,9 @@
   "species": [                       // SavedSpecies[], largest first
     { "genes": [ -1234567, ... ],
       "creatures": [ { "position": [x, y], "lastPosition": [x, y],
-                       "lastMovement": [dx, dy], "mass": 1, "massAtBirth": 1 } ] }
+                       "lastMovement": [dx, dy], "mass": 1, "massAtBirth": 1, "age": 120 } ] }
   ],
+  "cellWater": [ 50, 49.873, ... ],  // water of each cell, row by row (y, then x), 3 decimals
   "stats": {                         // SavedGenerationRegistry
     "generations": [ { "g": 1, "sC": 120, "sP": 500, "fV": 24, "b": 0, "d": 0 } ],  // generation, survivors, population, fitness, births, deaths
     "minSurvivorCount": 0, "maxSurvivorCount": 0, "maxFitnessValue": 0
@@ -47,7 +48,8 @@ Notes:
 - **Strategies and methods** are saved by their `name`, and loading looks the name up in `populationMap` / `selectionMap`. An unknown name falls back to *Asexual Random* or *Inside Reproduction Area*, with a console warning.
 - **Older files** have no `simulationType` or `maxAge`. They load as generational runs with a maximum age of 1000. A file with the removed `ContinuousPopulation` or `ContinuousSelection` loads as a continuous run, with *Random Fixed Gene* and *Inside Reproduction Area* in their place ([worldGenerationDataSerialization.ts](../../simulation/serialization/formatters/worldGenerationDataSerialization.ts)).
 - **Map objects** are saved by class name. Each type needs an entry in `objectFormatters` in [objectsSerialization.ts](../../simulation/serialization/formatters/objectsSerialization.ts): `RectangleObject`, `EllipseObject`, the reproduction and health areas in both shapes, and `RectangleSpawnArea`.
-- **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement and mass are saved for each creature. Ids, age, health and `distanceCovered` are not saved: they restart when the file is loaded. In a continuous run this means every creature starts again at age 0.
+- **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement, mass and age are saved for each creature. Ids, health and `distanceCovered` are not saved: they restart when the file is loaded. Files saved before October 2026 have no `age`, so their creatures start again at age 0: in a continuous run none of them dies of old age until `maxAge` steps have passed.
+- **`cellWater`** is saved with the creatures, so a resumed run continues with the water the cells had. Files without it (older files, setups, generation starts) give the cells the first rain. Resuming checks that it fits the world (same number of cells, and no more water than the total): otherwise it also falls back to the first rain.
 - `stats` is left out when **Include the stats history** is unchecked (`serializeSimulationData(worldController, false)`).
 - The run state in `worldControllerData` (`simCode`, `currentGen`, `currentStep`, times and speed) is read from the controller when saving, so a file records where the run is now.
 - `constants` is copied as is, so a file keeps its own `LOG_*`, `DETECT_RADIUS` and other constants.

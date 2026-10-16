@@ -101,6 +101,8 @@ The map editor's **Use Map** does the same as Update simulation: it writes the o
 
 The stats history follows the same rule. A hot change keeps the history of the running simulation, because `sim.stats` in the draft is the history from load time. Loading a file replaces it with the file's `stats`, or with an empty history.
 
+So does the water in the cells. A hot change copies it from the old grid, and loading a file takes the file's `cellWater`; `WorldWater.restoreCells()` puts it back, taken from the cloud. Only without it (an older file, or a hot change that changes the world size or leaves too little total water) do the cells get the first rain. Refilling them would give the creatures of a continuous run a window of plenty after every load.
+
 In both cases each creature is **rebuilt** with `WorldGenerations.restoreCreature()`. The rebuilt creature belongs to the new `WorldGenerations`, so it uses the new grid and the new sensor and action configuration. It keeps the genome, position, mass and counters of the original. Creatures that fall outside the new world, or on a cell that is now solid or taken, are dropped.
 
 Do not put the old `Creature` objects back on the new grid. They still point to the old `WorldGenerations`: they would move on the old grid and read the old settings.

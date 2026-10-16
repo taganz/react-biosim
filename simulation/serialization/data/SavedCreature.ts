@@ -5,5 +5,7 @@ export default interface SavedCreature {
   lastPosition: GridPosition;
   lastMovement: [number, number];
   mass: number,
-  massAtBirth : number
+  massAtBirth : number,
+  /** steps lived; older files do not have it */
+  age?: number
 }

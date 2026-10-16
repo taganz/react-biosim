@@ -17,6 +17,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **The prey sensors never see the last row and column** | The search area is clamped to `size − 1` and then used as an exclusive end, so a prey at `x = size − 1` or `y = size − 1` is not detected. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Plants with prey sensors detect any creature** | Plants have no prey genus, so for them the prey sensors return the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
+| **Files saved before October 2026 resume with young creatures and full cells** | They have no creature `age` and no `cellWater`. Every creature starts again at age 0 and every cell gets the first rain, so the first resumed generations of a continuous run have few deaths. Save the run again to get a file with both. | [Save format](development/serialization.md) |
+| **Some older sample files do not match their genomes** | Genes address actions by position in the enabled list, so a file whose list changed after its creatures evolved runs different brains. `public/test.sim` and `public/sim H8U generation 176_small_for_test.sim` list `Attack`, which is now `AttackPlant` / `AttackAnimal`. Loading ignores the unknown name, so their brains have one action fewer than when they were saved. | [Sensors and actions](reference/sensors-and-actions.md) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 
 ### User interface
@@ -79,6 +81,8 @@ These items were on the old list, or found while writing these docs, and are now
 - The log never wrote `BIRTH`. It is now written for every new creature, with the id and birth generation of its parent.
 - The log wrote `MOVE position x + 100y` after failed moves too. It is now written only when the creature moved.
 - 16 tests failed in `EventLogger.test.ts`. The logger was fine: the test never applied its own constants, so it ran with the default `LOG_LEVEL` (`STEP`), which drops creature events. It also changed `SIMULATION_DATA_DEFAULT` in place.
+- `public/turn right generation 5574.sim` had lost `MoveForward` and `Photosynthesis` from its enabled actions when the sample files were rebuilt in May 2024, while its genomes were kept. Its creatures ran different brains: about 40–120 survivors per generation instead of the 390 of its history. The two actions are back, and it resumes at about 400.
+- Resuming a file or **Update simulation** refilled every cell with the first rain, and creatures loaded from a file started again at age 0. In a continuous run the first resumed generation had a burst: 977 births and 59 deaths instead of about 3400 of each. The file now saves each creature's `age` and the water of each cell (`cellWater`), and a hot change keeps the water of the running world.
 
 ## Ideas
 

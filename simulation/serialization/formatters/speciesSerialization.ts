@@ -32,7 +32,8 @@ export default function serializeSpecies(worldController: WorldController) : Sav
         lastPosition: creature.lastPosition,
         position: creature.position,
         mass: creature.mass,
-        massAtBirth: creature.massAtBirth
+        massAtBirth: creature.massAtBirth,
+        age: creature._age
       });
     }
   
@@ -86,6 +87,10 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       // files from older versions may not have it
       if (savedCreature.mass !== undefined) {
         creature._mass._mass = savedCreature.mass;
+      }
+      // without it, a resumed continuous run has no deaths of old age until maxAge steps have passed
+      if (savedCreature.age !== undefined) {
+        creature._age = savedCreature.age;
       }
 
       return creature;

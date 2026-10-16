@@ -23,4 +23,6 @@ export type SimulationData = {
     stats?: GenerationRegistry;
     /** Creatures of the generation to start in startGeneration(), one genome each */
     startGenomes?: Genome[];
+    /** Water of each cell, row by row, for resumeRun(); without it the cells get the first rain */
+    cellWater?: number[];
 }

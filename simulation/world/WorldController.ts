@@ -166,12 +166,17 @@ export default class WorldController {
     const sourceCreatures : Creature[] = creatures ?? sim.species?.flatMap((species) => species.creatures) ?? [];
     // a hot change stays in the same generation, so it keeps its start genomes
     const startGenomes = creatures ? this.generations.startGenomes : sourceCreatures.map((creature) => creature.brain.genome);
+    // the cells keep their water, like the creatures keep their mass: the first rain would refill them
+    const cellWater = creatures ? WorldWater.cellWater(this.grid) : sim.cellWater;
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
-    this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
-    this.worldWater.firstRain(this.grid);
+    this.worldWater = new WorldWater(this.size, sim.waterData);
+    // older files have no cell water, and a hot change can change the world size
+    if (!cellWater || !this.worldWater.restoreCells(this.grid, cellWater)) {
+      this.worldWater.firstRain(this.grid);
+    }
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, []);
     // creatures are rebuilt so they use the new grid and settings;
     // the ones now outside the world or on an occupied cell are dropped

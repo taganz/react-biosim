@@ -72,7 +72,9 @@
             "MoveSouth",
             "MoveEast",
             "MoveWest",
-            "RandomMove"
+            "RandomMove",
+            "MoveForward",
+            "Photosynthesis"
         ],
         "metabolismEnabled": false,
         "phenotypeColorMode": "genome",
