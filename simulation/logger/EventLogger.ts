@@ -363,21 +363,20 @@ export default class EventLogger {
     type Pair = [LogEvent, string];
     type PairWithCount = [LogEvent, string, number];
 
-    // Create a map to store pair counts
-    const pairCounts = new Map<string, number>();
+    // the map keeps the pair itself: event names and param names can contain any separator
+    const pairCounts = new Map<string, PairWithCount>();
 
-    // Count pairs in stepTotals
-    array1.forEach(([event, str]) => {
-        const key = `${event}_${str}`;
-        pairCounts.set(key, (pairCounts.get(key) || 0) + 1);
+    array1.forEach(([event, str]: Pair) => {
+        const key = JSON.stringify([event, str]);
+        const counted = pairCounts.get(key);
+        if (counted) {
+          counted[2]++;
+        } else {
+          pairCounts.set(key, [event, str, 1]);
+        }
     });
 
-    // Convert pairCounts map to genTotals array
-    const array2: PairWithCount[] = [...pairCounts].map(([key, count]) => {
-        const [event, str] = key.split('_') as [LogEvent, string];
-        return [event, str, count];
-    });
-    return array2;
+    return [...pairCounts.values()];
   }
 
 

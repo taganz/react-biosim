@@ -73,6 +73,7 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 
 | `EventType` | `ParamName` | `ParamValue` | `ParamValue2` | `ParamString` | When |
 |---|---|---|---|---|---|
+| `BIRTH` | `parentId` | id of the parent, `0` if it has none | birth generation of the parent, `0` if it has none | | A new creature is created, after its `INFO birth` rows. The parent is the survivor or the reproducing creature whose genome it got; creatures with a random or fixed genome (generation 1, random fill) have none. Creatures restored by **Update simulation** or a resumed file are not births and write no `BIRTH`. |
 | `INFO` | `birth mass`, `birth gen`, … | see [INFO rows](#info-rows) | | | The creature is created. |
 | `INFO` | `dead mass`, `dead gen`, … | see [INFO rows](#info-rows) | | | The creature dies, after `DEAD`. |
 | `INFO` | ` mass`, ` gen`, … (leading space) | see [INFO rows](#info-rows) | | | **Log this creature** is pressed. Only kept if the simulation is at step 1 (see [Filters](#filters)). |
@@ -90,11 +91,9 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `ATTACK` | `preyMass` | mass the prey had before it was eaten | | | The prey was killed. |
 | `MOVE_TRY` | `x,y` | x step: −1, 0 or 1 | y step: −1, 0 or 1 | | The creature tries to move. |
 | `MOVE` | `direction` | x step | y step | `N`, `NE`, `E`, `SE`, `S`, `SW`, `W` or `NW` | The move succeeded. `N` is +y. |
-| `MOVE` | `position x + 100y` | `x + 100 × y` of the position after the try | | | After every move try, **also when the move failed**. |
+| `MOVE` | `position x + 100y` | `x + 100 × y` of the new position | | | The move succeeded, after `MOVE direction`. |
 | `DEAD_ATTACKED` | `killerSpecie` | x of the position | y of the position | species of the killer | The creature is killed by an attack. |
 | `DEAD` | `cause` | `0` | `0` | `old`, `basalConsumption`, `actionsExecutionConsumption`, `attacked`, `health` or `unknown` | The creature dies. |
-
-`BIRTH` is in **Events to record** but the engine never writes it: births are the `INFO` rows with `birth`.
 
 ### INFO rows
 
@@ -117,7 +116,7 @@ All with `LogLevel` `WORLD EVENTS` and empty creature columns:
 
 | `EventType` | `ParamName` | `ParamValue` | When |
 |---|---|---|---|
-| `GENERATION_START` | `population` | live creatures | Step 1 of a generation, before the creatures move. |
+| `GENERATION_START` | `population` | live creatures | Step 1 of a generation, before the creatures move. Once per generation. |
 | `STEP_END` | `population` | live creatures | End of every step. |
 | `STEP_END` | `population_plant`, `population_attack_plant`, `population_attack_animal` | live creatures of that genus | Same. |
 | `STEP_END` | `waterInCells`, `waterInCloud`, `waterInCreatures` | water in that part of the world | Same. |
@@ -130,7 +129,7 @@ This is what the log holds for a creature with **Level** at *Creature events and
 
 ### At birth
 
-8 `INFO` rows `birth …`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
+8 `INFO` rows `birth …`, then `BIRTH parentId`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
 
 ### Each step
 
@@ -143,10 +142,10 @@ The rows follow the order of `Creature.computeStep()`:
    - **Reproduction** (output above 0): `REPRODUCE_TRY mass`, then one of
      - not enough mass: `REPRODUCE_TRY mass consumed`;
      - no free cell nearby: nothing else;
-     - success: the child's 8 `INFO birth …` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
+     - success: the child's 8 `INFO birth …` rows and its `BIRTH` row with this creature as parent (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
    - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 8 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
 4. **Cost of the actions.** `METABOLISM actionsExecutionConsumption` (steps multiple of 10). If it ran out of mass: `DEAD actionsExecutionConsumption` + 8 `INFO dead …`, and the step ends.
-5. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`; `MOVE direction` if the cell was free and it had the mass to move; and always `MOVE position x + 100y`.
+5. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.
 
 When the creature is killed by another one, its death rows appear inside the attacker's step (3, above).
 
@@ -169,9 +168,6 @@ CREATURE;10;3;10;#3fa2c8;plant;42;MOVE;position x + 100y;2.315;0;
 
 The step totals of step 10 then follow, at the first event of step 11, mixed with the `WORLD EVENTS` rows of the end of step 10. On steps that are not multiples of 10 the `METABOLISM` and `PHOTOSYNTHESIS` rows are missing.
 
-## Known issues
+## Limitations
 
-- **Totals of events with `_` in the name are mislabelled.** The logger joins event type and `ParamName` with `_` and splits them again, so `REPRODUCE_TRY` totals come out as `REPRODUCE;TRY sum`, `ATTACK_TRY` as `ATTACK;TRY sum`, `MOVE_TRY` as `MOVE;TRY sum` and `DEAD_ATTACKED` as `DEAD;ATTACKED sum`; different `ParamName`s of those events end up with the same label. `INFO … _energyConsumedByActionsExecution` totals lose their `ParamName`. The counts themselves are right.
-- **`GENERATION_START` is written twice** from generation 2 on: once when the generation is created and once when its step 1 runs.
-- **`BIRTH` is never written.** Its box in **Events to record** has no effect.
-- **`MOVE position x + 100y` is written for failed moves too**, so it does not mean that the creature moved. The position is ambiguous when `x` is 100 or more.
+- `MOVE position x + 100y` packs the position in one number, which is ambiguous when `x` is 100 or more. The x and y of the position are in the `INFO … position` rows. The format is kept because the Power BI report reads it.

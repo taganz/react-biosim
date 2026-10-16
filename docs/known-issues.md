@@ -19,15 +19,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Plants with prey sensors detect any creature** | Plants have no prey genus, so for them the prey sensors return the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 
-### Logger
-
-| Bug | Effect | Details |
-|---|---|---|
-| **Totals of events with `_` in the name are mislabelled** | `REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY` and `DEAD_ATTACKED` totals come out as `REPRODUCE;TRY sum` and so on. The counts are right. | [The log file](reference/log-file.md#known-issues) |
-| **`GENERATION_START` is written twice** | From generation 2 on, once when the generation is created and once at its step 1. | [The log file](reference/log-file.md#known-issues) |
-| **`BIRTH` is never written** | Births are logged as `INFO birth …` rows, so its checkbox has no effect. | [The log file](reference/log-file.md#known-issues) |
-| **`MOVE position x + 100y` is written for failed moves** | It does not mean that the creature moved. | [The log file](reference/log-file.md#known-issues) |
-
 ### User interface
 
 | Bug | Effect | Details |
@@ -83,6 +74,10 @@ These items were on the old list, or found while writing these docs, and are now
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 - The logger settings can be changed from the UI (*Stats → Logger options*).
 - With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
+- Log totals of events with `_` in their name (`REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY`, `DEAD_ATTACKED`) were written as `REPRODUCE;TRY sum` and so on, and the totals of `INFO … _energyConsumedByActionsExecution` lost their `ParamName`.
+- The log wrote `GENERATION_START` twice from generation 2 on. It is now written once, at step 1.
+- The log never wrote `BIRTH`. It is now written for every new creature, with the id and birth generation of its parent.
+- The log wrote `MOVE position x + 100y` after failed moves too. It is now written only when the creature moved.
 - 16 tests failed in `EventLogger.test.ts`. The logger was fine: the test never applied its own constants, so it ran with the default `LOG_LEVEL` (`STEP`), which drops creature events. It also changed `SIMULATION_DATA_DEFAULT` in place.
 
 ## Ideas

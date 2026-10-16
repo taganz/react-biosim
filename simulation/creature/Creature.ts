@@ -182,8 +182,9 @@ export default class Creature {
 
     // Move
     if (probX !== 0 || probY !== 0) {
-      this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY);
-      this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
+      if (this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY)) {
+        this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
+      }
     }
 
     this.computeDistanceIndex();
@@ -248,7 +249,8 @@ export default class Creature {
     }
   }
 
-  private move(x: number, y: number) {
+  // returns true if the creature moved
+  private move(x: number, y: number): boolean {
 
     this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
     this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);    
@@ -291,8 +293,9 @@ export default class Creature {
       else if (x==-1 && y==1) this.stepDirection = "NW";
       else console.log("attack_plant error", x, y);
       this.log(LogEvent.MOVE, "direction", Math.round(x), Math.round(y), <string>this.stepDirection);
-
+      return true;
     }
+    return false;
   }
 
   // called by Actions

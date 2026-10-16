@@ -367,10 +367,7 @@ export default class WorldController {
       this.worldWater.rain(this.grid);            //TODO rain should occur during generation
     }
     this.generationRegistry.startGeneration();
-
-    this.logStartGeneration();
-
-
+    // GENERATION_START is logged by runStep() at step 1 of the new generation
   }
 
   private sendRedrawEventEveryImmediateSteps() : void { 

@@ -197,6 +197,8 @@ export default class WorldGenerations {
       creature.parentBirthGen = parent.birthGen;
       parent.childrenCount++;
     }
+    // 0 when the creature has no parent
+    creature.log(LogEvent.BIRTH, "parentId", parent?.id ?? 0, parent?.birthGen ?? 0);
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
     this.lastCreatureIdCreated += 1;  

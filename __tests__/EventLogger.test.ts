@@ -542,8 +542,31 @@ describe('EventLogger', () => {
         expect(logger.logCount).toBe(6);  // 3 creatures + 2 (!) step + 1 gen event
     });
 
-    
-    
-    
+
+    test('logEvent() - totals keep event and param names that contain _', () => {
+        logger.resume();
+        logger.logEvent({...mockEvent, eventType: LogEvent.REPRODUCE_TRY, paramName: 'mass'});
+        logger.logEvent({...mockEvent, eventType: LogEvent.REPRODUCE_TRY, paramName: 'mass consumed'});
+        logger.logEvent({...mockEvent, eventType: LogEvent.INFO, paramName: 'birth _energyConsumedByActionsExecution'});
+        worldControllerMock.currentStep = 2;
+        logger.logEvent(mockEvent);
+
+        const log = logger.getLog();
+        expect(log.includes("STEP TOTALS;1;1;1;;;;REPRODUCE_TRY;mass sum;1;;")).toBeTruthy();
+        expect(log.includes("STEP TOTALS;1;1;1;;;;REPRODUCE_TRY;mass consumed sum;1;;")).toBeTruthy();
+        expect(log.includes("STEP TOTALS;1;1;1;;;;INFO;birth _energyConsumedByActionsExecution sum;1;;")).toBeTruthy();
+    });
+
+    test('newCreature() - logs BIRTH with the parent id and birth generation', () => {
+        const eventLogger = worldControllerMock.eventLogger;
+        eventLogger.resume();
+        const parent = worldControllerMock.generations.newCreature([5, 5], true);
+        const child = worldControllerMock.generations.newCreature([6, 5], false, parent.brain.genome, parent);
+
+        const log = eventLogger.getLog();
+        expect(log.includes(`;${parent.id};BIRTH;parentId;0;0;`)).toBeTruthy();
+        expect(log.includes(`;${child.id};BIRTH;parentId;${parent.id};1;`)).toBeTruthy();
+    });
+
 });
 
