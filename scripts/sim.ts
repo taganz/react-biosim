@@ -17,6 +17,7 @@ type RunConfig = {
   resume?: boolean;
   generations?: number;
   overrides?: SimulationOverrides;
+  seed?: number;
   log?: boolean;
   maxRestarts?: number;
   maxSeconds?: number;
@@ -35,6 +36,8 @@ Options (they override the config file):
   --out <dir>                         output folder (default: results/<name>)
   --set <path>=<value>                change one setting, e.g. --set worldGenerationsData.initialPopulation=500
                                       (value is read as JSON, otherwise as text; can be repeated)
+  --seed <n>                          seed of the random generator: the same seed repeats the run
+                                      (default: the base's seed, or a random one; printed in summary.json)
   --log                               write the event log (log.csv)
   --max-restarts <n>                  stop when the population dies out more than n times (default: 5)
   --max-seconds <s>                   stop after s seconds
@@ -76,6 +79,7 @@ function parseArgs(argv: string[]): RunConfig {
       case "--name": cli.name = next(); break;
       case "--out": cli.out = next(); break;
       case "--log": cli.log = true; break;
+      case "--seed": cli.seed = parseNumber(arg, next()); break;
       case "--max-restarts": cli.maxRestarts = parseNumber(arg, next()); break;
       case "--max-seconds": cli.maxSeconds = parseNumber(arg, next()); break;
       case "--progress": cli.progressEvery = parseNumber(arg, next()); break;
@@ -148,6 +152,7 @@ async function main() {
     resume: config.resume,
     generations,
     overrides: config.overrides,
+    seed: config.seed,
     log: config.log,
     maxRestarts: config.maxRestarts,
     maxSeconds: config.maxSeconds,
@@ -174,6 +179,7 @@ async function main() {
     restarts: result.restarts,
     seconds: Math.round(result.seconds * 10) / 10,
     simCode: wc.simCode,
+    seed: wc.seed,
     overrides: config.overrides,
     unknownOverrideKeys: result.unknownKeys,
     lastGeneration: result.rows[result.rows.length - 1] ?? null,
@@ -198,7 +204,7 @@ async function main() {
 
   for (const key of result.unknownKeys) print(`warning: "${key}" is not a setting of the base; it was added but probably does nothing`);
   print(JSON.stringify({ ...summary, overrides: undefined }, null, 2));
-  print(`sim: results in ${outDir}`);
+  print(`sim: seed ${wc.seed}, results in ${outDir}`);
   // the extinction restart can leave a timer behind
   process.exit(0);
 }

@@ -52,6 +52,7 @@ Notes:
 - **`cellWater`** is saved with the creatures, so a resumed run continues with the water the cells had. Files without it (older files, setups, generation starts) give the cells the first rain. Resuming checks that it fits the world (same number of cells, and no more water than the total): otherwise it also falls back to the first rain.
 - `stats` is left out when **Include the stats history** is unchecked (`serializeSimulationData(worldController, false)`).
 - The run state in `worldControllerData` (`simCode`, `currentGen`, `currentStep`, times and speed) is read from the controller when saving, so a file records where the run is now.
+- **Random generator.** `seed` is a setting: the seed to start every run with, or missing for a random one. `runSeed` is the seed the saved run used, and `rngState` the [generator](../../simulation/helpers/random.ts) state at save time. Resuming a file (or a generation start) restores `rngState`, so loading the same file twice gives the same simulation. It is not the same as never having stopped: creatures are restored species by species, so they act in a different order and draw the random numbers in a different order. A setup (**My scenarios**) keeps `seed` and drops `runSeed` and `rngState`. Files without `rngState` (older ones) get a new seed on resume. **Update simulation** keeps the generator running.
 - `constants` is copied as is, so a file keeps its own `LOG_*`, `DETECT_RADIUS` and other constants.
 - Indentation is controlled by `PRETTIFY_OUTPUT_TO_FILE` and `PRETTIFY_OUTPUT_TO_COPY`.
 

@@ -45,4 +45,9 @@ export default interface SavedWorldControllerData {
   lastGenerationDuration: number;
   totalTime: number;
 
+  // random generator, missing in older files
+  seed?: number;
+  runSeed?: number;
+  rngState?: number;
+
 }

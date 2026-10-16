@@ -1,3 +1,4 @@
+import { random } from "@/simulation/helpers/random";
 import Creature from "../Creature";
 import * as constants from "../../simulationDataDefault"
 import {Direction, Direction4} from '@/simulation/world/direction';
@@ -249,8 +250,8 @@ export default class CreatureActions {
     if (this.data.RandomMove.enabled) {
       if (input > 0) {
         creature.addUrgeToMove(
-          (Math.random() * 2 - 1) * input,
-          (Math.random() * 2 - 1) * input
+          (random() * 2 - 1) * input,
+          (random() * 2 - 1) * input
         );
       }
 

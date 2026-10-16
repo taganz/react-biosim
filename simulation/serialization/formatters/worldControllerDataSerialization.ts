@@ -1,6 +1,7 @@
 import WorldController from "@/simulation/world/WorldController";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import SavedWorldControllerData from "../data/SavedWorldControllerData";
+import { getRandomState } from "@/simulation/helpers/random";
 
 export function deserializeWorldControllerData(parsed: SavedWorldControllerData) : WorldControllerData {
   const worldControllerData : WorldControllerData = parsed;
@@ -20,5 +21,7 @@ export function serializeWorldControllerData(worldController: WorldController) :
     currentStep: worldController.currentStep,
     lastGenerationDuration: worldController.lastGenerationDuration,
     totalTime: worldController.totalTime,
+    runSeed: worldController.seed,
+    rngState: getRandomState(),
   };
 }

@@ -1,3 +1,4 @@
+import { random } from "@/simulation/helpers/random";
 import CreatureBrain from "./brain/CreatureBrain";
 import { NeuronType } from "./brain/Neuron";
 import Genome, { geneToString } from "./brain/Genome";
@@ -30,7 +31,7 @@ export default class CreatureGenus {
             sourceId: generations.enabledSensors.indexOf(source),
             sinkType: NeuronType.ACTION,
             sinkId: generations.enabledActions.indexOf(sink),
-            weight: -4 + 8 * Math.random()
+            weight: -4 + 8 * random()
         }
         return (Genome.connectionToGene(connection));
     }
@@ -46,7 +47,7 @@ export default class CreatureGenus {
             sourceId: generations.enabledSensors.indexOf(source),
             sinkType: NeuronType.ACTION,
             sinkId: generations.enabledActions.indexOf(sink),
-            weight: -4 + 8 * Math.random()
+            weight: -4 + 8 * random()
         }
         return (Genome.connectionToGene(connection));
 }

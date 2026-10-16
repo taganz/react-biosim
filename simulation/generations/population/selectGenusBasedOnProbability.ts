@@ -1,3 +1,4 @@
+import { random } from "@/simulation/helpers/random";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 
 
@@ -7,13 +8,13 @@ export type GenusProbability = {
   };
 
 export function selectGenusBasedOnProbability(genera: GenusProbability[]) : Genus {
-    const random = Math.random();
+    const value = random();
   
     let cumulativeProbability = 0;
     for (const genus of genera) {
       cumulativeProbability += genus.probability;
       // Check if the random number is less than the cumulative probability
-      if (random < cumulativeProbability) {
+      if (value < cumulativeProbability) {
         return genus.genus;
       }
     }

@@ -1,5 +1,6 @@
+import { random } from "@/simulation/helpers/random";
 export const probabilityToBool = (factor: number) => {
-  return Math.random() < factor;
+  return random() < factor;
 };
 
 export const numberToBitString = (value: number) => {
@@ -31,7 +32,7 @@ export const paddingLeft = (string: String, paddingValue: string) => {
 };
 
 export const getRandomHexChar = (): string => {
-  return Math.round(Math.random() * 15).toString(16);
+  return Math.round(random() * 15).toString(16);
 };
 
 export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
@@ -68,6 +69,6 @@ export const linearTanhActivation = (x: number) => {
 };
 
 export const getRandomItem = <T>(a: Array<T>): T => {
-  const randomIndex = Math.floor(Math.random() * a.length);
+  const randomIndex = Math.floor(random() * a.length);
   return a[randomIndex];
 }

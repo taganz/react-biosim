@@ -12,6 +12,7 @@ import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import WorldWater from "../water/WorldWater";
 import { SimulationData } from "../SimulationData";
+import { randomSeed, setSeed, setRandomState } from "../helpers/random";
 
 // max time (ms) spent computing steps before yielding to the browser
 const MAX_TICK_MS = 30;
@@ -34,6 +35,8 @@ export default class WorldController {
 
   // initial values
   simCode: string = "XXX";
+  /** seed of the random generator for this run: worldControllerData.seed, or a random one */
+  seed: number = 0;
   size: number = 10;
   stepsPerGen: number = 0;
   initialPopulation: number = 0;
@@ -86,9 +89,15 @@ export default class WorldController {
    * Starts a new run from generation 1 with sim as settings and map. Uses simCode
    * if given, otherwise a new random code; the code is also written into
    * sim.worldControllerData and returned.
+   * Seeds the random generator with worldControllerData.seed, or a new random seed;
+   * with reseed false (restart after an extinction) it goes on with the same numbers.
    */
-  public startRun(sim: SimulationData, simCode?: string): string {
+  public startRun(sim: SimulationData, simCode?: string, reseed: boolean = true): string {
 
+    if (reseed) {
+      this.seed = sim.worldControllerData.seed ?? randomSeed();
+      setSeed(this.seed);
+    }
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects; 
@@ -127,6 +136,7 @@ export default class WorldController {
    */
   public startGeneration(sim: SimulationData): void {
 
+    this.restoreRandom(sim.worldControllerData);
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects;
@@ -168,6 +178,10 @@ export default class WorldController {
     const startGenomes = creatures ? this.generations.startGenomes : sourceCreatures.map((creature) => creature.brain.genome);
     // the cells keep their water, like the creatures keep their mass: the first rain would refill them
     const cellWater = creatures ? WorldWater.cellWater(this.grid) : sim.cellWater;
+    // a hot change goes on with the same random numbers
+    if (!creatures) {
+      this.restoreRandom(sim.worldControllerData);
+    }
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects;
@@ -209,6 +223,17 @@ export default class WorldController {
     );
 
     this.startLoop();
+  }
+
+  // a saved run goes on from its saved random state; older files get a new seed
+  private restoreRandom(worldControllerData: WorldControllerData) : void {
+    if (worldControllerData.rngState !== undefined) {
+      this.seed = worldControllerData.runSeed ?? worldControllerData.seed ?? 0;
+      setRandomState(worldControllerData.rngState);
+    } else {
+      this.seed = worldControllerData.seed ?? randomSeed();
+      setSeed(this.seed);
+    }
   }
 
   private loadWorldControllerInitialAndUserData(worldControllerData: WorldControllerData) : void {
@@ -313,7 +338,8 @@ export default class WorldController {
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
       // the user may have restarted or loaded another simulation during the wait
       if (runId === this._runId) {
-        this.startRun(this.simData);
+        // not reseeded: with a fixed seed it would die out the same way again
+        this.startRun(this.simData, undefined, false);
       }
       return "restarted";
     }

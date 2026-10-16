@@ -122,11 +122,19 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Despite its name, the minimum neuron output that triggers the attack actions. |
 
+### Random seed (`worldControllerData`)
+
+| Key | Startup | Meaning |
+|---|---|---|
+| `seed` | not set | Seed of the random generator. Set it to repeat a run: the same seed, settings and map give the same simulation (same code version and JavaScript engine). Not set: every run, **Restart** included, picks a new random seed. The headless runner sets it with `--seed`. |
+
+Every random decision of the engine (mutations, placement, the Random sensor, random moves, shuffles) comes from one generator in [random.ts](../../simulation/helpers/random.ts). After an extinction the run restarts without reseeding, so with a fixed seed it does not die out the same way again.
+
 ### Run state (`worldControllerData`, `worldGenerationsData`)
 
 The simulation writes these values itself so that a saved file can resume where it stopped. Do not edit them by hand.
 
-`currentGen`, `currentStep`, `lastGenerationDuration`, `totalTime`, `lastCreatureIdCreated`, `lastCreatureCount`, `lastSurvivorsCount`, `lastFitnessMaxValue`, `lastSurvivalRate`.
+`currentGen`, `currentStep`, `lastGenerationDuration`, `totalTime`, `runSeed` (the seed the run used), `rngState` (the random generator state), `lastCreatureIdCreated`, `lastCreatureCount`, `lastSurvivorsCount`, `lastFitnessMaxValue`, `lastSurvivalRate`.
 
 ### Other constants (`constants`)
 

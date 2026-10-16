@@ -1,3 +1,4 @@
+import { random } from "@/simulation/helpers/random";
 import { detectClosest } from "@/simulation/world/grid/GridDetect";
 import Creature from "../Creature";
 import { Genus } from "../CreatureGenus";
@@ -352,7 +353,7 @@ export default class CreatureSensors {
 
     // Random
     if (this.data.Random.enabled) {
-      values.push(Math.random());
+      values.push(random());
     }
 
     // HorizontalSpeed

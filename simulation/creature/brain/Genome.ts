@@ -1,3 +1,4 @@
+import { random } from "@/simulation/helpers/random";
 import { numberToHexColor } from "../../helpers/helpers";
 import {
   getRandomHexChar,
@@ -79,7 +80,7 @@ export default class Genome {
 
         if (mutationMode === MutationMode.singleBit) {
           // Select a mask for a random bit in the 32 bits of the gene
-          const randomBitMask = 1 << Math.round(Math.random() * geneBitSize);
+          const randomBitMask = 1 << Math.round(random() * geneBitSize);
           // Swap bit in the gene
           let newGene = originalGene;
           newGene ^= randomBitMask;
@@ -107,7 +108,7 @@ export default class Genome {
 
           // Select a random digit and change it with a random character
           const randomBitIndex: number = Math.round(
-            Math.random() * (hexArray.length - 1)
+            random() * (hexArray.length - 1)
           );
           hexArray[randomBitIndex] = getRandomHexChar();
 
@@ -149,11 +150,11 @@ export default class Genome {
         }
       }
 
-      if (Math.random() < geneInsertionDeletionProbability) {
-        if (Math.random() < deletionRate) {
+      if (random() < geneInsertionDeletionProbability) {
+        if (random() < deletionRate) {
           // Deletion
           if (newGenes.length > 1) {
-            const randomIndex = Math.floor(Math.random() * newGenes.length);
+            const randomIndex = Math.floor(random() * newGenes.length);
             newGenes.splice(randomIndex, 1);
           }
         } else if (newGenes.length < genomeMaxLength) {
@@ -173,14 +174,14 @@ export default class Genome {
   static generateRandomGene(): Gene {
     let result = 0;
     for (let i = 1; i <= geneBitSize; i++) {
-      if (Math.random() < 0.5) {
+      if (random() < 0.5) {
         // Random flip
         result ^= 1 << i;
       }
     }
     return result;
 
-    // return Math.round(Math.random() * maxGenNumber);
+    // return Math.round(random() * maxGenNumber);
   }
 
   static addGenesToLength(genes: Gene[], length: number) : Gene[] {
@@ -190,7 +191,7 @@ export default class Genome {
   }
 
   getRandomGeneIndex() {
-    return Math.floor(Math.random() * this.genes.length);
+    return Math.floor(random() * this.genes.length);
   }
 
   toBitString(): string {

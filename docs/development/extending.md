@@ -1,5 +1,9 @@
 # Extending the simulation
 
+## Randomness
+
+Never call `Math.random()` or a shuffle from a library in `simulation/`. Use `random()`, `randomInt()` and `shuffle()` from [simulation/helpers/random.ts](../../simulation/helpers/random.ts): they come from the seeded generator, so runs with the same seed repeat. Any new call changes the sequence, so results for a given seed change between code versions. The UI and `generateRandomString` (simulation codes) use `Math.random()` on purpose, so they do not consume the simulation's numbers.
+
 ## Add a sensor
 
 Sensors live in [CreatureSensors.ts](../../simulation/creature/brain/CreatureSensors.ts). Three parts must agree:

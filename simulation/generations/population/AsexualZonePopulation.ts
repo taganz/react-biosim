@@ -1,4 +1,4 @@
-import shuffle from "lodash.shuffle";
+import { shuffle } from "@/simulation/helpers/random";
 import WorldGenerations from "../WorldGenerations";
 import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";

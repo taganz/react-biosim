@@ -21,12 +21,12 @@ Everything is in [__tests__/](../../__tests__/) and tests the engine. There are 
 | Generations | `population`, `selection`, `selectGenusBased` |
 | World | `grid`, `GridDetect`, `WorldWater`, `WorldControllerLoop` |
 | Save format | `serialization` |
-| Headless runner | `runHeadless` |
+| Headless runner and seed | `runHeadless`, `Seed` |
 | Other | `EventLogger`, `helpers`, `generateRandomString` |
 
 ## Current status
 
-At the time of writing (October 2026), all 31 suites pass, and 6 tests are skipped. `npm test` must pass before a change is committed.
+At the time of writing (October 2026), all 32 suites pass, and 6 tests are skipped. `npm test` must pass before a change is committed.
 
 ## Writing a test
 

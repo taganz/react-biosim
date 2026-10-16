@@ -3,7 +3,7 @@ import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
 import {Direction, Direction4} from '@/simulation/world/direction';
-import shuffle from "lodash.shuffle";
+import { random, shuffle } from "@/simulation/helpers/random";
 import { geneArrayToString } from "@/simulation/creature/brain/Genome";
 
 
@@ -195,8 +195,8 @@ export class Grid {
 
   public getRandomPosition(): [number, number] {
       return [
-        Math.floor(Math.random() * this._size),
-        Math.floor(Math.random() * this._size),
+        Math.floor(random() * this._size),
+        Math.floor(random() * this._size),
       ];
     }
 
@@ -204,8 +204,8 @@ export class Grid {
   public getRandomAvailablePosition() : GridPosition | null {
     let position: GridPosition;
     // Generate a random starting position
-    const startX = Math.floor(Math.random() * this._size);
-    const startY = Math.floor(Math.random() * this._size);
+    const startX = Math.floor(random() * this._size);
+    const startY = Math.floor(random() * this._size);
 
     // Iterate over the array starting from the random position
     for (let x = startX; x < startX + this._size; x++) {
@@ -242,8 +242,8 @@ export class Grid {
         warning = initialPopulation * 1.5;
       }
       position = [
-        Math.floor(x + (Math.random() * 2 - 1) * hw2),
-        Math.floor(y + (Math.random() * 2 - 1) * hh2),
+        Math.floor(x + (random() * 2 - 1) * hw2),
+        Math.floor(y + (random() * 2 - 1) * hh2),
       ];
       position = this.clamp(position[0], position[1]);
       //console.log("warning: ", warning, "position ", position);
@@ -255,7 +255,7 @@ export class Grid {
 
 
   public getNearByAvailablePosition(x: number, y: number): [number, number] | null {
-    const directions = [[-1, 0], [-1, 1],[1, -1],[1, 1],[-1, -1], [1, 0], [0, -1], [0, 1]].sort(() => Math.random() - 0.5);; // Possible directions
+    const directions = shuffle([[-1, 0], [-1, 1],[1, -1],[1, 1],[-1, -1], [1, 0], [0, -1], [0, 1]]); // Possible directions
 
     for (const [dx, dy] of directions) {
         const newX = x + dx;

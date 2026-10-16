@@ -31,6 +31,7 @@ It uses the same code as the app: the base goes through the same deserializer as
 | `--name <name>` | config file name, or `run` | Name of the run |
 | `--out <dir>` | `results/<name>` | Output folder. Files in it are overwritten. `results/` is ignored by git. |
 | `--set <path>=<value>` | none | Change one setting. Can be repeated. The value is read as JSON (`500`, `true`, `"text"`, `[1,2]`), otherwise as text. |
+| `--seed <n>` | the base's `seed`, or a random one | Seed of the random generator. The same seed, base and overrides repeat the run exactly. With `--resume` it replaces the random state saved in the file. |
 | `--log` | off | Record the [event log](../reference/log-file.md) and write `log.csv` |
 | `--max-restarts <n>` | 5 | Stop when the population has died out more than `n` times |
 | `--max-seconds <s>` | no limit | Stop after `s` seconds |
@@ -77,9 +78,9 @@ npm run sim -- experiments/example.json --generations 50
 
 | File | Content |
 |---|---|
-| `summary.json` | Status, generations run, restarts, time, simulation code, the overrides, the last generation and the average of the last 10 generations. The runner also prints it at the end. |
+| `summary.json` | Status, generations run, restarts, time, simulation code, seed, the overrides, the last generation and the average of the last 10 generations. The runner also prints it at the end. |
 | `generations.csv` | One row per finished generation, separated by `;` like the log |
-| `setup.sim` | The settings and map the run started with. Load it in the app to watch the same configuration. |
+| `setup.sim` | The settings and map the run started with, and its seed: running it again (`--base results/<name>/setup.sim`) repeats the run. Load it in the app to watch the same configuration; delete `seed` from it to get a different run on every Restart. |
 | `final.sim` | The whole simulation at the end, with creatures and stats. Load it in the app, or continue it with `--base results/<name>/final.sim --resume`. |
 | `log.csv` | The event log, with `--log` only |
 
@@ -106,11 +107,13 @@ Claude Code can run the runner, read `summary.json` and `generations.csv`, and c
 - "Continue `public/turn right generation 5574.sim` for 100 generations and tell me if survival improves."
 - "Find the smallest initial population at which the herbivores do not die out."
 
+- "Repeat the last run with seeds 1 to 5 and give me the average survivors."
 
 Claude then picks the options, runs one `npm run sim` per experiment with a different `--name`, and reads the files in `results/`. For long runs, ask for `--max-seconds` so a run cannot go on for hours.
 
 ## Limits
 
-- There is no random seed: two runs with the same settings give different results. Compare averages over several generations or several runs.
+- A run is repeatable with the same seed, but one run is still one sample: to compare settings, run several seeds and compare averages.
+- Resuming `final.sim` is deterministic (the same file always continues the same way), but it does not give exactly the generations an uninterrupted run would have: restored creatures act in a different order. See [Save format](../development/serialization.md).
 - Nothing is drawn, so there are no images or GIFs. Load `final.sim` in the app to see the world.
 - `.sim` files older than the `plantGenes` setting do not load, in the runner or in the app. See [Known issues](../known-issues.md).

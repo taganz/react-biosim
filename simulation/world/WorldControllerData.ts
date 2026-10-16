@@ -46,6 +46,12 @@ export default interface WorldControllerData {
     currentStep: number;
     lastGenerationDuration: number;
     totalTime: number;
+
+    /** seed of the random generator: set it to repeat a run. Missing: a new random seed for every run */
+    seed?: number;
+    /** seed the saved run used, and the generator state when it was saved (missing in older files) */
+    runSeed?: number;
+    rngState?: number;
     
 
 }

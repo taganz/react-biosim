@@ -23,6 +23,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 - `simulationDataAtom` is the Settings **draft**. The running configuration is `worldController.simData`.
 - Read engine values in components with `useWorldValue(getter, default)`. The getter must return a primitive or a stable reference.
 - Population strategies, selection methods and map objects are saved by class `name`. Register new ones in `populationMap`, `selectionMap` and `objectFormatters` respectively.
+- Engine code draws random numbers only with `random()`, `randomInt()` and `shuffle()` from `simulation/helpers/random.ts`, never `Math.random()`, or seeded runs stop repeating.
 - Known bugs are listed in `docs/known-issues.md`. Check it before assuming something works.
 
 ## Documentation

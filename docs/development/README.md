@@ -57,6 +57,7 @@ simulation/              The engine: plain TypeScript, no React
   serialization/           Saved* types and the formatters that read and write them
   logger/                  EventLogger (CSV log)
   headless/                runHeadless: runs a simulation in Node without drawing
+  helpers/                 random.ts (the seeded random generator), helpers.ts
   simulationDataDefault.ts Default SimulationData and constants
   startupScenario.ts       SimulationData loaded when the app opens
 public/                  Scenario .sim files served to the Start tab

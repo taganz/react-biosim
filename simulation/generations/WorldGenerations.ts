@@ -94,8 +94,9 @@ export default class WorldGenerations {
                   worldController.simData.worldControllerData.ACTION_REPRODUCTION_OFFSET);
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
-    this.enabledSensors = worldGenerationsData.enabledSensors;
-    this.enabledActions = worldGenerationsData.enabledActions;
+    // the lists the brain uses: table order, without names that no longer exist (older files)
+    this.enabledSensors = this.sensors.enabledSensors;
+    this.enabledActions = this.actions.enabledActions;
   
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;
     this.phenotypeColorMode = worldGenerationsData.phenotypeColorMode;

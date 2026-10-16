@@ -72,9 +72,11 @@ export function serializeSimulationData(worldController: WorldController, includ
 // settings and map only: loading it starts a new run from generation 1
 export function serializeSetup(worldController: WorldController) : SavedSimulationData {
   const { species, cellWater, ...setup } = serializeSimulationData(worldController, false);
+  // the seed setting stays; the random state belongs to the run
+  const { runSeed, rngState, ...worldControllerData } = setup.worldControllerData;
   return {
     ...setup,
-    worldControllerData: { ...setup.worldControllerData, currentGen: 1, currentStep: 1, lastGenerationDuration: 0, totalTime: 0 },
+    worldControllerData: { ...worldControllerData, currentGen: 1, currentStep: 1, lastGenerationDuration: 0, totalTime: 0 },
   };
 }
 
