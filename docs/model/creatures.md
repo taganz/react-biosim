@@ -78,23 +78,21 @@ When it is on, mass is the creature's energy:
 
 ### Reproduction
 
-The **Reproduction** action creates a child during the generation, in a free cell next to the parent:
+The **Reproduction** action creates a child during the generation, in one of the 8 cells around the parent:
 
-- The parent needs more than `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH × birth mass`. With metabolism on, it also needs `REPRODUCTION_COST_PER_MASS_DO × birth mass` on top.
+- The parent needs more than `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH × birth mass`. With metabolism on, it also needs `REPRODUCTION_COST_PER_MASS_DO × birth mass` on top. Without that mass the action does nothing: it is not an attempt and costs nothing.
+- The child goes to a free cell, chosen at random. If none is free, a herbivore or carnivore parent eats a neighbour it can eat (the same rules as an [attack](#attack), in any of the 8 cells) and the child takes its cell.
 - A successful reproduction costs `REPRODUCTION_COST_PER_MASS_DO × birth mass`, plus the birth mass handed to the child.
-- A failed attempt, because the parent is too light or has no free neighbouring cell, costs `REPRODUCTION_COST_PER_MASS_TRY × birth mass`.
+- An attempt with no free cell and nothing to eat costs `REPRODUCTION_COST_PER_MASS_TRY × birth mass`.
 
 > **Known issue.** With metabolism off, mass never changes, so it can never exceed `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` (3) × birth mass. The Reproduction action therefore never succeeds unless metabolism is on.
 
 ### Attack
 
-**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_REPRODUCTION_OFFSET` (0.6) and a creature occupies one of the 4 neighbouring cells. The attack:
+**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_REPRODUCTION_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus**, and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
 
-1. needs, with metabolism on, more than `ATTACK_MULTIPLE_MASS_AT_BIRTH × birth mass` (plus `ATTACK_COST_PER_MASS_DO`);
-2. costs `ATTACK_COST_PER_MASS_TRY`;
-3. fails if the target has the **same genus** as the attacker;
-4. fails unless the attacker weighs at least `ATTACK_MIN_PREY_MASS_FACTOR` (2) times the target's mass;
-5. otherwise kills the target, and the attacker gains the target's mass.
+1. costs `ATTACK_COST_PER_MASS_TRY`. There is no minimum mass to attack: a creature lighter than that cost dies trying;
+2. kills the target, and the attacker gains the target's mass, up to its maximum mass.
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.
 
@@ -133,7 +131,7 @@ Each creature keeps these values. Nothing in the simulation reads them; they are
 | `parentId`, `parentBirthGen` | The creature its genome was copied from, and the generation that parent was born in. Both are set by `newCreature()` when it gets a parent: through the Reproduction action, or by the population strategy at the start of a generation. They are `null` for random genomes of generation 1. Most selection methods restart the ids at 1 every generation, so the id alone does not identify the parent. |
 | `birthGen` | The generation it was born in. `stepBirth` is the step within that generation. |
 | `childrenCount` | How many creatures got their genome from it. |
-| `attackCount`, `killCount` | Attack actions executed (including the ones without enough mass) and prey killed. |
+| `attackCount`, `killCount` | Attack actions executed and prey killed. |
 | `waterFromPhotosynthesis` | Total water taken from its cell by Photosynthesis. |
 | `waterFromPrey` | Total mass taken from the prey it killed. It only counts what fitted below its maximum mass: the rest of the prey returns to the prey's cell. |
 | `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` or `actionsExecutionConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |

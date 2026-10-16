@@ -199,6 +199,8 @@ export default class Creature {
 
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
+    // without enough mass it is not a try: nothing is logged or consumed
+    if (!this.reproduction.hasEnoughtMassToReproduce) return;
     this.log(LogEvent.REPRODUCE_TRY, "mass", this.mass);
     if (this.reproduction.reproduce(actionInputValue)) {
       this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
@@ -219,6 +221,24 @@ export default class Creature {
       this.killCount++;
       this.log(LogEvent.ATTACK, "preyMass", preyMass);
     }
+  }
+
+  findPreyDirection(): Direction4 {
+    return this._attack.findPreyDirection();
+  }
+
+  // with no free cell around, eats a neighbour to make room for a child; returns the freed cell or null
+  eatNeighbourForOffspring(): GridPosition | null {
+    const prey = this._attack.findPreyAround();
+    if (prey == null) return null;
+    const position: GridPosition = [prey.position[0], prey.position[1]];
+    this.attackCount++;
+    const preyMass = this._attack.eat(prey);
+    this.killCount++;
+    this.log(LogEvent.ATTACK, "preyMass", preyMass);
+    // the dead prey would only leave the grid at its next turn
+    this.generations.grid.cell(position[0], position[1]).creature = null;
+    return position;
   }
 
   private computeDistanceIndex(){

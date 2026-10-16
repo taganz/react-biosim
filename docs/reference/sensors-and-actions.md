@@ -63,15 +63,15 @@ Each action reads the output of its neuron once per step. Unless stated otherwis
 | 4 | RandomMove | Adds an urge to move in a random direction. | | ✓ | ✓ |
 | 5 | MoveForward | Repeats the last move. | | ✓ | ✓ |
 | 6 | Photosynthesis | Turns water from the creature's cell into mass. | ✓ | | |
-| 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
-| 8 | AttackPlant | Only when the output is above `ACTION_REPRODUCTION_OFFSET` (0.6). Attacks a creature in one of the 4 neighbouring cells. | | ✓ | ✓ |
+| 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. With no free cell, herbivores and carnivores eat a neighbour to make room. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
+| 8 | AttackPlant | Only when the output is above `ACTION_REPRODUCTION_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. | | ✓ | ✓ |
 | 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
 
 **Movement.** The urges from all movement actions are added up separately for x and for y. On each axis the creature moves one cell, in the direction of the urge, with probability `|tanh(urge)|`. So it moves at most one cell per axis per step, and only if the target cell is free.
 
 **Prey.** Herbivores hunt plants and carnivores hunt herbivores. Plants have no prey, so the prey sensors read "no prey" for them.
 
-**Attack.** An attack fails if the prey has the same genus as the attacker, or if the attacker is not at least `ATTACK_MIN_PREY_MASS_FACTOR` (2) times heavier than the prey. A successful attack kills the prey.
+**Attack.** The target is a neighbour the attacker can eat: one of a different genus, at most half as heavy as the attacker (`ATTACK_MIN_PREY_MASS_FACTOR`, 2). Neighbours that cannot be eaten are skipped, and with none the action does nothing. A successful attack kills the prey. See [Creatures → Attack](../model/creatures.md#attack).
 
 ## Gene encoding
 

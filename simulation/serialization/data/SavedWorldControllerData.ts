@@ -30,7 +30,6 @@ export default interface SavedWorldControllerData {
 
   ATTACK_COST_PER_MASS_TRY : number; 
   ATTACK_COST_PER_MASS_DO : number; 
-  ATTACK_MULTIPLE_MASS_AT_BIRTH : number; 
   ATTACK_MIN_PREY_MASS_FACTOR : number;
 
   // user values

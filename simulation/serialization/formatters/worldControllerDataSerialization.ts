@@ -4,7 +4,8 @@ import SavedWorldControllerData from "../data/SavedWorldControllerData";
 import { getRandomState } from "@/simulation/helpers/random";
 
 export function deserializeWorldControllerData(parsed: SavedWorldControllerData) : WorldControllerData {
-  const worldControllerData : WorldControllerData = parsed;
+  // older saves have ATTACK_MULTIPLE_MASS_AT_BIRTH, which no longer exists
+  const { ATTACK_MULTIPLE_MASS_AT_BIRTH, ...worldControllerData } = parsed as SavedWorldControllerData & { ATTACK_MULTIPLE_MASS_AT_BIRTH?: number };
   return worldControllerData;
 }
     

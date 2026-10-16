@@ -96,8 +96,8 @@ export default class CreatureMass {
     }
 
    // fraction of massAtBirth! Like consume, it never takes more than the creature has
-   consumeMassFraction(massFraction: number) {
-        this.consume(this._massAtBirth * massFraction);
+   consumeMassFraction(massFraction: number) : number {
+        return this.consume(this._massAtBirth * massFraction);
     }
 
     // gives mass to a newborn child: the water stays inside creatures. Returns the mass given

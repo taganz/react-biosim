@@ -154,11 +154,6 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           <Field label="Enough mass to reproduce">
             <YesNo value={creature.reproduction.hasEnoughtMassToReproduce} />
           </Field>
-          {preyGenus && (
-            <Field label="Enough mass to attack">
-              <YesNo value={creature._attack.hasEnoughtMassToAttack} />
-            </Field>
-          )}
         </Group>
 
         <Group title="Movement">

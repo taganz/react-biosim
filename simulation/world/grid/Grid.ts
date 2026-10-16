@@ -109,8 +109,10 @@ export class Grid {
 
   public removeCreature(creature: Creature) : void {
     const cell = this._grid[creature.position[0]][creature.position[1]];
-    if (cell.creature == null) {
-      throw new Error("removeCreature position.creature == null");
+    if (cell.creature !== creature) {
+      // a prey eaten to make room for a child left its cell when it died: the cell is empty or holds the child
+      if (!creature.isAlive) return;
+      throw new Error("removeCreature: the creature is not in its cell");
     }
     cell.creature = null;
   }

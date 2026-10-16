@@ -298,7 +298,7 @@ export default class CreatureActions {
     if (this.data.AttackPlant.enabled) {
       if (input > this.actionReproductionOffset) {    // was 0
 
-        const targetDirection : Direction4 = creature.generations.grid.getNeighbour4Creature(creature.position);
+        const targetDirection : Direction4 = creature.findPreyDirection();
         if (targetDirection!=null) {    //TODO check if target creature is plant
           creature.attack(input, targetDirection);
         }
@@ -312,7 +312,7 @@ export default class CreatureActions {
    if (this.data.AttackAnimal.enabled) {
     if (input > this.actionReproductionOffset) {    // was 0
 
-      const targetDirection : Direction4 = creature.generations.grid.getNeighbour4Creature(creature.position);
+      const targetDirection : Direction4 = creature.findPreyDirection();
       if (targetDirection!=null) {      //TODO check if target creature is animal or change to Attack and don't check
         creature.attack(input, targetDirection);
       }

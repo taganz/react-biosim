@@ -147,7 +147,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
           ATTACK_COST_PER_MASS_TRY : 0.4,
           ATTACK_COST_PER_MASS_DO : 0,
-          ATTACK_MULTIPLE_MASS_AT_BIRTH : 3,     // 0
           ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
 
         // user values

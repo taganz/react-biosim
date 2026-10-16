@@ -98,7 +98,7 @@ You can change these values only by editing a saved simulation file and loading 
 
 ### Metabolism constants (`worldControllerData`)
 
-Mass is only consumed when metabolism is enabled. The mass thresholds ("needs more than…") are always checked for reproduction, and only with metabolism for moving and attacking. "Birth mass" means the creature's own mass at birth.
+Mass is only consumed when metabolism is enabled. The mass thresholds ("needs more than…") are always checked for reproduction, and only with metabolism for moving. Attacking has no mass threshold. "Birth mass" means the creature's own mass at birth.
 
 | Key | Startup | Meaning |
 |---|---|---|
@@ -111,13 +111,12 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `MASS_COST_PER_EXECUTE_ACTION` | 0.01 | Mass spent per step for each enabled action. |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome. |
 | `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass to reproduce (plus `REPRODUCTION_COST_PER_MASS_DO` with metabolism). |
-| `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a failed reproduction attempt, as a multiple of birth mass. |
+| `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell and nothing to eat around, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |
 | `MOVE_MULTIPLE_MASS_AT_BIRTH` | 2 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
 | `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. |
 | `MOVE_COST_PER_MASS_DO` | 0.6 | Extra mass lost by moving, as a multiple of birth mass. |
-| `ATTACK_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass (plus `ATTACK_COST_PER_MASS_DO`) to attack. |
-| `ATTACK_COST_PER_MASS_TRY` | 0.4 | Mass lost by trying to attack. |
+| `ATTACK_COST_PER_MASS_TRY` | 0.4 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Despite its name, the minimum neuron output that triggers the attack actions. |
