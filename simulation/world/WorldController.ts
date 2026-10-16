@@ -373,6 +373,9 @@ export default class WorldController {
     }
     this.generationRegistry.startGeneration();
     // GENERATION_START is logged by runStep() at step 1 of the new generation
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.endGeneration, { detail: { worldController: this } })
+    );
   }
 
   private sendRedrawEventEveryImmediateSteps() : void { 

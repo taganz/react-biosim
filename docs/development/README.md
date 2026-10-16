@@ -18,6 +18,7 @@ npm test           # Jest
 npx tsc --noEmit   # type check
 npm run lint       # ESLint
 npm run build      # production build
+npm run sim        # headless runner, see docs/user/headless-runner.md
 ```
 
 `npm run lint` runs the ESLint CLI with `eslint.config.mjs` (Next.js 16 removed `next lint`) and should report nothing. It includes the React Compiler rules: don't mutate state, props or atom values (change a clone), don't read or write refs during render, and don't call `setState` synchronously in an effect. ESLint does not type-check, so also run `npx tsc --noEmit`.
@@ -55,13 +56,15 @@ simulation/              The engine: plain TypeScript, no React
   water/                   WorldWater, rain types
   serialization/           Saved* types and the formatters that read and write them
   logger/                  EventLogger (CSV log)
+  headless/                runHeadless: runs a simulation in Node without drawing
   simulationDataDefault.ts Default SimulationData and constants
   startupScenario.ts       SimulationData loaded when the app opens
 public/                  Scenario .sim files served to the Start tab
+scripts/                 sim.ts: command line of the headless runner (npm run sim, with tsx)
 __tests__/               Jest tests for the engine
 ```
 
-The **engine** (`simulation/`) has no React imports and can run in Node, which is how the tests use it. The only exception is `WorldController`, which uses `window.setTimeout` for its loop. Tests that create one never start the loop.
+The **engine** (`simulation/`) has no React imports and can run in Node, which is how the tests use it. The only exception is `WorldController`, which uses `window.setTimeout` for its loop. Most tests that create one never start the loop; the [headless runner](../user/headless-runner.md) runs it in Node by setting `window` to `globalThis`.
 
 `app/api/hello/route.ts` is left over from the Next.js template and is not used.
 
@@ -78,3 +81,4 @@ The reference pages are lists taken from the code. Update them in the same chang
 | The scenarios in `public/` | [scenarios.md](../user/scenarios.md) |
 | The save format | [serialization.md](serialization.md) |
 | A logged event, or the logger's columns and levels | [log-file.md](../reference/log-file.md) |
+| The headless runner's options or output files | [headless-runner.md](../user/headless-runner.md) |

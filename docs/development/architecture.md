@@ -62,6 +62,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `initializeWorld` | After `startRun()`, `resumeRun()` or `startGeneration()` rebuilds the world |
 | `startGeneration` | At step 1 of every generation |
 | `startStep`, `endStep` | Around every step. `endStep` can fire thousands of times per second. |
+| `endGeneration` | After a generation ends: its stats are in `generationRegistry` and the next generation is populated. Used by the [headless runner](../user/headless-runner.md). |
 | `redraw` | Every *Immediate steps* steps |
 | `stateChange` | Pause, resume, logger changes: anything outside the loop |
 

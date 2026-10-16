@@ -6,6 +6,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 
 - `npm run dev`: dev server on http://localhost:3000
 - `npm test`: Jest. Every suite must pass.
+- `npm run sim -- [config.json] [--generations N] [--set path=value] ...`: headless runner, results in `results/<name>/`. See `docs/user/headless-runner.md`; use it when asked to run simulations.
 - `npx tsc --noEmit`: type check. `npm run lint`: ESLint CLI with `eslint.config.mjs`, must report nothing.
 
 ## Layout

@@ -10,6 +10,7 @@ How to use the app.
 4. [Map editor](user/map-editor.md): obstacles and areas
 5. [Files](user/files.md): your own scenarios, save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
+7. [Headless runner](user/headless-runner.md): run simulations from the command line or from Claude, without the browser
 
 ## Simulation model
 

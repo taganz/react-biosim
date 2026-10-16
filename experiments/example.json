@@ -1,0 +1,12 @@
+{
+  "name": "example-plants-low-mutation",
+  "base": "../public/plants_2024_05_19.sim",
+  "generations": 20,
+  "overrides": {
+    "worldGenerationsData": { "mutationProbability": 0.005 }
+  },
+  "log": false,
+  "maxRestarts": 3,
+  "maxSeconds": 600,
+  "progressEvery": 5
+}
