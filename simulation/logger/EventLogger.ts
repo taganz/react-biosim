@@ -246,9 +246,12 @@ export default class EventLogger {
           )) {
         return;
         }
-        // counted for the step and generation totals even when creature rows are not recorded
-        this.stepTotals.push([eventValues.eventType, eventValues.paramName])
-        this.genTotals.push([eventValues.eventType, eventValues.paramName])
+        // counted for the step and generation totals even when creature rows are not recorded;
+        // BIRTH genome is not: there is already BIRTH parentId, once per birth
+        if (!(eventValues.eventType == LogEvent.BIRTH && eventValues.paramName == "genome")) {
+          this.stepTotals.push([eventValues.eventType, eventValues.paramName])
+          this.genTotals.push([eventValues.eventType, eventValues.paramName])
+        }
       }
 
       if (!this.levelIsRecorded(eventValues.logLevel)) return;

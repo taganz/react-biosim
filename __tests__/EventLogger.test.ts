@@ -568,5 +568,28 @@ describe('EventLogger', () => {
         expect(log.includes(`;${child.id};BIRTH;parentId;${parent.id};1;`)).toBeTruthy();
     });
 
+    test('newCreature() - logs BIRTH genome with the genome in hexadecimal', () => {
+        const eventLogger = worldControllerMock.eventLogger;
+        eventLogger.resume();
+        const creature = worldControllerMock.generations.newCreature([5, 5], true);
+
+        const hex = creature.brain.genome.toHexadecimalString();
+        expect(hex).toMatch(/^[0-9a-f]{8}( [0-9a-f]{8})*$/);
+        expect(eventLogger.getLog().includes(`;${creature.id};BIRTH;genome;0;0;${hex}\n`)).toBeTruthy();
+    });
+
+    test('BIRTH genome is not counted in the step and generation totals', () => {
+        logger.resume();
+        logger.logEvent({...mockEvent, eventType: LogEvent.BIRTH, paramName: 'parentId'});
+        logger.logEvent({...mockEvent, eventType: LogEvent.BIRTH, paramName: 'genome', paramString: '0000abcd'});
+        worldControllerMock.currentGen = 2;
+        logger.logEvent(mockEvent);
+
+        const log = logger.getLog();
+        expect(log.includes('STEP TOTALS;1;1;1;;;;BIRTH;parentId sum;1;;')).toBeTruthy();
+        expect(log.includes('GENERATION TOTALS;1;1;;;;;BIRTH;parentId sum;1;;')).toBeTruthy();
+        expect(log.includes('genome sum')).toBeFalsy();
+    });
+
 });
 

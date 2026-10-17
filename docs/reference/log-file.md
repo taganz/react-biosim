@@ -50,7 +50,7 @@ A Power BI report to analyse it is in `public/analyze simlog.pbix`.
 
 ### Totals
 
-A totals row **counts** events, it does not add their values: `METABOLISM;mass sum;37` means that 37 `METABOLISM` rows with `ParamName` `mass` happened in that step, whatever the masses were. Only creature events are counted, and only those that pass the creature filter and are switched on in **Events to record**, even when the level does not write creature rows.
+A totals row **counts** events, it does not add their values: `METABOLISM;mass sum;37` means that 37 `METABOLISM` rows with `ParamName` `mass` happened in that step, whatever the masses were. Only creature events are counted, and only those that pass the creature filter and are switched on in **Events to record**, even when the level does not write creature rows. `BIRTH genome` is not counted: `BIRTH parentId` already counts the births.
 
 The totals of a step are written when the first event of the next step arrives, with the generation and step they belong to. The totals of a generation are written in the same way, after the step totals of its last step.
 
@@ -74,6 +74,7 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `EventType` | `ParamName` | `ParamValue` | `ParamValue2` | `ParamString` | When |
 |---|---|---|---|---|---|
 | `BIRTH` | `parentId` | id of the parent, `0` if it has none | birth generation of the parent, `0` if it has none | | A new creature is created, after its `INFO birth` rows. The parent is the survivor or the reproducing creature whose genome it got; creatures with a random or fixed genome (generation 1, random fill) have none. Creatures restored by **Update simulation** or a resumed file are not births and write no `BIRTH`. |
+| `BIRTH` | `genome` | `0` | `0` | the genome in hexadecimal: one 8-digit gene per group, separated by spaces | Right after `BIRTH parentId`. Same format as the genome you can copy in the species panel. |
 | `INFO` | `birth mass`, `birth gen`, … | see [INFO rows](#info-rows) | | | The creature is created. |
 | `INFO` | `dead mass`, `dead gen`, … | see [INFO rows](#info-rows) | | | The creature dies, after `DEAD`. |
 | `INFO` | ` mass`, ` gen`, … (leading space) | see [INFO rows](#info-rows) | | | **Log this creature** is pressed. Only kept if the simulation is at step 1 (see [Filters](#filters)). |
@@ -129,7 +130,7 @@ This is what the log holds for a creature with **Level** at *Creature events and
 
 ### At birth
 
-8 `INFO` rows `birth …`, then `BIRTH parentId`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
+8 `INFO` rows `birth …`, then `BIRTH parentId` and `BIRTH genome`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
 
 ### Each step
 
@@ -142,7 +143,7 @@ The rows follow the order of `Creature.computeStep()`:
    - **Reproduction** (output above 0 and enough mass; otherwise nothing): `REPRODUCE_TRY mass`, then one of
      - no free cell nearby and nothing to eat: `REPRODUCE_TRY mass consumed`;
      - no free cell, but a neighbour it can eat: the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 8 `INFO dead …`) and `ATTACK preyMass`, then the rows of a success;
-     - success: the child's 8 `INFO birth …` rows and its `BIRTH` row with this creature as parent (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
+     - success: the child's 8 `INFO birth …` rows and its `BIRTH parentId` (with this creature as parent) and `BIRTH genome` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
    - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour it can eat in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 8 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
 4. **Cost of the actions.** `METABOLISM actionsExecutionConsumption` (steps multiple of 10). If it ran out of mass: `DEAD actionsExecutionConsumption` + 8 `INFO dead …`, and the step ends.
 5. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.
