@@ -52,6 +52,9 @@ function Section({ title, description, children }: {
 
 const FIELDS_GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
 
+// the generator keeps 32 bits of the seed
+const MAX_SEED = 0xffffffff;
+
 // Edits a draft (simulationDataAtom). The running simulation keeps its own
 // simulationData until the draft is applied with "Update simulation" or "Restart".
 export default function SettingsPanel() {
@@ -61,7 +64,11 @@ export default function SettingsPanel() {
   const hasPendingChanges =
     appliedSimulationData !== null && appliedSimulationData !== simulationData;
 
+  // the seed of the running simulation, which the draft may not have (random seed)
+  const runSeed = useWorldValue((world) => world.seed, null);
+
   const { worldControllerData, worldGenerationsData, waterData } = simulationData;
+  const isSeedFixed = worldControllerData.seed !== undefined;
   const { enabledSensors, enabledActions } = worldGenerationsData;
   const isContinuous = worldGenerationsData.simulationType === "continuous";
   // in continuous runs, new creatures only come from the Reproduction action
@@ -258,6 +265,52 @@ export default function SettingsPanel() {
             integer
             min={1}
           />
+        </div>
+        <div className={FIELDS_GRID}>
+          <div className="flex flex-col gap-1">
+            <CheckboxInput
+              id="fixedSeed"
+              label="Fixed seed"
+              checked={isSeedFixed}
+              // fixing the seed starts from the one the running simulation uses
+              onChange={(checked) => setWorldValue("seed", checked ? runSeed ?? 0 : undefined)}
+            />
+            {isSeedFixed && (
+              <NumberInput
+                label="Seed"
+                value={worldControllerData.seed ?? 0}
+                onChange={(value) => setWorldValue("seed", value)}
+                integer
+                min={0}
+                max={MAX_SEED}
+              />
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="text-xs">
+              {isSeedFixed
+                ? "Every Restart repeats the same simulation (same settings and map). Change the seed to get another one."
+                : "Every Restart picks a new random seed, so no two runs are the same."}{" "}
+              The seed is used when the simulation starts: apply it with Restart.
+            </p>
+            {runSeed !== null && (
+              <p className="text-xs">
+                The running simulation uses seed <b>{runSeed}</b>.
+                {worldControllerData.seed !== runSeed && (
+                  <>
+                    {" "}
+                    <button
+                      type="button"
+                      className="underline"
+                      onClick={() => setWorldValue("seed", runSeed)}
+                    >
+                      Fix this seed
+                    </button>
+                  </>
+                )}
+              </p>
+            )}
+          </div>
         </div>
       </Section>
 

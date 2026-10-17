@@ -26,6 +26,7 @@ Some changes behave differently depending on how you apply them:
 - **Phenotype mode** only changes how creatures are coloured. **Update simulation** recolours them straight away.
 - **Metabolism:** with **Update simulation**, the creatures keep their current mass and start gaining or losing it from the next step.
 - **Simulation code:** **Update simulation** renames the running simulation. **Restart** keeps the code only if you changed it; otherwise it picks a new random one.
+- **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect with **Restart**: **Update simulation** keeps the current random sequence.
 - **Sensors and actions:** genes point to sensors and actions by their position in the list of enabled items. If you change the list and click **Update simulation**, existing brains are rewired. Use **Restart** unless that is what you want.
 - **Invalid values:** a field rejects a value out of range and shows the allowed range. When you leave the field, it goes back to the last valid value.
 

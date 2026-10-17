@@ -125,7 +125,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 
 | Key | Startup | Meaning |
 |---|---|---|
-| `seed` | not set | Seed of the random generator. Set it to repeat a run: the same seed, settings and map give the same simulation (same code version and JavaScript engine). Not set: every run, **Restart** included, picks a new random seed. The headless runner sets it with `--seed`. |
+| `seed` | not set | Seed of the random generator. Set it to repeat a run: the same seed, settings and map give the same simulation (same code version and JavaScript engine). Not set: every run, **Restart** included, picks a new random seed. Set it in Settings with **Fixed seed** (World section), or in the headless runner with `--seed`. Integer from 0 to 4294967295. |
 
 Every random decision of the engine (mutations, placement, the Random sensor, random moves, shuffles) comes from one generator in [random.ts](../../simulation/helpers/random.ts). After an extinction the run restarts without reseeding, so with a fixed seed it does not die out the same way again.
 
