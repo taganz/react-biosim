@@ -397,7 +397,9 @@ export default class WorldController {
     this.logEndGeneration();
     if (!this.generations.isContinuous) {
       // selected now so that the survivors row belongs to the generation that ends
-      this.log(LogEvent.GENERATION_END, "survivors", this.generations.selectSurvivors());
+      const survivors = this.generations.selectSurvivors();
+      this.log(LogEvent.GENERATION_END, "survivors", survivors,
+               100 * survivors / this.generations.initialPopulation);
     }
 
     // Small pause

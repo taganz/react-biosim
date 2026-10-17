@@ -62,7 +62,9 @@ describe("runHeadless", () => {
     const survivors = result.worldController.eventLogger.getLog().split("\n")
       .map((line) => line.split(";"))
       .filter((cols) => cols[7] === "GENERATION_END" && cols[8] === "survivors")
-      .map((cols) => [Number(cols[2]), Number(cols[3]), Number(cols[9])]);
-    expect(survivors).toEqual(result.rows.map((row) => [row.generation, 5, row.survivorCount]));
+      .map((cols) => [Number(cols[2]), Number(cols[3]), Number(cols[9]), cols[10]]);
+    // ParamValue2: % of Initial population (10), written with the es-ES locale
+    expect(survivors).toEqual(result.rows.map((row) =>
+      [row.generation, 5, row.survivorCount, (row.survivorCount * 10).toLocaleString("es-ES")]));
   });
 });

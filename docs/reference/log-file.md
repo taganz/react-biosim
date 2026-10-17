@@ -146,7 +146,7 @@ All with `LogLevel` `WORLD EVENTS` and empty creature columns:
 | `STEP_END` | `waterInCells`, `waterInCloud`, `waterInCreatures` | water in that part of the world | Same. |
 | `STEP_END` | `waterTotal` | sum of the three | Same. |
 | `GENERATION_END` | same 8 names as `STEP_END` | same values; the water after evaporation | Last step of a generation, after its `STEP_END` rows. |
-| `GENERATION_END` | `survivors` | creatures chosen by the selection method, the parents of the next generation | Right after the other `GENERATION_END` rows, still in the generation that ends. Not written in continuous simulations, which have no selection. |
+| `GENERATION_END` | `survivors` | creatures chosen by the selection method, the parents of the next generation; `ParamValue2` is the same number as a percentage of **Initial population** (0 to 100, more if there are more survivors than Initial population) | Right after the other `GENERATION_END` rows, still in the generation that ends. Not written in continuous simulations, which have no selection. |
 
 ## One creature with every option on
 
