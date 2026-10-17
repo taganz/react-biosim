@@ -206,7 +206,7 @@ export default function SettingsPanel() {
               disallowed={/[^A-Za-z0-9_-]/g}
             />
             <p className="text-xs">
-              A name for this run, used in the names of saved files and GIFs. Restart picks a
+              A name for this run, used in the names of saved files, images, GIFs and logs. Restart picks a
               new random code unless you change it here.
             </p>
           </div>

@@ -49,7 +49,7 @@ export default function LoggerStatus() {
   const handleSaveLog = () => {
     if (!worldController) return;
     const saveLog: Blob = worldController.eventLogger.getLogBlob();
-    saveAs(saveLog, `simlog ${worldController.currentGen}.csv`);
+    saveAs(saveLog, `sim ${worldController.simCode} generation ${worldController.currentGen}.csv`);
   };
 
   const handleLogCreature = () => {

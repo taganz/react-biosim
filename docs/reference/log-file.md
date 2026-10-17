@@ -4,7 +4,7 @@ The event logger records what happens during a run and saves it as a CSV file. T
 
 ## The file
 
-**Save log** (*Stats → Under development*) downloads `simlog <generation>.csv`, where `<generation>` is the current generation. It is plain UTF-8 text:
+**Save log** (*Stats → Under development*) downloads `sim <code> generation <n>.csv`, the same pattern as the `.sim`, GIF and PNG files: `<code>` is the simulation code and `<n>` the current generation. It is plain UTF-8 text:
 
 - The separator is `;`.
 - The first line is the header.
