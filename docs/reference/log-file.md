@@ -43,7 +43,7 @@ A Power BI report to analyse it is in `public/analyze simlog.pbix`.
 Which kinds are written depends on two settings. `SETUP`, `GENERATION TOTALS` and `WORLD EVENTS` rows are always written.
 
 - `CREATURE` rows are written unless **Creature to log** (`LOG_CREATURE_ID`) is *No creatures* (`-1`, the default).
-- `STEP TOTALS` rows are written while **Step totals** (`LOG_STEP_TOTALS`, default on) is on.
+- `STEP TOTALS` rows are written while **Step totals** (`LOG_STEP_TOTALS`, default off) is on.
 
 Files saved with the old `LOG_LEVEL` setting are converted when they are loaded: *Creature events* keeps the creature filter, *Step totals* becomes *No creatures*, and *Generation totals* or *World events only* become *No creatures* with **Step totals** off.
 

@@ -34,7 +34,7 @@ const LOCALES: [string, string][] = [
 // Logger settings (LOG_* constants), see useSetLogOptions; Enable logger is in LoggerPanel
 export default function LoggerOptions() {
   const setOptions = useSetLogOptions();
-  const stepTotals = useWorldValue((world) => world.simData.constants.LOG_STEP_TOTALS !== false, true);
+  const stepTotals = useWorldValue((world) => world.simData.constants.LOG_STEP_TOTALS === true, false);
   const maxEvents = useWorldValue((world) => world.eventLogger.maxEvents, 0);
   const locale = useWorldValue((world) => String(world.simData.constants.LOG_LOCALE_STRING ?? ""), "");
   // the constants object is replaced on every change, so the reference is stable in between

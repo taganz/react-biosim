@@ -40,7 +40,7 @@ export const CONSTANTS_DEFAULT = {
     LOG_ENABLED : false,  // main switch for logging
     //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
     LOG_CREATURE_ID : -1,   // -1 no creatures (only the totals), 0 all creatures, -10 ids 1 to 9, -30 ids 1 to 29, else that id
-    LOG_STEP_TOTALS : true,   // write the step totals
+    LOG_STEP_TOTALS : false,   // write the step totals
     LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
     LOG_LOCALE_STRING : 'es-ES',
     LOG_ALLOWED_EVENTS: {

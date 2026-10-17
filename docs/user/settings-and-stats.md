@@ -90,7 +90,7 @@ A warning in red appears under **Creature to log** when the logger follows a sin
 
 **Logger options**, below, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
 
-- **Step totals** writes, for each step, how many times each creature event happened (default on). Turn it off for long recordings: the generation totals and the world events are always written.
+- **Step totals** writes, for each step, how many times each creature event happened (default off, as the rows add up fast in long recordings). The generation totals and the world events are always written.
 - **Maximum events** is the number of rows at which the logger stops.
 - **Number format (locale)** sets the decimal separator of the values: `es-ES` (1,5) or `en-US` (1.5). A file saved with another locale keeps it, and it shows in the list.
 - **Events to record** turns each event type on or off. A creature event that is off is not counted in the totals either.

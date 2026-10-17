@@ -333,7 +333,7 @@ export default class EventLogger {
       case LogLevel.CREATURE:
         return this.logCreatureId != LOG_NO_CREATURES;
       case LogLevel.STEP:
-        return this.worldController.simData.constants.LOG_STEP_TOTALS !== false;
+        return this.worldController.simData.constants.LOG_STEP_TOTALS === true;
       default:
         return true;
     }
