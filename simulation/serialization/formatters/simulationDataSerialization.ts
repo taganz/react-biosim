@@ -14,6 +14,7 @@ import SavedStartGenome from "../data/SavedStartGenome";
 import Genome from "@/simulation/creature/brain/Genome";
 import {serializeWorldControllerData, deserializeWorldControllerData} from "./worldControllerDataSerialization";
 import WorldWater from "@/simulation/water/WorldWater";
+import migrateLogConstants from "@/simulation/logger/migrateLogConstants";
 
 /*
 function loadGenerationRegistry(worldController: WorldController, parsed: SavedWorld) : void {
@@ -33,7 +34,7 @@ function loadGenerationRegistry(worldController: WorldController, parsed: SavedW
 export default function deserializeSimulationData(worldController: WorldController, parsed: SavedSimulationData) : SimulationData {
   // species, stats and startGenomes are optional: a setup has none of them
     const simulationData : SimulationData = {
-        constants : parsed.constants,
+        constants : migrateLogConstants(parsed.constants),
         worldGenerationsData : deserializeWorldGenerationData(parsed),
         worldControllerData : deserializeWorldControllerData(parsed.worldControllerData),
         waterData : deserializeWaterData(parsed.waterData),

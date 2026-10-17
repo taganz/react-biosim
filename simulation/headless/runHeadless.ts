@@ -103,6 +103,10 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
     const { rngState, ...worldControllerData } = merged.worldControllerData;
     merged.worldControllerData = { ...worldControllerData, seed: options.seed };
   }
+  // --log turns the logger on, which is off by default
+  if (options.log) {
+    merged.constants = { ...(merged.constants as unknown as object), LOG_ENABLED: true } as unknown as string;
+  }
   const sim = deserializeSimulationData(worldController, merged);
 
   const maxRestarts = options.maxRestarts ?? 5;

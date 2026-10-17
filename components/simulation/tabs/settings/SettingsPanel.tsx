@@ -66,6 +66,8 @@ export default function SettingsPanel() {
 
   // the seed of the running simulation, which the draft may not have (random seed)
   const runSeed = useWorldValue((world) => world.seed, null);
+  // startRun() writes the new code into the draft in place, which does not re-render this panel
+  useWorldValue((world) => world.simCode, null);
 
   const { worldControllerData, worldGenerationsData, waterData } = simulationData;
   const isSeedFixed = worldControllerData.seed !== undefined;

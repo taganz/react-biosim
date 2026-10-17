@@ -435,6 +435,7 @@ export default class Creature {
       this.deathGen = this.generations.worldController.currentGen;
     }
     this._mass.die();
+    this.eventLogger?.noteCreatureDeath(this.id);
     this.log(LogEvent.DEAD, "cause", undefined, undefined, cause);
     this.logBasicData("dead");
     //console.log(this.id, cause, this._age, this.generations.worldController.currentStep);

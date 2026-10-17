@@ -57,6 +57,8 @@ export default class WorldGenerations {
   lastCreatureCount: number = 0;      
   lastSurvivorsCount: number = 0;
   lastFitnessMaxValue : number = 0;
+  // set by selectSurvivors() at the end of a generation, used by selectionAndRepopulate()
+  private selection: {survivors: Creature[], fitnessMaxValue : number} | null = null;
   lastSurvivalRate : number = 0;
   // births and deaths during the current generation, and during the last one
   birthsThisGeneration: number = 0;
@@ -296,11 +298,16 @@ private closeBirthAndDeathCounts(): void {
   this.deathsThisGeneration = 0;
 }
 
+// Get survivors and calculate maximum fitness for this generation; returns the number of survivors
+public selectSurvivors(): number {
+  this.selection = this.selectionMethod.getSurvivors(this);
+  return this.selection.survivors.length;
+}
+
 public selectionAndRepopulate(): void {
 
-
-  // Get survivors and calculate maximum fitness for this generation
-  const {survivors, fitnessMaxValue} = this.selectionMethod.getSurvivors(this);
+  const {survivors, fitnessMaxValue} = this.selection ?? this.selectionMethod.getSurvivors(this);
+  this.selection = null;
 
   this.grid.clearCreatures();
   this.currentCreatures = [];

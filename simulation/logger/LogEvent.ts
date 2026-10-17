@@ -28,6 +28,8 @@ export enum LogLevel {
   STEP = "STEP TOTALS",
   GENERATION = "GENERATION TOTALS",
   WORLD = "WORLD EVENTS",
+  // the configuration, written whatever the level when a recording starts
+  SETUP = "SETUP",
 }
 
 

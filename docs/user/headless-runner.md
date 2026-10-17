@@ -32,7 +32,7 @@ It uses the same code as the app: the base goes through the same deserializer as
 | `--out <dir>` | `results/<name>` | Output folder. Files in it are overwritten. `results/` is ignored by git. |
 | `--set <path>=<value>` | none | Change one setting. Can be repeated. The value is read as JSON (`500`, `true`, `"text"`, `[1,2]`), otherwise as text. |
 | `--seed <n>` | the base's `seed`, or a random one | Seed of the random generator. The same seed, base and overrides repeat the run exactly. With `--resume` it replaces the random state saved in the file. |
-| `--log` | off | Record the [event log](../reference/log-file.md) and write `log.csv` |
+| `--log` | off | Turn the logger on, record the [event log](../reference/log-file.md) and write `log.csv` |
 | `--max-restarts <n>` | 5 | Stop when the population has died out more than `n` times |
 | `--max-seconds <s>` | no limit | Stop after `s` seconds |
 | `--progress <n>` | 10 | Print a line every `n` generations; 0 prints none |

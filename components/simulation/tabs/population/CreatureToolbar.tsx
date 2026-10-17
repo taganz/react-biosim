@@ -8,22 +8,22 @@ import Button from "@/components/global/Button";
 import useWorldValue from "@/hooks/useWorldValue";
 import { findLivingParent, speciesMembers } from "@/simulation/generations/creatureQueries";
 import {
-  logCreatureIdAtom,
   selectedSpeciesAtom,
   userSelectCreatureAtom,
   worldControllerAtom,
 } from "../../store";
+import useSetLogOptions from "../stats/useSetLogOptions";
 
 interface Props {
   creature: Creature;
 }
 
-// Moves the selection to other creatures (same species, parent) and logs the selected one
+// Moves the selection to other creatures (same species, parent) and puts the selected one in Creature to log
 export default function CreatureToolbar({ creature }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const setSelectedCreature = useSetAtom(userSelectCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
-  const setLogCreatureId = useSetAtom(logCreatureIdAtom);
+  const setLogOptions = useSetLogOptions();
   const [logMessage, setLogMessage] = useState("");
 
   // "index,count": a string, so the snapshot is a primitive
@@ -61,16 +61,8 @@ export default function CreatureToolbar({ creature }: Props) {
   };
 
   const logCreature = () => {
-    if (!worldController) return;
-    setLogCreatureId(creature.id);
-    try {
-      worldController.eventLogger.startLoggingCreatureId(creature.id);
-      setLogMessage(`Logging creature #${creature.id}. Save the log in Stats → Logger.`);
-    } catch {
-      // the logger is already set to the new id; only the first record of the creature failed
-      setLogMessage(`Creature #${creature.id} is not alive; it will be logged if a creature with this id appears.`);
-    }
-    worldController.notifyStateChange();
+    setLogOptions({ LOG_CREATURE_ID: creature.id });
+    setLogMessage(`Creature to log is #${creature.id}. It is used when a recording starts, in Stats → Logger.`);
   };
 
   return (
@@ -102,7 +94,7 @@ export default function CreatureToolbar({ creature }: Props) {
         >
           Select parent
         </Button>
-        {logEnabled && <Button onClick={logCreature}>Log this creature</Button>}
+        {logEnabled && <Button onClick={logCreature}>Set as creature to log</Button>}
       </div>
       {logMessage && <p role="status" className="text-xs">{logMessage}</p>}
     </div>

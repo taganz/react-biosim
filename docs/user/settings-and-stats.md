@@ -68,16 +68,29 @@ Typical shapes:
 
 Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled. **Show water in cells** paints every empty cell of the world from grey (no water) to blue (full), by its water as a percentage of the cell's capacity. It is a viewer option: it is off when the app opens, it is not saved with the simulation, and it redraws the world at once, also while paused. Because it is drawn on the world canvas, GIFs recorded while it is on show the water too.
 
-### Under development: logger
+### Logger
 
-Expand this section to see the **logger**. It records creature events (births, moves, deaths, attacks…) and saves them as a `.csv` file. The buttons record the first generation, the next generation, or everything from the first generation on. **Creature to log** filters by creature id: `0` logs all creatures, `-10` logs creatures 0 to 9, and any other number logs that single creature. **Log this creature** in the Population tab fills this field with the selected creature. A Power BI report to analyse the log is in `public/analyze simlog.pbix`. What the file contains, row by row, is in [The log file](../reference/log-file.md).
+The **logger** records the events of the simulation (births, moves, deaths, attacks…) and saves them as a `.csv` file. A Power BI report to analyse the log is in `public/analyze simlog.pbix`. Every recording starts with `SETUP` rows that list all the settings (sensors and actions as 1 or 0) and the constants of the simulation. What the file contains, row by row, is in [The log file](../reference/log-file.md).
 
-**Logger options**, below it, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
+**Enable logger**, at the top, turns the logger on or off (it is off by default). While it is off, the rest of the section is hidden. Turning it off stops it and deletes the log; when the log has events that have not been saved, it asks first. It is saved with the simulation.
 
-- **Enable logger** turns the logger on or off. When it is off, the rest of the section is hidden.
-- **Level** chooses which rows go into the file. *Creature events and all totals* writes one row per creature event plus the totals. *Step totals…* writes, for each step, how many times each creature event happened, plus the generation totals and the world events. *Generation totals…* writes only the counts per generation and the world events. *World events only* writes only the population and water rows of the world. The totals count only the creatures that pass **Creature to log**.
-- **Maximum events** is the number of rows at which the logger pauses.
-- **Number format (locale)** sets the decimal separator of the values, for example `es-ES` (1,5) or `en-US` (1.5). Unknown locales are ignored.
+**Recording** shows what the logger is doing:
+
+- **Status**: *Stopped*, *Waiting for generation N to start* (a recording starts at step 1 of a generation; generation 1 needs **Restart**, and the status says so), *Recording generation N* (with *stops at its end* when it records one generation), *Stopped: the generation is recorded*, or *Stopped: the log reached Maximum events*.
+- **Events logged**, out of **Maximum events**, with *(not saved)* when there are events that have not been saved.
+- **Generations** and **Creatures** in the log.
+
+To record, choose **From** (*Next generation*, or *Generation 1*, which waits for a **Restart**) and **For** (*One generation*, or *Until stopped*), and press **Start recording**. While the logger is recording or waiting, the button is **Stop log**. **From** and **For** are not saved with the simulation.
+
+**Start recording** and **Delete log** delete the log; **Save log** downloads it. When the log has events that have not been saved, the first two ask first. **Save log** and **Delete log** are disabled while the log is empty.
+
+**Creature to log** chooses the creatures whose events are written, one row per event: *No creatures (only totals)*, the default, *All creatures*, *Creatures 1 to 9*, *Creatures 1 to 29*, or *One creature*, which shows a **Creature id** field. The step and generation totals count these creatures, or every creature with *No creatures*. It is saved with the simulation (`LOG_CREATURE_ID`), and the logger reads it when a recording starts: a change during a recording is used from the next one, and a note says so. **Set as creature to log** in the Population tab sets it to the selected creature. When the selection method gives the ids again every generation, a note says that the id is a different creature in each generation.
+
+A warning in red appears under **Creature to log** when the logger follows a single creature and it dies, with the generation and step of its death. No more events of it are logged. The warning goes away when a creature with that id is alive again, for example in the next generation of a method that restarts the ids.
+
+**Logger options**, below, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
+
+- **Step totals** writes, for each step, how many times each creature event happened (default on). Turn it off for long recordings: the generation totals and the world events are always written.
+- **Maximum events** is the number of rows at which the logger stops.
+- **Number format (locale)** sets the decimal separator of the values: `es-ES` (1,5) or `en-US` (1.5). A file saved with another locale keeps it, and it shows in the list.
 - **Events to record** turns each event type on or off. A creature event that is off is not counted in the totals either.
-
-**Log this creature** sets the level to *Creature events* for the logger only: the saved setting does not change until you choose a level here.

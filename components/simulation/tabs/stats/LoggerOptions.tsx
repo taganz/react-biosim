@@ -1,21 +1,11 @@
 "use client";
 
-import { useAtomValue, useSetAtom } from "jotai";
-import { simulationDataAtom, worldControllerAtom } from "../../store";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
-import TextInput from "@/components/global/inputs/TextInput";
-import { LogOptions } from "@/simulation/logger/EventLogger";
-import { AllowedLogEvents, LogEvent, LogLevel } from "@/simulation/logger/LogEvent";
+import { AllowedLogEvents, LogEvent } from "@/simulation/logger/LogEvent";
 import useWorldValue from "@/hooks/useWorldValue";
-
-const LEVEL_OPTIONS: [LogLevel, string][] = [
-  [LogLevel.CREATURE, "Creature events and all totals"],
-  [LogLevel.STEP, "Step totals, generation totals and world events"],
-  [LogLevel.GENERATION, "Generation totals and world events"],
-  [LogLevel.WORLD, "World events only"],
-];
+import useSetLogOptions from "./useSetLogOptions";
 
 const CREATURE_EVENTS: LogEvent[] = [
   LogEvent.INFO,
@@ -35,21 +25,16 @@ const WORLD_EVENTS: LogEvent[] = [LogEvent.GENERATION_START, LogEvent.GENERATION
 
 const NO_EVENTS = {} as AllowedLogEvents;
 
-function isSupportedLocale(locale: string): boolean {
-  try {
-    return Intl.NumberFormat.supportedLocalesOf(locale).length > 0;
-  } catch {
-    return false;
-  }
-}
+// the decimal separator of the values; a file can bring another locale, which is kept in the list
+const LOCALES: [string, string][] = [
+  ["es-ES", "es-ES (1,5)"],
+  ["en-US", "en-US (1.5)"],
+];
 
-// Logger settings (LOG_* constants). They apply at once to the running simulation,
-// and to the Settings draft so that Update simulation and Restart keep them.
+// Logger settings (LOG_* constants), see useSetLogOptions; Enable logger is in LoggerPanel
 export default function LoggerOptions() {
-  const worldController = useAtomValue(worldControllerAtom);
-  const setSimulationData = useSetAtom(simulationDataAtom);
-  const logEnabled = useWorldValue((world) => Boolean(world.simData.constants.LOG_ENABLED), false);
-  const logLevel = useWorldValue((world) => world.eventLogger.logLevel, LogLevel.STEP);
+  const setOptions = useSetLogOptions();
+  const stepTotals = useWorldValue((world) => world.simData.constants.LOG_STEP_TOTALS !== false, true);
   const maxEvents = useWorldValue((world) => world.eventLogger.maxEvents, 0);
   const locale = useWorldValue((world) => String(world.simData.constants.LOG_LOCALE_STRING ?? ""), "");
   // the constants object is replaced on every change, so the reference is stable in between
@@ -57,16 +42,6 @@ export default function LoggerOptions() {
     (world) => (world.simData.constants.LOG_ALLOWED_EVENTS as AllowedLogEvents | undefined) ?? NO_EVENTS,
     NO_EVENTS
   );
-
-  const setOptions = (options: Partial<LogOptions>) => {
-    if (!worldController) return;
-    const previous = worldController.simData;
-    const updated = worldController.setLogOptions(options);
-    // with no pending changes the draft is the running simData, and it stays so
-    setSimulationData((prev) =>
-      prev === previous ? updated : { ...prev, constants: { ...prev.constants, ...options } }
-    );
-  };
 
   const setEventAllowed = (event: LogEvent, allowed: boolean) =>
     setOptions({ LOG_ALLOWED_EVENTS: { ...allowedEvents, [event]: allowed } });
@@ -83,59 +58,53 @@ export default function LoggerOptions() {
 
   return (
     <div className="flex flex-col gap-4">
-      <CheckboxInput
-        id="log-enabled"
-        label="Enable logger"
-        checked={logEnabled}
-        onChange={(checked) => setOptions({ LOG_ENABLED: checked })}
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <NumberInput
+          label="Maximum events"
+          value={maxEvents}
+          onChange={(value) => setOptions({ LOG_EVENTLOGGER_MAX_EVENTS: value })}
+          min={1}
+          integer
+        />
+        <SelectInput
+          label="Number format (locale)"
+          value={locale}
+          onChange={(value) => setOptions({ LOG_LOCALE_STRING: value })}
+        >
+          {LOCALES.map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+          {!LOCALES.some(([value]) => value === locale) && <option value={locale}>{locale}</option>}
+        </SelectInput>
+      </div>
+      <p className="text-xs">
+        The logger stops when it reaches the maximum. The locale sets the decimal separator of the values.
+      </p>
 
-      {logEnabled && (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <SelectInput
-              label="Level"
-              value={logLevel}
-              onChange={(value) => setOptions({ LOG_LEVEL: value as LogLevel })}
-            >
-              {LEVEL_OPTIONS.map(([level, label]) => (
-                <option key={level} value={level}>{label}</option>
-              ))}
-            </SelectInput>
-            <NumberInput
-              label="Maximum events"
-              value={maxEvents}
-              onChange={(value) => setOptions({ LOG_EVENTLOGGER_MAX_EVENTS: value })}
-              min={1}
-              integer
-            />
-            <TextInput
-              label="Number format (locale)"
-              value={locale}
-              onChange={(value) => {
-                // an unknown locale would make toLocaleString throw while logging
-                if (isSupportedLocale(value)) setOptions({ LOG_LOCALE_STRING: value });
-              }}
-            />
-          </div>
-          <p className="text-xs">
-            The logger pauses when it reaches the maximum. The locale sets the decimal separator of the
-            values, for example es-ES (1,5) or en-US (1.5).
-          </p>
+      <div className="flex flex-col gap-1">
+        <CheckboxInput
+          id="log-step-totals"
+          label="Step totals"
+          checked={stepTotals}
+          onChange={(checked) => setOptions({ LOG_STEP_TOTALS: checked })}
+        />
+        <p className="text-xs">
+          How many times each creature event happened in each step. Turn them off for long recordings: the
+          generation totals and the world events are always written.
+        </p>
+      </div>
 
-          <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 font-bold">Events to record</legend>
-            <p className="text-xs">Creature events (also counted in the step and generation totals):</p>
-            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-              {CREATURE_EVENTS.map(eventCheckbox)}
-            </div>
-            <p className="text-xs">World events:</p>
-            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-              {WORLD_EVENTS.map(eventCheckbox)}
-            </div>
-          </fieldset>
-        </>
-      )}
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 font-bold">Events to record</legend>
+        <p className="text-xs">Creature events (also counted in the step and generation totals):</p>
+        <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+          {CREATURE_EVENTS.map(eventCheckbox)}
+        </div>
+        <p className="text-xs">World events:</p>
+        <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+          {WORLD_EVENTS.map(eventCheckbox)}
+        </div>
+      </fieldset>
     </div>
   );
 }

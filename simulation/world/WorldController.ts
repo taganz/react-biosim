@@ -33,6 +33,8 @@ export default class WorldController {
   eventLogger : EventLogger;
   worldWater : WorldWater;
   simData : SimulationData;
+  /** the configuration the run started (or was loaded) with; Update simulation changes simData but not this */
+  private runStartSimData? : SimulationData;
 
   // initial values
   simCode: string = "XXX";
@@ -104,10 +106,12 @@ export default class WorldController {
       setSeed(this.seed);
     }
     this.simData = sim;
+    this.runStartSimData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects; 
+    // a restart that repeats the run gets the running code, which stays random
+    this.isSimCodeRandom = simCode === undefined || (simCode === this.simCode && this.isSimCodeRandom);
     this.simCode = simCode ?? generateRandomString(sim.constants.SIM_CODE_LENGTH);
-    this.isSimCodeRandom = simCode === undefined;
     sim.worldControllerData.simCode = this.simCode;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
@@ -124,6 +128,7 @@ export default class WorldController {
     this.totalTime = 0;
   
   
+    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -137,13 +142,14 @@ export default class WorldController {
 
   /**
    * The code a restart with the Settings draft should use: the draft code if the user
-   * chose it (now or in an earlier update), or if the draft is the running configuration
-   * with a fixed seed, so the restart repeats the same simulation. Otherwise undefined,
+   * chose it (now or in an earlier update), or if the draft is the configuration the run
+   * started with and has a fixed seed, so the restart repeats the same simulation. Settings
+   * applied with Update simulation make it another simulation. Otherwise undefined,
    * for a new random code.
    */
   public restartSimCode(draft: SimulationData): string | undefined {
     const draftCode = draft.worldControllerData.simCode;
-    const repeatsRun = draft === this.simData && draft.worldControllerData.seed !== undefined;
+    const repeatsRun = draft === this.runStartSimData && draft.worldControllerData.seed !== undefined;
     return draftCode !== this.simCode || !this.isSimCodeRandom || repeatsRun ? draftCode : undefined;
   }
 
@@ -156,6 +162,7 @@ export default class WorldController {
 
     this.restoreRandom(sim.worldControllerData);
     this.simData = sim;
+    this.runStartSimData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
@@ -177,6 +184,7 @@ export default class WorldController {
     this.lastGenerationDuration = sim.worldControllerData.lastGenerationDuration;
     this.totalTime = sim.worldControllerData.totalTime;
 
+    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -200,6 +208,7 @@ export default class WorldController {
     // a hot change goes on with the same random numbers
     if (!creatures) {
       this.restoreRandom(sim.worldControllerData);
+      this.runStartSimData = sim;
     }
     this.simData = sim;
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
@@ -244,6 +253,7 @@ export default class WorldController {
     this.totalTime = sim.worldControllerData.totalTime;
 
   
+    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -385,6 +395,10 @@ export default class WorldController {
   private async endGeneration(runId: number): Promise<void> {
 
     this.logEndGeneration();
+    if (!this.generations.isContinuous) {
+      // selected now so that the survivors row belongs to the generation that ends
+      this.log(LogEvent.GENERATION_END, "survivors", this.generations.selectSurvivors());
+    }
 
     // Small pause
     if (this.pauseBetweenGenerations > 0) {
@@ -505,9 +519,11 @@ export default class WorldController {
     this.eventLogger.pause();
     this.notifyStateChange();
   }
-  resumeLog() : void {
-    this.eventLogger.resume();
+  // false if the log is full
+  resumeLog() : boolean {
+    const resumed = this.eventLogger.resume();
     this.notifyStateChange();
+    return resumed;
   }
 
   /**
@@ -516,9 +532,16 @@ export default class WorldController {
    * Returns the new simData.
    */
   setLogOptions(options: Partial<LogOptions>) : SimulationData {
+    // logger options do not change the simulation, so a restart still repeats the run
+    const isRunStart = this.simData === this.runStartSimData;
     this.simData = {...this.simData, constants: {...this.simData.constants, ...options}};
-    if (options.LOG_LEVEL !== undefined) this.eventLogger.setLogLevel(options.LOG_LEVEL);
+    if (isRunStart) this.runStartSimData = this.simData;
     if (options.LOG_EVENTLOGGER_MAX_EVENTS !== undefined) this.eventLogger.setMaxEvents(options.LOG_EVENTLOGGER_MAX_EVENTS);
+    // turning the logger off stops it and deletes the log
+    if (options.LOG_ENABLED === false) {
+      this.eventLogger.pause();
+      this.eventLogger.deleteLog();
+    }
     this.notifyStateChange();
     return this.simData;
   }

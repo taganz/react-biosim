@@ -1,5 +1,5 @@
 import { LogLevel, LogEvent } from "@/simulation/logger/LogEvent";
-import EventLogger from "@/simulation/logger/EventLogger";
+import EventLogger, { LOG_NO_CREATURES, LoggerState } from "@/simulation/logger/EventLogger";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationCallEvent } from "@/simulation/logger/EventLogger";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
@@ -34,7 +34,7 @@ describe('EventLogger', () => {
               // -- log 
             LOG_ENABLED : true,  // main switch for logging
             //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
-            LOG_LEVEL : LogLevel.CREATURE, 
+            LOG_STEP_TOTALS : true,
             LOG_CREATURE_ID : 0,   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
             LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
             LOG_LOCALE_STRING : 'es-ES',
@@ -259,8 +259,8 @@ describe('EventLogger', () => {
     });
 
 
-    test('logEvent() - STEP level records step totals but not creature rows', () => {
-        logger.setLogLevel(LogLevel.STEP);
+    test('logEvent() - no creatures records step totals of every creature but not creature rows', () => {
+        worldControllerMock.simData.constants.LOG_CREATURE_ID = LOG_NO_CREATURES;
         logger.resume();
         worldControllerMock.currentGen = 2;
         logger.logEvent({...mockEvent, creatureId: 1});
@@ -273,8 +273,9 @@ describe('EventLogger', () => {
         expect(log.includes("STEP TOTALS;1;2;1;;;;BIRTH;massAtBirth sum;2;;")).toBeTruthy();
     });
 
-    test('logEvent() - GENERATION level records generation totals only', () => {
-        logger.setLogLevel(LogLevel.GENERATION);
+    test('logEvent() - no creatures and no step totals records generation totals only', () => {
+        worldControllerMock.simData.constants.LOG_CREATURE_ID = LOG_NO_CREATURES;
+        worldControllerMock.simData.constants.LOG_STEP_TOTALS = false;
         logger.resume();
         worldControllerMock.currentGen = 2;
         logger.logEvent({...mockEvent, creatureId: 1});
@@ -292,12 +293,11 @@ describe('EventLogger', () => {
 
     test('setLogOptions() - replaces simData and updates the logger', () => {
         const previous = worldControllerMock.simData;
-        const updated = worldControllerMock.setLogOptions({LOG_LEVEL: LogLevel.WORLD, LOG_EVENTLOGGER_MAX_EVENTS: 5});
+        const updated = worldControllerMock.setLogOptions({LOG_STEP_TOTALS: false, LOG_EVENTLOGGER_MAX_EVENTS: 5});
         expect(updated).not.toBe(previous);
         expect(worldControllerMock.simData).toBe(updated);
-        expect(updated.constants.LOG_LEVEL).toBe(LogLevel.WORLD);
-        expect(previous.constants.LOG_LEVEL).toBe(LogLevel.CREATURE);
-        expect(worldControllerMock.eventLogger.logLevel).toBe(LogLevel.WORLD);
+        expect(updated.constants.LOG_STEP_TOTALS).toBe(false);
+        expect(previous.constants.LOG_STEP_TOTALS).toBe(true);
         expect(worldControllerMock.eventLogger.maxEvents).toBe(5);
     });
 
@@ -591,5 +591,204 @@ describe('EventLogger', () => {
         expect(log.includes('genome sum')).toBeFalsy();
     });
 
-});
+    test('noteCreatureDeath() - remembers when the logged creature dies, and nothing for other creatures', () => {
+        (logger as any).logCreatureId = 5;
+        worldControllerMock.currentGen = 3;
+        worldControllerMock.currentStep = 40;
+        logger.noteCreatureDeath(6);
+        expect(logger.creatureDeathGen).toBe(0);
+        logger.noteCreatureDeath(5);
+        expect(logger.creatureDeathGen).toBe(3);
+        expect(logger.creatureDeathStep).toBe(40);
+    });
 
+    test('noteCreatureDeath() - ignores deaths when the logger follows a range of creatures', () => {
+        (logger as any).logCreatureId = -10;
+        logger.noteCreatureDeath(5);
+        expect(logger.creatureDeathGen).toBe(0);
+    });
+
+    describe('Creature to log', () => {
+        test('is read from LOG_CREATURE_ID when a recording starts', () => {
+            worldControllerMock.simData.constants.LOG_CREATURE_ID = 5;
+            logger.resume();
+            logger.logEvent({...mockEvent, creatureId: 5});
+            logger.logEvent({...mockEvent, creatureId: 6});
+            expect(logger.creatureId).toBe(5);
+            expect(logger.logCount).toBe(1);
+        });
+
+        test('a change during a recording is used from the next recording', () => {
+            logger.resume();
+            logger.logEvent({...mockEvent, creatureId: 5});
+            worldControllerMock.simData.constants.LOG_CREATURE_ID = 5;
+            logger.logEvent({...mockEvent, creatureId: 6});
+            expect(logger.creatureId).toBe(0);
+            expect(logger.logCount).toBe(2);
+
+            logger.recordNextGeneration();
+            worldControllerMock.currentGen = 2;
+            logger.logEvent({...mockEvent, creatureId: 6});
+            logger.logEvent({...mockEvent, creatureId: 5});
+            expect(logger.creatureId).toBe(5);
+            expect(logger.logCount).toBe(1);
+        });
+    });
+
+    describe('state', () => {
+        test('off when LOG_ENABLED is false, paused on creation', () => {
+            expect(logger.state).toBe(LoggerState.PAUSED);
+            worldControllerMock.simData.constants.LOG_ENABLED = false;
+            expect(logger.state).toBe(LoggerState.OFF);
+        });
+
+        test('waits for the start of a generation, records it, and finishes at its end', () => {
+            worldControllerMock.currentStep = 2;
+            logger.recordNextGeneration();
+            expect(logger.state).toBe(LoggerState.WAITING);
+            expect(logger.firstGenerationToWaitFor).toBe(2);
+
+            worldControllerMock.currentGen = 2;
+            worldControllerMock.currentStep = 1;
+            logger.logEvent(mockEvent);
+            expect(logger.state).toBe(LoggerState.RECORDING);
+            expect(logger.stopsAtEndOfGeneration).toBeTruthy();
+
+            worldControllerMock.currentGen = 3;
+            logger.logEvent(mockEvent);
+            expect(logger.state).toBe(LoggerState.FINISHED);
+            expect(logger.firstGenerationLogged).toBe(2);
+            expect(logger.lastGenerationLogged).toBe(2);
+        });
+
+        test('records several generations and remembers the range', () => {
+            logger.recordFromFirstGeneration();
+            logger.logEvent(mockEvent);
+            worldControllerMock.currentGen = 2;
+            logger.logEvent(mockEvent);
+            expect(logger.stopsAtEndOfGeneration).toBeFalsy();
+            expect(logger.firstGenerationLogged).toBe(1);
+            expect(logger.lastGenerationLogged).toBe(2);
+        });
+
+        test('max reached when the log is full, and resume() refuses', () => {
+            logger.resume();
+            for (let i = 0; i < 11; i++) logger.logEvent(mockEvent);
+            expect(logger.state).toBe(LoggerState.MAX_REACHED);
+            expect(logger.resume()).toBeFalsy();
+            expect(logger.state).toBe(LoggerState.MAX_REACHED);
+        });
+
+        test('pause() is paused, whatever stopped it before', () => {
+            logger.resume();
+            for (let i = 0; i < 11; i++) logger.logEvent(mockEvent);
+            logger.pause();
+            expect(logger.state).toBe(LoggerState.PAUSED);
+        });
+    });
+
+    test('startRecording() - from the next generation until stopped, deleting the log', () => {
+        logger.resume();
+        logger.logEvent(mockEvent);
+        worldControllerMock.currentStep = 2;
+        logger.startRecording(false, false);
+        expect(logger.logCount).toBe(0);
+        expect(logger.firstGenerationToWaitFor).toBe(2);
+        for (const gen of [2, 3, 4]) {
+            worldControllerMock.currentGen = gen;
+            worldControllerMock.currentStep = 1;
+            logger.logEvent(mockEvent);
+        }
+        expect(logger.state).toBe(LoggerState.RECORDING);
+        expect(logger.firstGenerationLogged).toBe(2);
+        expect(logger.lastGenerationLogged).toBe(4);
+    });
+
+    test('setLogOptions() - turning the logger off stops it and deletes the log', () => {
+        const eventLogger = worldControllerMock.eventLogger;
+        eventLogger.resume();
+        eventLogger.logEvent(mockEvent);
+        expect(eventLogger.logCount).toBe(1);
+        worldControllerMock.setLogOptions({LOG_ENABLED: false});
+        expect(eventLogger.logCount).toBe(0);
+        expect(eventLogger.isPaused).toBeTruthy();
+    });
+
+    test('getLogBlob() - holds the same text as getLog()', async () => {
+        logger.resume();
+        logger.logEvent(mockEvent);
+        expect(await logger.getLogBlob().text()).toBe(logger.getLog());
+    });
+
+    test('hasUnsavedRows - true with events not saved, false after markSaved() or deleteLog()', () => {
+        expect(logger.hasUnsavedRows).toBeFalsy();
+        logger.resume();
+        logger.logEvent(mockEvent);
+        expect(logger.hasUnsavedRows).toBeTruthy();
+        logger.markSaved();
+        expect(logger.hasUnsavedRows).toBeFalsy();
+        logger.logEvent(mockEvent);
+        expect(logger.hasUnsavedRows).toBeTruthy();
+        logger.deleteLog();
+        expect(logger.hasUnsavedRows).toBeFalsy();
+    });
+
+    describe('SETUP rows', () => {
+        const setupRows = (log: string) => log.split('\n').filter((line) => line.startsWith('SETUP;'));
+
+        test('a recording starts with the settings and the constants, whatever the rows and the events', () => {
+            simulationData.constants.LOG_CREATURE_ID = LOG_NO_CREATURES;
+            simulationData.constants.LOG_STEP_TOTALS = false;
+            simulationData.constants.LOG_ALLOWED_EVENTS = {...simulationData.constants.LOG_ALLOWED_EVENTS, [LogEvent.BIRTH]: false};
+            simulationData.worldGenerationsData = {
+                ...simulationData.worldGenerationsData,
+                enabledSensors: ['HorizontalPosition'],
+                enabledActions: ['MoveNorth'],
+            };
+            logger.resume();
+            // BIRTH is off, so the recording starts with the next event
+            logger.logEvent(mockEvent);
+            logger.logEvent({...mockEvent, eventType: LogEvent.MOVE});
+
+            const lines = logger.getLog().split('\n');
+            // the header, then the SETUP block
+            expect(lines[1].startsWith('SETUP;1;1;1;;;;SETTING;simCode;0;0;')).toBeTruthy();
+            const rows = setupRows(logger.getLog());
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;size;' + simulationData.worldControllerData.size + ';0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;sensor.HorizontalPosition;1;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;sensor.VerticalPosition;0;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;action.MoveNorth;1;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;action.MoveSouth;0;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;SETTING;populationStrategy;0;0;' + simulationData.worldGenerationsData.populationStrategy.name);
+            expect(rows).toContain('SETUP;1;1;1;;;;CONSTANT;LOG_CREATURE_ID;-1;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;CONSTANT;LOG_STEP_TOTALS;0;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;CONSTANT;LOG_ALLOWED_EVENTS.BIRTH;0;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;CONSTANT;LOG_ALLOWED_EVENTS.MOVE;1;0;');
+            expect(rows).toContain('SETUP;1;1;1;;;;CONSTANT;REPRODUCTION_COST_PER_MASS_TRY;0,1;0;');
+            // and they do not count as events
+            expect(logger.logCount).toBe(0);
+        });
+
+        test('one row per sensor and per action, in table order', () => {
+            logger.resume();
+            logger.logEvent(mockEvent);
+            const names = setupRows(logger.getLog()).map((line) => line.split(';')[8]);
+            const sensors = Object.keys(worldControllerMock.generations.sensors.data).map((name) => `sensor.${name}`);
+            const actions = Object.keys(worldControllerMock.generations.actions.data).map((name) => `action.${name}`);
+            expect(names.filter((name) => name.startsWith('sensor.'))).toEqual(sensors);
+            expect(names.filter((name) => name.startsWith('action.'))).toEqual(actions);
+        });
+
+        test('logSetup() writes them again while recording, and nothing when not recording', () => {
+            logger.logSetup();
+            expect(setupRows(logger.getLog())).toHaveLength(0);
+
+            logger.resume();
+            logger.logEvent(mockEvent);
+            const count = setupRows(logger.getLog()).length;
+            logger.logSetup();
+            expect(setupRows(logger.getLog())).toHaveLength(2 * count);
+        });
+    });
+
+});

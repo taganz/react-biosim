@@ -35,8 +35,10 @@ export const userSelectCreatureAtom = atom(null, (get, set, creature: Creature |
     set(waitForCreatureTextAtom, "");
   }
 });
-// the "Creature to log" field of the logger; also set from the Population tab
-export const logCreatureIdAtom = atom(0);
+
+// when and for how long Start recording records, in Stats → Logger; not saved
+export const logFromFirstGenerationAtom = atom(false);
+export const logOneGenerationAtom = atom(true);
 
 export const simulationDataAtom = atom(SIMULATION_DATA_DEFAULT);
 //export const simulationConstantsDataAtom = atom(SIMULATION_DATA_DEFAULT.constants);

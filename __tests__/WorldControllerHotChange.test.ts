@@ -123,10 +123,47 @@ describe("WorldController hot change", () => {
     // with changed settings it is another simulation, so it gets a new code
     const changed = { ...fixed, worldControllerData: { ...fixed.worldControllerData, stepsPerGen: 500 } };
     expect(worldController.restartSimCode(changed)).toBeUndefined();
+    // also when the changes were applied with Update simulation before the restart
+    const rainy = { ...fixed, waterData: { ...fixed.waterData, waterRainMaxPerCell: 7 } };
+    worldControllerSimDataHotChange(worldController, rainy);
+    expect(worldController.restartSimCode(rainy)).toBeUndefined();
+    worldController.startRun(rainy, worldController.restartSimCode(rainy));
+    worldController.pause();
+    expect(worldController.simCode).not.toBe(randomCode);
+    // and once restarted with them, a new restart repeats that run
+    expect(worldController.restartSimCode(rainy)).toBe(worldController.simCode);
     // and without a fixed seed every restart is a new simulation
     const randomSeed = { ...fixed, worldControllerData: { ...fixed.worldControllerData, seed: undefined } };
     worldController.startRun(randomSeed);
     worldController.pause();
     expect(worldController.restartSimCode(randomSeed)).toBeUndefined();
+  });
+
+  test("a restart that repeats the run does not make its code a chosen one", () => {
+    const fixed = { ...simulationData, worldControllerData: { ...simulationData.worldControllerData, seed: 42 } };
+    worldController.startRun(fixed);
+    worldController.startRun(fixed, worldController.restartSimCode(fixed));
+    worldController.pause();
+    expect(worldController.isSimCodeRandom).toBe(true);
+
+    // so a later change still gets a new code
+    const rainy = { ...fixed, waterData: { ...fixed.waterData, waterRainMaxPerCell: 7 } };
+    expect(worldController.restartSimCode(rainy)).toBeUndefined();
+  });
+
+  test("logger options do not stop a restart from repeating the run", () => {
+    const fixed = { ...simulationData, worldControllerData: { ...simulationData.worldControllerData, seed: 42 } };
+    worldController.startRun(fixed);
+    worldController.pause();
+    const code = worldController.simCode;
+
+    const logged = worldController.setLogOptions({ LOG_ENABLED: true });
+    expect(worldController.restartSimCode(logged)).toBe(code);
+
+    // after a real change applied with Update simulation they do not hide it
+    const rainy = { ...logged, waterData: { ...logged.waterData, waterRainMaxPerCell: 7 } };
+    worldControllerSimDataHotChange(worldController, rainy);
+    const relogged = worldController.setLogOptions({ LOG_ENABLED: false });
+    expect(worldController.restartSimCode(relogged)).toBeUndefined();
   });
 });

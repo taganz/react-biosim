@@ -55,4 +55,14 @@ describe("runHeadless", () => {
     expect(result.status).toBe("timeout");
     expect(result.worldController.isPaused).toBe(true);
   });
+
+  test("the log has the survivors of each generation in its generation", async () => {
+    const result = await runHeadless({ base: "startup", generations: 3, overrides: small, log: true, seed: 1 });
+    // LogLevel;StepIndex;CurrentGen;CurrentStep;...;EventType;ParamName;ParamValue;...
+    const survivors = result.worldController.eventLogger.getLog().split("\n")
+      .map((line) => line.split(";"))
+      .filter((cols) => cols[7] === "GENERATION_END" && cols[8] === "survivors")
+      .map((cols) => [Number(cols[2]), Number(cols[3]), Number(cols[9])]);
+    expect(survivors).toEqual(result.rows.map((row) => [row.generation, 5, row.survivorCount]));
+  });
 });

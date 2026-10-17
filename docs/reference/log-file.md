@@ -1,15 +1,15 @@
 # The log file
 
-The event logger records what happens during a run and saves it as a CSV file. This page describes the file: its columns, the four kinds of rows, every event the engine writes, and the exact rows of one creature when every option is on. How to use the logger from the UI is in [Settings and stats](../user/settings-and-stats.md#under-development-logger). The code is in [EventLogger.ts](../../simulation/logger/EventLogger.ts) and [LogEvent.ts](../../simulation/logger/LogEvent.ts).
+The event logger records what happens during a run and saves it as a CSV file. This page describes the file: its columns, the five kinds of rows, every event the engine writes, and the exact rows of one creature when every option is on. How to use the logger from the UI is in [Settings and stats](../user/settings-and-stats.md#under-development-logger). The code is in [EventLogger.ts](../../simulation/logger/EventLogger.ts) and [LogEvent.ts](../../simulation/logger/LogEvent.ts).
 
 ## The file
 
-**Save log** (*Stats → Under development*) downloads `sim <code> generation <n>.csv`, the same pattern as the `.sim`, GIF and PNG files: `<code>` is the simulation code and `<n>` the current generation. It is plain UTF-8 text:
+**Save log** (*Stats → Logger*) downloads `sim <code> generation <n>_creature <id>.csv`, the same pattern as the `.sim`, GIF and PNG files plus the creature filter: `<code>` is the simulation code, `<n>` the current generation and `<id>` the **Creature to log** of the last recording (`0`, `-10`, `-30` or a creature id). It is plain UTF-8 text:
 
 - The separator is `;`.
 - The first line is the header.
 - Numbers are formatted with the locale in **Number format (locale)** (`LOG_LOCALE_STRING`, default `es-ES`), with at most 2 decimals. With `es-ES` the decimal separator is a comma and numbers of 5 digits or more get a dot as thousands separator (`12.345,67`).
-- The log is kept in memory until **Delete log**. Recording again with one of the *Record…* buttons deletes it first; **Resume log** and **Log this creature** add to it.
+- The log is kept in memory until **Delete log**. **Start recording** deletes it first, and so does turning the logger off. They ask first when the log has events that have not been saved.
 
 A Power BI report to analyse it is in `public/analyze simlog.pbix`.
 
@@ -17,7 +17,7 @@ A Power BI report to analyse it is in `public/analyze simlog.pbix`.
 
 | Column | Content |
 |---|---|
-| `LogLevel` | The kind of row: `CREATURE`, `STEP TOTALS`, `GENERATION TOTALS` or `WORLD EVENTS` (see below). |
+| `LogLevel` | The kind of row: `SETUP`, `CREATURE`, `STEP TOTALS`, `GENERATION TOTALS` or `WORLD EVENTS` (see below). |
 | `StepIndex` | Counter of the steps recorded since recording started. It starts at 1 and goes up by one every time the step or the generation changes, so it keeps growing across generations. |
 | `CurrentGen` | Generation. |
 | `CurrentStep` | Step within the generation (1 to *Steps per generation*). Empty in generation totals. |
@@ -28,29 +28,53 @@ A Power BI report to analyse it is in `public/analyze simlog.pbix`.
 | `ParamName` | What the value is. Totals add ` sum` to it. |
 | `ParamValue` | First value. `0` when the event has no value. |
 | `ParamValue2` | Second value. `0` when the event has no second value; empty in totals. |
-| `ParamString` | A text value (direction, death cause, killer species). Empty when not used. |
+| `ParamString` | A text value (direction, death cause, killer species, a text setting). Empty when not used. |
 
 ## Kinds of rows
 
 | `LogLevel` | Written by | One row per… |
 |---|---|---|
+| `SETUP` | the logger | setting and constant, when a recording starts (see [Setup rows](#setup-rows)) |
 | `CREATURE` | `Creature.log()` | creature event |
 | `STEP TOTALS` | the logger | event type and `ParamName` that happened in a step |
 | `GENERATION TOTALS` | the logger | event type and `ParamName` that happened in a generation |
-| `WORLD EVENTS` | `WorldController.log()` | population and water value at the start of a generation, at the end of a step and at the end of a generation |
+| `WORLD EVENTS` | `WorldController.log()` | population and water value at the start of a generation, at the end of a step and at the end of a generation, and the survivors of each generation |
 
-**Level** (`LOG_LEVEL`) chooses which kinds are written. Each level writes its own rows and the ones below it in this list:
+Which kinds are written depends on two settings. `SETUP`, `GENERATION TOTALS` and `WORLD EVENTS` rows are always written.
 
-| Level | Creature | Step totals | Generation totals | World events |
-|---|:-:|:-:|:-:|:-:|
-| *Creature events and all totals* (`CREATURE`) | ✓ | ✓ | ✓ | ✓ |
-| *Step totals…* (`STEP`, default) | | ✓ | ✓ | ✓ |
-| *Generation totals…* (`GENERATION`) | | | ✓ | ✓ |
-| *World events only* (`WORLD`) | | | | ✓ |
+- `CREATURE` rows are written unless **Creature to log** (`LOG_CREATURE_ID`) is *No creatures* (`-1`, the default).
+- `STEP TOTALS` rows are written while **Step totals** (`LOG_STEP_TOTALS`, default on) is on.
+
+Files saved with the old `LOG_LEVEL` setting are converted when they are loaded: *Creature events* keeps the creature filter, *Step totals* becomes *No creatures*, and *Generation totals* or *World events only* become *No creatures* with **Step totals** off.
+
+### Setup rows
+
+A block of `SETUP` rows records the configuration the log was made with. It is written:
+
+- when a recording starts, before its first row: **Start recording**, at the step 1 where recording begins;
+- every time the run is set up (**Restart**, a loaded file or setup, **Update simulation**, the restart after an extinction) while the logger is recording. These currently pause the logger, unless a recording from *Generation 1* is waiting for it, so in practice the block comes with the start of the recording.
+
+They are always written, are not in **Events to record**, and do not count for **Maximum events** (nor for the number of events shown in Stats). They only need the logger to be enabled and recording.
+
+| Column | Content |
+|---|---|
+| `StepIndex`, `CurrentGen`, `CurrentStep` | Where the recording starts. |
+| `EventType` | `SETTING` for a value of the Settings tab, `CONSTANT` for a constant. |
+| `ParamName` | The key of the setting (`size`, `mutationProbability`…), `sensor.<name>` / `action.<name>`, or the name of the constant. Nested constants get a path: `LOG_ALLOWED_EVENTS.MOVE`, `POPULATION_DEFAULT_GENUS.0.probability`, `colors.obstacle`. |
+| `ParamValue` | The value of a number, up to 10 decimals; `1` or `0` for a checkbox or other true/false value; `0` for a text value. |
+| `ParamValue2` | `0`. |
+| `ParamString` | The value of a text setting or constant (`simCode`, `mutationMode`, `populationStrategy`, `LOG_LOCALE_STRING`…); empty for numbers. |
+
+The rows come in this order:
+
+1. **Settings** (`SETTING`), in the order of the Settings tab ([Parameters](parameters.md#settings-tab)): `simCode`, `phenotypeColorMode`, `metabolismEnabled`, `size`, `initialPopulation`, `stepsPerGen`, `seed` (`random` in `ParamString` when it is not fixed), `runSeed` (the seed this run uses), `simulationType`, `maxAge`, `populationStrategy`, `selectionMethod`, `initialGenomeSize`, `maxGenomeSize`, `maxNumberNeurons`, `mutationMode`, `mutationProbability`, `geneInsertionDeletionProbability`, `deletionRatio`; then one `sensor.<name>` row for every sensor and one `action.<name>` row for every action, in [table order](sensors-and-actions.md), with `1` if it is enabled and `0` if not; then the six water settings.
+2. **Constants** (`CONSTANT`): the upper case values of `worldControllerData` (`MASS_*`, `REPRODUCTION_*`, `MOVE_*`, `ATTACK_*`…), then everything in `constants` (`LOG_*`, selection percentages, `POPULATION_DEFAULT_*`, `SIM_CODE_LENGTH`, colours…).
+
+The values are those of the running simulation, not of the Settings draft.
 
 ### Totals
 
-A totals row **counts** events, it does not add their values: `METABOLISM;mass sum;37` means that 37 `METABOLISM` rows with `ParamName` `mass` happened in that step, whatever the masses were. Only creature events are counted, and only those that pass the creature filter and are switched on in **Events to record**, even when the level does not write creature rows. `BIRTH genome` is not counted: `BIRTH parentId` already counts the births.
+A totals row **counts** events, it does not add their values: `METABOLISM;mass sum;37` means that 37 `METABOLISM` rows with `ParamName` `mass` happened in that step, whatever the masses were. Only creature events are counted, and only those that pass the creature filter and are switched on in **Events to record**, also with *No creatures*, which writes no creature rows: then every creature is counted. `BIRTH genome` is not counted: `BIRTH parentId` already counts the births.
 
 The totals of a step are written when the first event of the next step arrives, with the generation and step they belong to. The totals of a generation are written in the same way, after the step totals of its last step.
 
@@ -58,12 +82,12 @@ The totals of a step are written when the first event of the next step arrives, 
 
 An event is written only if all of these hold:
 
-1. The logger is enabled (`LOG_ENABLED`) and recording, and has fewer rows than **Maximum events** (`LOG_EVENTLOGGER_MAX_EVENTS`). When it reaches the maximum it pauses.
+1. The logger is enabled (`LOG_ENABLED`) and recording, and has fewer rows than **Maximum events** (`LOG_EVENTLOGGER_MAX_EVENTS`). When it reaches the maximum it stops.
 2. Its event type is on in **Events to record** (`LOG_ALLOWED_EVENTS`).
-3. For creature events, the creature passes **Creature to log** (`LOG_CREATURE_ID`): `0` is every creature, `-10` ids 1 to 9, `-30` ids 1 to 29, any other number that id only.
-4. Its kind is written at the current level (totals still count the creature events that pass 1–3).
+3. For creature events, the creature passes **Creature to log** (`LOG_CREATURE_ID`): `-1` (*No creatures*) writes no creature rows, `0` is every creature, `-10` ids 1 to 9, `-30` ids 1 to 29, any other number that id only. The logger reads it when a recording starts; a change during a recording is used from the next one.
+4. Its kind is written: creature rows unless **Creature to log** is *No creatures*, step totals while **Step totals** is on (totals still count the creature events that pass 1–3).
 
-Recording starts at step 1 of a generation: the *Record…* buttons wait for step 1 of the first or the next generation, and **Resume log** and **Log this creature** for the next step 1. Events before that are dropped.
+Recording starts at step 1 of a generation: **Start recording** waits for step 1 of generation 1 or of the next generation, as chosen in **From**. Events before that are dropped.
 
 To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only written on steps that are multiples of 10 (10, 20, 30…). All other events are written on every step.
 
@@ -77,7 +101,6 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `BIRTH` | `genome` | `0` | `0` | the genome in hexadecimal: one 8-digit gene per group, separated by spaces | Right after `BIRTH parentId`. Same format as the genome you can copy in the species panel. |
 | `INFO` | `birth mass`, `birth gen`, … | see [INFO rows](#info-rows) | | | The creature is created. |
 | `INFO` | `dead mass`, `dead gen`, … | see [INFO rows](#info-rows) | | | The creature dies, after `DEAD`. |
-| `INFO` | ` mass`, ` gen`, … (leading space) | see [INFO rows](#info-rows) | | | **Log this creature** is pressed. Only kept if the simulation is at step 1 (see [Filters](#filters)). |
 | `METABOLISM` | `mass` | mass after the basal consumption | | | Every step (multiples of 10). |
 | `METABOLISM` | `basalConsumption` | mass spent on basal metabolism | | | Every step (multiples of 10). |
 | `METABOLISM` | `actionsExecutionConsumption` | mass spent on the actions of the brain | | | Every step (multiples of 10). |
@@ -98,7 +121,7 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 
 ### INFO rows
 
-`INFO` always comes as a block of 8 rows. `<when>` is `birth`, `dead`, or empty for **Log this creature**:
+`INFO` always comes as a block of 8 rows. `<when>` is `birth` or `dead`:
 
 | `ParamName` | `ParamValue` | `ParamValue2` |
 |---|---|---|
@@ -123,10 +146,11 @@ All with `LogLevel` `WORLD EVENTS` and empty creature columns:
 | `STEP_END` | `waterInCells`, `waterInCloud`, `waterInCreatures` | water in that part of the world | Same. |
 | `STEP_END` | `waterTotal` | sum of the three | Same. |
 | `GENERATION_END` | same 8 names as `STEP_END` | same values; the water after evaporation | Last step of a generation, after its `STEP_END` rows. |
+| `GENERATION_END` | `survivors` | creatures chosen by the selection method, the parents of the next generation | Right after the other `GENERATION_END` rows, still in the generation that ends. Not written in continuous simulations, which have no selection. |
 
 ## One creature with every option on
 
-This is what the log holds for a creature with **Level** at *Creature events and all totals*, every box in **Events to record** on, and **Creature to log** set to its id (or `0`).
+This is what the log holds for a creature with **Step totals** on, every box in **Events to record** on, and **Creature to log** set to its id (or `0`).
 
 ### At birth
 

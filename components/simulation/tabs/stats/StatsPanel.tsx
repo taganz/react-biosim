@@ -4,8 +4,7 @@ import { useCallback } from "react";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
 import WorldWaterStatus from "./WorldWaterStatus";
-import LoggerStatus from "./LoggerStatus";
-import LoggerOptions from "./LoggerOptions";
+import LoggerPanel from "./LoggerPanel";
 import RunTimes from "./RunTimes";
 import useWorldValue from "@/hooks/useWorldValue";
 
@@ -74,22 +73,7 @@ export default function StatsPanel() {
 
       <WorldWaterStatus/>
 
-      <details>
-        <summary className="cursor-pointer text-2xl font-bold">
-          Under development: logger
-        </summary>
-        <div className="mt-4 flex flex-col gap-6">
-          <section className="flex flex-col gap-2">
-            <h3 className="text-xl font-bold">Logger</h3>
-            <p>Logger creates a .csv file. A powerbi report is available in github public folder</p>
-            <LoggerStatus/>
-          </section>
-          <section className="flex flex-col gap-2">
-            <h3 className="text-xl font-bold">Logger options</h3>
-            <LoggerOptions/>
-          </section>
-        </div>
-      </details>
+      <LoggerPanel/>
   </div>
   );
 }

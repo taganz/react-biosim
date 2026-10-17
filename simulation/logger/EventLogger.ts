@@ -1,5 +1,6 @@
 import WorldController from '../world/WorldController';
 import {AllowedLogEvents, LogEvent, LogLevel} from "@/simulation/logger/LogEvent"
+import setupParams from "@/simulation/logger/setupParams";
 
 export interface SimulationCallEvent {
   logLevel: LogLevel;
@@ -13,13 +14,29 @@ export interface SimulationCallEvent {
   paramString: string;
 }
 
+// LOG_CREATURE_ID that writes no creature rows: only the totals, which count every creature
+export const LOG_NO_CREATURES = -1;
+
 // the LOG_* constants that can be changed while the simulation runs
 export interface LogOptions {
   LOG_ENABLED: boolean;
-  LOG_LEVEL: LogLevel;
+  LOG_CREATURE_ID: number;
+  LOG_STEP_TOTALS: boolean;
   LOG_EVENTLOGGER_MAX_EVENTS: number;
   LOG_LOCALE_STRING: string;
   LOG_ALLOWED_EVENTS: AllowedLogEvents;
+}
+
+/** What the logger is doing, for the UI */
+export enum LoggerState {
+  OFF = "off",
+  PAUSED = "paused",
+  // a recording was asked for, it starts at step 1 of a generation
+  WAITING = "waiting",
+  RECORDING = "recording",
+  MAX_REACHED = "max reached",
+  // the generations asked for are recorded
+  FINISHED = "finished",
 }
 
 interface SimulationEvent {
@@ -43,11 +60,19 @@ export default class EventLogger {
   private worldController : WorldController;
   private logThreshold: number;
   private log: SimulationEvent[] = [];
+  // SETUP rows in the log: they do not count for the maximum
+  private setupRowCount = 0;
   private stepTotals : [LogEvent, string][]=[];
   private genTotals : [LogEvent, string][]=[];
   private paused = true; 
+  // why the logger paused by itself
+  private stopReason: LoggerState.MAX_REACHED | LoggerState.FINISHED | null = null;
+  // rows of the log (with the SETUP rows) when it was last saved
+  private savedRowCount = 0;
   private logCreatureId : number;
-  private currentLogLevel : LogLevel;
+  // when the single creature being logged died (0 if it has not died)
+  private logCreatureDeathGen = 0;
+  private logCreatureDeathStep = 0;
   private waitingForFirstGenerationRecording = false;
   
   
@@ -56,6 +81,7 @@ export default class EventLogger {
   private generationsToRecord = 1;
 
   private stepIndex = 0;   
+  private firstGenLogged = 0;
   private lastGenLogged  = 0;
   private lastStepLogged = 0;
    
@@ -63,7 +89,6 @@ export default class EventLogger {
   constructor(worldController : WorldController, logThreshold?: number) {
     this.worldController = worldController;
     this.logCreatureId = this.worldController.simData.constants.LOG_CREATURE_ID;
-    this.currentLogLevel = this.worldController.simData.constants.LOG_LEVEL;
     if (logThreshold) {
       this.logThreshold = logThreshold;
     } else {
@@ -76,25 +101,53 @@ export default class EventLogger {
   get isPaused() : boolean {
     return this.paused == true;
   }
+  /** rows in the log, without the SETUP rows */
   get logCount() : number {
-    return this.log.length;
+    return this.log.length - this.setupRowCount;
   }
   get thresholdReached(): boolean {
-    return  this.log.length >= this.logThreshold;
+    return  this.logCount >= this.logThreshold;
   }
   get creatureId() : number {
     return this.logCreatureId;
   }
-  get logLevel() : LogLevel {
-    return this.currentLogLevel;
+  get creatureDeathGen() : number {
+    return this.logCreatureDeathGen;
+  }
+  get creatureDeathStep() : number {
+    return this.logCreatureDeathStep;
   }
   get maxEvents() : number {
     return this.logThreshold;
   }
-
-  public setLogLevel(level: LogLevel) {
-    this.currentLogLevel = level;
+  get state() : LoggerState {
+    if (!this.worldController.simData.constants.LOG_ENABLED) return LoggerState.OFF;
+    if (this.paused) return this.stopReason ?? LoggerState.PAUSED;
+    return this.recording ? LoggerState.RECORDING : LoggerState.WAITING;
   }
+  /** the generation the recording waits for: 1 waits for a restart */
+  get firstGenerationToWaitFor() : number {
+    return this.firstGenerationToRecord;
+  }
+  /** the first and the last generation in the log (0 when it is empty) */
+  get firstGenerationLogged() : number {
+    return this.firstGenLogged;
+  }
+  get lastGenerationLogged() : number {
+    return this.lastGenLogged;
+  }
+  /** the recording stops at the end of the generation it is recording */
+  get stopsAtEndOfGeneration() : boolean {
+    return this.recording && this.generationsToRecord == 0;
+  }
+  /** the log has events that have not been saved */
+  get hasUnsavedRows() : boolean {
+    return this.logCount > 0 && this.log.length > this.savedRowCount;
+  }
+  public markSaved() {
+    this.savedRowCount = this.log.length;
+  }
+
   public setMaxEvents(maxEvents: number) {
     this.logThreshold = maxEvents;
   }
@@ -110,67 +163,73 @@ export default class EventLogger {
 
   public pause() {
     this.paused = true;
+    this.stopReason = null;
   }
 
-  // start recording from next generation continuous
-  public resume() {
-    if (this.logCount > this.logThreshold) {
+  // start recording from next generation continuous; false if the log is full
+  public resume() : boolean {
+    if (this.thresholdReached) {
       console.warn("EventLogger, can't resume max logCount attained: ", this.logThreshold);
+      return false;
     } 
     else {
       this.paused = false;
+      this.stopReason = null;
       this.firstGenerationToRecord = this.worldController.currentGen + 1;
       this.recording = false;
       this.generationsToRecord = 999999999;
+      return true;
     }
   }
 
   public deleteLog() {
     this.stepIndex = 0;
     this.lastStepLogged = 0;
+    this.firstGenLogged = 0;
     this.lastGenLogged = 0;
     this.log = [];
+    this.setupRowCount = 0;
+    this.savedRowCount = 0;
     this.stepTotals = [];
     this.genTotals =[];
   }
 
-  public startLoggingCreatureId(id: number) {
-    this.resume();
-    this.currentLogLevel = LogLevel.CREATURE;
-    this.logCreatureId = id;
-    this.worldController.generations.creatureById(this.logCreatureId).logBasicData();  
+  /** remembers when the single creature being logged dies, also while the logger is paused */
+  public noteCreatureDeath(id: number) {
+    if (this.logCreatureId <= 0 || id != this.logCreatureId) return;
+    this.logCreatureDeathGen = this.worldController.currentGen;
+    this.logCreatureDeathStep = this.worldController.currentStep;
+  }
+
+  /**
+   * Deletes the log and records from step 1 of generation 1 (after a restart) or of the next
+   * generation, for one generation or until the logger is stopped.
+   */
+  public startRecording(fromFirstGeneration: boolean, oneGeneration: boolean) {
+    this.deleteLog();
+    this.paused = false;
+    this.stopReason = null;
+    this.firstGenerationToRecord = fromFirstGeneration ? 1 : this.worldController.currentGen + 1;
+    this.recording = false;
+    this.generationsToRecord = oneGeneration ? 1 : 999999999;
+    this.waitingForFirstGenerationRecording = fromFirstGeneration;
   }
 
   // record 1 generation
   public recordNextGeneration() {
-    this.deleteLog();
-    this.paused = false;
-    this.firstGenerationToRecord = this.worldController.currentGen + 1;
-    this.recording = false;
-    this.generationsToRecord = 1;
-    this.waitingForFirstGenerationRecording = false;
+    this.startRecording(false, true);
   }
-
   public recordFirstGeneration() {
-    this.deleteLog();
-    this.paused = false;
-    this.firstGenerationToRecord = 1;
-    this.recording = false;
-    this.generationsToRecord = 1;
-    this.waitingForFirstGenerationRecording = true;
+    this.startRecording(true, true);
   }
   public recordFromFirstGeneration() {
-    this.deleteLog();
-    this.paused = false;
-    this.firstGenerationToRecord = 1;
-    this.recording = false;
-    this.generationsToRecord = 999999999;
-    this.waitingForFirstGenerationRecording = true;
+    this.startRecording(true, false);
   }
   
   public logEvent(eventValues: SimulationCallEvent) : void {
 
-    if (this.logCount >= this.logThreshold) {
+    if (this.thresholdReached) {
+      if (!this.paused) this.stopReason = LoggerState.MAX_REACHED;
       this.paused = true;
       return;
     }
@@ -181,11 +240,17 @@ export default class EventLogger {
       if ((this.firstGenerationToRecord >= this.worldController.currentGen)
               && (this.worldController.currentStep == 1)) {
           this.recording = true;
+          // Creature to log is read when a recording starts
+          this.logCreatureId = this.worldController.simData.constants.LOG_CREATURE_ID;
+          this.logCreatureDeathGen = 0;
+          this.logCreatureDeathStep = 0;
+          if (this.firstGenLogged == 0) this.firstGenLogged = this.worldController.currentGen;
           this.lastStepLogged = this.worldController.currentStep;
           this.lastGenLogged = this.worldController.currentGen;
           this.stepIndex = 1;
           this.generationsToRecord--;
           this.waitingForFirstGenerationRecording = false;
+          this.logSetupRows();
         }
         else {
           return;
@@ -214,6 +279,7 @@ export default class EventLogger {
             this.aggregateAtGenerationLevel(eventValues);
             if (this.generationsToRecord == 0) {
               this.pause();
+              this.stopReason = LoggerState.FINISHED;
               return;
             }
           };
@@ -228,11 +294,49 @@ export default class EventLogger {
 
   }
 
-  // levels from the most detailed; a log level records its own rows and the ones after it
-  private static readonly LEVEL_ORDER = [LogLevel.CREATURE, LogLevel.STEP, LogLevel.GENERATION, LogLevel.WORLD];
+  /**
+   * Writes the configuration of the simulation (SETUP rows) if the logger is recording.
+   * The controller calls it every time a run is set up; a recording also writes it when it starts.
+   */
+  public logSetup(): void {
+    if (this.recording && !this.isPaused && this.worldController.simData.constants.LOG_ENABLED) {
+      this.logSetupRows();
+    }
+  }
 
+  // SETUP rows skip the level, the event filter and the maximum: a log always says how it was made
+  private logSetupRows() {
+    const locale = this.worldController.simData.constants.LOG_LOCALE_STRING;
+    for (const { eventType, name, value } of setupParams(this.worldController)) {
+      this.pushEventToLog({
+        logLevel: LogLevel.SETUP,
+        stepIndex: this.stepIndex.toString(),
+        currentGen: this.worldController.currentGen.toString(),
+        currentStep: this.worldController.currentStep.toString(),
+        speciesId: "",
+        genusId: "",
+        creatureId: "",
+        eventType,
+        paramName: name,
+        // constants can be small (0.0001), so more decimals than the other rows
+        paramValue: typeof value === "number" ? value.toLocaleString(locale, {maximumFractionDigits: 10}) : "0",
+        paramValue2: "0",
+        paramString: typeof value === "number" ? "" : value,
+      });
+      this.setupRowCount++;
+    }
+  }
+
+  // creature rows unless the recording logs no creatures, step totals if LOG_STEP_TOTALS is on, the rest always
   private levelIsRecorded(level: LogLevel): boolean {
-    return EventLogger.LEVEL_ORDER.indexOf(level) >= EventLogger.LEVEL_ORDER.indexOf(this.currentLogLevel);
+    switch (level) {
+      case LogLevel.CREATURE:
+        return this.logCreatureId != LOG_NO_CREATURES;
+      case LogLevel.STEP:
+        return this.worldController.simData.constants.LOG_STEP_TOTALS !== false;
+      default:
+        return true;
+    }
   }
 
   private logReceivedEvent(eventValues:SimulationCallEvent) {
@@ -240,6 +344,7 @@ export default class EventLogger {
       // if logging creature log, check id range
       if (eventValues.logLevel == LogLevel.CREATURE) {
         if (!(this.logCreatureId == 0 
+          || this.logCreatureId == LOG_NO_CREATURES
           || this.logCreatureId == eventValues.creatureId 
           || (this.logCreatureId == -10 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 10)
           || (this.logCreatureId == -30 && <number>eventValues.creatureId > 0 && <number>eventValues.creatureId < 30)
@@ -274,31 +379,24 @@ export default class EventLogger {
     this.pushEventToLog(simulationEvent);
   }
   
-  // get events data in blog format to write to file 
+  // get events data in blob format to write to file; one part per line, so the file is never one big string
   public getLogBlob(): Blob {
-    let csvData: string;
-
-    csvData = this.getLog();
-
-    const blob = new Blob([csvData], { type: 'text/plain;charset=utf-8' });
-    return blob;
-    
+    return new Blob(this.csvLines(), { type: 'text/plain;charset=utf-8' });
   }
 
   public getLog(): string {
-    let csvData: string;
+    return this.csvLines().join("");
+  }
 
-    csvData = this._csvHeaders;
-
-    // _csvHeaders should also be initialized!!
+  // the header, then one line per row, each one ending in \n
+  private csvLines(): string[] {
+    const lines = [this._csvHeaders];
     for (const event of this.log) {
-      csvData += `${event.logLevel};${event.stepIndex};${event.currentGen};${event.currentStep};`
+      lines.push(`${event.logLevel};${event.stepIndex};${event.currentGen};${event.currentStep};`
                   +`${event.speciesId};${event.genusId};${event.creatureId};${event.eventType};`
-                  +`${event.paramName};${event.paramValue};${event.paramValue2};${event.paramString}\n`;
+                  +`${event.paramName};${event.paramValue};${event.paramValue2};${event.paramString}\n`);
     }
-
-    return csvData;
-    
+    return lines;
   }
   
   private pushEventToLog(simulationEvent : SimulationEvent) {

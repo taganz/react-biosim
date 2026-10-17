@@ -65,8 +65,9 @@ These items were on the old list, or found while writing these docs, and are now
 - Life history of each creature (parent, children, attacks, kills, photosynthesis, cause of death), shown in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file
-- Logging a single creature (*Stats → Logger → Creature to log*)
+- Logging a single creature (*Stats → Logger → Creature to log*), with warnings when it dies or when the level does not write creature events, and its id in the name of the saved log
 - Consistent styling and status messages for log, save, load and GIF
+- A clearer logger panel (*Stats → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
 - Water accounting with metabolism. Several leaks made `waterInCreatures` drift until the simulation stopped with a `dissipateWater` error: failed attempts could take more mass than the creature had, the child's mass on reproduction went to the cloud, photosynthesis lost the water above the maximum mass, attackers gained mass that also went back to the cell, and new generations had mass that was not counted.
 - Continuous runs are now a **Simulation type** instead of a population strategy and a selection method. This fixes the old Continuous strategy: it broke in generation 1, it dropped every creature not born in the current generation, and old age never applied.
@@ -87,6 +88,9 @@ These items were on the old list, or found while writing these docs, and are now
 - With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
 - Log totals of events with `_` in their name (`REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY`, `DEAD_ATTACKED`) were written as `REPRODUCE;TRY sum` and so on, and the totals of `INFO … _energyConsumedByActionsExecution` lost their `ParamName`.
 - The log wrote `GENERATION_START` twice from generation 2 on. It is now written once, at step 1.
+- **Log this creature** logged another creature. It started recording at the next generation, where most selection methods give the id to another creature, and its first `INFO` rows were dropped. It is replaced by **Creature to log**, which the logger reads when a recording starts.
+- The logger said *Recording* while it was waiting for a generation to start, or for a **Restart**, and *Paused* when it had reached **Maximum events**. **Resume log** with the log exactly full did nothing. The status now says what the logger is doing.
+- The *Record…* buttons and **Delete log** deleted the log without asking. They are replaced by **From**, **For** and **Start recording**, which ask, like **Delete log**, when the log has events that have not been saved.
 - The log never wrote `BIRTH`. It is now written for every new creature, with the id and birth generation of its parent.
 - The log wrote `MOVE position x + 100y` after failed moves too. It is now written only when the creature moved.
 - 16 tests failed in `EventLogger.test.ts`. The logger was fine: the test never applied its own constants, so it ran with the default `LOG_LEVEL` (`STEP`), which drops creature events. It also changed `SIMULATION_DATA_DEFAULT` in place.

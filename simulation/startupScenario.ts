@@ -11,7 +11,6 @@ import WorldObject from "./world/objects/WorldObject";
 import { WaterData } from "./water/WaterData";
 import { SimulationData } from "./SimulationData";
 import { LogEvent } from "./logger/LogEvent";
-import { LogLevel } from "./logger/LogEvent";
 import Genome from "./creature/brain/Genome";
 
 const startUpScenarioConstants = {
@@ -20,10 +19,10 @@ const startUpScenarioConstants = {
   PRETTIFY_OUTPUT_TO_FILE : true,   
 
   // -- log 
-  LOG_ENABLED : true,  // main switch for logging
+  LOG_ENABLED : false,  // main switch for logging
   //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
-  LOG_LEVEL : LogLevel.STEP,
-  LOG_CREATURE_ID : 0,   // if 0 all creatures, if -10 ids from 0 to 10, if -30 ids from 0 to 30, else else a id 
+  LOG_CREATURE_ID : -1,   // -1 no creatures (only the totals), 0 all creatures, -10 ids 1 to 9, -30 ids 1 to 29, else that id
+  LOG_STEP_TOTALS : true,   // write the step totals
   LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
   LOG_LOCALE_STRING : 'es-ES',
   LOG_ALLOWED_EVENTS: {
