@@ -50,3 +50,6 @@ next-env.d.ts
 
 # headless runner output
 /results/
+
+# Claude Code local files and worktrees
+/.claude/
