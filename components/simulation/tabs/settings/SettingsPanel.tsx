@@ -207,7 +207,8 @@ export default function SettingsPanel() {
             />
             <p className="text-xs">
               A name for this run, used in the names of saved files, images, GIFs and logs. Restart picks a
-              new random code unless you change it here.
+              new random code unless you change it here (a code you change is kept by later restarts) or the seed is fixed
+              and nothing else has changed.
             </p>
           </div>
           <div className="flex flex-col gap-1">

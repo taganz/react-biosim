@@ -35,6 +35,8 @@ export default class WorldController {
 
   // initial values
   simCode: string = "XXX";
+  /** true while simCode was picked at random (or came with a loaded file), false once the user chose it */
+  isSimCodeRandom: boolean = true;
   /** seed of the random generator for this run: worldControllerData.seed, or a random one */
   seed: number = 0;
   size: number = 10;
@@ -102,6 +104,7 @@ export default class WorldController {
     this.loadWorldControllerInitialAndUserData(sim.worldControllerData);
     this.objects = sim.worldObjects; 
     this.simCode = simCode ?? generateRandomString(sim.constants.SIM_CODE_LENGTH);
+    this.isSimCodeRandom = simCode === undefined;
     sim.worldControllerData.simCode = this.simCode;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
@@ -130,6 +133,18 @@ export default class WorldController {
   }
 
   /**
+   * The code a restart with the Settings draft should use: the draft code if the user
+   * chose it (now or in an earlier update), or if the draft is the running configuration
+   * with a fixed seed, so the restart repeats the same simulation. Otherwise undefined,
+   * for a new random code.
+   */
+  public restartSimCode(draft: SimulationData): string | undefined {
+    const draftCode = draft.worldControllerData.simCode;
+    const repeatsRun = draft === this.simData && draft.worldControllerData.seed !== undefined;
+    return draftCode !== this.simCode || !this.isSimCodeRandom || repeatsRun ? draftCode : undefined;
+  }
+
+  /**
    * Starts generation sim.worldControllerData.currentGen of a saved run, with
    * sim.startGenomes as its creatures (no mutation) and sim.stats as its history.
    * Keeps the simulation code of the saved run.
@@ -153,6 +168,7 @@ export default class WorldController {
 
     // state data
     this.simCode = sim.worldControllerData.simCode;
+    this.isSimCodeRandom = true;
     this.currentGen = sim.worldControllerData.currentGen;
     this.currentStep = 1;
     this.lastGenerationDuration = sim.worldControllerData.lastGenerationDuration;
@@ -211,6 +227,13 @@ export default class WorldController {
 
 
     // state data
+    // a hot change with another code means the user chose it; a loaded file keeps its code
+    // until the next restart, like a random one
+    if (!creatures) {
+      this.isSimCodeRandom = true;
+    } else if (sim.worldControllerData.simCode !== this.simCode) {
+      this.isSimCodeRandom = false;
+    }
     this.simCode = sim.worldControllerData.simCode;
     this.currentGen = sim.worldControllerData.currentGen;
     this.currentStep = sim.worldControllerData.currentStep;
@@ -339,7 +362,7 @@ export default class WorldController {
       // the user may have restarted or loaded another simulation during the wait
       if (runId === this._runId) {
         // not reseeded: with a fixed seed it would die out the same way again
-        this.startRun(this.simData, undefined, false);
+        this.startRun(this.simData, this.restartSimCode(this.simData), false);
       }
       return "restarted";
     }

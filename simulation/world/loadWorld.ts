@@ -24,7 +24,9 @@ export function loadSavedSimulationAndStartRun(worldController: WorldController,
   const parsed = JSON.parse(data) as SavedSimulationData;
   const simulationData : SimulationData = deserializeSimulationData(worldController, parsed);
   worldController.pause();
-  const simCode = worldController.startRun(simulationData);
-  simulationData.worldControllerData.simCode = simCode;
+  // the run keeps the code of the file (a new random one if it has none),
+  // and like any loaded code it is replaced at the next restart
+  worldController.startRun(simulationData, simulationData.worldControllerData.simCode || undefined);
+  worldController.isSimCodeRandom = true;
   return simulationData;
 }

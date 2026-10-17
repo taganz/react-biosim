@@ -137,6 +137,8 @@ describe("user scenarios", () => {
     expect(other.currentGen).toBe(1);
     expect(other.generations.currentCreatures).toHaveLength(10);
     expect(other.size).toBe(20);
+    expect(other.simCode).toBe(worldController.simCode);
+    expect(other.simData.worldControllerData.simCode).toBe(worldController.simCode);
   });
 
   test("Save to file writes the current generation and step, not the ones from load time", async () => {

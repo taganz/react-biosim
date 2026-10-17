@@ -51,6 +51,8 @@ Checked against the code in October 2026. Each item links to the page that expla
 
 These items were on the old list, or found while writing these docs, and are now fixed:
 
+- Loading a setup or a scenario from Start gave the run a new random simulation code instead of the one in the file.
+- A simulation code applied with **Update simulation** was replaced by a random one at the next **Restart** or restart after an extinction.
 - Saving a simulation without its creatures: **My scenarios** in the Files tab saves the setup, or the genomes at the start of a generation.
 - **Update simulation** after loading a file set the stats history back to the one in the file. Loading a file without stats kept the history of the previous run.
 - **Save to file** can leave out the stats history.

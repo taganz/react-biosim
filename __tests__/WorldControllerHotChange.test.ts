@@ -96,4 +96,37 @@ describe("WorldController hot change", () => {
     expect(water.waterInCreatures).toBeGreaterThanOrEqual(0);
     expect(water.totalWater).toBeCloseTo(totalWater, 6);
   });
+
+  test("a code applied with Update simulation is kept by the next restart", () => {
+    // with the code it got at random, a restart picks a new one
+    expect(worldController.restartSimCode(simulationData)).toBeUndefined();
+
+    const draft = { ...simulationData, worldControllerData: { ...simulationData.worldControllerData, simCode: "my-run" } };
+    worldControllerSimDataHotChange(worldController, draft);
+    expect(worldController.simCode).toBe("my-run");
+
+    // the draft code now matches the running one, but the user chose it
+    worldController.startRun(draft, worldController.restartSimCode(draft));
+    worldController.pause();
+    expect(worldController.simCode).toBe("my-run");
+    // and it stays chosen for the restarts after that
+    expect(worldController.restartSimCode(draft)).toBe("my-run");
+  });
+
+  test("a restart that repeats the run (fixed seed, no changes) keeps a random code", () => {
+    const fixed = { ...simulationData, worldControllerData: { ...simulationData.worldControllerData, seed: 42 } };
+    worldController.startRun(fixed);
+    worldController.pause();
+    const randomCode = worldController.simCode;
+    expect(worldController.restartSimCode(fixed)).toBe(randomCode);
+
+    // with changed settings it is another simulation, so it gets a new code
+    const changed = { ...fixed, worldControllerData: { ...fixed.worldControllerData, stepsPerGen: 500 } };
+    expect(worldController.restartSimCode(changed)).toBeUndefined();
+    // and without a fixed seed every restart is a new simulation
+    const randomSeed = { ...fixed, worldControllerData: { ...fixed.worldControllerData, seed: undefined } };
+    worldController.startRun(randomSeed);
+    worldController.pause();
+    expect(worldController.restartSimCode(randomSeed)).toBeUndefined();
+  });
 });
