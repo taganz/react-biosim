@@ -7,5 +7,7 @@ export enum WorldEvents {
   // a generation finished: its stats are in the registry and the next generation is populated
   endGeneration = "endGeneration",
   // run/log state changed outside the simulation loop (pause, resume, log controls)
-  stateChange = "stateChange"
+  stateChange = "stateChange",
+  // the creature of WorldController.watchedCreatureId was born and the run paused; detail.creature is it
+  watchedCreatureBorn = "watchedCreatureBorn"
 }

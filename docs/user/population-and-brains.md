@@ -25,6 +25,10 @@ When a new generation starts, the selection moves to a creature of the same spec
 
 ![A selected creature](images/canvas_selected.png)
 
+To select a creature by its id, type the id in **Select creature id**, below the summary line, and press **Select** or Enter. If a creature with that id is alive, it is selected as if you had clicked it in the world. Ids can restart every generation, so in continuous runs, where creatures of several generations live together, the youngest creature with that id is selected.
+
+If no living creature has that id, the simulation waits for it: a message under the field says so, and when a creature with that id is born it is selected and the simulation pauses. **Stop waiting** cancels this, and so does selecting another creature (clicking it in the world, a species box, or the buttons under **Creature #id**). The field is emptied once the creature is selected or the wait is cancelled. The wait survives a restart, so you can type an id and then press **Restart**.
+
 Pause the simulation, or set **Pause between steps** to 200, before you click. The creature you click is the one whose live values appear below. To choose a specific creature of a species, click it in the world instead of the species box. To clear only the creature and keep the species, use the **×** next to its name at the top of the panel.
 
 ## Layout of the panel
@@ -47,7 +51,7 @@ At the top of the **Creature** section there are some buttons:
 
 - **◀ ▶** select the previous or next living creature of the same species (ordered by id). The text between them says which one you are looking at, for example "2 of 5 in its species".
 - **Select parent** selects the creature its genome was copied from, and that creature's species, since a mutation may have made the child a new species. It is only enabled while the parent is alive. In generational runs the parents are replaced when the generation ends, so this is mostly useful in continuous runs or for children born by the Reproduction action.
-- **Log this creature** (only when the logger is enabled) sets the logger to this creature, like **Creature to log** in *Stats → Logger*, and starts recording. Most selection methods restart the ids every generation, so in later generations the logger records whichever creature has that id.
+- **Set as creature to log** (only when the logger is enabled) puts the id of this creature in **Creature to log**, in *Stats → Logger*. It does not start a recording: the logger reads the field when a recording starts. Most selection methods restart the ids every generation, so a recording that starts in a later generation logs whichever creature has that id then. To log a creature of generation 1, use a fixed seed and *Record first generation*: after **Restart** the same id is the same creature.
 
 The section is updated at every step:
 
@@ -74,7 +78,7 @@ Selecting a creature or a species box clears the cell. To clear it yourself, use
 
 ## Selected species
 
-- **Alive / percentage**: size of the species and its share of the creatures alive at the start of the generation. If every member has died, it shows **Extinct**.
+- **Alive / percentage**: how many members of the species are alive now and their share of all the living creatures. Unlike the boxes, it is live, so it also counts species born during the generation (continuous runs). If every member has died, it shows **Extinct**.
 - **Neuronal network**: the brain shared by every member of the species.
 - **What drives each action**: a summary of the network.
 - **Genome**: genome size and the raw genes in hexadecimal and binary. Use the clipboard button to copy them.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtomValue, useAtom, useSetAtom } from "jotai";
-import { worldControllerAtom, selectedSpeciesAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
+import { worldControllerAtom, selectedSpeciesAtom, selectedCreatureAtom, selectedCellAtom, userSelectCreatureAtom } from "../../store";
 import { useEffect, useMemo, useState } from "react";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import classNames from "classnames";
@@ -9,6 +9,7 @@ import { Species } from "../../../../simulation/creature/Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import PopulationSummary from "./PopulationSummary";
+import CreatureIdSearch from "./CreatureIdSearch";
 
 export default function PopulationPanel() {
   const worldController = useAtomValue(worldControllerAtom);
@@ -18,6 +19,7 @@ export default function PopulationPanel() {
   // shared with SimulationCanvas, which selects the species of the clicked creature
   const [selectedSpecies, setSelectedSpecies] = useAtom(selectedSpeciesAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
+  const userSelectCreature = useSetAtom(userSelectCreatureAtom);
   const setSelectedCell = useSetAtom(selectedCellAtom);
 
   // selecting a species also selects one of its creatures, so its live values and ring are
@@ -29,7 +31,7 @@ export default function PopulationPanel() {
     setSelectedSpecies(clicked);
     setSelectedCell(null);
     if (!keepCurrent) {
-      setSelectedCreature(clicked.creatures.find((creature) => creature.isAlive) ?? null);
+      userSelectCreature(clicked.creatures.find((creature) => creature.isAlive) ?? null);
     }
   };
 
@@ -95,13 +97,11 @@ export default function PopulationPanel() {
   return (
     <div className="flex flex-col gap-6">
       <PopulationSummary speciesCount={species.length} />
+      <CreatureIdSearch />
 
       <div className="flex gap-4">
         <div className="min-w-0 grow">
-          <SelectedSpecies
-            species={species}
-            selectedSpecies={selectedSpecies}
-          />
+          <SelectedSpecies selectedSpecies={selectedSpecies} />
         </div>
 
         <div

@@ -9,8 +9,8 @@ import useWorldValue from "@/hooks/useWorldValue";
 import { findLivingParent, speciesMembers } from "@/simulation/generations/creatureQueries";
 import {
   logCreatureIdAtom,
-  selectedCreatureAtom,
   selectedSpeciesAtom,
+  userSelectCreatureAtom,
   worldControllerAtom,
 } from "../../store";
 
@@ -21,7 +21,7 @@ interface Props {
 // Moves the selection to other creatures (same species, parent) and logs the selected one
 export default function CreatureToolbar({ creature }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
-  const setSelectedCreature = useSetAtom(selectedCreatureAtom);
+  const setSelectedCreature = useSetAtom(userSelectCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
   const setLogCreatureId = useSetAtom(logCreatureIdAtom);
   const [logMessage, setLogMessage] = useState("");

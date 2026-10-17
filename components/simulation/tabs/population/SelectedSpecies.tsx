@@ -16,30 +16,27 @@ import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLab
 import { computeInfluences } from "@/simulation/creature/brain/Helpers/networkInfluence";
 import { initialNeuronOutput } from "@/simulation/creature/brain/CreatureBrain";
 import { GENUS_LABELS } from "./genusLabels";
+import useWorldValue from "@/hooks/useWorldValue";
+import { countLivingWithGenes } from "@/simulation/generations/creatureQueries";
 
 interface Props {
-  species: Species[];
   selectedSpecies?: Species;
 }
 
-export default function SelectedSpeciesPanel({
-  species,
-  selectedSpecies,
-}: Props) {
+export default function SelectedSpeciesPanel({ selectedSpecies }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
   const [networkView, setNetworkView] = useState<"live" | "structure">("live");
 
-  const actualSelectedSpecies =
-    selectedSpecies &&
-    species.find((item) => item.genomeKey === selectedSpecies.genomeKey);
-
-  const aliveCreatures = actualSelectedSpecies?.creatures.length ?? 0;
-
-  // the species list is grouped at the start of the generation, so the percentage uses
-  // the creatures alive at that moment
-  const totalCreatures = species.reduce((total, item) => total + item.creatures.length, 0);
+  // counted live: the species list is only grouped at the start of the generation, so it misses
+  // species born later (continuous runs) and members that died since. "members,alive" is a primitive
+  const counts = useWorldValue((world) => {
+    if (!selectedSpecies) return "0,0";
+    const { members, alive } = countLivingWithGenes(world.generations, selectedSpecies.genome.genes);
+    return `${members},${alive}`;
+  }, "0,0");
+  const [aliveCreatures, totalCreatures] = counts.split(",").map(Number);
   const populationPercentage = (
     totalCreatures > 0 ? (aliveCreatures / totalCreatures) * 100 : 0
   ).toFixed(2);
@@ -96,7 +93,7 @@ export default function SelectedSpeciesPanel({
               {selectedSpecies.genome.getHexColor()}
             </span>
             {genus !== "unknown" && <span>{GENUS_LABELS[genus]}</span>}
-            {actualSelectedSpecies ? (
+            {aliveCreatures > 0 ? (
               <span className="tabular-nums">
                 {aliveCreatures} alive · {populationPercentage}%
               </span>

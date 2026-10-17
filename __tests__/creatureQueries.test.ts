@@ -4,7 +4,7 @@ import { SimulationData } from "@/simulation/SimulationData";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
-import { findLivingParent, haveSameGenome, speciesMembers } from "@/simulation/generations/creatureQueries";
+import { countLivingWithGenes, findLivingCreatureById, findLivingParent, haveSameGenome, speciesMembers } from "@/simulation/generations/creatureQueries";
 
 describe('creature queries', () => {
 
@@ -54,5 +54,23 @@ describe('creature queries', () => {
         a1.health = 0;
         expect(findLivingParent(worldController.generations, child)).toBeUndefined();
         expect(findLivingParent(worldController.generations, a1)).toBeUndefined();
+    });
+
+    test('findLivingCreatureById ignores the dead and prefers the youngest', () => {
+        expect(findLivingCreatureById(worldController.generations, a2.id)).toBe(a2);
+        expect(findLivingCreatureById(worldController.generations, 999)).toBeUndefined();
+        // another creature with the same id, born in a later generation
+        b1.id = a2.id;
+        b1.birthGen = a2.birthGen + 1;
+        expect(findLivingCreatureById(worldController.generations, a2.id)).toBe(b1);
+        b1.health = 0;
+        expect(findLivingCreatureById(worldController.generations, a2.id)).toBe(a2);
+    });
+
+    test('countLivingWithGenes counts the living members and all the living', () => {
+        expect(countLivingWithGenes(worldController.generations, genomeA.genes)).toEqual({ members: 2, alive: 3 });
+        a1.health = 0;
+        expect(countLivingWithGenes(worldController.generations, genomeA.genes)).toEqual({ members: 1, alive: 2 });
+        expect(countLivingWithGenes(worldController.generations, [12345])).toEqual({ members: 0, alive: 2 });
     });
 });

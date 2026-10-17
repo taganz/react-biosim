@@ -5,7 +5,7 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
-import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom} from "./store";
+import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom, userSelectCreatureAtom, waitForCreatureTextAtom} from "./store";
 import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";
 import Creature from "@/simulation/creature/Creature";
@@ -34,6 +34,8 @@ export default function SimulationCanvas({ className }: Props) {
   const setEventLogger = useSetAtom(eventLoggerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
+  const userSelectCreature = useSetAtom(userSelectCreatureAtom);
+  const setWaitForCreatureText = useSetAtom(waitForCreatureTextAtom);
   const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
   const showWater = useAtomValue(showWaterAtom);
@@ -125,7 +127,7 @@ export default function SimulationCanvas({ className }: Props) {
       const onClick = (e: MouseEvent) => {
         const [worldX, worldY] = worldCanvas.mouseEventPosToWorld(e);
         const creature = worldController.grid.cell(worldX, worldY).creature;
-        setSelectedCreature(creature ?? null);
+        userSelectCreature(creature ?? null);
         setSelectedSpecies(
           creature ? new Species(creature.brain.genome.clone(), [creature]) : undefined
         );
@@ -149,7 +151,7 @@ export default function SimulationCanvas({ className }: Props) {
         worldCanvas.canvas.removeEventListener("mousemove", onMouseMove);
       };
     },
-    [worldController, worldCanvas, setSelectedCreature, setSelectedSpecies, setSelectedCell]
+    [worldController, worldCanvas, userSelectCreature, setSelectedSpecies, setSelectedCell]
   );
 
   // the creatures are replaced at the start of each generation, so the selection moves to a
@@ -167,6 +169,8 @@ export default function SimulationCanvas({ className }: Props) {
         const previous = selectedCreatureRef.current;
         if (!previous) return;
         const candidates = worldController.generations.currentCreatures.filter((creature) => creature.isAlive);
+        // already in the new generation, e.g. it was selected by id when it was born
+        if (candidates.includes(previous)) return;
 
         const genomeKey = previous.brain.genome.toDecimalString(false);
         const sameSpecies = candidates.find(
@@ -196,6 +200,27 @@ export default function SimulationCanvas({ className }: Props) {
       };
     },
     [worldController, setSelectedCreature, setSelectedSpecies]
+  );
+
+  // a creature asked for by id in the Population tab was born: select it like a click would
+  useEffect(
+    function selectWatchedCreature() {
+      if (!worldController) return;
+
+      const onBorn = (e: Event) => {
+        const { creature } = (e as CustomEvent<{ creature: Creature }>).detail;
+        setSelectedCreature(creature);
+        setSelectedSpecies(new Species(creature.brain.genome.clone(), [creature]));
+        setSelectedCell(null);
+        setWaitForCreatureText("");
+      };
+
+      worldController.events.addEventListener(WorldEvents.watchedCreatureBorn, onBorn);
+      return () => {
+        worldController.events.removeEventListener(WorldEvents.watchedCreatureBorn, onBorn);
+      };
+    },
+    [worldController, setSelectedCreature, setSelectedSpecies, setSelectedCell, setWaitForCreatureText]
   );
 
   // ring around the selected creature, or square around the selected cell, drawn on the overlay

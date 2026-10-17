@@ -13,6 +13,7 @@ import generateRandomString from "@/helpers/generateRandomString";
 import WorldWater from "../water/WorldWater";
 import { SimulationData } from "../SimulationData";
 import { randomSeed, setSeed, setRandomState } from "../helpers/random";
+import { findLivingCreatureById } from "../generations/creatureQueries";
 
 // max time (ms) spent computing steps before yielding to the browser
 const MAX_TICK_MS = 30;
@@ -55,6 +56,8 @@ export default class WorldController {
   currentGen: number = 1;
   currentStep: number = 1;
   lastGenerationDuration: number = 0; 
+  /** id of a creature that is not alive yet: when it is born the run pauses and it is announced. null when none */
+  watchedCreatureId: number | null = null;
   totalTime: number = 0;
   
 
@@ -299,6 +302,7 @@ export default class WorldController {
       const result = await this.runStep(runId);
       // the world was restarted or reloaded while this step was running; the new run has its own loop
       if (runId !== this._runId) return;
+      this.checkWatchedCreature();
       stepsDone++;
       if (result === "generationEnded") break;
     }
@@ -446,6 +450,28 @@ export default class WorldController {
 
   
 
+
+  /** waits for a creature with this id to be born (null stops waiting) */
+  watchCreatureId(id: number | null): void {
+    this.watchedCreatureId = id;
+    this.notifyStateChange();
+  }
+
+  // births happen during the steps and when a generation is populated, so this runs after every step
+  private checkWatchedCreature(): void {
+    if (this.watchedCreatureId === null) return;
+    const creature = findLivingCreatureById(this.generations, this.watchedCreatureId);
+    if (!creature) return;
+    this.watchedCreatureId = null;
+    this.pause();
+    // the steps run without redrawing may have hidden the birth
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
+    );
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.watchedCreatureBorn, { detail: { worldController: this, creature } })
+    );
+  }
 
   pause(): void {
     if (!this._paused) {

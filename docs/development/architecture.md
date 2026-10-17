@@ -65,6 +65,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `endGeneration` | After a generation ends: its stats are in `generationRegistry` and the next generation is populated. Used by the [headless runner](../user/headless-runner.md). |
 | `redraw` | Every *Immediate steps* steps |
 | `stateChange` | Pause, resume, logger changes: anything outside the loop |
+| `watchedCreatureBorn` | The creature whose id the Population tab is waiting for (`watchedCreatureId`) was born; the run is already paused. `SimulationCanvas` selects it |
 
 **Reading engine values in a component:** use [useWorldValue](../../hooks/useWorldValue.ts):
 
