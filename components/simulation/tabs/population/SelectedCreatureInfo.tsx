@@ -52,13 +52,14 @@ function YesNo({ value }: { value: boolean }) {
 
 const formatMass = (value: number) => value.toFixed(2);
 
+// each one starts the sentence that says when the creature died
 const DEATH_CAUSES: Record<DeathCause, string> = {
-  old: "old age",
-  basalConsumption: "ran out of mass (basal consumption)",
-  actionsExecutionConsumption: "ran out of mass (cost of its actions)",
-  attacked: "eaten",
-  health: "health reached 0",
-  unknown: "unknown cause",
+  old: "Died of old age",
+  basalConsumption: "Ran out of mass (basal consumption)",
+  actionsExecutionConsumption: "Ran out of mass (cost of its actions)",
+  attacked: "Was eaten",
+  health: "Its health reached 0",
+  unknown: "Died",
 };
 
 function deathText(creature: Creature): string {
@@ -69,7 +70,7 @@ function deathText(creature: Creature): string {
   const killer = creature.deathCause === "attacked" && creature.killedBySpecies
     ? ` by a creature of species ${creature.killedBySpecies}`
     : "";
-  return `Died of ${DEATH_CAUSES[creature.deathCause]}${killer} at generation ${creature.deathGen}, step ${creature.deathStep}. The values are from its last step.`;
+  return `${DEATH_CAUSES[creature.deathCause]}${killer} at generation ${creature.deathGen}, step ${creature.deathStep}. The values are from its last step.`;
 }
 
 // Everything about one creature, read again on every step so the values stay live
