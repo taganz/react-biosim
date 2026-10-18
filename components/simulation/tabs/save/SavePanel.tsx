@@ -16,7 +16,7 @@ export default function SavePanel() {
   const simulationData = useAtomValue(simulationDataAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
-  const [includeStats, setIncludeStats] = useState(true);
+  const [includeStats, setIncludeStats] = useState(false);
 
   const toJson = (worldController: WorldController, prettify: boolean) => {
     const savedWorld : SavedSimulationData = serializeSimulationData(worldController, includeStats);
