@@ -141,7 +141,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MOVE_COST_PER_MASS_DO : 0.6,
           MOVE_MULTIPLE_MASS_AT_BIRTH : 2,    // 2
 
-          ATTACK_COST_PER_MASS_TRY : 0.4,
+          ATTACK_COST_PER_MASS_TRY : 0.02,
           ATTACK_COST_PER_MASS_DO : 0,
           ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
 

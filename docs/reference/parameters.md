@@ -114,9 +114,9 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell and nothing to eat around, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |
 | `MOVE_MULTIPLE_MASS_AT_BIRTH` | 2 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
-| `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. |
+| `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. A creature without enough mass to move does not try and loses nothing. |
 | `MOVE_COST_PER_MASS_DO` | 0.6 | Extra mass lost by moving, as a multiple of birth mass. |
-| `ATTACK_COST_PER_MASS_TRY` | 0.4 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
+| `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Despite its name, the minimum neuron output that triggers the attack actions. |

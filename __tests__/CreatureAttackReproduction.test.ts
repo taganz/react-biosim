@@ -68,6 +68,51 @@ describe('attack and reproduction', () => {
         expect(prey.deathCause).toBe("attacked");
     });
 
+    test('the attack checks the prey before paying its cost', () => {
+        worldController.simData.worldControllerData.ATTACK_COST_PER_MASS_TRY = 0.4;
+        const attacker = spawn("attack_plant", [2, 2]);
+        attacker._mass._mass = 2;
+        const prey = spawn("plant", [3, 2]);
+        prey._mass._mass = 0.9;     // edible now, too heavy once the attacker has paid the 0.4
+
+        attacker.attack(1, attacker.findPreyDirection());
+
+        expect(prey.deathCause).toBe("attacked");
+        expect(attacker.killCount).toBe(1);
+        expect(attacker.mass).toBeCloseTo(2 - 0.4 + 0.9);
+    });
+
+    test('without enough mass moving is not a try: no mass is lost and nothing is logged', () => {
+        const data = worldController.simData.worldControllerData;
+        data.MOVE_COST_PER_MASS_TRY = 0.2;
+        data.MOVE_COST_PER_MASS_DO = 0.6;
+        data.MOVE_MULTIPLE_MASS_AT_BIRTH = 2;
+        const creature = spawn("attack_plant", [2, 2]);
+        expect(creature.hasEnoughMassToMove()).toBe(false);
+        const log = jest.spyOn(creature, "log");
+        const before = creature.mass;
+
+        expect((creature as any).move(1, 0)).toBe(false);
+
+        expect(creature.mass).toBe(before);
+        expect(creature.position).toEqual([2, 2]);
+        expect(log).not.toHaveBeenCalledWith(LogEvent.MOVE_TRY, expect.anything(), expect.anything(), expect.anything());
+    });
+
+    test('with enough mass moving pays the try and the move', () => {
+        const data = worldController.simData.worldControllerData;
+        data.MOVE_COST_PER_MASS_TRY = 0.2;
+        data.MOVE_COST_PER_MASS_DO = 0.6;
+        data.MOVE_MULTIPLE_MASS_AT_BIRTH = 0;
+        const creature = spawn("attack_plant", [2, 2]);
+        const before = creature.mass;
+
+        expect((creature as any).move(1, 0)).toBe(true);
+
+        expect(creature.position).toEqual([3, 2]);
+        expect(creature.mass).toBeCloseTo(before - creature.massAtBirth * (0.2 + 0.6));
+    });
+
     test('the parent eats a neighbour to make room for its child whatever its mass', () => {
         const parent = spawn("attack_plant", [2, 2]);
         surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");

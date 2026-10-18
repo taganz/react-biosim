@@ -53,11 +53,13 @@ export default class CreatureAttack {
 
     // returns preyMass or 0 if prey not killed
    attack(actionInputValue: number, targetDirection: Direction4) : number {
-    this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);
     const preyPosition = this.grid.cellOffsetDirection4(this.creature.position, targetDirection);
     if (preyPosition != null) {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
-        if (!this.canEat(prey)) {
+        // check before paying the try: the cost could leave the attacker too light for the prey it found
+        const canEat = this.canEat(prey);
+        this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);
+        if (!canEat) {
             return 0;
         }
         return this.eat(prey!);

@@ -271,11 +271,12 @@ export default class Creature {
   // returns true if the creature moved
   private move(x: number, y: number): boolean {
 
-    this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
-    this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);    
+    // without enough mass it is not a try: nothing is logged or consumed
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
+    this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
+    this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);
     this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
     
     const finalX = this.position[0] + x;

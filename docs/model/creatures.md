@@ -47,7 +47,7 @@ moveY = tanh(urgeY)          probability of moving one cell in y = |moveY|
 
 - Each axis is decided separately, so a creature can move diagonally.
 - The move only happens if the target cell is inside the world and empty. A diagonal move is also blocked when both cells beside the diagonal are occupied, so creatures cannot slip between two blocked cells.
-- With metabolism on, every attempt costs `MOVE_COST_PER_MASS_TRY × birth mass`. A successful move costs another `MOVE_COST_PER_MASS_DO × birth mass`. A creature that is too light cannot move.
+- With metabolism on, every attempt costs `MOVE_COST_PER_MASS_TRY × birth mass`, plus another `MOVE_COST_PER_MASS_DO × birth mass` that is paid even if the target cell is blocked. A creature that is too light cannot move: it does not try and loses nothing.
 
 A strong urge (an action output close to 1) makes movement almost certain. A weak one makes it occasional, which is where much of the randomness in early generations comes from.
 
@@ -91,7 +91,7 @@ The **Reproduction** action creates a child during the generation, in one of the
 
 **AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_REPRODUCTION_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus**, and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
 
-1. costs `ATTACK_COST_PER_MASS_TRY`. There is no minimum mass to attack: a creature lighter than that cost dies trying;
+1. costs `ATTACK_COST_PER_MASS_TRY`. Whether the prey can be eaten is decided before paying it. There is no minimum mass to attack: a creature lighter than that cost dies trying;
 2. kills the target, and the attacker gains the target's mass, up to its maximum mass.
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.

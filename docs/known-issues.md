@@ -84,6 +84,9 @@ These items were on the old list, or found while writing these docs, and are now
 - The attack actions targeted the first neighbour found in random order, even one of the same genus or too heavy to eat, and then failed. They now pick a neighbour that can be eaten.
 - A creature without enough mass to reproduce lost `REPRODUCTION_COST_PER_MASS_TRY × birth mass` every step its Reproduction neuron fired, and the log row `REPRODUCE_TRY mass consumed` wrote 0.1 × its current mass instead of what it lost. Without enough mass the action now does nothing; `mass consumed` is written for attempts that find no room, with the mass actually lost.
 - With no free cell around, a herbivore or carnivore ready to reproduce now eats a neighbour it can eat and puts its child in that cell.
+- The attack actions paid `ATTACK_COST_PER_MASS_TRY` before checking the prey again, so an attacker that was just heavy enough for its prey became too light and failed. With the startup settings (cost 0.4, herbivore birth mass 2) a newborn herbivore failed every attack and starved. The prey is now checked before paying.
+- A creature without enough mass to move lost `MOVE_COST_PER_MASS_TRY × birth mass` every step a movement action fired. A newborn herbivore with the startup settings lost 0.4 per step. Without enough mass moving now does nothing.
+- The startup `ATTACK_COST_PER_MASS_TRY` is 0.02 instead of 0.4, and the built-in default 0.02 instead of 0.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 - With more herbivore survivors than 20% of the initial population, Plant/Herbivore created the herbivores and no plants, so that generation had nothing to eat. It now always adds the plants.
 - The logger settings can be changed from the UI (*Stats → Logger options*).
