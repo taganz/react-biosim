@@ -69,9 +69,45 @@ const getGenusShares = (list: GenusProbability[]) => {
   return shares;
 };
 
-function GenusListEditor({ genusList, actions, initialGenomeSize, onChange }: {
+// Why CreatureGenus.geneArrayForGenus cannot build a genome for this genus with the
+// draft's enabled sensors and actions: it would pick from an empty list and write a broken gene.
+const getGenusProblems = (
+  genus: Genus,
+  sensors: Sensor[],
+  actions: Action[],
+  enabledSensors: SensorName[],
+  enabledActions: ActionName[],
+  initialGenomeSize: number
+) => {
+  const problems: string[] = [];
+  if (!sensors.some((sensor) => enabledSensors.includes(sensor.name) && sensor.compatibleGenus.includes(genus))) {
+    problems.push("No enabled sensor is compatible with this genus.");
+  }
+  const mainActions = actions.filter((action) => action.mainGenus === genus);
+  if (!mainActions.some((action) => enabledActions.includes(action.name))) {
+    problems.push(
+      mainActions.length
+        ? `Its main action (${mainActions.map((action) => getPrettyName(action.name)).join(", ")}) is not enabled.`
+        : "No action defines this genus."
+    );
+  }
+  if (
+    initialGenomeSize > 1 &&
+    !actions.some((action) => enabledActions.includes(action.name) && action.compatibleGenus.includes(genus))
+  ) {
+    problems.push("No enabled action is compatible with this genus, so its other genes cannot be built.");
+  }
+  return problems;
+};
+
+function GenusListEditor({
+  genusList, sensors, actions, enabledSensors, enabledActions, initialGenomeSize, onChange,
+}: {
   genusList: GenusProbability[];
+  sensors: Sensor[];
   actions: Action[];
+  enabledSensors: SensorName[];
+  enabledActions: ActionName[];
   initialGenomeSize: number;
   onChange: (genus: Genus, probability: number) => void;
 }) {
@@ -103,6 +139,10 @@ function GenusListEditor({ genusList, actions, initialGenomeSize, onChange }: {
             .filter((action) => action.mainGenus === genus)
             .map((action) => getPrettyName(action.name));
           const share = index < shares.length ? shares[index] : 0;
+          // only genera that get creatures need to be buildable
+          const problems = share > 0
+            ? getGenusProblems(genus, sensors, actions, enabledSensors, enabledActions, initialGenomeSize)
+            : [];
           return (
             <div key={genus} className="contents">
               <div className="flex flex-col justify-end">
@@ -123,6 +163,14 @@ function GenusListEditor({ genusList, actions, initialGenomeSize, onChange }: {
                 <span className="text-xs">Share</span>
                 <span>{(share * 100).toFixed(0)}%</span>
               </div>
+              {problems.length > 0 && (
+                <div className="bg-red p-2 text-sm sm:col-span-3">
+                  <p>Generation 1 cannot build valid genomes for this genus:</p>
+                  <ul className="list-disc pl-5">
+                    {problems.map((problem) => <li key={problem}>{problem}</li>)}
+                  </ul>
+                </div>
+              )}
             </div>
           );
         })}
@@ -494,7 +542,10 @@ export default function SettingsPanel() {
         {isRandomFixedGene && (
           <GenusListEditor
             genusList={genusList}
+            sensors={sensors}
             actions={actions}
+            enabledSensors={enabledSensors}
+            enabledActions={enabledActions}
             initialGenomeSize={worldGenerationsData.initialGenomeSize}
             onChange={handleGenusProbabilityChange}
           />
