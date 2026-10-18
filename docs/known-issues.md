@@ -85,6 +85,7 @@ These items were on the old list, or found while writing these docs, and are now
 - A creature without enough mass to reproduce lost `REPRODUCTION_COST_PER_MASS_TRY × birth mass` every step its Reproduction neuron fired, and the log row `REPRODUCE_TRY mass consumed` wrote 0.1 × its current mass instead of what it lost. Without enough mass the action now does nothing; `mass consumed` is written for attempts that find no room, with the mass actually lost.
 - With no free cell around, a herbivore or carnivore ready to reproduce now eats a neighbour it can eat and puts its child in that cell.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
+- With more herbivore survivors than 20% of the initial population, Plant/Herbivore created the herbivores and no plants, so that generation had nothing to eat. It now always adds the plants.
 - The logger settings can be changed from the UI (*Stats → Logger options*).
 - With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
 - Log totals of events with `_` in their name (`REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY`, `DEAD_ATTACKED`) were written as `REPRODUCE;TRY sum` and so on, and the totals of `INFO … _energyConsumedByActionsExecution` lost their `ParamName`.

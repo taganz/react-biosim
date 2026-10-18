@@ -19,7 +19,6 @@ import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreatures";
 */
 const HERBIVORES_PROPORTION = 0.2;
 
-// if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class PlantHerbivorePopulation implements PopulationStrategy {
   name = "PlantHerbivorePopulation";
 
@@ -47,30 +46,30 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
         for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation*HERBIVORES_PROPORTION; parentIdx++) {
           addCreaturesFromParent(worldGenerations, parents[parentIdx], 1);
         }
-        return;
       }
-            
-      // Add extra creatures to achieve the target population, but
-      // we want all survivors to have at least one children
-      let shuffledParents = shuffle(parents);
-      const childrenPerParent = Math.max(
-        Math.ceil(worldGenerations.initialPopulation * HERBIVORES_PROPORTION / parents.length),
-        1
-      );
+      else {
+        // Add extra creatures to achieve the target population, but
+        // we want all survivors to have at least one children
+        let shuffledParents = shuffle(parents);
+        const childrenPerParent = Math.max(
+          Math.ceil(worldGenerations.initialPopulation * HERBIVORES_PROPORTION / parents.length),
+          1
+        );
 
-      for (let parentIdx = 0; parentIdx < shuffledParents.length; parentIdx++) {
-        const parent = shuffledParents[parentIdx];
-        for (let childIdx = 0; childIdx < childrenPerParent; childIdx++) {
-          if (childIdx === 0 || totalNeededCreatures > 0) {
-            if (childIdx > 0) {
-              totalNeededCreatures--;
+        for (let parentIdx = 0; parentIdx < shuffledParents.length; parentIdx++) {
+          const parent = shuffledParents[parentIdx];
+          for (let childIdx = 0; childIdx < childrenPerParent; childIdx++) {
+            if (childIdx === 0 || totalNeededCreatures > 0) {
+              if (childIdx > 0) {
+                totalNeededCreatures--;
+              }
+              addCreaturesFromParent(worldGenerations, parent, 1);
             }
-            addCreaturesFromParent(worldGenerations, parent, 1);
           }
         }
       }
 
-      // now add plants to complete population
+      // now add plants to complete population, also when there were more parents than needed
       addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
     }
 
