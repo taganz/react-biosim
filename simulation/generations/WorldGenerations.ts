@@ -92,7 +92,7 @@ export default class WorldGenerations {
     this.deletionRatio = worldGenerationsData.deletionRatio;
     this.geneInsertionDeletionProbability = worldGenerationsData.geneInsertionDeletionProbability;
     this.sensors = new CreatureSensors();
-    this.actions = new CreatureActions (worldController.simData.worldControllerData.ACTION_REPRODUCTION_OFFSET);
+    this.actions = new CreatureActions (worldController.simData.worldControllerData.ACTION_ATTACK_OFFSET);
     this.sensors.loadFromList(worldGenerationsData.enabledSensors);
     this.actions.loadFromList(worldGenerationsData.enabledActions);
     // the lists the brain uses: table order, without names that no longer exist (older files)

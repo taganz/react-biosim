@@ -26,7 +26,7 @@ A creature is created by the population strategy, or by another creature through
 At every step, each living creature runs `computeStep()`, in this order:
 
 1. **Age.** In continuous runs, if its age is above **Maximum age**, it dies of old age. In generational runs the limit is *Steps per generation* + 1, so it never applies: creatures are replaced first.
-2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE × number of genes`, so bigger genomes cost more.
+2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` for each primary gene (the first gene that drives Photosynthesis and the first that drives Reproduction) and `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` for every other gene, so bigger genomes cost more.
 3. **Think and act.** It reads its sensors, runs its network and executes the actions (see [Brain and genome](brain.md)). Movement actions only add to an *urge to move*. Photosynthesis, Reproduction and the attacks happen straight away.
 4. **Move.** The urge to move is resolved (see [Movement](#movement)).
 5. **Distance index.** The `distanceCovered` counter is updated (see [Distance index](#distance-index)).
@@ -88,7 +88,7 @@ The **Reproduction** action creates a child during the generation, in one of the
 
 ### Attack
 
-**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_REPRODUCTION_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus**, and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
+**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_ATTACK_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus**, and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
 
 1. costs `ATTACK_COST_PER_MASS_TRY`. Whether the prey can be eaten is decided before paying it. There is no minimum mass to attack: a creature lighter than that cost dies trying;
 2. kills the target, and the attacker gains the target's mass, up to its maximum mass.

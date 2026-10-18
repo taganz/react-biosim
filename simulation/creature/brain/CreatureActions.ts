@@ -98,7 +98,7 @@ export default class CreatureActions {
   enabledActions: ActionName[] = [];
 
 
-  constructor (private actionReproductionOffset: number
+  constructor (private actionAttackOffset: number
    ){
 
   }
@@ -290,7 +290,7 @@ export default class CreatureActions {
 
     // AttackPlant
     if (this.data.AttackPlant.enabled) {
-      if (input > this.actionReproductionOffset) {    // was 0
+      if (input > this.actionAttackOffset) {    // was 0
 
         const targetDirection : Direction4 = creature.findPreyDirection();
         if (targetDirection!=null) {    //TODO check if target creature is plant
@@ -304,7 +304,7 @@ export default class CreatureActions {
 
    // AttackAnimal
    if (this.data.AttackAnimal.enabled) {
-    if (input > this.actionReproductionOffset) {    // was 0
+    if (input > this.actionAttackOffset) {    // was 0
 
       const targetDirection : Direction4 = creature.findPreyDirection();
       if (targetDirection!=null) {      //TODO check if target creature is animal or change to Attack and don't check

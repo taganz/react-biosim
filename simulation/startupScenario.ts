@@ -67,7 +67,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
 
           // model values
-          MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
+          MASS_WATER_TO_MASS_PER_STEP : 0.05, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
           MASS_AT_BIRTH_ATTACK_PLANT : 3,
           MASS_AT_BIRTH_ATTACK : 2,
@@ -75,12 +75,14 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
+          MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : 0.01,   // the first Photosynthesis gene and the first Reproduction gene
 
           REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
           REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3
           REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : 3,    
 
-          ACTION_REPRODUCTION_OFFSET : 0.6,  // will trigger action if input value is greater
+          ACTION_REPRODUCTION_OFFSET : 0.6,  // not used
+          ACTION_ATTACK_OFFSET : 0.6,  // the attack actions fire if their output is greater
 
           MOVE_COST_PER_MASS_TRY : 0.2,
           MOVE_COST_PER_MASS_DO : 0.6,

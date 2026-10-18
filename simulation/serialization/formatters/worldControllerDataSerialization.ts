@@ -7,7 +7,14 @@ export function deserializeWorldControllerData(parsed: SavedWorldControllerData)
   // older saves have ATTACK_MULTIPLE_MASS_AT_BIRTH and MASS_COST_PER_EXECUTE_ACTION, which no longer exist
   const { ATTACK_MULTIPLE_MASS_AT_BIRTH, MASS_COST_PER_EXECUTE_ACTION, ...worldControllerData } =
     parsed as SavedWorldControllerData & { ATTACK_MULTIPLE_MASS_AT_BIRTH?: number, MASS_COST_PER_EXECUTE_ACTION?: number };
-  return worldControllerData;
+  // older saves have no ACTION_ATTACK_OFFSET: their attacks used ACTION_REPRODUCTION_OFFSET
+  // nor MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY: every gene cost MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
+  return {
+    ...worldControllerData,
+    ACTION_ATTACK_OFFSET: worldControllerData.ACTION_ATTACK_OFFSET ?? worldControllerData.ACTION_REPRODUCTION_OFFSET,
+    MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY: worldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY
+      ?? worldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE,
+  };
 }
     
 

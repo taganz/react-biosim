@@ -15,12 +15,14 @@ export default interface WorldControllerData {
     MASS_MAX_MULTIPLE_MASS_AT_BIRT : number, 
     
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number, 
+    MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : number,
 
     REPRODUCTION_COST_PER_MASS_TRY : number, 
     REPRODUCTION_COST_PER_MASS_DO : number, 
     REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : number,     
 
-    ACTION_REPRODUCTION_OFFSET : number, 
+    ACTION_REPRODUCTION_OFFSET : number,
+    ACTION_ATTACK_OFFSET : number,
 
     MOVE_COST_PER_MASS_TRY : number, 
     MOVE_COST_PER_MASS_DO : number, 

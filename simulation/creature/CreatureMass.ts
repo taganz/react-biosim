@@ -1,6 +1,10 @@
 import Creature from "./Creature";
 import WorldWater from "../water/WorldWater";
 import { GridCell } from "../world/grid/Grid";
+import WorldGenerations from "../generations/WorldGenerations";
+import Genome, { Gene } from "./brain/Genome";
+import { NeuronType } from "./brain/Neuron";
+import { ActionName } from "./brain/CreatureActions";
 
 export default class CreatureMass {
     //_massAtBirth : number;
@@ -38,11 +42,26 @@ export default class CreatureMass {
             this._worldWater.getWaterFromCloud(this.massAtBirth);
         }
 
-        this._basalConsumption = creature.generations.worldController.simData.worldControllerData.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * 
-                creature.brain.genome.genes.length;
+        this._basalConsumption = CreatureMass.basalConsumption(creature.generations, creature.brain.genome.genes);
         this._metabolismEnabled = creature.generations.metabolismEnabled;
         this._maxMass = this._massAtBirth 
                 * creature.generations.worldController.simData.worldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
+    }
+
+    // the first gene that drives Photosynthesis and the first that drives Reproduction cost
+    // MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY; every other gene costs MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
+    static basalConsumption(generations: WorldGenerations, genes: Gene[]): number {
+        const data = generations.worldController.simData.worldControllerData;
+        const primaryFound = new Set<ActionName>();
+        for (const gene of genes) {
+            const connection = Genome.geneToConnection(gene, generations);
+            if (connection.sinkType !== NeuronType.ACTION) continue;
+            const action = generations.enabledActions[connection.sinkId];
+            if (action === "Photosynthesis" || action === "Reproduction") primaryFound.add(action);
+        }
+        const primaryGenes = primaryFound.size;
+        return data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * primaryGenes
+            + data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * (genes.length - primaryGenes);
     }
 
     get isAlive() {

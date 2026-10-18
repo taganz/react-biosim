@@ -64,7 +64,7 @@ Some consequences:
 | Movement actions | output > 0 | the output is added to the urge to move |
 | Photosynthesis | output > 0 | water taken = `MASS_WATER_TO_MASS_PER_STEP × output` |
 | Reproduction | output > 0 | the output is not used |
-| AttackPlant, AttackAnimal | output > 0.6 | the output is not used |
+| AttackPlant, AttackAnimal | output > `ACTION_ATTACK_OFFSET` (0.6) | the output is not used |
 
 A negative output does nothing. In particular, MoveNorth with a negative output does **not** push the creature south.
 

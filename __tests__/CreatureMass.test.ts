@@ -10,6 +10,8 @@ import WorldWater from "@/simulation/water/WorldWater";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
+import { NeuronType } from "@/simulation/creature/brain/Neuron";
+import { ActionName } from "@/simulation/creature/brain/CreatureActions";
 
 /* https://jestjs.io/docs/expect  */
 /* per fer toThrow cal posar tot en funcio expect( () => {...} ).toThrow() */
@@ -97,6 +99,23 @@ describe('CreaturePhenotype', () => {
         expect(mass._worldWater.waterInCreatures).toBe(6 - mass._basalConsumption );
         expect(mass._worldWater.waterInCloud).toBe(194 + mass._basalConsumption);
         expect(mass._worldWater.waterInCells).toBe(50);
+    });
+    test('basalConsumption - the first Photosynthesis and the first Reproduction gene cost PRIMARY, the rest PER_BRAIN_SIZE', ()=> {
+        const data = worldController.simData.worldControllerData;
+        data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.04;
+        data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY = 0.01;
+        const geneTo = (action: ActionName) => Genome.connectionToGene({
+            sourceType: NeuronType.SENSOR, sourceId: 0,
+            sinkType: NeuronType.ACTION, sinkId: generations.enabledActions.indexOf(action), weight: 1 });
+        const photosynthesis = geneTo("Photosynthesis");
+        const reproduction = geneTo("Reproduction");
+        const other = geneTo("AttackPlant");
+
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, reproduction])).toBeCloseTo(0.02);
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, other, reproduction])).toBeCloseTo(0.06);
+        // a second Photosynthesis gene is not primary
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, photosynthesis])).toBeCloseTo(0.05);
+        expect(CreatureMass.basalConsumption(generations, [other, other])).toBeCloseTo(0.08);
     });
     test('eat - move the prey mass to the attacker, the water stays in creatures', ()=> {
         mass = joeAttackAnimal._mass;
