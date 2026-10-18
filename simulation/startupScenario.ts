@@ -67,7 +67,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
 
           // model values
-          MASS_WATER_TO_MASS_PER_STEP : 0.05, //0.1 - 0.4
+          MASS_WATER_TO_MASS_PER_STEP : 0.1, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
           MASS_AT_BIRTH_ATTACK_PLANT : 3,
           MASS_AT_BIRTH_ATTACK : 2,

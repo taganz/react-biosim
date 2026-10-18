@@ -102,7 +102,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 
 | Key | Startup | Meaning |
 |---|---|---|
-| `MASS_WATER_TO_MASS_PER_STEP` | 0.05 | Water a creature takes from its cell in one photosynthesis step, multiplied by the action's output. |
+| `MASS_WATER_TO_MASS_PER_STEP` | 0.1 | Water a creature takes from its cell in one photosynthesis step, multiplied by the action's output. |
 | `MASS_AT_BIRTH_PLANT` | 1 | Birth mass of a plant. |
 | `MASS_AT_BIRTH_ATTACK_PLANT` | 3 | Birth mass of a herbivore. |
 | `MASS_AT_BIRTH_ATTACK` | 2 | Birth mass of the old "attack" genus (no longer used). |
