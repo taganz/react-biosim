@@ -12,8 +12,6 @@ export default interface SavedWorldControllerData {
   MASS_AT_BIRTH_ATTACK_ANIMAL : number; 
   MASS_MAX_MULTIPLE_MASS_AT_BIRT : number; 
   
-  MASS_COST_PER_EXECUTE_ACTION : number; 
-
   MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number; 
 
   REPRODUCTION_COST_PER_MASS_TRY : number; 

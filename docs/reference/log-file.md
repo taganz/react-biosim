@@ -103,7 +103,6 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `INFO` | `dead mass`, `dead gen`, … | see [INFO rows](#info-rows) | | | The creature dies, after `DEAD`. |
 | `METABOLISM` | `mass` | mass after the basal consumption | | | Every step (multiples of 10). |
 | `METABOLISM` | `basalConsumption` | mass spent on basal metabolism | | | Every step (multiples of 10). |
-| `METABOLISM` | `actionsExecutionConsumption` | mass spent on the actions of the brain | | | Every step (multiples of 10). |
 | `PHOTOSYNTHESIS` | `actionInputValue` | output of the Photosynthesis neuron | | | The neuron output is above 0 (multiples of 10). |
 | `PHOTOSYNTHESIS` | `waterGotFromCell` | water taken from the cell | | | Same. |
 | `REPRODUCE_TRY` | `mass` | mass of the creature | | | The Reproduction neuron output is above 0 and the creature has the mass to reproduce. Without that mass no row is written. |
@@ -117,18 +116,17 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `MOVE` | `direction` | x step | y step | `N`, `NE`, `E`, `SE`, `S`, `SW`, `W` or `NW` | The move succeeded. `N` is +y. |
 | `MOVE` | `position x + 100y` | `x + 100 × y` of the new position | | | The move succeeded, after `MOVE direction`. |
 | `DEAD_ATTACKED` | `killerSpecie` | x of the position | y of the position | species of the killer | The creature is killed by an attack. |
-| `DEAD` | `cause` | `0` | `0` | `old`, `basalConsumption`, `actionsExecutionConsumption`, `attacked`, `health` or `unknown` | The creature dies. |
+| `DEAD` | `cause` | `0` | `0` | `old`, `basalConsumption`, `attacked`, `health` or `unknown` | The creature dies. |
 
 ### INFO rows
 
-`INFO` always comes as a block of 8 rows. `<when>` is `birth` or `dead`:
+`INFO` always comes as a block of 7 rows. `<when>` is `birth` or `dead`:
 
 | `ParamName` | `ParamValue` | `ParamValue2` |
 |---|---|---|
 | `<when> mass` | current mass | |
 | `<when> gen` | current generation | |
 | `<when> neuronsCount` | number of enabled actions (the same for every creature) | |
-| `<when> _energyConsumedByActionsExecution` | enabled actions × cost per action | |
 | `<when> stepBirth` | step in which it was born | |
 | `<when> massAtBirth` | mass at birth | |
 | `<when> position` | x | y |
@@ -154,23 +152,22 @@ This is what the log holds for a creature with **Step totals** on, every box in 
 
 ### At birth
 
-8 `INFO` rows `birth …`, then `BIRTH parentId` and `BIRTH genome`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
+7 `INFO` rows `birth …`, then `BIRTH parentId` and `BIRTH genome`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
 
 ### Each step
 
 The rows follow the order of `Creature.computeStep()`:
 
-1. **Age.** If it is older than its maximum age: `DEAD` with `old`, then 8 `INFO` rows `dead …`, and nothing else this step.
-2. **Basal metabolism.** `METABOLISM mass` and `METABOLISM basalConsumption` (steps multiple of 10). If it ran out of mass: `DEAD basalConsumption` + 8 `INFO dead …`, and the step ends.
+1. **Age.** If it is older than its maximum age: `DEAD` with `old`, then 7 `INFO` rows `dead …`, and nothing else this step.
+2. **Basal metabolism.** `METABOLISM mass` and `METABOLISM basalConsumption` (steps multiple of 10). If it ran out of mass: `DEAD basalConsumption` + 7 `INFO dead …`, and the step ends.
 3. **Brain.** The actions run in table order ([Sensors and actions](sensors-and-actions.md)). Movement actions write nothing here, they only add to the urge to move. The others:
    - **Photosynthesis** (output above 0, steps multiple of 10): `PHOTOSYNTHESIS actionInputValue`, `PHOTOSYNTHESIS waterGotFromCell`.
    - **Reproduction** (output above 0 and enough mass; otherwise nothing): `REPRODUCE_TRY mass`, then one of
      - no free cell nearby and nothing to eat: `REPRODUCE_TRY mass consumed`;
-     - no free cell, but a neighbour it can eat: the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 8 `INFO dead …`) and `ATTACK preyMass`, then the rows of a success;
-     - success: the child's 8 `INFO birth …` rows and its `BIRTH parentId` (with this creature as parent) and `BIRTH genome` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
-   - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour it can eat in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 8 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
-4. **Cost of the actions.** `METABOLISM actionsExecutionConsumption` (steps multiple of 10). If it ran out of mass: `DEAD actionsExecutionConsumption` + 8 `INFO dead …`, and the step ends.
-5. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.
+     - no free cell, but a neighbour it can eat: the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 7 `INFO dead …`) and `ATTACK preyMass`, then the rows of a success;
+     - success: the child's 7 `INFO birth …` rows and its `BIRTH parentId` (with this creature as parent) and `BIRTH genome` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
+   - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour it can eat in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 7 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
+4. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.
 
 When the creature is killed by another one, its death rows appear inside the attacker's step (3, above).
 
@@ -185,7 +182,6 @@ CREATURE;10;3;10;#3fa2c8;plant;42;PHOTOSYNTHESIS;actionInputValue;0,74;0;
 CREATURE;10;3;10;#3fa2c8;plant;42;PHOTOSYNTHESIS;waterGotFromCell;0,07;0;
 CREATURE;10;3;10;#3fa2c8;plant;42;REPRODUCE_TRY;mass;3,48;0;
 CREATURE;10;3;10;#3fa2c8;plant;42;REPRODUCE_TRY;mass consumed;0,1;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;METABOLISM;actionsExecutionConsumption;0,03;0;
 CREATURE;10;3;10;#3fa2c8;plant;42;MOVE_TRY;x,y;1;0;
 CREATURE;10;3;10;#3fa2c8;plant;42;MOVE;direction;1;0;E
 CREATURE;10;3;10;#3fa2c8;plant;42;MOVE;position x + 100y;2.315;0;

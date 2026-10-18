@@ -96,11 +96,9 @@ export default class CreatureActions {
 
   neuronsCount: number = 0;
   enabledActions: ActionName[] = [];
-  _energyConsumedByActionsExecution : number = 0;
 
 
-  constructor (private costPerExecuteAction: number,
-               private actionReproductionOffset: number
+  constructor (private actionReproductionOffset: number
    ){
 
   }
@@ -184,7 +182,6 @@ export default class CreatureActions {
         this.neuronsCount++;
       }
     }
-    this._energyConsumedByActionsExecution = this.neuronsCount * this.costPerExecuteAction; 
   }
 
   actionNameToId(actionName: ActionName): number {
@@ -202,7 +199,6 @@ export default class CreatureActions {
   executeActions(creature: Creature, values: number[]) {
     let currentIndex = 0;
     let input = values[0];
-    let energyConsumedByActionsExecution = 0;
 
     // MoveNorth
     if (this.data.MoveNorth.enabled) {
@@ -319,8 +315,6 @@ export default class CreatureActions {
     currentIndex++;
     input = values[currentIndex];
   }
- 
-    return this._energyConsumedByActionsExecution;
 
 
   }

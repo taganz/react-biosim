@@ -55,7 +55,6 @@ const formatMass = (value: number) => value.toFixed(2);
 const DEATH_CAUSES: Record<DeathCause, string> = {
   old: "old age",
   basalConsumption: "ran out of mass (basal consumption)",
-  actionsExecutionConsumption: "ran out of mass (cost of its actions)",
   attacked: "eaten",
   health: "health reached 0",
   unknown: "unknown cause",

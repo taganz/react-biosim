@@ -16,7 +16,7 @@ import WorldControllerData from "../world/WorldControllerData";
 export const maxHealth = 100;
 
 // the reasons passed to die()
-export type DeathCause = "old" | "basalConsumption" | "actionsExecutionConsumption" | "attacked" | "health" | "unknown";
+export type DeathCause = "old" | "basalConsumption" | "attacked" | "health" | "unknown";
 
 const distanceStraightMin = 35;   // <--- ajustar, passar a parametres de la simulacio?
 const distanceStraightMax = 120;   // <--- ajustar, passar a parametres de la simulacio?  - treure?
@@ -162,13 +162,7 @@ export default class Creature {
 
     // read sensors and activate actions that will update urgeToMove and call other creature functions
     this.urgeToMove = [0, 0];
-    const energyConsumedByActionsExecution = this.brain.step();
-    const consumed = this._mass.consume(energyConsumedByActionsExecution);
-    this.log(LogEvent.METABOLISM, "actionsExecutionConsumption", consumed);
-    if (!this.isAlive) {
-      this.die("actionsExecutionConsumption");
-      return;
-    }
+    this.brain.step();
 
     // Calculate probability of movement
     const moveX = Math.tanh(this.urgeToMove[0]);
@@ -389,7 +383,6 @@ export default class Creature {
     this.log(LogEvent.INFO, when + " " +"mass", this.mass);
     this.log(LogEvent.INFO, when + " " +"gen", this.generations.worldController.currentGen);
     this.log(LogEvent.INFO, when + " " +"neuronsCount", this.brain.actions.neuronsCount);
-    this.log(LogEvent.INFO, when + " " +"_energyConsumedByActionsExecution", this.brain.actions._energyConsumedByActionsExecution);
     this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
     this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
     this.log(LogEvent.INFO, when + " " +"position", this.position[0], this.position[1]);

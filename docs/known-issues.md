@@ -103,6 +103,7 @@ These items were on the old list, or found while writing these docs, and are now
 - 16 tests failed in `EventLogger.test.ts`. The logger was fine: the test never applied its own constants, so it ran with the default `LOG_LEVEL` (`STEP`), which drops creature events. It also changed `SIMULATION_DATA_DEFAULT` in place.
 - `public/turn right generation 5574.sim` had lost `MoveForward` and `Photosynthesis` from its enabled actions when the sample files were rebuilt in May 2024, while its genomes were kept. Its creatures ran different brains: about 40–120 survivors per generation instead of the 390 of its history. The two actions are back, and it resumes at about 400.
 - Resuming a file or **Update simulation** refilled every cell with the first rain, and creatures loaded from a file started again at age 0. In a continuous run the first resumed generation had a burst: 977 births and 59 deaths instead of about 3400 of each. The file now saves each creature's `age` and the water of each cell (`cellWater`), and a hot change keeps the water of the running world.
+- `MASS_COST_PER_EXECUTE_ACTION` is removed. It charged every creature the same mass per step (number of enabled actions × cost), whatever its brain did, so it could not favour any genome. Older files that have it still load. The log no longer writes `METABOLISM actionsExecutionConsumption`, the `DEAD` cause `actionsExecutionConsumption` or the `INFO … _energyConsumedByActionsExecution` row, so `INFO` blocks have 7 rows.
 
 ## Ideas
 

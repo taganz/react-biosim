@@ -20,7 +20,7 @@ describe('CreatureActions', () => {
          ];
 
     beforeEach(() => {
-        ca = new CreatureActions(0.1, 0.5);
+        ca = new CreatureActions(0.5);
       });
 
     afterEach(() => {

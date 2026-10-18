@@ -74,8 +74,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MASS_AT_BIRTH_ATTACK_ANIMAL : 6,
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
-          MASS_COST_PER_EXECUTE_ACTION : 0.01, //  a plant has a minimum of 2 actions and gets energy from photosynthesis
-
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
 
           REPRODUCTION_COST_PER_MASS_TRY : 0.1,    

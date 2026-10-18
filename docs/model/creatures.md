@@ -28,9 +28,8 @@ At every step, each living creature runs `computeStep()`, in this order:
 1. **Age.** In continuous runs, if its age is above **Maximum age**, it dies of old age. In generational runs the limit is *Steps per generation* + 1, so it never applies: creatures are replaced first.
 2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE × number of genes`, so bigger genomes cost more.
 3. **Think and act.** It reads its sensors, runs its network and executes the actions (see [Brain and genome](brain.md)). Movement actions only add to an *urge to move*. Photosynthesis, Reproduction and the attacks happen straight away.
-4. **Action cost.** It spends `MASS_COST_PER_EXECUTE_ACTION × number of actions enabled in the simulation`. Every creature pays the same, whatever its own brain uses.
-5. **Move.** The urge to move is resolved (see [Movement](#movement)).
-6. **Distance index.** The `distanceCovered` counter is updated (see [Distance index](#distance-index)).
+4. **Move.** The urge to move is resolved (see [Movement](#movement)).
+5. **Distance index.** The `distanceCovered` counter is updated (see [Distance index](#distance-index)).
 
 A creature that runs out of mass at any point dies, and the rest of its step is skipped.
 
@@ -134,7 +133,7 @@ Each creature keeps these values. Nothing in the simulation reads them; they are
 | `attackCount`, `killCount` | Attack actions executed and prey killed. |
 | `waterFromPhotosynthesis` | Total water taken from its cell by Photosynthesis. |
 | `waterFromPrey` | Total mass taken from the prey it killed. It only counts what fitted below its maximum mass: the rest of the prey returns to the prey's cell. |
-| `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` or `actionsExecutionConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
+| `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
 | `killedBySpecies` | For `attacked`, the species of the attacker. |
 
 **Update simulation** and **Use Map** keep these values. Save files do not store them, so creatures loaded from a file start with an empty history.
