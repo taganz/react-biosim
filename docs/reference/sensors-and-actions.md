@@ -15,7 +15,7 @@ Every creature belongs to a **genus** (its trophic level), worked out from the a
 | `plant` | plant | otherwise, has a gene connected to **Photosynthesis** | green |
 | `unknown` | — | none of the above | black |
 
-Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Gene and Plant/Herbivore. Random genomes can connect any sensor to any action.
+Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Genera and Plant/Herbivore. Random genomes can connect any sensor to any action.
 
 ## Sensors
 

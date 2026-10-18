@@ -142,7 +142,7 @@ The simulation writes these values itself so that a saved file can resume where 
 | `DETECT_RADIUS` | 10 | Radius, in cells, of the prey sensors. |
 | `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Distance. |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
-| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Gene strategy. Choosing that strategy in Settings fills an empty list with the default one. |
+| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in Settings fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1*. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
 | `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Stats → Logger*. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
 | `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |

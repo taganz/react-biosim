@@ -18,7 +18,7 @@ Everything after `--` goes to the runner. The code is in [scripts/sim.ts](../../
 It uses the same code as the app: the base goes through the same deserializer as **Load**, and the loop is `WorldController`'s. Only two things differ:
 
 - the speed settings are forced: no pauses, and a redraw event every 1000 steps;
-- constants missing from an older `.sim` file, such as `POPULATION_DEFAULT_GENUS`, are taken from the defaults. Without them *Random Fixed Gene* cannot create a population.
+- constants missing from an older `.sim` file, such as `POPULATION_DEFAULT_GENUS`, are taken from the defaults. Without them *Random Fixed Genera* cannot create a population.
 
 ## Options
 

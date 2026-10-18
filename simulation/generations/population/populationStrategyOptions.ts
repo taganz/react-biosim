@@ -8,7 +8,7 @@ import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 export const populationStrategyOptions: Option[] = [
   {value: "AsexualRandomPopulation", label: "Asexual Random"},
   {value: "AsexualZonePopulation", label: "Asexual Zone"},
-  {value: "RandomFixedGenePopulation", label: "Random Fixed Gene (in dev)"},
+  {value: "RandomFixedGenePopulation", label: "Random Fixed Genera"},
   {value: "PlantHerbivorePopulation", label: "PlantHerbivorePopulation (in dev)"},
 ];
 

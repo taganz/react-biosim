@@ -51,7 +51,7 @@ export function serializeWorldGenerationData(worldController: WorldController)
 
 
 // Older files had a Continuous population strategy and a Continuous selection method
-// instead of a simulation type. They load as a continuous run; Random Fixed Gene builds
+// instead of a simulation type. They load as a continuous run; Random Fixed Genera builds
 // generation 1 as the old Continuous strategy did.
 const LEGACY_CONTINUOUS_POPULATION = "ContinuousPopulation";
 const LEGACY_CONTINUOUS_SELECTION = "ContinuousSelection";

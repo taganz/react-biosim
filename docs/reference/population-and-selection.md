@@ -25,12 +25,14 @@ The classic model from David R. Miller's video.
 
 Works like Asexual Random, but places creatures inside the first **spawn area** on the map. If the map has no spawn area, it behaves exactly like Asexual Random.
 
-### Random Fixed Gene (`RandomFixedGenePopulation`) *(in dev)*
+### Random Fixed Genera (`RandomFixedGenePopulation`)
 
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.
 - **Next generations:** every survivor has `ceil(initial population ÷ survivors)` children, so the population can end up slightly above the target.
 
 When you choose this strategy in Settings and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list from `simulationDataDefault.ts` is copied into the settings: plant 0.7, attack_plant 0.3, attack_animal 0. The list is saved with the simulation. The main action of each genus with a probability above 0 is also enabled (see below).
+
+While this strategy is selected, Settings shows the list under **Genera of generation 1**: one row per genus (plant, attack_plant, attack_animal) with its probability, the action its main gene uses, and the share of generation 1 it will get. Genera are picked in list order, so if the probabilities add up to less than 1 the last genus in the list gets the rest, and if they add up to more, genera later in the list get less. Settings warns when the total is not 1 or the list is empty. Raising a genus above 0 enables its main action, Reproduction and metabolism, as choosing the strategy does. Changes take effect with **Restart**.
 
 ### Plant/Herbivore (`PlantHerbivorePopulation`) *(in dev)*
 
@@ -40,7 +42,7 @@ A predator–prey experiment. Use it with the Greatest Mass selection method.
 - **Generation 1:** both groups are built from their genus.
 - **Next generations:** herbivores are children of the surviving herbivores. Plants are created again from scratch, so only herbivores evolve.
 
-Choosing Random Fixed Gene or Plant/Herbivore in Settings enables the main action of every genus the strategy creates, because a creature of that genus cannot be built without it: **Photosynthesis** for plant, **Attack Plant** for attack_plant and **Attack Animal** for attack_animal. **Reproduction** is enabled too, since every genus needs it. It also turns **metabolism** on, since those actions only change mass when it is on. Other actions stay as they were, and you can still turn any of this off afterwards.
+Choosing Random Fixed Genera or Plant/Herbivore in Settings enables the main action of every genus the strategy creates, because a creature of that genus cannot be built without it: **Photosynthesis** for plant, **Attack Plant** for attack_plant and **Attack Animal** for attack_animal. **Reproduction** is enabled too, since every genus needs it. It also turns **metabolism** on, since those actions only change mass when it is on. Other actions stay as they were, and you can still turn any of this off afterwards.
 
 ## Selection methods
 
@@ -76,4 +78,4 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 - **Plant/Herbivore ignores survivors that are not herbivores** and logs a warning in the console. Only Greatest Mass selects herbivores alone; with other methods the surviving plants are dropped, and if no herbivore survives the next generation has only plants.
 - **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
 - **Asexual Zone ignores the spawn area when there are more survivors than Initial population.** In that case it places children in random cells.
-- **Random Fixed Gene** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in Settings, so a file saved with this strategy and an empty list still starts with no genus to pick from.
+- **Random Fixed Genera** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in Settings, so a file saved with this strategy and an empty list still starts with no genus to pick from, until you give one a probability under **Genera of generation 1**.

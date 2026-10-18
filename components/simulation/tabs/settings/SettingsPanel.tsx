@@ -50,6 +50,99 @@ function Section({ title, description, children }: {
   );
 }
 
+const GENERA: { genus: Genus; label: string }[] = [
+  { genus: "plant", label: "Plant" },
+  { genus: "attack_plant", label: "Herbivore (attack_plant)" },
+  { genus: "attack_animal", label: "Carnivore (attack_animal)" },
+];
+
+// The share of creatures each entry gets, picked the way selectGenusBasedOnProbability
+// does: in list order, and the last entry takes whatever is left below 1.
+const getGenusShares = (list: GenusProbability[]) => {
+  let cumulative = 0;
+  const shares = list.map((item) => {
+    const start = Math.min(cumulative, 1);
+    cumulative += item.probability;
+    return Math.max(0, Math.min(cumulative, 1) - start);
+  });
+  if (shares.length) shares[shares.length - 1] += Math.max(0, 1 - cumulative);
+  return shares;
+};
+
+function GenusListEditor({ genusList, actions, initialGenomeSize, onChange }: {
+  genusList: GenusProbability[];
+  actions: Action[];
+  initialGenomeSize: number;
+  onChange: (genus: Genus, probability: number) => void;
+}) {
+  // entries keep the order of the saved list, which decides who gets the leftover share
+  const rows = [
+    ...genusList,
+    ...GENERA.filter(({ genus }) => !genusList.some((item) => item.genus === genus))
+      .map(({ genus }) => ({ genus, probability: 0 })),
+  ];
+  const shares = getGenusShares(genusList);
+  const total = genusList.reduce((sum, item) => sum + item.probability, 0);
+  const isTotalOne = Math.abs(total - 1) < 1e-9;
+  const lastGenus = genusList.at(-1)?.genus;
+
+  return (
+    <div className="flex flex-col gap-2 rounded-md border border-grey-mid p-3">
+      <h4 className="font-bold">Genera of generation 1</h4>
+      <p className="text-xs">
+        Each creature of generation 1 gets a genus picked with these probabilities, and a new random
+        genome of {initialGenomeSize} {initialGenomeSize === 1 ? "gene" : "genes"} for it: one main gene
+        that connects a sensor to the action that defines the genus, plus random genes that connect
+        sensors and actions compatible with the genus. Later generations are children of the survivors.
+        Apply changes with Restart.
+      </p>
+      <div className="grid gap-x-4 gap-y-2 sm:grid-cols-[minmax(0,1fr)_8rem_6rem]">
+        {rows.map(({ genus, probability }, index) => {
+          const label = GENERA.find((item) => item.genus === genus)?.label ?? genus;
+          const mainActions = actions
+            .filter((action) => action.mainGenus === genus)
+            .map((action) => getPrettyName(action.name));
+          const share = index < shares.length ? shares[index] : 0;
+          return (
+            <div key={genus} className="contents">
+              <div className="flex flex-col justify-end">
+                <span>{label}</span>
+                <span className="text-xs">
+                  Main gene: {mainActions.length ? mainActions.join(", ") : "none"}
+                </span>
+              </div>
+              <NumberInput
+                label="Probability"
+                value={probability}
+                onChange={(value) => onChange(genus, value)}
+                step={0.05}
+                min={0}
+                max={1}
+              />
+              <div className="flex flex-col justify-end text-sm">
+                <span className="text-xs">Share</span>
+                <span>{(share * 100).toFixed(0)}%</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {genusList.length === 0 ? (
+        <p className="bg-red p-2 text-sm">
+          The list is empty, so generation 1 cannot be created. Give at least one genus a probability.
+        </p>
+      ) : !isTotalOne && (
+        <p className="bg-red p-2 text-sm">
+          The probabilities add up to {Number(total.toFixed(3))}, not 1.{" "}
+          {total < 1
+            ? `The rest goes to the last genus in the list${lastGenus ? ` (${lastGenus})` : ""}.`
+            : "Genera later in the list get less than their probability, or nothing."}
+        </p>
+      )}
+    </div>
+  );
+}
+
 const FIELDS_GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
 
 // the generator keeps 32 bits of the seed
@@ -117,10 +210,27 @@ export default function SettingsPanel() {
     }
   };
 
-  // Random Fixed Gene needs a genus list; older files and the startup scenario have none,
-  // so the default list is copied into the draft (and saved with it).
   // Strategies that build creatures from a genus also need the main action of each genus
   // (the one that defines it), so those actions are enabled, and metabolism with them.
+  const withGenusActions = (data: WorldGenerationsData, genera: Genus[]): WorldGenerationsData => {
+    if (!genera.length || !actions.length) return data;
+    // kept in table order, which is the order genes use to address actions
+    const enabledActions = actions
+      .filter((action) =>
+        data.enabledActions.includes(action.name) ||
+        (action.mainGenus !== null && genera.includes(action.mainGenus)) ||
+        // every genus needs to reproduce
+        action.name === "Reproduction")
+      .map((action) => action.name);
+    // genus actions (Photosynthesis, attacks) only change mass with metabolism on
+    return { ...data, enabledActions, metabolismEnabled: true };
+  };
+
+  const activeGenera = (list: GenusProbability[]) =>
+    list.filter((item) => item.probability > 0).map((item) => item.genus);
+
+  // Random Fixed Genera needs a genus list; older files and the startup scenario have none,
+  // so the default list is copied into the draft (and saved with it).
   const handlePopulationStrategyChange = (value: string) =>
     setSimulationData((prev) => {
       let constants = prev.constants;
@@ -134,31 +244,34 @@ export default function SettingsPanel() {
 
       const genera: Genus[] =
         value === "RandomFixedGenePopulation"
-          ? (constants.POPULATION_DEFAULT_GENUS as GenusProbability[])
-              .filter((item) => item.probability > 0)
-              .map((item) => item.genus)
+          ? activeGenera(constants.POPULATION_DEFAULT_GENUS)
           : value === "PlantHerbivorePopulation"
           ? ["plant", "attack_plant"]
           : [];
-      // kept in table order, which is the order genes use to address actions
-      const enabledActions = actions
-        .filter((action) =>
-          prev.worldGenerationsData.enabledActions.includes(action.name) ||
-          (action.mainGenus !== null && genera.includes(action.mainGenus)) ||
-          // every genus needs to reproduce
-          (action.name === "Reproduction" && genera.length > 0))
-        .map((action) => action.name);
 
       return {
         ...prev,
         constants,
-        worldGenerationsData: {
-          ...prev.worldGenerationsData,
-          populationStrategy: selectPopulationStrategy(value),
-          enabledActions: actions.length ? enabledActions : prev.worldGenerationsData.enabledActions,
-          // genus actions (Photosynthesis, attacks) only change mass with metabolism on
-          metabolismEnabled: genera.length > 0 || prev.worldGenerationsData.metabolismEnabled,
-        },
+        worldGenerationsData: withGenusActions(
+          { ...prev.worldGenerationsData, populationStrategy: selectPopulationStrategy(value) },
+          genera
+        ),
+      };
+    });
+
+  // the genus list of Random Fixed Genera; a genus raised above 0 needs its actions too
+  const isRandomFixedGene = worldGenerationsData.populationStrategy.name === "RandomFixedGenePopulation";
+  const genusList: GenusProbability[] = simulationData.constants?.POPULATION_DEFAULT_GENUS ?? [];
+  const handleGenusProbabilityChange = (genus: Genus, probability: number) =>
+    setSimulationData((prev) => {
+      const current: GenusProbability[] = prev.constants?.POPULATION_DEFAULT_GENUS ?? [];
+      const list = current.some((item) => item.genus === genus)
+        ? current.map((item) => (item.genus === genus ? { ...item, probability } : item))
+        : [...current, { genus, probability }];
+      return {
+        ...prev,
+        constants: { ...prev.constants, POPULATION_DEFAULT_GENUS: list },
+        worldGenerationsData: withGenusActions(prev.worldGenerationsData, probability > 0 ? [genus] : []),
       };
     });
 
@@ -378,6 +491,14 @@ export default function SettingsPanel() {
             </SelectInput>
           )}
         </div>
+        {isRandomFixedGene && (
+          <GenusListEditor
+            genusList={genusList}
+            actions={actions}
+            initialGenomeSize={worldGenerationsData.initialGenomeSize}
+            onChange={handleGenusProbabilityChange}
+          />
+        )}
         {continuousWarnings.length > 0 && (
           <div className="bg-red p-2 text-sm">
             <p>No creature can be born in this continuous run:</p>

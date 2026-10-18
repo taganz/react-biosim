@@ -77,7 +77,7 @@ With **Simulation type** set to **Continuous** (*Settings → Generations*), the
 - **Stats:** the plotted value is the population at the end of each window. The Stats tab also shows the births and deaths of the last window.
 - If every creature dies, the simulation restarts from generation 1, as in generational runs.
 
-Files saved with the old *Continuous* population strategy or selection method load as continuous runs, with Random Fixed Gene as the strategy for generation 1.
+Files saved with the old *Continuous* population strategy or selection method load as continuous runs, with Random Fixed Genera as the strategy for generation 1.
 
 ## Why it works
 
