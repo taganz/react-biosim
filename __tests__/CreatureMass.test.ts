@@ -4,7 +4,7 @@ import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import CreatureMass from "@/simulation/creature/CreatureMass";
 import WorldWater from "@/simulation/water/WorldWater";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
@@ -29,7 +29,7 @@ describe('CreaturePhenotype', () => {
        
     
     beforeEach(() => {
-        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        const simulationData : SimulationData = TEST_SIMULATION_DATA;
         simulationData.worldObjects = [];
         simulationData.worldControllerData.size = 5;
         simulationData.worldGenerationsData.initialPopulation = 3;

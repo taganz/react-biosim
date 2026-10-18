@@ -1,5 +1,3 @@
-// load the defaults first, like the other tests: other import orders hit a circular import
-import "@/simulation/simulationDataDefault";
 import WorldController from "@/simulation/world/WorldController";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SimulationData } from "@/simulation/SimulationData";

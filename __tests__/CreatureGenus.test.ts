@@ -4,7 +4,7 @@ import Creature from "@/simulation/creature/Creature";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from '@/simulation/SimulationData';
-import { SIMULATION_DATA_DEFAULT } from '@/simulation/simulationDataDefault';
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from '@/simulation/creature/brain/Genome';
 import CreatureGenus from '@/simulation/creature/CreatureGenus';
 import { Gene } from "@/simulation/creature/brain/Genome";
@@ -28,7 +28,7 @@ describe('CreatureGenus', () => {
     let TEST_LOOPS = 50;
     //console.warn("doing some probabilistic tests... TEST_LOOPS=", TEST_LOOPS.toString());
     
-    simulationData = SIMULATION_DATA_DEFAULT;
+    simulationData = TEST_SIMULATION_DATA;
     simulationData.worldGenerationsData.enabledActions = [
       "MoveNorth",        // 0
       "MoveSouth",        // 1

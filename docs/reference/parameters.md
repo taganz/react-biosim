@@ -104,16 +104,16 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 |---|---|---|
 | `MASS_WATER_TO_MASS_PER_STEP` | 0.30 | Water a creature takes from its cell in one photosynthesis step, multiplied by the action's output. |
 | `MASS_AT_BIRTH_PLANT` | 1 | Birth mass of a plant. |
-| `MASS_AT_BIRTH_ATTACK_PLANT` | 2 | Birth mass of a herbivore. |
+| `MASS_AT_BIRTH_ATTACK_PLANT` | 3 | Birth mass of a herbivore. |
 | `MASS_AT_BIRTH_ATTACK` | 2 | Birth mass of the old "attack" genus (no longer used). |
-| `MASS_AT_BIRTH_ATTACK_ANIMAL` | 3 | Birth mass of a carnivore. |
+| `MASS_AT_BIRTH_ATTACK_ANIMAL` | 6 | Birth mass of a carnivore. |
 | `MASS_MAX_MULTIPLE_MASS_AT_BIRT` | 5 | Maximum mass, as a multiple of birth mass. |
 | `MASS_COST_PER_EXECUTE_ACTION` | 0.01 | Mass spent per step for each enabled action. |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome. |
 | `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass to reproduce (plus `REPRODUCTION_COST_PER_MASS_DO` with metabolism). |
 | `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell and nothing to eat around, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |
-| `MOVE_MULTIPLE_MASS_AT_BIRTH` | 2 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
+| `MOVE_MULTIPLE_MASS_AT_BIRTH` | 0 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
 | `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. A creature without enough mass to move does not try and loses nothing. |
 | `MOVE_COST_PER_MASS_DO` | 0.6 | Extra mass lost by moving, as a multiple of birth mass. |
 | `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |

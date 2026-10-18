@@ -1,6 +1,6 @@
 
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationDataDefault"
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import {Grid} from '../simulation/world/grid/Grid';
 import WorldWater from "@/simulation/water/WorldWater";
 import { WaterData } from "@/simulation/water/WaterData";
@@ -14,7 +14,7 @@ describe('WorldWater', () => {
     let grid : Grid;
     
     beforeEach(() => {
-        waterData = constants.SIMULATION_DATA_DEFAULT.waterData;
+        waterData = TEST_SIMULATION_DATA.waterData;
         waterData.waterRainMaxPerCell = 1.1;
         waterData.waterFirstRainPerCell = 2.1;
         waterData.waterCellCapacity = 4.3;
@@ -46,7 +46,7 @@ describe('WorldWater', () => {
 
     
     test('firstRain() - first rain per cell greater than cell capacity ', () => {
-        waterData = constants.SIMULATION_DATA_DEFAULT.waterData;
+        waterData = TEST_SIMULATION_DATA.waterData;
         waterData.waterCellCapacity = 4.3;
         waterData.waterFirstRainPerCell = 10;
         waterData.waterTotalPerCell = 100;

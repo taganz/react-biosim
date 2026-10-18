@@ -1,5 +1,5 @@
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationDataDefault"
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import Genome from "@/simulation/creature/brain/Genome";
 import WorldController from "@/simulation/world/WorldController";
@@ -12,7 +12,7 @@ import { Gene } from "@/simulation/creature/brain/Genome";
 describe('brain basic tests', () => {
 
     
-    const simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
+    const simulationData : SimulationData = TEST_SIMULATION_DATA;
     const worldController = new WorldController(simulationData);
     const generations = worldController.generations;
     let genomePlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "plant", 1));

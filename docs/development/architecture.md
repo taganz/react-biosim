@@ -30,7 +30,7 @@ The engine is a plain, mutable object graph. React does not own its state. React
 
 [SimulationCanvas.tsx](../../components/simulation/SimulationCanvas.tsx) creates everything once, when it mounts:
 
-1. It picks the startup `SimulationData`: `startUpScenarioSimulationData`, or `SIMULATION_DATA_DEFAULT` if `STARTUP_MODE` in [simulationDataDefault.ts](../../simulation/simulationDataDefault.ts) is `"simulationDefault"`.
+1. It takes the default settings, `startUpScenarioSimulationData` from [startupScenario.ts](../../simulation/startupScenario.ts).
 2. It runs `new WorldController(simData)` and then `startRun(simData)`, which starts the loop.
 3. It stores the controller in `worldControllerAtom` and the settings in `simulationDataAtom`.
 4. It creates a `WorldCanvas` for the `<canvas>` element and stores it in `worldCanvasAtom`.

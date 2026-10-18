@@ -23,7 +23,7 @@ import { WaterData } from "@/simulation/water/WaterData";
 import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
-import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
+import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
 
@@ -286,7 +286,7 @@ export default function SettingsPanel() {
       if (value === "RandomFixedGenePopulation" && !genusList?.length) {
         constants = {
           ...constants,
-          POPULATION_DEFAULT_GENUS: CONSTANTS_DEFAULT.POPULATION_DEFAULT_GENUS.map((item) => ({ ...item })),
+          POPULATION_DEFAULT_GENUS: DEFAULT_GENUS_PROBABILITIES.map((item) => ({ ...item })),
         };
       }
 

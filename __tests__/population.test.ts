@@ -2,7 +2,7 @@
 
 
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationDataDefault"
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
 import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
 import {Grid} from '../simulation/world/grid/Grid';
@@ -19,7 +19,7 @@ export type SavedPopulationStrategy = string;
 
 describe('populationStrategy', () => {
 
-        let simulationData : SimulationData = constants.SIMULATION_DATA_DEFAULT;
+        let simulationData : SimulationData = TEST_SIMULATION_DATA;
         simulationData.worldGenerationsData.initialPopulation = 5;
         simulationData.worldControllerData.size = 5;
         

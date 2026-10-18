@@ -3,7 +3,7 @@ import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from '@/simulation/SimulationData';
-import { SIMULATION_DATA_DEFAULT } from '@/simulation/simulationDataDefault';
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from '@/simulation/creature/brain/Genome';
 import CreatureGenus from '@/simulation/creature/CreatureGenus';
 import WorldWater from '@/simulation/water/WorldWater';
@@ -20,7 +20,7 @@ describe('creature test', () => {
     let genome : Genome;
     let worldWater : WorldWater;
     
-    simulationData = SIMULATION_DATA_DEFAULT;
+    simulationData = TEST_SIMULATION_DATA;
     simulationData.worldGenerationsData.enabledActions = [
       "MoveNorth",        // 0
       "MoveSouth",        // 1

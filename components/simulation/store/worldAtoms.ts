@@ -3,7 +3,7 @@ import WorldCanvas from "@/simulation/world/WorldCanvas";
 import Creature from "@/simulation/creature/Creature";
 import { Species } from "@/simulation/creature/Species";
 import { atom } from "jotai";
-import {SIMULATION_DATA_DEFAULT}  from "@/simulation/simulationDataDefault"
+import { startUpScenarioSimulationData } from "@/simulation/startupScenario"
 import EventLogger from "@/simulation/logger/EventLogger";
 import { GridPosition } from "@/simulation/world/grid/Grid";
 
@@ -40,12 +40,7 @@ export const userSelectCreatureAtom = atom(null, (get, set, creature: Creature |
 export const logFromFirstGenerationAtom = atom(false);
 export const logOneGenerationAtom = atom(true);
 
-export const simulationDataAtom = atom(SIMULATION_DATA_DEFAULT);
-//export const simulationConstantsDataAtom = atom(SIMULATION_DATA_DEFAULT.constants);
-//export const worldGenerationDataAtom = atom(SIMULATION_DATA_DEFAULT.worldGenerationsData);
-//export const worldControllerDataAtom = atom(SIMULATION_DATA_DEFAULT.worldControllerData);
-//export const waterDataAtom = atom(SIMULATION_DATA_DEFAULT.waterData);
-//export const worldObjectsDataAtom = atom(SIMULATION_DATA_DEFAULT.worldObjects);
+export const simulationDataAtom = atom(startUpScenarioSimulationData);
 /*
 export const currentGenAtom = atom( (get) => {
   const w = get(worldControllerAtom); 

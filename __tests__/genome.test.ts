@@ -1,5 +1,5 @@
 //import {describe, expect, test} from '@jest/globals';
-import * as constants from "@/simulation/simulationDataDefault"
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome, {geneToString} from "@/simulation/creature/brain/Genome";
 import { ConnectionType } from "@/simulation/creature/brain/Connection";
 import WorldController from "@/simulation/world/WorldController";
@@ -56,7 +56,7 @@ describe('genome test', () => {
     "AttackPlant",      // 8
     "AttackAnimal",     // 9
   ];
-  simulationData = constants.SIMULATION_DATA_DEFAULT;
+  simulationData = TEST_SIMULATION_DATA;
   simulationData.worldGenerationsData.enabledSensors = allSensors;
   simulationData.worldGenerationsData.enabledActions = allActions;
   const worldController = new WorldController(simulationData);

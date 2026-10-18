@@ -1,5 +1,3 @@
-// load the defaults first, like the other tests: other import orders hit a circular import
-import "@/simulation/simulationDataDefault";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
@@ -27,6 +25,9 @@ describe("PlantHerbivorePopulation", () => {
         ...generationsData,
         initialPopulation,
         metabolismEnabled: true,
+        // no mutations: a child that loses its AttackPlant gene would be a plant and change the counts
+        mutationProbability: 0,
+        geneInsertionDeletionProbability: 0,
         populationStrategy: selectPopulationStrategy("PlantHerbivorePopulation"),
         selectionMethod: selectSelectionMethod("GreatestMassSelection"),
         enabledActions: Array.from(new Set([...generationsData.enabledActions, "Photosynthesis", "Reproduction", "AttackPlant"])),

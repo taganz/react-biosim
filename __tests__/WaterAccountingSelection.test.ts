@@ -1,9 +1,7 @@
-// load the defaults first, like the other tests: other import orders hit a circular import
-import "@/simulation/simulationDataDefault";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
-import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
+import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { selectPopulationStrategy } from "@/simulation/generations/population/populationStrategyOptions";
 import { selectSelectionMethod } from "@/simulation/generations/selection/selectionMethodOptions";
 
@@ -33,7 +31,7 @@ describe("water accounting across generations", () => {
     const simulationData: SimulationData = {
       ...startUpScenarioSimulationData,
       worldObjects: [],
-      constants: { ...startUpScenarioSimulationData.constants, POPULATION_DEFAULT_GENUS: CONSTANTS_DEFAULT.POPULATION_DEFAULT_GENUS },
+      constants: { ...startUpScenarioSimulationData.constants, POPULATION_DEFAULT_GENUS: DEFAULT_GENUS_PROBABILITIES },
       worldControllerData: { ...startUpScenarioSimulationData.worldControllerData, size: 30, stepsPerGen: 50 },
       worldGenerationsData: {
         ...generationsData,

@@ -12,7 +12,7 @@ import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimula
 
 type RunConfig = {
   name?: string;
-  /** "startup", "default" or the path of a .sim file */
+  /** "startup" or the path of a .sim file */
   base?: string;
   resume?: boolean;
   generations?: number;
@@ -29,7 +29,7 @@ type RunConfig = {
 const USAGE = `Usage: npm run sim -- [config.json] [options]
 
 Options (they override the config file):
-  --base <startup|default|file.sim>   settings to start from (default: startup)
+  --base <startup|file.sim>           settings to start from (default: startup)
   --resume                            continue the saved run in the base file
   --generations <n>                   generations to complete (default: 100)
   --name <name>                       name of the run (default: config file name or "run")
@@ -99,7 +99,7 @@ function parseArgs(argv: string[]): RunConfig {
         config = JSON.parse(fs.readFileSync(arg, "utf8"));
         config.name ??= path.basename(arg, path.extname(arg));
         // a base file is relative to the config file
-        if (config.base && !["startup", "default"].includes(config.base)) {
+        if (config.base && config.base !== "startup") {
           config.base = path.resolve(path.dirname(arg), config.base);
         }
     }
@@ -134,7 +134,7 @@ async function main() {
   const outDir = path.resolve(config.out ?? path.join("results", name));
 
   let base: HeadlessOptions["base"];
-  if (baseName === "startup" || baseName === "default") {
+  if (baseName === "startup") {
     base = baseName;
   } else {
     if (!fs.existsSync(baseName)) fail(`base file not found: ${baseName}`);

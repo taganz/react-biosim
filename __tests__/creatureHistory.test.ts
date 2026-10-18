@@ -1,7 +1,7 @@
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 
@@ -12,7 +12,7 @@ describe('creature history', () => {
     let parent : Creature;
 
     beforeEach(() => {
-        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        const simulationData : SimulationData = TEST_SIMULATION_DATA;
         simulationData.worldObjects = [];
         simulationData.worldControllerData.size = 5;
         simulationData.worldGenerationsData.initialPopulation = 3;

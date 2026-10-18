@@ -10,7 +10,7 @@ Everything after `--` goes to the runner. The code is in [scripts/sim.ts](../../
 
 ## What it does
 
-1. Takes a **base**: the scenario the app opens with (`startup`, the default), the built-in defaults (`default`), or a `.sim` file saved from the app.
+1. Takes a **base**: the settings the app opens with (`startup`, the default) or a `.sim` file saved from the app.
 2. Applies the **overrides**: settings you change, written as a part of the `.sim` file.
 3. Starts a new run from generation 1, or with `--resume` continues the run saved in the base file.
 4. Runs until the requested number of generations has finished, then writes the results.
@@ -25,7 +25,7 @@ It uses the same code as the app: the base goes through the same deserializer as
 | Option | Default | Meaning |
 |---|---|---|
 | `config.json` (first argument) | none | A config file, see below. The options below override it. |
-| `--base <startup\|default\|file.sim>` | `startup` | Settings to start from |
+| `--base <startup\|file.sim>` | `startup` | Settings to start from |
 | `--resume` | off | Continue the run saved in the base file: its creatures, or the genomes of a file saved at the start of a generation. Without it, a `.sim` file is used as a setup and the run starts at generation 1. |
 | `--generations <n>` | 100 | Generations to complete |
 | `--name <name>` | config file name, or `run` | Name of the run |

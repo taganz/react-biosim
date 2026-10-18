@@ -1,7 +1,7 @@
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { GridPosition } from "@/simulation/world/grid/Grid";
@@ -15,10 +15,10 @@ describe('attack and reproduction', () => {
     beforeEach(() => {
         jest.spyOn(console, "log").mockImplementation(() => {});
         const simulationData : SimulationData = {
-            ...SIMULATION_DATA_DEFAULT,
+            ...TEST_SIMULATION_DATA,
             worldObjects: [],
-            worldControllerData: { ...SIMULATION_DATA_DEFAULT.worldControllerData, size: 5 },
-            worldGenerationsData: { ...SIMULATION_DATA_DEFAULT.worldGenerationsData, initialPopulation: 0, metabolismEnabled: true },
+            worldControllerData: { ...TEST_SIMULATION_DATA.worldControllerData, size: 5 },
+            worldGenerationsData: { ...TEST_SIMULATION_DATA.worldGenerationsData, initialPopulation: 0, metabolismEnabled: true },
         };
         worldController = new WorldController(simulationData);
     });

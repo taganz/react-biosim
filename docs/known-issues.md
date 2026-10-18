@@ -87,6 +87,8 @@ These items were on the old list, or found while writing these docs, and are now
 - The attack actions paid `ATTACK_COST_PER_MASS_TRY` before checking the prey again, so an attacker that was just heavy enough for its prey became too light and failed. With the startup settings (cost 0.4, herbivore birth mass 2) a newborn herbivore failed every attack and starved. The prey is now checked before paying.
 - A creature without enough mass to move lost `MOVE_COST_PER_MASS_TRY × birth mass` every step a movement action fired. A newborn herbivore with the startup settings lost 0.4 per step. Without enough mass moving now does nothing.
 - The startup `ATTACK_COST_PER_MASS_TRY` is 0.02 instead of 0.4, and the built-in default 0.02 instead of 0.
+- The default settings were in two files, `startupScenario.ts` and `simulationDataDefault.ts`, so each new default had to be written twice. `startupScenario.ts` is now the only one; the constants are in `constantsDefault.ts`, and the tests use `TEST_SIMULATION_DATA`, which keeps the values they had. `STARTUP_MODE` and the headless runner's `--base default` are gone.
+- `PlantHerbivorePopulation.test.ts` failed about one run in three: with mutations on, a child could lose its AttackPlant gene and count as a plant. The test now turns mutations off.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 - With more herbivore survivors than 20% of the initial population, Plant/Herbivore created the herbivores and no plants, so that generation had nothing to eat. It now always adds the plants.
 - The logger settings can be changed from the UI (*Stats → Logger options*).

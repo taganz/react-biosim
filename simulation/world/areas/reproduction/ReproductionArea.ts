@@ -1,4 +1,4 @@
-import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
+import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import WorldObject from "../../objects/WorldObject";
 
 type WorldObjectConstructor = new (...args: any[]) => WorldObject;

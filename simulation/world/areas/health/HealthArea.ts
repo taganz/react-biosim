@@ -1,5 +1,5 @@
 import Creature from "../../../creature/Creature";
-import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
+import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import WorldObject from "../../objects/WorldObject";
 
 type WorldObjectType = new (...args: any[]) => WorldObject;

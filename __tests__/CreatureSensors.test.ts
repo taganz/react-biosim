@@ -4,7 +4,7 @@ import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import Genome from "@/simulation/creature/brain/Genome";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
@@ -54,7 +54,7 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
       
       // simulationData default values
 
-      simulationData = SIMULATION_DATA_DEFAULT;
+      simulationData = TEST_SIMULATION_DATA;
       // no mutation
       simulationData.worldGenerationsData.mutationProbability = 0;
       simulationData.worldGenerationsData.deletionRatio = 0;
@@ -200,7 +200,7 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
     /*
     test('calculateOutputs() - PreyDistance: finds nearest prey counting chess king steps', () => {
 
-      const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+      const simulationData : SimulationData = TEST_SIMULATION_DATA;
       simulationData.worldObjects = [];
       simulationData.worldControllerData.size = 5;
       simulationData.worldGenerationsData.initialPopulation = 3;

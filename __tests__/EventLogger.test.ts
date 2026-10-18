@@ -2,7 +2,7 @@ import { LogLevel, LogEvent } from "@/simulation/logger/LogEvent";
 import EventLogger, { LOG_NO_CREATURES, LoggerState } from "@/simulation/logger/EventLogger";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationCallEvent } from "@/simulation/logger/EventLogger";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import { SimulationData } from "@/simulation/SimulationData";
 
 
@@ -61,8 +61,8 @@ describe('EventLogger', () => {
         //const worldControllerData = testWorldControllerData;
         //const worldGenerationsData = testWorldGenerationsData;
         simulationData = {
-            ...SIMULATION_DATA_DEFAULT,
-            constants: {...SIMULATION_DATA_DEFAULT.constants, ...mockSimulationDataConstants},
+            ...TEST_SIMULATION_DATA,
+            constants: {...TEST_SIMULATION_DATA.constants, ...mockSimulationDataConstants},
         };
         worldControllerMock = new WorldController(simulationData);
         logger = new EventLogger(worldControllerMock, 10);

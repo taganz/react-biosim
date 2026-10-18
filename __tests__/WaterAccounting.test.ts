@@ -1,4 +1,4 @@
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import WorldController from "@/simulation/world/WorldController";
 
 /* with metabolism, all mass is water: the water counted in creatures must match their mass */
@@ -22,16 +22,16 @@ describe("water accounting with metabolism", () => {
 
   function start(simulationType: "generational" | "continuous", stepsPerGen: number) {
     const sim = {
-      ...SIMULATION_DATA_DEFAULT,
+      ...TEST_SIMULATION_DATA,
       worldObjects: [],
       worldControllerData: {
-        ...SIMULATION_DATA_DEFAULT.worldControllerData,
+        ...TEST_SIMULATION_DATA.worldControllerData,
         size: 30, stepsPerGen, pauseBetweenSteps: 0, immediateSteps: 1, pauseBetweenGenerations: 0,
         // low enough that plants reproduce
         REPRODUCTION_MULTIPLE_MASS_AT_BIRTH: 3,
       },
       worldGenerationsData: {
-        ...SIMULATION_DATA_DEFAULT.worldGenerationsData,
+        ...TEST_SIMULATION_DATA.worldGenerationsData,
         initialPopulation: 150, simulationType, metabolismEnabled: true,
       },
     };

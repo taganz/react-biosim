@@ -3,7 +3,7 @@ import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import { detectAll, gridDistance, detectClosest, DetectedCreature } from "@/simulation/world/grid/GridDetect";
 import Genome from '@/simulation/creature/brain/Genome';
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
@@ -23,7 +23,7 @@ describe('gridDetect', () => {
     let genomePlant : Genome;;
     
     beforeEach(() => {
-        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        const simulationData : SimulationData = TEST_SIMULATION_DATA;
         // no mutation
         simulationData.worldGenerationsData.mutationProbability = 0;
         simulationData.worldGenerationsData.deletionRatio = 0;
@@ -131,7 +131,7 @@ describe('gridDetect', () => {
         ]);
     });
     test('grid.detectAll(): big grid ', () => {
-        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        const simulationData : SimulationData = TEST_SIMULATION_DATA;
         // no mutation
         simulationData.worldGenerationsData.mutationProbability = 0;
         simulationData.worldGenerationsData.deletionRatio = 0;
@@ -215,7 +215,7 @@ describe('gridDetect', () => {
     }
 
     test('grid.detectClosest(): same result as searching every creature around', () => {
-        const simulationData : SimulationData = SIMULATION_DATA_DEFAULT;
+        const simulationData : SimulationData = TEST_SIMULATION_DATA;
         simulationData.worldObjects = [];
         simulationData.worldControllerData.size = 30;
         simulationData.worldGenerationsData.initialPopulation = 0;

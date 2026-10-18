@@ -1,5 +1,4 @@
-// load the defaults first: other import orders hit a circular import
-import { CONSTANTS_DEFAULT, SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
+import { CONSTANTS_DEFAULT, DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
 import WorldController from "@/simulation/world/WorldController";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
@@ -16,8 +15,8 @@ import deserializeSimulationData, { serializeSetup } from "@/simulation/serializ
 export type SimulationOverrides = { [key: string]: unknown };
 
 export type HeadlessOptions = {
-  /** "startup" (the scenario the app opens with), "default", or the contents of a .sim file */
-  base: "startup" | "default" | SavedSimulationData;
+  /** "startup" (the settings the app opens with) or the contents of a .sim file */
+  base: "startup" | SavedSimulationData;
   /** continue a saved run (its creatures or start genomes) instead of starting from generation 1 */
   resume?: boolean;
   /** generations to complete */
@@ -87,12 +86,12 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
   // WorldController schedules its loop with window.setTimeout
   if (typeof window === "undefined") (globalThis as Record<string, unknown>).window = globalThis;
 
-  const baseSim: SimulationData = options.base === "default" ? SIMULATION_DATA_DEFAULT : startUpScenarioSimulationData;
-  const worldController = new WorldController(baseSim);
+  const worldController = new WorldController(startUpScenarioSimulationData);
   // the base as a saved file, so a .sim file and the built-in bases go through the same path as loading in the app
-  // older files lack newer constants (e.g. POPULATION_DEFAULT_GENUS): take those from the defaults
+  // older files lack newer constants (e.g. POPULATION_DEFAULT_GENUS): take those from the defaults,
+  // with the default genus list so that Random Fixed Genera can create a population
   const saved: SavedSimulationData = typeof options.base === "object"
-    ? { ...options.base, constants: { ...CONSTANTS_DEFAULT, ...(options.base.constants as unknown as object) } as unknown as string }
+    ? { ...options.base, constants: { ...CONSTANTS_DEFAULT, POPULATION_DEFAULT_GENUS: DEFAULT_GENUS_PROBABILITIES, ...(options.base.constants as unknown as object) } as unknown as string }
     : serializeSetup(worldController);
 
   const unknownKeys: string[] = [];

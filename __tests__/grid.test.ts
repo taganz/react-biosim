@@ -3,7 +3,7 @@ import {Grid, GridCell} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
-import * as constants from "@/simulation/simulationDataDefault"
+import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 
 /* https://jestjs.io/docs/expect  */
 
@@ -97,7 +97,7 @@ describe('grid basics', () => {
 
         });
         
-        const worldController = new WorldController(constants.SIMULATION_DATA_DEFAULT);
+        const worldController = new WorldController(TEST_SIMULATION_DATA);
         const generations = new Generations(worldController, worldController.simData.worldGenerationsData, worldController.grid);
         const joe = new Creature(generations, [10, 10], true);
  

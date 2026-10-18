@@ -30,7 +30,7 @@ Sensors live in [CreatureSensors.ts](../../simulation/creature/brain/CreatureSen
 
 Add the sensor **at the end** of `data`. Inserting it in the middle changes the position of the sensors after it. Saved genomes then point to different sensors, but only in simulations where the new sensor is enabled.
 
-The Settings checkboxes and the network diagram labels are generated from `data`, so they need no change. Add the sensor to `enabledSensors` in a scenario or in [simulationDataDefault.ts](../../simulation/simulationDataDefault.ts) to switch it on by default. Then document it in [sensors-and-actions.md](../reference/sensors-and-actions.md).
+The Settings checkboxes and the network diagram labels are generated from `data`, so they need no change. Add the sensor to `enabledSensors` in a scenario or in [startupScenario.ts](../../simulation/startupScenario.ts) to switch it on by default. Then document it in [sensors-and-actions.md](../reference/sensors-and-actions.md).
 
 **Test it** the way [CreatureSensors.test.ts](../../__tests__/CreatureSensors.test.ts) does: build a small world, place a creature and check `calculateOutputs()`.
 
@@ -85,4 +85,6 @@ Useful helpers:
 
 ## Change the startup scenario
 
-The app opens with `startUpScenarioSimulationData` from [startupScenario.ts](../../simulation/startupScenario.ts). To open with `SIMULATION_DATA_DEFAULT` instead, set `STARTUP_MODE = "simulationDefault"` in [simulationDataDefault.ts](../../simulation/simulationDataDefault.ts).
+The app opens with `startUpScenarioSimulationData` from [startupScenario.ts](../../simulation/startupScenario.ts). It is the only set of default settings: the headless runner starts from it too, and the tests build `TEST_SIMULATION_DATA` from it. The constants (log options, colors, `DETECT_RADIUS`…) are in [constantsDefault.ts](../../simulation/constantsDefault.ts), together with `DEFAULT_GENUS_PROBABILITIES`, the genus list that Settings copies when Random Fixed Genera is chosen with an empty one.
+
+When you change a default, update the **Startup** column of [parameters.md](../reference/parameters.md).

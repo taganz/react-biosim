@@ -10,10 +10,7 @@ import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";
 import Creature from "@/simulation/creature/Creature";
 import type { Gene } from "@/simulation/creature/brain/Genome";
-import { STARTUP_MODE } from "@/simulation/simulationDataDefault";
-import { startUpScenarioSimulationData } from "../../simulation/startupScenario";
-import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
-import { SimulationData } from "@/simulation/SimulationData";
+import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
 //import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 //import EventLogger from "@/simulation/logger/EventLogger";
 
@@ -43,12 +40,7 @@ export default function SimulationCanvas({ className }: Props) {
   useEffect(
     function instantiateWorld() {
 
-      let simData : SimulationData;
-      if (STARTUP_MODE=="startupScenario") {
-        simData = startUpScenarioSimulationData;
-      } else {
-        simData = SIMULATION_DATA_DEFAULT;
-      }
+      const simData = startUpScenarioSimulationData;
 
       let worldController = new WorldController(simData);
       const simCode = worldController.startRun(simData);  

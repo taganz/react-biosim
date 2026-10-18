@@ -58,11 +58,11 @@ simulation/              The engine: plain TypeScript, no React
   logger/                  EventLogger (CSV log)
   headless/                runHeadless: runs a simulation in Node without drawing
   helpers/                 random.ts (the seeded random generator), helpers.ts
-  simulationDataDefault.ts Default SimulationData and constants
-  startupScenario.ts       SimulationData loaded when the app opens
+  constantsDefault.ts      Default constants and genus list
+  startupScenario.ts       The default SimulationData: the app opens with it
 public/                  Scenario .sim files served to the Start tab
 scripts/                 sim.ts: command line of the headless runner (npm run sim, with tsx)
-__tests__/               Jest tests for the engine
+__tests__/               Jest tests for the engine; support/ holds TEST_SIMULATION_DATA
 ```
 
 The **engine** (`simulation/`) has no React imports and can run in Node, which is how the tests use it. The only exception is `WorldController`, which uses `window.setTimeout` for its loop. Most tests that create one never start the loop; the [headless runner](../user/headless-runner.md) runs it in Node by setting `window` to `globalThis`.

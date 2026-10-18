@@ -8,65 +8,12 @@ import RectangleObject from "@/simulation/world/objects/RectangleObject";
 import WorldObject from "./world/objects/WorldObject";
 import { WaterData } from "./water/WaterData";
 import { SimulationData } from "./SimulationData";
-import { LogEvent } from "./logger/LogEvent";
+import { CONSTANTS_DEFAULT } from "./constantsDefault";
 
-const startUpScenarioConstants = {
-  
-  PRETTIFY_OUTPUT_TO_COPY : true,   
-  PRETTIFY_OUTPUT_TO_FILE : true,   
-
-  // -- log 
-  LOG_ENABLED : false,  // main switch for logging
-  //LOG_RESET_AT_RESTART : true,    // will reset automatically on every restart
-  LOG_CREATURE_ID : -1,   // -1 no creatures (only the totals), 0 all creatures, -10 ids 1 to 9, -30 ids 1 to 29, else that id
-  LOG_STEP_TOTALS : false,   // write the step totals
-  LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
-  LOG_LOCALE_STRING : 'es-ES',
-  LOG_ALLOWED_EVENTS: {
-    // creature
-    [LogEvent.INFO]: true,
-    [LogEvent.REPRODUCE]: true,
-    [LogEvent.REPRODUCE_TRY]: true,
-    [LogEvent.PHOTOSYNTHESIS]: true,
-    [LogEvent.BIRTH]: true,
-    [LogEvent.DEAD]: true,
-    [LogEvent.DEAD_ATTACKED]: true,
-    [LogEvent.METABOLISM]: true,
-    [LogEvent.ATTACK]: true,
-    [LogEvent.ATTACK_TRY]: true,
-    [LogEvent.MOVE]: true, 
-    [LogEvent.MOVE_TRY]: true, 
-    // controller
-    [LogEvent.GENERATION_START]: true,
-    [LogEvent.GENERATION_END]: true,
-    [LogEvent.STEP_END]: true,
-  },
-  GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS : 0.05, 
-  GREATEST_MASS_SELECTION_TOP_SURVIVORS : 0.05, 
-
-  // -- selection method
-
-  POPULATION_DEFAULT_SPECIES : [],
-
-  //POPULATION_DEFAULT_GENUS : [{genus: "plant", probability: 0.9},
-  //                            {genus: "attack_plant", probability: 0.1}],  // used in RandomFixedGenePopulation
-  POPULATION_DEFAULT_GENUS : [],
-  
-  SIM_CODE_LENGTH : 3,    
-
-  // -- objects
-
-  colors : {
-    reproduction: "rgba(0,0,255,0.1)",
-    obstacle: "rgb(60, 60, 60)",
-    healing: "rgba(0,255,0, 0.1)",
-    danger: "rgba(255,0,0, 0.1)",
-    spawn: "rgba(255, 255, 0, 0.1)",
-
-  },
-
-  DETECT_RADIUS : 10,    
-};
+/*
+ * The default settings: the app opens with them, the headless runner starts from them,
+ * and the tests build their own configuration from them (__tests__/support/testSimulationData.ts).
+ */
 
 const startupScenarioWorldGenerationsData : WorldGenerationsData = {
     simulationType: "generational",
@@ -122,9 +69,9 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           // model values
           MASS_WATER_TO_MASS_PER_STEP : 0.30, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
-          MASS_AT_BIRTH_ATTACK_PLANT : 2,
+          MASS_AT_BIRTH_ATTACK_PLANT : 3,
           MASS_AT_BIRTH_ATTACK : 2,
-          MASS_AT_BIRTH_ATTACK_ANIMAL : 3,
+          MASS_AT_BIRTH_ATTACK_ANIMAL : 6,
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_COST_PER_EXECUTE_ACTION : 0.01, //  a plant has a minimum of 2 actions and gets energy from photosynthesis
@@ -139,7 +86,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
           MOVE_COST_PER_MASS_TRY : 0.2,
           MOVE_COST_PER_MASS_DO : 0.6,
-          MOVE_MULTIPLE_MASS_AT_BIRTH : 2,    // 2
+          MOVE_MULTIPLE_MASS_AT_BIRTH : 0, // 2,    // 2
 
           ATTACK_COST_PER_MASS_TRY : 0.02,
           ATTACK_COST_PER_MASS_DO : 0,
@@ -176,7 +123,7 @@ const startupScenarioWorldObjectsData: WorldObject[] = [
       ];
     
 export const startUpScenarioSimulationData : SimulationData = {
-  constants: startUpScenarioConstants,
+  constants: { ...CONSTANTS_DEFAULT },
   worldGenerationsData: startupScenarioWorldGenerationsData,
   worldControllerData: startupScenarioWorldControllerData,
   waterData : startUpScenarioWaterData,
