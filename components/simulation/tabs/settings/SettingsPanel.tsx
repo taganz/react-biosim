@@ -488,7 +488,7 @@ export default function SettingsPanel() {
               onChange={(value: string) => setGenerationsValue("simulationType", value as SimulationType)}
             >
               <option value="generational">Generational</option>
-              <option value="continuous">Continuous (in dev)</option>
+              <option value="continuous">Continuous</option>
             </SelectInput>
             <ul className="text-xs">
               <li><b>Generational:</b> at the end of each generation the selection method picks the survivors, and the next generation is made of their children.</li>
