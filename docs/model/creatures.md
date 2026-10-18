@@ -26,7 +26,7 @@ A creature is created by the population strategy, or by another creature through
 At every step, each living creature runs `computeStep()`, in this order:
 
 1. **Age.** In continuous runs, if its age is above **Maximum age**, it dies of old age. In generational runs the limit is *Steps per generation* + 1, so it never applies: creatures are replaced first.
-2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` for each primary gene (the first gene that drives Photosynthesis and the first that drives Reproduction) and `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` for every other gene, so bigger genomes cost more.
+2. **Basal metabolism.** It spends `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` for each primary gene (the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis) and `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` for every other gene, so bigger genomes cost more.
 3. **Think and act.** It reads its sensors, runs its network and executes the actions (see [Brain and genome](brain.md)). Movement actions only add to an *urge to move*. Photosynthesis, Reproduction and the attacks happen straight away.
 4. **Move.** The urge to move is resolved (see [Movement](#movement)).
 5. **Distance index.** The `distanceCovered` counter is updated (see [Distance index](#distance-index)).

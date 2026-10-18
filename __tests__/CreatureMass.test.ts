@@ -100,7 +100,7 @@ describe('CreaturePhenotype', () => {
         expect(mass._worldWater.waterInCloud).toBe(194 + mass._basalConsumption);
         expect(mass._worldWater.waterInCells).toBe(50);
     });
-    test('basalConsumption - the first Photosynthesis and the first Reproduction gene cost PRIMARY, the rest PER_BRAIN_SIZE', ()=> {
+    test('basalConsumption - in plants the first Photosynthesis and the first Reproduction gene cost PRIMARY, the rest PER_BRAIN_SIZE', ()=> {
         const data = worldController.simData.worldControllerData;
         data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE = 0.04;
         data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY = 0.01;
@@ -111,11 +111,14 @@ describe('CreaturePhenotype', () => {
         const reproduction = geneTo("Reproduction");
         const other = geneTo("AttackPlant");
 
-        expect(CreatureMass.basalConsumption(generations, [photosynthesis, reproduction])).toBeCloseTo(0.02);
-        expect(CreatureMass.basalConsumption(generations, [photosynthesis, other, reproduction])).toBeCloseTo(0.06);
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, reproduction], "plant")).toBeCloseTo(0.02);
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, other, reproduction], "plant")).toBeCloseTo(0.06);
         // a second Photosynthesis gene is not primary
-        expect(CreatureMass.basalConsumption(generations, [photosynthesis, photosynthesis])).toBeCloseTo(0.05);
-        expect(CreatureMass.basalConsumption(generations, [other, other])).toBeCloseTo(0.08);
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, photosynthesis], "plant")).toBeCloseTo(0.05);
+        expect(CreatureMass.basalConsumption(generations, [other, other], "plant")).toBeCloseTo(0.08);
+        // in the other genera only Reproduction is primary
+        expect(CreatureMass.basalConsumption(generations, [photosynthesis, other, reproduction], "attack_plant")).toBeCloseTo(0.09);
+        expect(CreatureMass.basalConsumption(generations, [other, reproduction], "attack_animal")).toBeCloseTo(0.05);
     });
     test('eat - move the prey mass to the attacker, the water stays in creatures', ()=> {
         mass = joeAttackAnimal._mass;

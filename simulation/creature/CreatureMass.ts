@@ -5,6 +5,7 @@ import WorldGenerations from "../generations/WorldGenerations";
 import Genome, { Gene } from "./brain/Genome";
 import { NeuronType } from "./brain/Neuron";
 import { ActionName } from "./brain/CreatureActions";
+import { Genus } from "./CreatureGenus";
 
 export default class CreatureMass {
     //_massAtBirth : number;
@@ -42,22 +43,23 @@ export default class CreatureMass {
             this._worldWater.getWaterFromCloud(this.massAtBirth);
         }
 
-        this._basalConsumption = CreatureMass.basalConsumption(creature.generations, creature.brain.genome.genes);
+        this._basalConsumption = CreatureMass.basalConsumption(creature.generations, creature.brain.genome.genes, creature._genus);
         this._metabolismEnabled = creature.generations.metabolismEnabled;
         this._maxMass = this._massAtBirth 
                 * creature.generations.worldController.simData.worldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
     }
 
-    // the first gene that drives Photosynthesis and the first that drives Reproduction cost
+    // the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis cost
     // MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY; every other gene costs MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
-    static basalConsumption(generations: WorldGenerations, genes: Gene[]): number {
+    static basalConsumption(generations: WorldGenerations, genes: Gene[], genus: Genus): number {
         const data = generations.worldController.simData.worldControllerData;
+        const primaryActions: ActionName[] = genus === "plant" ? ["Photosynthesis", "Reproduction"] : ["Reproduction"];
         const primaryFound = new Set<ActionName>();
         for (const gene of genes) {
             const connection = Genome.geneToConnection(gene, generations);
             if (connection.sinkType !== NeuronType.ACTION) continue;
             const action = generations.enabledActions[connection.sinkId];
-            if (action === "Photosynthesis" || action === "Reproduction") primaryFound.add(action);
+            if (primaryActions.includes(action)) primaryFound.add(action);
         }
         const primaryGenes = primaryFound.size;
         return data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * primaryGenes

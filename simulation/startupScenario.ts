@@ -75,7 +75,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
-          MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : 0.01,   // the first Photosynthesis gene and the first Reproduction gene
+          MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : 0.01,   // the first Reproduction gene and, in plants, the first Photosynthesis gene
 
           REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
           REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3

@@ -70,7 +70,7 @@ These items were on the old list, or found while writing these docs, and are now
 - Consistent styling and status messages for log, save, load and GIF
 - A clearer logger panel (*Stats → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
-- A cheaper basal cost for the primary genes, the first Photosynthesis and the first Reproduction gene (`MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY`)
+- A cheaper basal cost for the primary genes, the first Reproduction gene and, in plants, the first Photosynthesis gene (`MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY`)
 - Water accounting with metabolism. Several leaks made `waterInCreatures` drift until the simulation stopped with a `dissipateWater` error: failed attempts could take more mass than the creature had, the child's mass on reproduction went to the cloud, photosynthesis lost the water above the maximum mass, attackers gained mass that also went back to the cell, and new generations had mass that was not counted.
 - Continuous runs are now a **Simulation type** instead of a population strategy and a selection method. This fixes the old Continuous strategy: it broke in generation 1, it dropped every creature not born in the current generation, and old age never applied.
 - The Initial population field no longer accepts World size², which the engine refuses. Its maximum is size² − 1.
