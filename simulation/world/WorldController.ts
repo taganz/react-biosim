@@ -59,6 +59,8 @@ export default class WorldController {
   /** id of a creature that is not alive yet: when it is born the run pauses and it is announced. null when none */
   watchedCreatureId: number | null = null;
   totalTime: number = 0;
+  /** increases every time the canvas is told to redraw; costly UI values are recomputed only when it changes */
+  redrawCount: number = 0;
   
 
   events: EventTarget = new EventTarget();
@@ -445,18 +447,21 @@ export default class WorldController {
     );
   }
 
+  private dispatchRedraw() : void {
+    this.redrawCount++;
+    this.events.dispatchEvent(
+      new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
+    );
+  }
+
   private sendRedrawEventEveryImmediateSteps() : void { 
     if (this.immediateSteps == 1) {
-      this.events.dispatchEvent(
-        new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
-      );
+      this.dispatchRedraw();
     } else
     if (this._immediateStepsCounter > 0) {
       this._immediateStepsCounter--;
       if (this._immediateStepsCounter == 0) {
-        this.events.dispatchEvent(
-          new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
-        );
+        this.dispatchRedraw();
         this._immediateStepsCounter = this.immediateSteps;
       } 
     }
@@ -479,9 +484,7 @@ export default class WorldController {
     this.watchedCreatureId = null;
     this.pause();
     // the steps run without redrawing may have hidden the birth
-    this.events.dispatchEvent(
-      new CustomEvent(WorldEvents.redraw, { detail: { worldController: this } })
-    );
+    this.dispatchRedraw();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.watchedCreatureBorn, { detail: { worldController: this, creature } })
     );

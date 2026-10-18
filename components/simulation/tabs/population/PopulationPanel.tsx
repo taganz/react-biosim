@@ -10,6 +10,11 @@ import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import PopulationSummary from "./PopulationSummary";
 import CreatureIdSearch from "./CreatureIdSearch";
+import SpeciesFilter from "./SpeciesFilter";
+import {
+  getEnabledSensorAndActionNames,
+  getUsedSensorsAndActions,
+} from "@/simulation/creature/brain/Helpers/networkLabels";
 
 export default function PopulationPanel() {
   const worldController = useAtomValue(worldControllerAtom);
@@ -73,7 +78,31 @@ export default function PopulationPanel() {
     // generationKey is not read, but a new generation has new creatures
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worldController, generationKey]);
-  const renderedSpecies = species.slice(0, 42);
+
+  // sensors and actions each species' network uses, for the filter
+  const usedBySpecies = useMemo(
+    () => new Map(species.map((s) => [s.genomeKey, getUsedSensorsAndActions(s.creatures[0])])),
+    [species]
+  );
+  const enabledNames = useMemo(
+    () =>
+      species.length > 0
+        ? getEnabledSensorAndActionNames(species[0].creatures[0])
+        : { sensors: [], actions: [] },
+    [species]
+  );
+
+  const [sensorFilter, setSensorFilter] = useState("");
+  const [actionFilter, setActionFilter] = useState("");
+  const filteredSpecies = species.filter((s) => {
+    const used = usedBySpecies.get(s.genomeKey)!;
+    return (
+      (sensorFilter === "" || used.sensors.has(sensorFilter)) &&
+      (actionFilter === "" || used.actions.has(actionFilter))
+    );
+  });
+  const isFiltered = sensorFilter !== "" || actionFilter !== "";
+  const renderedSpecies = filteredSpecies.slice(0, 42);
 
   // Bind worldController events
   useEffect(() => {
@@ -98,6 +127,22 @@ export default function PopulationPanel() {
     <div className="flex flex-col gap-6">
       <PopulationSummary speciesCount={species.length} />
       <CreatureIdSearch />
+      <SpeciesFilter
+        sensors={enabledNames.sensors}
+        actions={enabledNames.actions}
+        sensor={sensorFilter}
+        action={actionFilter}
+        onSensorChange={setSensorFilter}
+        onActionChange={setActionFilter}
+        message={
+          isFiltered
+            ? `${filteredSpecies.length} of ${species.length} species match` +
+              (filteredSpecies.length > renderedSpecies.length
+                ? `, showing the ${renderedSpecies.length} largest.`
+                : ".")
+            : ""
+        }
+      />
 
       <div className="flex gap-4">
         <div className="min-w-0 grow">

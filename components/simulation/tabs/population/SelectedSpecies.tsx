@@ -1,6 +1,6 @@
 import { useAtomValue, useAtom } from "jotai";
 import { worldControllerAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreatureInfo from "./SelectedCreatureInfo";
@@ -30,11 +30,21 @@ export default function SelectedSpeciesPanel({ selectedSpecies }: Props) {
   const [networkView, setNetworkView] = useState<"live" | "structure">("live");
 
   // counted live: the species list is only grouped at the start of the generation, so it misses
-  // species born later (continuous runs) and members that died since. "members,alive" is a primitive
+  // species born later (continuous runs) and members that died since. "members,alive" is a primitive.
+  // Counting compares the genes of every creature, so with Immediate steps above 1 it is only redone
+  // when the canvas is redrawn, as the rest of the world is not shown more often either
+  const countsCache = useRef<{ species?: Species; redrawCount: number; value: string }>(undefined);
   const counts = useWorldValue((world) => {
     if (!selectedSpecies) return "0,0";
+    const cache = countsCache.current;
+    const throttled = world.immediateSteps > 1 && !world.isPaused;
+    if (throttled && cache?.species === selectedSpecies && cache.redrawCount === world.redrawCount) {
+      return cache.value;
+    }
     const { members, alive } = countLivingWithGenes(world.generations, selectedSpecies.genome.genes);
-    return `${members},${alive}`;
+    const value = `${members},${alive}`;
+    countsCache.current = { species: selectedSpecies, redrawCount: world.redrawCount, value };
+    return value;
   }, "0,0");
   const [aliveCreatures, totalCreatures] = counts.split(",").map(Number);
   const populationPercentage = (
