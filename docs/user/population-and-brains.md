@@ -79,7 +79,7 @@ Selecting a creature or a species box clears the cell. To clear it yourself, use
 
 ## Selected species
 
-- **Alive / percentage**: how many members of the species are alive now and their share of all the living creatures. Unlike the boxes, it is live, so it also counts species born during the generation (continuous runs). If every member has died, it shows **Extinct**.
+- **Alive / percentage**: how many members of the species are alive now and their share of all the living creatures. Unlike the boxes, it is live, so it also counts species born during the generation (continuous runs). With **Immediate steps** at 20 or 200 it is recounted only when the world is redrawn, because counting compares the genes of every creature. If every member has died, it shows **Extinct**.
 - **Neuronal network**: the brain shared by every member of the species.
 - **What drives each action**: a summary of the network.
 - **Genome**: genome size and the raw genes in hexadecimal and binary. Use the clipboard button to copy them.
