@@ -1,4 +1,5 @@
 import type Creature from "../../Creature";
+import { NeuronType } from "../Neuron";
 
 const getPrettyName = (name: string) => name.replace(/([A-Z])/g, " $1").trim();
 
@@ -20,4 +21,30 @@ export function getNetworkLabels(creature: Creature): { sensors: string[]; actio
   }
 
   return { sensors, actions };
+}
+
+// Sensors and actions that the creature's network uses: the ones with at least one connection,
+// as the network diagram shows them. Returned by pretty name, without the [n] of each neuron
+export function getUsedSensorsAndActions(creature: Creature): { sensors: Set<string>; actions: Set<string> } {
+  const sensorNames: string[] = [];
+  for (const { enabled, name, neuronCount } of Object.values(creature.brain.sensors.data)) {
+    if (!enabled) continue;
+    for (let i = 0; i < neuronCount; i++) sensorNames.push(getPrettyName(name));
+  }
+  const actionNames = getNetworkLabels(creature).actions;
+
+  const sensors = new Set<string>();
+  const actions = new Set<string>();
+  for (const connection of creature.brain.brain.connections) {
+    if (connection.sourceType === NeuronType.SENSOR) sensors.add(sensorNames[connection.sourceId]);
+    if (connection.sinkType === NeuronType.ACTION) actions.add(actionNames[connection.sinkId]);
+  }
+  return { sensors, actions };
+}
+
+// Pretty names of every enabled sensor and action, in table order
+export function getEnabledSensorAndActionNames(creature: Creature): { sensors: string[]; actions: string[] } {
+  const pick = (data: Record<string, { enabled: boolean; name: string }>) =>
+    Object.values(data).filter(({ enabled }) => enabled).map(({ name }) => getPrettyName(name));
+  return { sensors: pick(creature.brain.sensors.data), actions: pick(creature.brain.actions.data) };
 }

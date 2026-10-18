@@ -14,6 +14,7 @@ Creatures with exactly the same genome belong to the same **species**. Each spec
 
 - The coloured boxes on the right are the 42 largest species, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus and size.
 - Click a box to select that species. One of its living creatures is selected too, with a ring around it in the world, so the live values of its network are shown. If the selected creature already belongs to that species, it stays selected. Click the box again to clear both the species and the creature.
+- **Filter species by** shows only the species whose network uses a given **Sensor** and/or **Action**: the ones with at least one connection from that sensor or to that action, as drawn in the network diagram. The lists contain the enabled sensors and actions. With both set, a species must use both. A line below says how many species match; the boxes show the 42 largest of them. **Clear filter** sets both back to **Any**. The filter only hides boxes: it does not change the selection.
 
 Many species in the list have the same colour (in `trophicLevel` mode, species of the same genus have similar shades) and the same count. Usually these are close relatives that differ by one mutation.
 
