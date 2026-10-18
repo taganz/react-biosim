@@ -1,8 +1,5 @@
 import PopulationStrategy from "./PopulationStrategy";
-import AsexualZonePopulation from "./AsexualZonePopulation";
 import AsexualRandomPopulation from "./AsexualRandomPopulation";
-import RandomFixedGenePopulation from "./RandomFixedGenePopulation";
-import PlantHerbivorePopulation from "./PlantHerbivorePopulation";
 import { populationMap } from "./populationStrategyOptions";
 
 export type SavedPopulationStrategy = string;

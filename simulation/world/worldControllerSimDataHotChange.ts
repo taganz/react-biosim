@@ -1,8 +1,4 @@
 import WorldController from "@/simulation/world/WorldController";
-import WorldControllerData from "@/simulation/world/WorldControllerData";
-import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
-import { WaterData } from "@/simulation/water/WaterData";
-import WorldObject from "./objects/WorldObject";
 import { SimulationData } from "../SimulationData";
 
 // Updates worldGenerationsData and worldControllerData with current run status vars 

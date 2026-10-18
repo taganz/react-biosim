@@ -3,7 +3,6 @@ import WorldGenerations from "../WorldGenerations";
 import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
-import WorldObject from "@/simulation/world/objects/WorldObject";
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class AsexualZonePopulation implements PopulationStrategy {

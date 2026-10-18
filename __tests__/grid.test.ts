@@ -3,12 +3,7 @@ import {Grid, GridCell} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
-import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
-import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
-import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import * as constants from "@/simulation/simulationDataDefault"
-import WorldWater from '@/simulation/water/WorldWater';
 
 /* https://jestjs.io/docs/expect  */
 

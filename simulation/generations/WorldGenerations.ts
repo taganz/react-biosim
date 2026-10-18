@@ -6,7 +6,7 @@ import PopulationStrategy from "./population/PopulationStrategy";
 //import InsideReproductionAreaSelection from "../creature/selection/InsideReproductionAreaSelection";
 import SelectionMethod from "./selection/SelectionMethod";
 import CreatureSensors from "../creature/brain/CreatureSensors";
-import {Grid, GridCell, GridPosition} from "../world/grid/Grid"
+import {Grid, GridPosition} from "../world/grid/Grid"
 import Genome from "@/simulation/creature/brain/Genome";
 import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";

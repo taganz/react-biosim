@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useAtom } from "jotai";
 import useWorldValue from "@/hooks/useWorldValue";
 import { showWaterAtom } from "../../store/guiControlsAtoms";

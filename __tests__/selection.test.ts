@@ -1,7 +1,5 @@
 // WORKING FILE
 
-import { populationStrategyFormatter } from "@/simulation/generations/population/populationStrategyFormatter";
-import WorldController from "@/simulation/world/WorldController";
 import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
 import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
 import GreatestDistanceSelection from "@/simulation/generations/selection/GreatestDistanceSelection";

@@ -2,7 +2,6 @@
 /* per fer toThrow cal posar tot en funcio expect( () => {...} ).toThrow() */
 
 import { selectGenusBasedOnProbability, GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
-import { Genus } from "@/simulation/creature/CreatureGenus";
 
 describe('selectGenusBasedOnProbability', () => {
     

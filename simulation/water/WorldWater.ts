@@ -1,6 +1,5 @@
-import { Grid, GridPosition, GridCell } from "../world/grid/Grid";
+import { Grid, GridCell } from "../world/grid/Grid";
 import { WaterData } from "@/simulation/water/WaterData";
-import { RainType } from "./RainType";
 
 /* 
     manages the water amount in the world (should be constant)

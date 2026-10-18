@@ -1,4 +1,3 @@
-import {Grid} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import WorldGenerations from "../WorldGenerations";
 

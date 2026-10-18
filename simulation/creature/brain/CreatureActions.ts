@@ -1,8 +1,6 @@
 import { random } from "@/simulation/helpers/random";
 import Creature from "../Creature";
-import * as constants from "../../simulationDataDefault"
-import {Direction, Direction4} from '@/simulation/world/direction';
-import { GridPosition } from "@/simulation/world/grid/Grid";
+import {Direction4} from '@/simulation/world/direction';
 import { Genus } from "../CreatureGenus";
 
 

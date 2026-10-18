@@ -3,8 +3,8 @@
 import WorldCanvas from "@/simulation/world/WorldCanvas";
 import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
-import { atom, useAtom, useSetAtom, useAtomValue } from "jotai";
-import React, { useCallback, useEffect, useRef } from "react";
+import { useAtom, useSetAtom, useAtomValue } from "jotai";
+import { useEffect, useRef } from "react";
 import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom, userSelectCreatureAtom, waitForCreatureTextAtom} from "./store";
 import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";

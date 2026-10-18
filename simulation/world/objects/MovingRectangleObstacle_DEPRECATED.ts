@@ -1,8 +1,3 @@
-import Creature from "@/simulation/creature/Creature";
-import { lerp } from "../../helpers/helpers";
-import WorldController from "../WorldController";
-import { CONSTANTS_DEFAULT } from "@/simulation/simulationDataDefault";
-import WorldObject from "./WorldObject";
 
 /*
 export default class MovingRectangleObstacle_DEPRECATED  implements WorldObject {

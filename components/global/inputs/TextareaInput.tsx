@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import { PropsWithChildren, useRef } from "react";
-import { FaClipboard } from "react-icons/fa";
+import { PropsWithChildren } from "react";
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from "react-textarea-autosize";

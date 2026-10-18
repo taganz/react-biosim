@@ -1,7 +1,6 @@
 //import {describe, expect, test} from '@jest/globals';
 import * as constants from "@/simulation/simulationDataDefault"
 import Genome, {geneToString} from "@/simulation/creature/brain/Genome";
-import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import { ConnectionType } from "@/simulation/creature/brain/Connection";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";

@@ -6,7 +6,7 @@ import {stateInitialAtom, stateStartPendingAtom, stateRecordingAtom, stateSavePe
 
 import {worldControllerAtom} from "../../store"
 import { WorldEvents } from "@/simulation/events/WorldEvents";
-import {atom, useAtom, useAtomValue} from 'jotai';
+import {useAtom, useAtomValue} from 'jotai';
 import {gifWorkerAsString} from "./gifWorkerAsString"
 
 

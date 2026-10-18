@@ -1,11 +1,7 @@
 import { shuffle } from "@/simulation/helpers/random";
 import WorldGenerations from "../WorldGenerations";
-import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
-import Genome from "../../creature/brain/Genome"
-import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
-import { selectGenusBasedOnProbability } from "./selectGenusBasedOnProbability"; 
 import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreatures";
 
 /* 

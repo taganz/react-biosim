@@ -1,5 +1,4 @@
 import EllipseObject from "../../objects/EllipseObject";
-import WorldController from "../../WorldController";
 import ReproductionArea from "./ReproductionArea";
 
 export default class EllipseReproductionArea extends ReproductionArea(

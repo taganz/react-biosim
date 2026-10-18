@@ -1,13 +1,12 @@
 import CreatureSensors from "@/simulation/creature/brain/CreatureSensors";
 import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
-import {Grid, GridCell} from '../simulation/world/grid/Grid';
+import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
 import { SIMULATION_DATA_DEFAULT } from "@/simulation/simulationDataDefault";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import Genome from "@/simulation/creature/brain/Genome";
-import { Genus } from "@/simulation/creature/CreatureGenus";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 

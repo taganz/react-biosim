@@ -1,6 +1,6 @@
 "use client";
 
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import MapDesignerLayer from "./MapDesignerLayer";
 import {
   mapDesignerFullscreenAtom,

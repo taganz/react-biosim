@@ -1,8 +1,6 @@
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
-import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
 import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
 import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
@@ -11,7 +9,6 @@ import WorldObject from "./world/objects/WorldObject";
 import { WaterData } from "./water/WaterData";
 import { SimulationData } from "./SimulationData";
 import { LogEvent } from "./logger/LogEvent";
-import Genome from "./creature/brain/Genome";
 
 const startUpScenarioConstants = {
   

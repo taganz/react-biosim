@@ -1,5 +1,5 @@
 import Creature from "./Creature";
-import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
+import {LogEvent} from '@/simulation/logger/LogEvent';
 
 export default class CreatureReproduction {
 

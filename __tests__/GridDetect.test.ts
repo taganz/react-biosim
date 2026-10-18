@@ -1,5 +1,5 @@
 
-import {Grid, GridCell} from '../simulation/world/grid/Grid';
+import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
 import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
@@ -8,7 +8,6 @@ import { detectAll, gridDistance, detectClosest, DetectedCreature } from "@/simu
 import Genome from '@/simulation/creature/brain/Genome';
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import WorldGenerations from '@/simulation/generations/WorldGenerations';
-import CreatureMass from '@/simulation/creature/CreatureMass';
 
 /* https://jestjs.io/docs/expect  */
 /* per fer toThrow cal posar tot en funcio expect( () => {...} ).toThrow() */

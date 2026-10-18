@@ -7,10 +7,9 @@ import {
   paddingLeft,
   probabilityToBool,
 } from "../../helpers/helpers";
-import { Genus } from "../CreatureGenus";
 import { MutationMode } from "./MutationMode";
 import { ConnectionType } from "./Connection";
-import { NeuronType, neuronTypeToString } from "./Neuron";
+import { NeuronType } from "./Neuron";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
 const logMutations = false;

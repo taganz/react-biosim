@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Atom, PrimitiveAtom, WritableAtom, atom } from "jotai";
+import { PrimitiveAtom, atom } from "jotai";
 import React from "react";
 import { createContext } from "react";
 

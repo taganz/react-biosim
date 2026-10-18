@@ -1,5 +1,3 @@
-import WorldObject from "@/simulation/world/objects/WorldObject";
-import { WaterData } from "@/simulation/water/WaterData";
 
 
 

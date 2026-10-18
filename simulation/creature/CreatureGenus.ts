@@ -1,16 +1,11 @@
 import { random } from "@/simulation/helpers/random";
 import CreatureBrain from "./brain/CreatureBrain";
 import { NeuronType } from "./brain/Neuron";
-import Genome, { geneToString } from "./brain/Genome";
-import { Sensor, SensorName } from "./brain/CreatureSensors";
-import { ActionName } from "./brain/CreatureActions";
-import CreatureActions from "./brain/CreatureActions";
-import CreatureSensors from "./brain/CreatureSensors";
+import Genome from "./brain/Genome";
 import { Gene } from "./brain/Genome";
 import WorldGenerations from "../generations/WorldGenerations";
 import { ConnectionType } from "./brain/Connection";
 import { getRandomItem } from "../helpers/helpers";
-import { geneArrayToString } from "./brain/Genome";
 export type Genus = "unknown" | "plant" | "attack_plant" |"attack_animal";
 
 export default class CreatureGenus {

@@ -1,5 +1,3 @@
-import SavedWorldObject from "@/simulation/serialization/data/SavedWorldObject";
-import { WaterData } from "@/simulation/water/WaterData";
 
 export default interface SavedWorldControllerData {
   // initial values

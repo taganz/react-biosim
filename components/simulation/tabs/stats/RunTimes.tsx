@@ -4,7 +4,7 @@ import useWorldValue from "@/hooks/useWorldValue";
 import { worldControllerAtom } from "../../store";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { useAtomValue } from "jotai";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // counts the steps computed during each second; null until the first second has passed
 function useStepsPerSecond(): number | null {

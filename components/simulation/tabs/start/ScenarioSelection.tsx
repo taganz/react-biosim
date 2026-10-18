@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import StatusMessage from "@/components/global/StatusMessage";
 import useSimulationLoader from "@/hooks/useSimulationLoader";

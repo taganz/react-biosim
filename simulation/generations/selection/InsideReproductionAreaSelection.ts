@@ -1,5 +1,4 @@
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
-import {Grid} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
 import SelectionMethod from "./SelectionMethod";
 

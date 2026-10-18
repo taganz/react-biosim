@@ -1,10 +1,9 @@
 "use client";
 
-import React from "react";
 import Button from "../global/Button";
 import { FaRedo } from "react-icons/fa";
-import { useAtom, useAtomValue } from "jotai";
-import { simulationDataAtom, worldControllerAtom, worldCanvasAtom} from "./store";
+import { useAtomValue } from "jotai";
+import { simulationDataAtom, worldControllerAtom} from "./store";
 
 interface Props {
   // icon only on narrow screens, for the control bar

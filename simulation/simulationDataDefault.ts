@@ -1,27 +1,14 @@
 
-import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
-import { ActionName } from "@/simulation/creature/brain/CreatureActions";
-import SelectionMethod from "@/simulation/generations/selection/SelectionMethod";
-import InsideReproductionAreaSelection from "@/simulation/generations/selection/InsideReproductionAreaSelection";
-import PopulationStrategy from "@/simulation/generations/population/PopulationStrategy";
-import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
-import RandomFixedGenePopulation from "@/simulation/generations/population/RandomFixedGenePopulation";
-import AsexualRandomPopulation from "@/simulation/generations/population/AsexualRandomPopulation";
-import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
-import RectangleSpawnArea from "@/simulation/world/areas/spawn/RectangleSpawnArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import RectangleObject from "@/simulation/world/objects/RectangleObject";
-import {LogEvent, AllowedLogEvents} from "@/simulation/logger/LogEvent"
-import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
+import {LogEvent} from "@/simulation/logger/LogEvent"
 import WorldGenerationsData from "./generations/WorldGenerationsData";
 import WorldControllerData from "./world/WorldControllerData";
 import { WaterData } from "./water/WaterData";
 import { SimulationData} from "./SimulationData";
 import Genome from "./creature/brain/Genome";
 import { NeuronType } from "./creature/brain/Neuron";
-import { selectGenusBasedOnProbability, GenusProbability } from "./generations/population/selectGenusBasedOnProbability";
 import GreatestMassSelection from "./generations/selection/GreatestMassSelection";
 import PlantHerbivorePopulation from "./generations/population/PlantHerbivorePopulation";
 

@@ -1,8 +1,5 @@
 import SelectionMethod from "./SelectionMethod";
-import GreatestDistanceSelection from "./GreatestDistanceSelection";
-import ReproductionSelection from "./ReproductionSelection";
 import InsideReproductionAreaSelection from "./InsideReproductionAreaSelection";
-import GreatestMassSelection from "./GreatestMassSelection";
 import { selectionMap } from "./selectionMethodOptions";
 
 export type SavedSelectionMethod = string;

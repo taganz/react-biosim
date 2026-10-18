@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { FaSlidersH } from "react-icons/fa";
 import RestartButton from "../RestartButton";

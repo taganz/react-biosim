@@ -1,4 +1,3 @@
-import { shuffle } from "@/simulation/helpers/random";
 import WorldGenerations from "../WorldGenerations";
 import {GridPosition} from "../../world/grid/Grid";
 import Creature from "../../creature/Creature";
@@ -6,7 +5,7 @@ import PopulationStrategy from "./PopulationStrategy";
 import Genome from "../../creature/brain/Genome"
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import { selectGenusBasedOnProbability } from "./selectGenusBasedOnProbability"; 
-import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreatures";
+import { addCreaturesFromParent } from "./addCreatures";
 
 // if a SpawnZone object exists, centers population around it, if not, replicate RandomPopulation
 export default class RandomFixedGenePopulation implements PopulationStrategy {

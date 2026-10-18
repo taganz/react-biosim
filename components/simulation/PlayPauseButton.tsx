@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useAtomValue } from "jotai";
 import { FaPause, FaPlay } from "react-icons/fa";
 import Button from "../global/Button";

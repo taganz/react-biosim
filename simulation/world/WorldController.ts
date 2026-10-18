@@ -1,11 +1,9 @@
-import { MutationMode } from "../creature/brain/MutationMode";
 import { WorldEvents } from "../events/WorldEvents";
 import { GenerationRegistry } from "./stats/GenerationRegistry";
-import {Grid, GridCell, GridPosition} from "./grid/Grid"
+import {Grid} from "./grid/Grid"
 import WorldObject from "./objects/WorldObject";
 import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "../generations/WorldGenerations";
-import WorldGenerationsData from "../generations/WorldGenerationsData";
 import Creature from "../creature/Creature"
 import EventLogger, {LogOptions, SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';

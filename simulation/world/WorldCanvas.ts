@@ -1,6 +1,5 @@
 import Creature from "../creature/Creature";
 import {GridPosition} from "./grid/Grid"
-import WorldObject from "./objects/WorldObject";
 import WorldController from "./WorldController";
 
 

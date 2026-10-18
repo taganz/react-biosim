@@ -6,7 +6,6 @@ import { selectionMethodFormatter } from '@/simulation/generations/selection/sel
 import {populationStrategyFormatter} from "@/simulation/generations/population/populationStrategyFormatter";
 import SavedWorldGenerationData from "../data/SavedWorldGenerationData"
 import {serializeMutationMode, deserializeMutationMode} from "@/simulation/creature/brain/MutationMode"
-import { SimulationData } from '@/simulation/SimulationData';
 import { SavedSimulationData } from '../data/SavedSimulationData';
 
 export function serializeWorldGenerationData(worldController: WorldController) 

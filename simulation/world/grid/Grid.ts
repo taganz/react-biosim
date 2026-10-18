@@ -2,9 +2,8 @@
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
-import {Direction, Direction4} from '@/simulation/world/direction';
+import {Direction4} from '@/simulation/world/direction';
 import { random, shuffle } from "@/simulation/helpers/random";
-import { geneArrayToString } from "@/simulation/creature/brain/Genome";
 
 
 export type GridCell = {

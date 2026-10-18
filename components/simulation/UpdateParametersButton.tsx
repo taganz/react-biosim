@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Button from "../global/Button";
 import { useAtomValue } from "jotai";
 import { worldControllerAtom, simulationDataAtom } from "./store";

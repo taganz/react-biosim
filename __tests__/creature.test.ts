@@ -1,13 +1,7 @@
 //import {describe, expect, test} from '@jest/globals';
-import {Grid, GridCell} from '../simulation/world/grid/Grid';
-import * as constants from "@/simulation/simulationDataDefault"
+import {Grid} from '../simulation/world/grid/Grid';
 import Creature from "@/simulation/creature/Creature";
-import Generations from "@/simulation/generations/WorldGenerations";
 import WorldController from "@/simulation/world/WorldController";
-import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import ReproductionSelection from "@/simulation/generations/selection/ReproductionSelection";
-import AsexualZonePopulation from "@/simulation/generations/population/AsexualZonePopulation";
-import WorldGenerationsData from '@/simulation/generations/WorldGenerationsData';
 import { SimulationData } from '@/simulation/SimulationData';
 import { SIMULATION_DATA_DEFAULT } from '@/simulation/simulationDataDefault';
 import Genome from '@/simulation/creature/brain/Genome';
