@@ -8,8 +8,8 @@ import GreatestMassSelection from "@/simulation/generations/selection/GreatestMa
 export const selectionMethodOptions: Option[] = [
   {value: "InsideReproductionAreaSelection", label: "Inside Reproduction Area"},
   {value: "GreatestDistanceSelection", label: "Greatest Distance (in dev)"},
-  {value: "GreatestMassSelection", label: "Greatest Mass (in dev)"},
-  {value: "ReproductionSelection", label: "Reproduction (in dev)"},
+  {value: "GreatestMassSelection", label: "Greatest Mass (hervivores only)"},
+  {value: "ReproductionSelection", label: "Reproduction"},
 ];
 
 // Mapping from values to constructor functions
