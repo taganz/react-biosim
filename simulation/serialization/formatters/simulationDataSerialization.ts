@@ -6,44 +6,27 @@ import WorldController from "@/simulation/world/WorldController";
 import generationRegistryFormatter from "./generationRegistryFormatter";
 import serializeSpecies from "./speciesSerialization";
 import { deserializeSpecies } from "./speciesSerialization";
-import {deserializeWaterData} from "./waterDataSerialization";
 import SavedStartGenome from "../data/SavedStartGenome";
 import Genome from "@/simulation/creature/brain/Genome";
-import {serializeWorldControllerData, deserializeWorldControllerData} from "./worldControllerDataSerialization";
+import {serializeWorldControllerData} from "./worldControllerDataSerialization";
 import WorldWater from "@/simulation/water/WorldWater";
-import migrateLogConstants from "@/simulation/logger/migrateLogConstants";
+import migrateSavedSimulationData, { SAVE_FORMAT_VERSION } from "../migrateSavedSimulationData";
 
-/*
-function loadGenerationRegistry(worldController: WorldController, parsed: SavedWorld) : void {
-    // Load generation registry
-    if (parsed.stats) {
-      worldController.generationRegistry = generationRegistryFormatter.deserialize(
-        parsed.stats,
-        worldController
-      );
-    } else {
-      worldController.generationRegistry = new GenerationRegistry(worldController);
-    }
-  
-}
-*/
-
-export default function deserializeSimulationData(worldController: WorldController, parsed: SavedSimulationData) : SimulationData {
-  // species, stats and startGenomes are optional: a setup has none of them
-    const simulationData : SimulationData = {
-        constants : migrateLogConstants(parsed.constants),
-        worldGenerationsData : deserializeWorldGenerationData(parsed),
-        worldControllerData : deserializeWorldControllerData(parsed.worldControllerData),
-        waterData : deserializeWaterData(parsed.waterData),
+// takes a parsed file of any version: migrateSavedSimulationData() brings it to the current format
+export default function deserializeSimulationData(worldController: WorldController, file: unknown) : SimulationData {
+    const parsed = migrateSavedSimulationData(file);
+    // species, stats and startGenomes are optional: a setup has none of them
+    return {
+        constants : parsed.constants,
+        worldGenerationsData : deserializeWorldGenerationData(parsed.worldGenerationsData),
+        worldControllerData : { ...parsed.worldControllerData },
+        waterData : { ...parsed.waterData },
         worldObjects : deserializeObjects(parsed.worldObjects),
         species : parsed.species === undefined ? undefined : deserializeSpecies(worldController, parsed.species),
         stats : (parsed.stats === undefined || Object.keys(parsed.stats).length === 0) ? undefined : generationRegistryFormatter.deserialize(parsed.stats),
         startGenomes : parsed.startGenomes === undefined ? undefined : deserializeStartGenomes(parsed.startGenomes),
         cellWater : parsed.cellWater,
-      // export function deserializeObjects
-      //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
-    }
-    return simulationData;
+    };
 }
     
 
@@ -51,18 +34,16 @@ export default function deserializeSimulationData(worldController: WorldControll
 export function serializeSimulationData(worldController: WorldController, includeStats: boolean = true) : SavedSimulationData {
   const sim = worldController.simData;  
   const serializedSimulationData : SavedSimulationData = {
-        constants : sim.constants, // JSON.stringify(sim.constants),
+        version : SAVE_FORMAT_VERSION,
+        constants : sim.constants,
         worldGenerationsData : serializeWorldGenerationData(worldController),
         worldControllerData : serializeWorldControllerData(worldController),
-        waterData : deserializeWaterData(sim.waterData),
+        waterData : { ...sim.waterData },
         worldObjects : serializeObjects(sim.worldObjects),
         species: serializeSpecies(worldController),
         // rounded: 3 decimals are far below what a creature takes in a step, and keep the file small
         cellWater: WorldWater.cellWater(worldController.grid).map((water) => Math.round(water * 1000) / 1000),
         ...(includeStats ? { stats: generationRegistryFormatter.serialize(worldController.generationRegistry) } : {}),
-       
-      // export function deserializeObjects
-      //    worldObjects: [...deserializeObjects(parsed.worldControllerData.worldObjects)],
     }
     return serializedSimulationData;
 }

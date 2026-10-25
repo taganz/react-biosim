@@ -13,8 +13,6 @@ const COUNTED_GENERA: Genus[] = ["plant", "attack_plant", "attack_animal"];
 // One line with the state of the whole population. Everything but the species count is live;
 // the species are grouped at the start of each generation.
 export default function PopulationSummary({ speciesCount }: Props) {
-  const currentGen = useWorldValue((world) => world.currentGen, 0);
-  const currentStep = useWorldValue((world) => world.currentStep, 0);
   const alive = useWorldValue((world) => world.generations.currentCreatures.length, 0);
   // a string, so the snapshot is a primitive and React only re-renders when a count changes
   const genusCounts = useWorldValue((world) => {
@@ -33,9 +31,6 @@ export default function PopulationSummary({ speciesCount }: Props) {
 
   return (
     <div className="flex flex-wrap gap-x-6 gap-y-1 tabular-nums lg:text-lg">
-      <span>
-        <strong>Generation</strong> {currentGen} · <strong>step</strong> {currentStep}
-      </span>
       <span>
         <strong>Alive creatures:</strong> {alive}
       </span>

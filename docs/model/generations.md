@@ -74,7 +74,7 @@ With **Simulation type** set to **Continuous** (*Scenario → Generations*), the
 - **Deaths:** creatures die of hunger, of attacks, or of old age when they are older than **Maximum age**.
 - **Water** is never reset. The rain of a generation is spread over its steps: each step rains `1 ÷ steps per generation` of **Rain max per cell** (see [World → Water](world.md#water)).
 - **The Age sensor** is the age of the creature divided by **Maximum age**, instead of the time since the start of the generation.
-- **Stats:** the plotted value is the population at the end of each window. The Stats tab also shows the births and deaths of the last window.
+- **Stats:** the plotted value is the population at the end of each window. The fitness chart in the Simulation tab also shows the births and deaths of the last window.
 - If every creature dies, the simulation restarts from generation 1, as in generational runs.
 
 Files saved with the old *Continuous* population strategy or selection method load as continuous runs, with Random Fixed Genera as the strategy for generation 1.

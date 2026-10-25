@@ -4,11 +4,11 @@ import TabPanel from "@/components/global/tabs/TabPanel";
 import Tabs from "@/components/global/tabs/Tabs";
 import ControlBar from "@/components/simulation/controlbar/ControlBar";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
-import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
+import ExportPanel from "@/components/simulation/tabs/export/ExportPanel";
 import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
 import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
-import StatsPanel from "@/components/simulation/tabs/stats/StatsPanel";
+import ToolsPanel from "@/components/simulation/tabs/tools/ToolsPanel";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -32,13 +32,10 @@ export default function Home() {
                 <TabList label="Simulation panels">
                   <Tab index={0}>Scenario</Tab>
                   <Tab index={1}>Simulation</Tab>
-                  <Tab index={2}>Export</Tab>
-                  <Tab index={3}>Tools</Tab>
-                  <Tab index={4}>About</Tab>
-                  {/* Old tabs: their components move to the new ones above */}
-                  <Tab index={5}>Population</Tab>
-                  <Tab index={6}>Stats</Tab>
-                  <Tab index={7}>Files</Tab>
+                  <Tab index={2}>Population</Tab>
+                  <Tab index={3}>Export</Tab>
+                  <Tab index={4}>Tools</Tab>
+                  <Tab index={5}>About</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -49,11 +46,19 @@ export default function Home() {
                   <SimulationPanel />
                 </TabPanel>
 
-                <TabPanel index={2}></TabPanel>
+                <TabPanel index={2}>
+                  <PopulationPanel />
+                </TabPanel>
 
-                <TabPanel index={3}></TabPanel>
+                <TabPanel index={3}>
+                  <ExportPanel />
+                </TabPanel>
 
                 <TabPanel index={4}>
+                  <ToolsPanel />
+                </TabPanel>
+
+                <TabPanel index={5}>
                   <p>
                       This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
                       <a
@@ -69,11 +74,11 @@ export default function Home() {
                   <ul className="list-disc pl-6">
                     <li>Start by using one of the simulations based on the video in the &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Adjust simulation speed and restart in the control bar at the top.</li>
-                    <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
+                    <li>See fitness evolution in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
-                    <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation and load it again in &apos;Files&apos;&nbsp;panel.</li>
+                    <li>Create a gif or save an image of current generation in &apos;Export&apos;&nbsp;panel.</li>
+                    <li>Save a copy of current simulation in &apos;Export&apos;&nbsp;panel and load it again in &apos;Scenario&apos;&nbsp;panel.</li>
                   </ul>
                   <br/>
                   Source code:&nbsp;{" "}
@@ -94,18 +99,6 @@ export default function Home() {
                   </a>
                   . Thanks to Carlos
                   <br/>
-                </TabPanel>
-
-                <TabPanel index={5}>
-                  <PopulationPanel />
-                </TabPanel>
-
-                <TabPanel index={6}>
-                  <StatsPanel />
-                </TabPanel>
-
-                <TabPanel index={7}>
-                  <FilesPanel />
                 </TabPanel>
               </Tabs>
             </div>

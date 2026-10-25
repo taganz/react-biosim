@@ -27,8 +27,8 @@ export default function ScenariosSelection() {
   };
 
   return (
-    <div className="my-4 flex flex-col gap-2">
-      <SelectInput label="Scenario" value={selectedIndex} onChange={handleSelection}>
+    <div className="flex flex-col gap-2">
+      <SelectInput label="Demo scenarios" value={selectedIndex} onChange={handleSelection}>
         <option value="">--Choose a scenario--</option>
         {scenarioObjects.map((scenario, index) => (
           <option key={scenario.filename} value={index.toString()}>

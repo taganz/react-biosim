@@ -4,7 +4,7 @@ The event logger records what happens during a run and saves it as a CSV file. T
 
 ## The file
 
-**Save log** (*Stats → Logger*) downloads `sim <code> generation <n>_creature <id>.csv`, the same pattern as the `.sim`, GIF and PNG files plus the creature filter: `<code>` is the simulation code, `<n>` the current generation and `<id>` the **Creature to log** of the last recording (`0`, `-10`, `-30` or a creature id). It is plain UTF-8 text:
+**Save log** (*Tools → Logger*) downloads `sim <code> generation <n>_creature <id>.csv`, the same pattern as the `.sim`, GIF and PNG files plus the creature filter: `<code>` is the simulation code, `<n>` the current generation and `<id>` the **Creature to log** of the last recording (`0`, `-10`, `-30` or a creature id). It is plain UTF-8 text:
 
 - The separator is `;`.
 - The first line is the header.
@@ -54,7 +54,7 @@ A block of `SETUP` rows records the configuration the log was made with. It is w
 - when a recording starts, before its first row: **Start recording**, at the step 1 where recording begins;
 - every time the run is set up (**Restart**, a loaded file or setup, **Update simulation**, the restart after an extinction) while the logger is recording. These currently pause the logger, unless a recording from *Generation 1* is waiting for it, so in practice the block comes with the start of the recording.
 
-They are always written, are not in **Events to record**, and do not count for **Maximum events** (nor for the number of events shown in Stats). They only need the logger to be enabled and recording.
+They are always written, are not in **Events to record**, and do not count for **Maximum events** (nor for the number of events shown in Tools → Logger). They only need the logger to be enabled and recording.
 
 | Column | Content |
 |---|---|

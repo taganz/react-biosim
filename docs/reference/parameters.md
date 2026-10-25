@@ -10,7 +10,7 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 | `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the [Map editor](../user/map-editor.md), in the Scenario tab) |
 | `constants` | object | Advanced options that are not shown in the UI |
 
-The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file from the **Files** tab replaces all of them.
+The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file with **Load .sim file** replaces all of them.
 
 ## How changes are applied
 
@@ -109,7 +109,7 @@ They open from the **Speed** button in the control bar. They change the running 
 |---|---|---|---|---|
 | Pause between steps (ms) | `worldControllerData.pauseBetweenSteps` | 0, 10, 50, 200 | 10 | Wait after each batch of steps. |
 | Pause between generations (ms) | `worldControllerData.pauseBetweenGenerations` | 0, 1000, 4000 | 0 | Wait at the end of each generation. |
-| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. Choosing 20 or 200 sets both pauses to 0. A batch of steps also ends after 30 ms, so when steps are slow (large worlds or populations) 20 and 200 run at the same speed. Compare them with **Steps per second** in Stats. |
+| Immediate steps | `worldControllerData.immediateSteps` | 1, 20, 200 | 1 | Steps computed before the canvas is redrawn. Use 200 to run at full speed. Choosing 20 or 200 sets both pauses to 0. A batch of steps also ends after 30 ms, so when steps are slow (large worlds or populations) 20 and 200 run at the same speed. Compare them with **Steps per second** under the fitness chart in the Simulation tab. |
 
 ## Not in the UI
 
@@ -164,6 +164,6 @@ The simulation writes these values itself so that a saved file can resume where 
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
 | `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1*. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
-| `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Stats → Logger*. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
+| `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Tools → Logger*. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
 | `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |
 | `SIM_CODE_LENGTH` | 3 | Length of the generated simulation code. |

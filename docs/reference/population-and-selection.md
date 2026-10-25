@@ -3,7 +3,7 @@
 A simulation runs in **generations**. Each generation lasts **Steps per generation** steps, and two pluggable pieces drive it:
 
 1. At the **start** of a generation, the **population strategy** places creatures on the map. From generation 2 on, it uses the survivors of the previous generation as parents.
-2. At the **end** of a generation, the **selection method** decides which creatures survive and become parents. It also computes the **fitness** value plotted in the Stats tab.
+2. At the **end** of a generation, the **selection method** decides which creatures survive and become parents. It also computes the **fitness** value plotted in the fitness chart of the Simulation tab.
 
 Both are chosen in **Scenario → Generations**. Options marked *(in dev)* in the UI are experimental.
 
@@ -48,7 +48,7 @@ Choosing Random Fixed Genera or Plant/Herbivore in the Scenario tab enables the 
 
 Source: [simulation/generations/selection/](../../simulation/generations/selection/).
 
-| UI label | Class | Who survives | Fitness value (Stats tab) |
+| UI label | Class | Who survives | Fitness value (fitness chart) |
 |---|---|---|---|
 | Inside Reproduction Area | `InsideReproductionAreaSelection` | Living creatures standing inside a **reproduction area** when the generation ends. | Survival rate: survivors ÷ initial population × 100 |
 | Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of creatures that travelled furthest during the generation (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`). | Largest distance covered |

@@ -12,7 +12,7 @@ import {
   userSelectCreatureAtom,
   worldControllerAtom,
 } from "../../store";
-import useSetLogOptions from "../stats/useSetLogOptions";
+import useSetLogOptions from "../tools/useSetLogOptions";
 
 interface Props {
   creature: Creature;

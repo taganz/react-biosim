@@ -6,9 +6,9 @@ How to use the app.
 
 1. [Getting started](user/getting-started.md): the screen, loading a scenario, speed controls
 2. [Population and brains](user/population-and-brains.md): species, selecting creatures, reading neural networks
-3. [Scenario, simulation and stats](user/settings-and-stats.md): changing the rules, applying changes, run options, reading the fitness chart
+3. [Scenario, simulation and tools](user/settings-and-stats.md): changing the rules, applying changes, run options, reading the fitness chart, the logger
 4. [Map editor](user/map-editor.md): obstacles and areas
-5. [Files](user/files.md): your own scenarios, save, load, PNG and GIF export
+5. [Export](user/export.md): your own scenarios, save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
 7. [Headless runner](user/headless-runner.md): run simulations from the command line or from Claude, without the browser
 

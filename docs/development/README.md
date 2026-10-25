@@ -45,7 +45,7 @@ components/
     SimulationCanvas.tsx   Creates the WorldController and draws the world
     controlbar/            Top bar: generation counter, survivors, speed controls, Restart, Play / Pause
     store/                 Jotai atoms
-    tabs/                  One folder per tab: start, population, stats, settings, map, save, load, files
+    tabs/                  One folder per tab: scenario, simulation, export, tools, population, save
 hooks/                   useWorldValue, useSimulationLoader, mouse and scroll helpers
 helpers/                 Coordinates, map-object geometry, random strings, user scenario storage
 simulation/              The engine: plain TypeScript, no React

@@ -1,50 +1,5 @@
+import WorldControllerData from "@/simulation/world/WorldControllerData";
 
-export default interface SavedWorldControllerData {
-  // initial values
-  size: number; 
-  stepsPerGen: number;
-  
-  // model values
-  MASS_WATER_TO_MASS_PER_STEP : number; 
-  MASS_AT_BIRTH_PLANT : number; 
-  MASS_AT_BIRTH_ATTACK_PLANT : number; 
-  MASS_AT_BIRTH_ATTACK : number; 
-  MASS_AT_BIRTH_ATTACK_ANIMAL : number; 
-  MASS_MAX_MULTIPLE_MASS_AT_BIRT : number; 
-  
-  MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number; 
-  MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY? : number;     // missing in older saves
-
-  REPRODUCTION_COST_PER_MASS_TRY : number; 
-  REPRODUCTION_COST_PER_MASS_DO : number; 
-  REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : number;     
-
-  ACTION_REPRODUCTION_OFFSET : number; 
-  ACTION_ATTACK_OFFSET? : number;     // missing in older saves
-
-  MOVE_COST_PER_MASS_TRY : number; 
-  MOVE_COST_PER_MASS_DO : number; 
-  MOVE_MULTIPLE_MASS_AT_BIRTH : number; 
-
-  ATTACK_COST_PER_MASS_TRY : number; 
-  ATTACK_COST_PER_MASS_DO : number; 
-  ATTACK_MIN_PREY_MASS_FACTOR : number;
-
-  // user values
-  pauseBetweenSteps: number;
-  immediateSteps: number;
-  pauseBetweenGenerations: number;
-  
-  // state values
-  simCode: string;
-  currentGen: number;
-  currentStep: number;
-  lastGenerationDuration: number;
-  totalTime: number;
-
-  // random generator, missing in older files
-  seed?: number;
-  runSeed?: number;
-  rngState?: number;
-
-}
+/** Saved as is: sizes, metabolism constants, speed, seed and run state */
+type SavedWorldControllerData = WorldControllerData;
+export default SavedWorldControllerData;

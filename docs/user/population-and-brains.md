@@ -6,7 +6,7 @@ The **Population** tab shows what is alive and how it thinks.
 
 ## Summary line
 
-The line at the top shows the generation and step, how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
+The line at the top shows how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
 
 ## Species
 
@@ -52,7 +52,7 @@ At the top of the **Creature** section there are some buttons:
 
 - **◀ ▶** select the previous or next living creature of the same species (ordered by id). The text between them says which one you are looking at, for example "2 of 5 in its species".
 - **Select parent** selects the creature its genome was copied from, and that creature's species, since a mutation may have made the child a new species. It is only enabled while the parent is alive. In generational runs the parents are replaced when the generation ends, so this is mostly useful in continuous runs or for children born by the Reproduction action.
-- **Set as creature to log** (only when the logger is enabled) puts the id of this creature in **Creature to log**, in *Stats → Logger*. It does not start a recording: the logger reads the field when a recording starts. Most selection methods restart the ids every generation, so a recording that starts in a later generation logs whichever creature has that id then. To log a creature of generation 1, use a fixed seed and record from *Generation 1*: after **Restart** the same id is the same creature.
+- **Set as creature to log** (only when the logger is enabled) puts the id of this creature in **Creature to log**, in *Tools → Logger*. It does not start a recording: the logger reads the field when a recording starts. Most selection methods restart the ids every generation, so a recording that starts in a later generation logs whichever creature has that id then. To log a creature of generation 1, use a fixed seed and record from *Generation 1*: after **Restart** the same id is the same creature.
 
 The section is updated at every step:
 

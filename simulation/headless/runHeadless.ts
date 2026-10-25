@@ -91,7 +91,7 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
   // older files lack newer constants (e.g. POPULATION_DEFAULT_GENUS): take those from the defaults,
   // with the default genus list so that Random Fixed Genera can create a population
   const saved: SavedSimulationData = typeof options.base === "object"
-    ? { ...options.base, constants: { ...CONSTANTS_DEFAULT, POPULATION_DEFAULT_GENUS: DEFAULT_GENUS_PROBABILITIES, ...(options.base.constants as unknown as object) } as unknown as string }
+    ? { ...options.base, constants: { ...CONSTANTS_DEFAULT, POPULATION_DEFAULT_GENUS: DEFAULT_GENUS_PROBABILITIES, ...options.base.constants } }
     : serializeSetup(worldController);
 
   const unknownKeys: string[] = [];
@@ -104,7 +104,7 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
   }
   // --log turns the logger on, which is off by default
   if (options.log) {
-    merged.constants = { ...(merged.constants as unknown as object), LOG_ENABLED: true } as unknown as string;
+    merged.constants = { ...merged.constants, LOG_ENABLED: true };
   }
   const sim = deserializeSimulationData(worldController, merged);
 

@@ -123,4 +123,4 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## Logging
 
-[EventLogger](../../simulation/logger/EventLogger.ts) collects creature and generation events (see [LogEvent.ts](../../simulation/logger/LogEvent.ts)) and saves them as CSV (the format is in [The log file](../reference/log-file.md)). It is configured through the `LOG_*` constants, which *Stats → Logger options* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Scenario draft may share its `constants` object. Its UI is in *Stats → Logger*.
+[EventLogger](../../simulation/logger/EventLogger.ts) collects creature and generation events (see [LogEvent.ts](../../simulation/logger/LogEvent.ts)) and saves them as CSV (the format is in [The log file](../reference/log-file.md)). It is configured through the `LOG_*` constants, which *Tools → Logger options* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Scenario draft may share its `constants` object. Its UI is in *Tools → Logger*.

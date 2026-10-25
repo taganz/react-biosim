@@ -64,7 +64,7 @@ Useful helpers:
 - `generations.grid.getRandomAvailablePosition()`, `getCenteredAvailablePosition(...)` and `getNearByAvailablePosition(...)`: find free cells. They can return `null` when the world is full.
 - `addCreaturesFromGenus()` and `addCreaturesFromParent()` in [addCreatures.ts](../../simulation/generations/population/addCreatures.ts).
 
-`getSurvivors()` returns `{ survivors, fitnessMaxValue }`. It is called once per generation, on the last step and before `currentGen` goes up, so the log can write the `GENERATION_END survivors` row; it must not draw random numbers or change the creatures. The fitness value is what the Stats chart plots, and `fitnessValueName` is the chart title. Set `isContinuous: true` only if creatures should keep their water between generations. It is not related to the *Continuous* simulation type, which uses no selection method.
+`getSurvivors()` returns `{ survivors, fitnessMaxValue }`. It is called once per generation, on the last step and before `currentGen` goes up, so the log can write the `GENERATION_END survivors` row; it must not draw random numbers or change the creatures. The fitness value is what the fitness chart (Simulation tab) plots, and `fitnessValueName` is the chart title. Set `isContinuous: true` only if creatures should keep their water between generations. It is not related to the *Continuous* simulation type, which uses no selection method.
 
 ## Add a map object
 
@@ -74,7 +74,7 @@ Useful helpers:
 
 ## Add a scenario
 
-1. Set the scenario up in the app, then save it with **Files → Save to file**.
+1. Set the scenario up in the app, then save it with **Export → Save to file**.
 2. Put the file in [public/](../../public/).
 3. Add an entry to [scenarioObjects.tsx](../../components/simulation/tabs/scenario/scenarioObjects.tsx):
    ```ts

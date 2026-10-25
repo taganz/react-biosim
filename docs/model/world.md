@@ -63,4 +63,4 @@ The total amount of water is fixed and is split between three stores ([WorldWate
 - **Evaporation**, at the end of every generation and before the rain, takes up to **Evaporation** units from each cell back to the cloud. (The call is hidden inside the end-of-generation logging function, `logEndGeneration`.)
 - In generational runs with the classic selection methods, all water is **reset** at the end of every generation, followed by a new first rain. Continuous runs, and the Reproduction selection method, carry water over between generations.
 
-The **Water** section in *Stats* shows the three stores. Their sum should stay constant. Its **Show water in cells** option paints the water of each empty cell on the world, as a percentage of the cell's capacity.
+The **Water** section in the *Simulation* tab shows the three stores. Their sum should stay constant. Its **Show water in cells** option paints the water of each empty cell on the world, as a percentage of the cell's capacity.

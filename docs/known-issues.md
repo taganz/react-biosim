@@ -20,7 +20,7 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **Plants with prey sensors detect any creature** | Plants have no prey genus, so for them the prey sensors return the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Files saved before October 2026 resume with young creatures and full cells** | They have no creature `age` and no `cellWater`. Every creature starts again at age 0 and every cell gets the first rain, so the first resumed generations of a continuous run have few deaths. Save the run again to get a file with both. | [Save format](development/serialization.md) |
 | **Some older sample files do not match their genomes** | Genes address actions by position in the enabled list, so a file whose list changed after its creatures evolved runs different brains. `public/test.sim` and `public/sim H8U generation 176_small_for_test.sim` list `Attack`, which is now `AttackPlant` / `AttackAnimal`. Loading ignores the unknown name, so their brains have one action fewer than when they were saved. `public/plants_2024_05_19.sim` lists the removed `Touch` sensor. | [Sensors and actions](reference/sensors-and-actions.md) |
-| **Files without `plantGenes` do not load** | The deserializer calls `JSON.parse` on the missing value and throws, in the app and in the headless runner. Example: `public/sim W19 generation 16_herbivores.sim`. | [Save format](development/serialization.md) |
+| **`public/sim W19 generation 16_herbivores.sim` does not load** | It was saved with an older metabolism: its creatures carry far more mass (one has about 53,000) than the world has water, and restoring them runs out of water. | [Save format](development/serialization.md) |
 | **Update simulation while paused runs one step** | `resumeRun` restarts the loop, and the pause is applied again after the first step. |  [Architecture](development/architecture.md#ui--engine-applying-settings) |
 
 ### User interface
@@ -52,7 +52,7 @@ These items were on the old list, or found while writing these docs, and are now
 
 - Loading a setup or a scenario from Start gave the run a new random simulation code instead of the one in the file.
 - A simulation code applied with **Update simulation** was replaced by a random one at the next **Restart** or restart after an extinction.
-- Saving a simulation without its creatures: **My scenarios** in the Files tab saves the setup, or the genomes at the start of a generation.
+- Saving a simulation without its creatures: **My scenarios** in the Export tab saves the setup, or the genomes at the start of a generation.
 - **Update simulation** after loading a file set the stats history back to the one in the file. Loading a file without stats kept the history of the previous run.
 - **Save to file** can leave out the stats history.
 - **Save to file** wrote the generation, step and simulation code from load time instead of the current ones. It also saved each creature's position from the previous step, and loading ignored the saved mass.
@@ -65,9 +65,9 @@ These items were on the old list, or found while writing these docs, and are now
 - Life history of each creature (parent, children, attacks, kills, photosynthesis, cause of death), shown in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file
-- Logging a single creature (*Stats → Logger → Creature to log*), with warnings when it dies or when the level does not write creature events, and its id in the name of the saved log
+- Logging a single creature (*Tools → Logger → Creature to log*), with warnings when it dies or when the level does not write creature events, and its id in the name of the saved log
 - Consistent styling and status messages for log, save, load and GIF
-- A clearer logger panel (*Stats → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
+- A clearer logger panel (*Tools → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
 - A cheaper basal cost for the primary genes, the first Reproduction gene and, in plants, the first Photosynthesis gene (`MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY`)
 - Water accounting with metabolism. Several leaks made `waterInCreatures` drift until the simulation stopped with a `dissipateWater` error: failed attempts could take more mass than the creature had, the child's mass on reproduction went to the cloud, photosynthesis lost the water above the maximum mass, attackers gained mass that also went back to the cell, and new generations had mass that was not counted.
@@ -92,7 +92,7 @@ These items were on the old list, or found while writing these docs, and are now
 - `PlantHerbivorePopulation.test.ts` failed about one run in three: with mutations on, a child could lose its AttackPlant gene and count as a plant. The test now turns mutations off.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 - With more herbivore survivors than 20% of the initial population, Plant/Herbivore created the herbivores and no plants, so that generation had nothing to eat. It now always adds the plants.
-- The logger settings can be changed from the UI (*Stats → Logger options*).
+- The logger settings can be changed from the UI (*Tools → Logger options*).
 - With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
 - Log totals of events with `_` in their name (`REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY`, `DEAD_ATTACKED`) were written as `REPRODUCE;TRY sum` and so on, and the totals of `INFO … _energyConsumedByActionsExecution` lost their `ParamName`.
 - The log wrote `GENERATION_START` twice from generation 2 on. It is now written once, at step 1.
@@ -105,6 +105,7 @@ These items were on the old list, or found while writing these docs, and are now
 - `public/turn right generation 5574.sim` had lost `MoveForward` and `Photosynthesis` from its enabled actions when the sample files were rebuilt in May 2024, while its genomes were kept. Its creatures ran different brains: about 40–120 survivors per generation instead of the 390 of its history. The two actions are back, and it resumes at about 400.
 - Resuming a file or **Update simulation** refilled every cell with the first rain, and creatures loaded from a file started again at age 0. In a continuous run the first resumed generation had a burst: 977 births and 59 deaths instead of about 3400 of each. The file now saves each creature's `age` and the water of each cell (`cellWater`), and a hot change keeps the water of the running world.
 - `MASS_COST_PER_EXECUTE_ACTION` is removed. It charged every creature the same mass per step (number of enabled actions × cost), whatever its brain did, so it could not favour any genome. Older files that have it still load. The log no longer writes `METABOLISM actionsExecutionConsumption`, the `DEAD` cause `actionsExecutionConsumption` or the `INFO … _energyConsumedByActionsExecution` row, so `INFO` blocks have 7 rows.
+- Files without `plantGenes` did not load. Saved files now have a version number, and one migration brings older files to the current format: the oldest ones, from before metabolism and water, take the missing settings from the startup values. `public/sim H8U generation 176_small_for_test.sim` loads again.
 
 ## Ideas
 

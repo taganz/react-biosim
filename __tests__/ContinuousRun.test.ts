@@ -3,11 +3,8 @@ import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";
-import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
-import {
-  serializeWorldGenerationData,
-  deserializeWorldGenerationData,
-} from "@/simulation/serialization/formatters/worldGenerationDataSerialization";
+import { serializeWorldGenerationData } from "@/simulation/serialization/formatters/worldGenerationDataSerialization";
+import deserializeSimulationData, { serializeSetup } from "@/simulation/serialization/formatters/simulationDataSerialization";
 
 /* continuous runs: a generation is only a time window and the creatures carry on */
 
@@ -128,18 +125,19 @@ describe("continuous simulation type", () => {
   });
 
   describe("loading files", () => {
-    function savedWith(changes: object): SavedSimulationData {
+    // a file without a version (version 1) with these changes, as it loads
+    function loadOldFileWith(changes: object) {
       start("generational", 1000);
-      const saved = { ...serializeWorldGenerationData(worldController), ...changes };
-      return { worldGenerationsData: saved } as SavedSimulationData;
+      const { version, ...file } = serializeSetup(worldController);
+      const old = { ...file, worldGenerationsData: { ...file.worldGenerationsData, ...changes } };
+      return deserializeSimulationData(worldController, old).worldGenerationsData;
     }
 
     test("an old Continuous file loads as a continuous run", () => {
-      const parsed = savedWith({
+      const data = loadOldFileWith({
         simulationType: undefined, maxAge: undefined,
         populationStrategy: "ContinuousPopulation", selectionMethod: "ContinuousSelection",
       });
-      const data = deserializeWorldGenerationData(parsed);
       expect(data.simulationType).toBe("continuous");
       expect(data.maxAge).toBe(1000);
       expect(data.populationStrategy.name).toBe("RandomFixedGenePopulation");
@@ -147,8 +145,7 @@ describe("continuous simulation type", () => {
     });
 
     test("an old file without simulation type loads as generational", () => {
-      const parsed = savedWith({ simulationType: undefined, maxAge: undefined });
-      expect(deserializeWorldGenerationData(parsed).simulationType).toBe("generational");
+      expect(loadOldFileWith({ simulationType: undefined, maxAge: undefined }).simulationType).toBe("generational");
     });
 
     test("the simulation type and maximum age are saved", () => {
