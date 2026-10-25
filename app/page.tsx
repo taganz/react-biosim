@@ -8,7 +8,7 @@ import ExportPanel from "@/components/simulation/tabs/export/ExportPanel";
 import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
 import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
-import StatsPanel from "@/components/simulation/tabs/stats/StatsPanel";
+import ToolsPanel from "@/components/simulation/tabs/tools/ToolsPanel";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -37,7 +37,6 @@ export default function Home() {
                   <Tab index={4}>About</Tab>
                   {/* Old tabs: their components move to the new ones above */}
                   <Tab index={5}>Population</Tab>
-                  <Tab index={6}>Stats</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -52,7 +51,9 @@ export default function Home() {
                   <ExportPanel />
                 </TabPanel>
 
-                <TabPanel index={3}></TabPanel>
+                <TabPanel index={3}>
+                  <ToolsPanel />
+                </TabPanel>
 
                 <TabPanel index={4}>
                   <p>
@@ -70,7 +71,7 @@ export default function Home() {
                   <ul className="list-disc pl-6">
                     <li>Start by using one of the simulations based on the video in the &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Adjust simulation speed and restart in the control bar at the top.</li>
-                    <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
+                    <li>See fitness evolution in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Export&apos;&nbsp;panel.</li>
@@ -99,10 +100,6 @@ export default function Home() {
 
                 <TabPanel index={5}>
                   <PopulationPanel />
-                </TabPanel>
-
-                <TabPanel index={6}>
-                  <StatsPanel />
                 </TabPanel>
               </Tabs>
             </div>

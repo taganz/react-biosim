@@ -1,6 +1,6 @@
-# Scenario, simulation and stats
+# Scenario, simulation and tools
 
-Use **Scenario** to change the rules of a simulation, **Simulation** for the options of the run itself, and **Stats** to see whether the change worked.
+Use **Scenario** to change the rules of a simulation, **Simulation** for the options of the run itself and to see whether the change worked, and **Tools** for the logger.
 
 ## Scenario
 
@@ -45,11 +45,13 @@ The options of the running simulation. They have no draft: a change applies at o
 - **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect at the next **Restart**: the running simulation keeps its random sequence.
 - **Phenotype mode** (Display) only changes how creatures are coloured: by genome, so each species has its own colour, or by trophic level (green plants, blue herbivores, red carnivores). The creatures are recoloured straight away.
 
-## Stats
+Below the options, two collapsible sections show how the run is going. Both start closed: click the title to open them.
 
-![Stats tab](images/tab_stats.png)
+### Fitness chart
 
-The chart plots the **fitness value** of every generation. The selection method defines what fitness means, and the chart title changes with it:
+![Fitness chart](images/tab_stats.png)
+
+The section title is the name of the fitness value, for example **Survival rate (%)**. The chart plots the **fitness value** of every generation. The selection method defines what fitness means, and the chart title changes with it:
 
 | Selection method | Chart title | Meaning |
 |---|---|---|
@@ -72,6 +74,8 @@ Typical shapes:
 ### Water
 
 Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled. **Show water in cells** paints every empty cell of the world from grey (no water) to blue (full), by its water as a percentage of the cell's capacity. It is a viewer option: it is off when the app opens, it is not saved with the simulation, and it redraws the world at once, also while paused. Because it is drawn on the world canvas, GIFs recorded while it is on show the water too.
+
+## Tools
 
 ### Logger
 

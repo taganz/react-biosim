@@ -3,10 +3,9 @@
 import { useCallback } from "react";
 import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
 import LinearGraph from "@/components/global/graphs/LinearGraph";
-import WorldWaterStatus from "./WorldWaterStatus";
-import LoggerPanel from "./LoggerPanel";
 import RunTimes from "./RunTimes";
 import useWorldValue from "@/hooks/useWorldValue";
+import CollapsibleSection from "../CollapsibleSection";
 
 const NO_GENERATIONS: SingleGeneration[] = [];
 
@@ -14,7 +13,8 @@ function getter(data: SingleGeneration): [number, number] {
   return [data.generation, data.maxFitnessValue];
 }
 
-export default function StatsPanel() {
+// Fitness per generation (the survival rate, for Inside Reproduction Area), in a collapsible section
+export default function FitnessGraph() {
   // generationRegistry is replaced on restart, so read it through the hook instead of caching it
   const data = useWorldValue((world) => world.generationRegistry.generations, NO_GENERATIONS);
   // generations are pushed into the same array, so use the generation number to trigger graph redraws
@@ -46,9 +46,7 @@ export default function StatsPanel() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-10">
-    <div>
-      <h3 className="mb-1 text-2xl font-bold">{fitnessValueName}</h3>
+    <CollapsibleSection title={fitnessValueName}>
       {isContinuous ? (
         <p>{`At the end of the last generation: ${lastFitnessMaxValue} creatures, ${lastBirths} births and ${lastDeaths} deaths during it.`}</p>
       ) : (
@@ -68,12 +66,7 @@ export default function StatsPanel() {
         className="aspect-[2/1] w-full bg-white"
       />
       <RunTimes />
-     {/* TODO genus graph.... */ }
-     </div>
-
-      <WorldWaterStatus/>
-
-      <LoggerPanel/>
-  </div>
+      {/* TODO genus graph.... */}
+    </CollapsibleSection>
   );
 }

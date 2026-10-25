@@ -92,7 +92,7 @@ npm run sim -- experiments/example.json --generations 50
 |---|---|
 | `run` | 0, then one more after every extinction: the engine restarts from generation 1 with the same settings |
 | `generation` | Generation number |
-| `startingPopulation`, `survivorCount`, `births`, `deaths`, `maxFitnessValue` | The generation's stats, as in the Stats tab |
+| `startingPopulation`, `survivorCount`, `births`, `deaths`, `maxFitnessValue` | The generation's stats, as in the fitness chart of the Simulation tab |
 | `durationMs` | Time the generation took |
 | `nextPopulation` | Population at the start of the next generation |
 | `nextPlants`, `nextAttackPlants`, `nextAttackAnimals`, `nextUnknown` | The same population by [genus](../model/creatures.md) |

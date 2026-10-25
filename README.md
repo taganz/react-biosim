@@ -11,7 +11,7 @@ Creatures live on a grid and are controlled by small neural networks built from 
 ## Quick start
 
 1. Open the **Start** tab and pick a scenario.
-2. Watch the fitness curve rise in the **Stats** tab.
+2. Watch the fitness curve rise in the **Simulation** tab (**Survival rate (%)**).
 3. Click a species in the **Population** tab to see its brain.
 4. Change the rules in **Settings** or draw a new map in **Map**, then click **Restart**.
 
@@ -42,13 +42,12 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 
 | Tab | Use it to |
 |---|---|
-| Start | Load an included scenario |
-| Population | See the top species, a creature's genome and its neural network, live or as a diagram |
-| Stats | Plot fitness per generation, check the logger and water |
-| Settings | Change world, generations, neural networks, mutations, sensors and actions, then apply with **Update simulation** (keeps the creatures) or **Restart** |
-| Map | Draw obstacles and areas, then apply the map to the simulation |
+| Scenario | Load a demo scenario, a `.sim` file or a saved scenario; change world, generations, neural networks, mutations, sensors, actions and the map, then apply with **Update simulation** (keeps the creatures) or **Restart** |
+| Simulation | Simulation code, seed and display options; plot fitness per generation and check the water |
 | Export | Save your own scenarios, save the simulation to a `.sim` file or as JSON, export images and GIFs |
+| Tools | Record the simulation events with the logger |
 | About | Credits and links |
+| Population | See the top species, a creature's genome and its neural network, live or as a diagram |
 
 ## Documentation
 

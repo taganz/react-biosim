@@ -3,6 +3,7 @@
 import { useAtom } from "jotai";
 import useWorldValue from "@/hooks/useWorldValue";
 import { showWaterAtom } from "../../store/guiControlsAtoms";
+import CollapsibleSection from "../CollapsibleSection";
 
 export default function WorldWaterStatus() {
   const totalWater = useWorldValue((world) => world.worldWater.totalWater, 0);
@@ -12,8 +13,7 @@ export default function WorldWaterStatus() {
   const [showWater, setShowWater] = useAtom(showWaterAtom);
 
   return (
-    <section className="flex flex-col gap-2">
-      <h3 className="text-2xl font-bold">Water</h3>
+    <CollapsibleSection title="Water">
       <dl className="grid grid-cols-[auto_1fr] gap-x-4">
         <dt>Total water</dt>
         <dd>{totalWater.toFixed(1)}</dd>
@@ -32,6 +32,6 @@ export default function WorldWaterStatus() {
         />
         Show water in cells
       </label>
-    </section>
+    </CollapsibleSection>
   );
 }

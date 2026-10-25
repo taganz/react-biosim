@@ -8,7 +8,7 @@ The screen has three parts:
 
 - **The control bar** (top). Shows progress and holds the speed controls, Restart and Play / Pause. It stays at the top of the screen when you scroll.
 - **The world** (left). Each coloured square is a creature. Shaded rectangles are areas: blue for reproduction, yellow for spawn, green or red for health. Dark grey rectangles are obstacles. The top-left corner shows the current generation.
-- **The tabs** (right). Use them to load scenarios, inspect creatures, read stats, change settings, edit the map and save your work.
+- **The tabs** (right). Use them to load scenarios, inspect creatures, read the fitness chart, change settings, edit the map and save your work.
 
 ## 1. Load a scenario
 
@@ -25,7 +25,7 @@ Each **generation** lasts a fixed number of steps (300 by default). At every ste
 1. The creatures that reached the goal survive. In most scenarios, the goal is to stand inside a blue reproduction area.
 2. A new generation is created from copies of the survivors' genomes. A few copies mutate.
 
-In the first generations creatures move almost at random. After tens or hundreds of generations, most of them head for the goal. Open the **Stats** tab to watch the survival rate climb (see [Scenario, simulation and stats](settings-and-stats.md)).
+In the first generations creatures move almost at random. After tens or hundreds of generations, most of them head for the goal. Open **Survival rate (%)** in the **Simulation** tab to watch it climb (see [Scenario, simulation and tools](settings-and-stats.md)).
 
 ## 3. Control the speed
 
@@ -43,7 +43,7 @@ In the first generations creatures move almost at random. After tens or hundreds
 
 The speed controls open from the **Speed** button, in a panel over the page. Click anywhere else to close it. Survivors is shown on screens at least 1024 px wide. On phones the Speed and Restart buttons show only their icons.
 
-The time spent running the simulation is shown in the **Stats** tab.
+The time spent running the simulation is shown under the fitness chart in the **Simulation** tab.
 
 ## 4. Look inside a creature
 
@@ -52,7 +52,7 @@ Click any creature in the world. A ring marks it, and the **Population** tab sho
 ## Next steps
 
 - [Population and brains](population-and-brains.md): species, neural networks, genomes
-- [Scenario, simulation and stats](settings-and-stats.md): change the rules and measure the results
+- [Scenario, simulation and tools](settings-and-stats.md): change the rules and measure the results
 - [Map editor](map-editor.md): draw your own world
 - [Export](export.md): your own scenarios, save, load, export images and GIFs
 - [Scenarios](scenarios.md): what each included scenario shows

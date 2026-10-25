@@ -8,7 +8,7 @@ import SelectedCellInfo from "./SelectedCellInfo";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
-import CollapsibleSection from "./CollapsibleSection";
+import CollapsibleSection from "../CollapsibleSection";
 import CreatureToolbar from "./CreatureToolbar";
 import { ToggleGroup } from "@/components/global/ToggleGroup";
 import Toggle from "@/components/global/Toggle";

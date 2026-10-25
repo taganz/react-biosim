@@ -8,6 +8,8 @@ import { PhenoTypeColorMode } from "@/simulation/creature/PhenoTypeColorMode";
 import useWorldValue from "@/hooks/useWorldValue";
 import Section, { FIELDS_GRID } from "../Section";
 import useSetRunOptions from "./useSetRunOptions";
+import FitnessGraph from "./FitnessGraph";
+import WorldWaterStatus from "./WorldWaterStatus";
 
 // the generator keeps 32 bits of the seed
 const MAX_SEED = 0xffffffff;
@@ -116,6 +118,12 @@ export default function SimulationPanel() {
           </div>
         </div>
       </Section>
+
+      {/* === STATS === */}
+      <div className="flex flex-col gap-4">
+        <FitnessGraph />
+        <WorldWaterStatus />
+      </div>
     </div>
   );
 }

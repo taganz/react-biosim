@@ -65,9 +65,9 @@ These items were on the old list, or found while writing these docs, and are now
 - Life history of each creature (parent, children, attacks, kills, photosynthesis, cause of death), shown in the Population tab
 - Showing the brain of a species, as a structure diagram, with live values and an influence table
 - Saving the metabolism parameters in the save file
-- Logging a single creature (*Stats → Logger → Creature to log*), with warnings when it dies or when the level does not write creature events, and its id in the name of the saved log
+- Logging a single creature (*Tools → Logger → Creature to log*), with warnings when it dies or when the level does not write creature events, and its id in the name of the saved log
 - Consistent styling and status messages for log, save, load and GIF
-- A clearer logger panel (*Stats → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
+- A clearer logger panel (*Tools → Logger*, no longer under development, off by default): the real status, **From** / **For** / **Start recording** / **Stop log**, a list for **Creature to log** and for the number locale, and a faster save of large logs. **Level** is replaced by *No creatures* in **Creature to log** and a **Step totals** box; files with `LOG_LEVEL` are converted
 - A metabolic cost for brain size (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`)
 - A cheaper basal cost for the primary genes, the first Reproduction gene and, in plants, the first Photosynthesis gene (`MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY`)
 - Water accounting with metabolism. Several leaks made `waterInCreatures` drift until the simulation stopped with a `dissipateWater` error: failed attempts could take more mass than the creature had, the child's mass on reproduction went to the cloud, photosynthesis lost the water above the maximum mass, attackers gained mass that also went back to the cell, and new generations had mass that was not counted.
@@ -92,7 +92,7 @@ These items were on the old list, or found while writing these docs, and are now
 - `PlantHerbivorePopulation.test.ts` failed about one run in three: with mutations on, a child could lose its AttackPlant gene and count as a plant. The test now turns mutations off.
 - Greatest Mass no longer crashes when no herbivores are left. It returns no survivors, and with Plant/Herbivore the next generation has only plants.
 - With more herbivore survivors than 20% of the initial population, Plant/Herbivore created the herbivores and no plants, so that generation had nothing to eat. It now always adds the plants.
-- The logger settings can be changed from the UI (*Stats → Logger options*).
+- The logger settings can be changed from the UI (*Tools → Logger options*).
 - With the logger level at *Step totals* or *Generation totals* (the default is *Step totals*), the step and generation totals were always empty: creature events were dropped before they were counted.
 - Log totals of events with `_` in their name (`REPRODUCE_TRY`, `ATTACK_TRY`, `MOVE_TRY`, `DEAD_ATTACKED`) were written as `REPRODUCE;TRY sum` and so on, and the totals of `INFO … _energyConsumedByActionsExecution` lost their `ParamName`.
 - The log wrote `GENERATION_START` twice from generation 2 on. It is now written once, at step 1.
