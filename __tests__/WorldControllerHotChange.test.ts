@@ -164,4 +164,38 @@ describe("WorldController hot change", () => {
     const relogged = worldController.setLogOptions({ LOG_ENABLED: false });
     expect(worldController.restartSimCode(relogged)).toBeUndefined();
   });
+  test("run options apply at once and do not touch the creatures", () => {
+    worldController.pause();
+    const creatures = positions(worldController);
+    const before = worldController.simData;
+
+    const updated = worldController.setRunOptions({ simCode: "MYRUN", phenotypeColorMode: "trophicLevel", seed: 7 });
+    expect(worldController.simCode).toBe("MYRUN");
+    expect(worldController.isSimCodeRandom).toBe(false);
+    expect(worldController.generations.phenotypeColorMode).toBe("trophicLevel");
+    expect(updated.worldControllerData).toMatchObject({ simCode: "MYRUN", seed: 7 });
+    expect(updated.worldGenerationsData.phenotypeColorMode).toBe("trophicLevel");
+    // replaced, not mutated
+    expect(before.worldControllerData.simCode).not.toBe("MYRUN");
+    expect(positions(worldController)).toEqual(creatures);
+
+    // a chosen code is kept by restarts; the seed applies there
+    worldController.startRun(updated, worldController.restartSimCode(updated));
+    expect(worldController.simCode).toBe("MYRUN");
+    expect(worldController.seed).toBe(7);
+
+    // null goes back to a random seed
+    expect(worldController.setRunOptions({ seed: null }).worldControllerData.seed).toBeUndefined();
+  });
+
+  test("fixing the seed of the run still repeats it; another seed does not", () => {
+    worldController.pause();
+    const code = worldController.simCode;
+
+    const fixed = worldController.setRunOptions({ seed: worldController.seed });
+    expect(worldController.restartSimCode(fixed)).toBe(code);
+
+    const other = worldController.setRunOptions({ seed: worldController.seed + 1 });
+    expect(worldController.restartSimCode(other)).toBeUndefined();
+  });
 });

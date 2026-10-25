@@ -1,6 +1,6 @@
 # The log file
 
-The event logger records what happens during a run and saves it as a CSV file. This page describes the file: its columns, the five kinds of rows, every event the engine writes, and the exact rows of one creature when every option is on. How to use the logger from the UI is in [Settings and stats](../user/settings-and-stats.md#under-development-logger). The code is in [EventLogger.ts](../../simulation/logger/EventLogger.ts) and [LogEvent.ts](../../simulation/logger/LogEvent.ts).
+The event logger records what happens during a run and saves it as a CSV file. This page describes the file: its columns, the five kinds of rows, every event the engine writes, and the exact rows of one creature when every option is on. How to use the logger from the UI is in [Scenario, simulation and stats](../user/settings-and-stats.md#logger). The code is in [EventLogger.ts](../../simulation/logger/EventLogger.ts) and [LogEvent.ts](../../simulation/logger/LogEvent.ts).
 
 ## The file
 
@@ -59,7 +59,7 @@ They are always written, are not in **Events to record**, and do not count for *
 | Column | Content |
 |---|---|
 | `StepIndex`, `CurrentGen`, `CurrentStep` | Where the recording starts. |
-| `EventType` | `SETTING` for a value of the Settings tab, `CONSTANT` for a constant. |
+| `EventType` | `SETTING` for a value of the Scenario or Simulation tab, `CONSTANT` for a constant. |
 | `ParamName` | The key of the setting (`size`, `mutationProbability`…), `sensor.<name>` / `action.<name>`, or the name of the constant. Nested constants get a path: `LOG_ALLOWED_EVENTS.MOVE`, `POPULATION_DEFAULT_GENUS.0.probability`, `colors.obstacle`. |
 | `ParamValue` | The value of a number, up to 10 decimals; `1` or `0` for a checkbox or other true/false value; `0` for a text value. |
 | `ParamValue2` | `0`. |
@@ -67,10 +67,10 @@ They are always written, are not in **Events to record**, and do not count for *
 
 The rows come in this order:
 
-1. **Settings** (`SETTING`), in the order of the Settings tab ([Parameters](parameters.md#settings-tab)): `simCode`, `phenotypeColorMode`, `metabolismEnabled`, `size`, `initialPopulation`, `stepsPerGen`, `seed` (`random` in `ParamString` when it is not fixed), `runSeed` (the seed this run uses), `simulationType`, `maxAge`, `populationStrategy`, `selectionMethod`, `initialGenomeSize`, `maxGenomeSize`, `maxNumberNeurons`, `mutationMode`, `mutationProbability`, `geneInsertionDeletionProbability`, `deletionRatio`; then one `sensor.<name>` row for every sensor and one `action.<name>` row for every action, in [table order](sensors-and-actions.md), with `1` if it is enabled and `0` if not; then the six water settings.
+1. **Settings** (`SETTING`), in this order ([Parameters](parameters.md)): `simCode`, `phenotypeColorMode`, `metabolismEnabled`, `size`, `initialPopulation`, `stepsPerGen`, `seed` (`random` in `ParamString` when it is not fixed), `runSeed` (the seed this run uses), `simulationType`, `maxAge`, `populationStrategy`, `selectionMethod`, `initialGenomeSize`, `maxGenomeSize`, `maxNumberNeurons`, `mutationMode`, `mutationProbability`, `geneInsertionDeletionProbability`, `deletionRatio`; then one `sensor.<name>` row for every sensor and one `action.<name>` row for every action, in [table order](sensors-and-actions.md), with `1` if it is enabled and `0` if not; then the six water settings.
 2. **Constants** (`CONSTANT`): the upper case values of `worldControllerData` (`MASS_*`, `REPRODUCTION_*`, `MOVE_*`, `ATTACK_*`…), then everything in `constants` (`LOG_*`, selection percentages, `POPULATION_DEFAULT_*`, `SIM_CODE_LENGTH`, colours…).
 
-The values are those of the running simulation, not of the Settings draft.
+The values are those of the running simulation, not of the Scenario draft.
 
 ### Totals
 

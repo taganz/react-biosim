@@ -66,11 +66,11 @@ Survivors themselves do **not** carry on into the next generation: only their ch
 
 ## Continuous runs
 
-With **Simulation type** set to **Continuous** (*Settings → Generations*), the population never ends. A generation is only a time window of *Steps per generation* steps, used for the stats, the logger, the counter and the file names. This mode is experimental.
+With **Simulation type** set to **Continuous** (*Scenario → Generations*), the population never ends. A generation is only a time window of *Steps per generation* steps, used for the stats, the logger, the counter and the file names. This mode is experimental.
 
 - **Generation 1** is created by the population strategy, as usual. After that the strategy is not used, and there is no selection method.
 - **At the end of a generation** nothing happens to the creatures: they keep their position, mass and age. Creature ids are not reset.
-- **Births:** new creatures only come from the **Reproduction** action, which needs [metabolism](creatures.md#mass-and-metabolism) to be on. Settings shows a warning when metabolism is off or the action is disabled.
+- **Births:** new creatures only come from the **Reproduction** action, which needs [metabolism](creatures.md#mass-and-metabolism) to be on. The Scenario tab shows a warning when metabolism is off or the action is disabled.
 - **Deaths:** creatures die of hunger, of attacks, or of old age when they are older than **Maximum age**.
 - **Water** is never reset. The rain of a generation is spread over its steps: each step rains `1 ÷ steps per generation` of **Rain max per cell** (see [World → Water](world.md#water)).
 - **The Age sensor** is the age of the creature divided by **Maximum age**, instead of the time since the start of the generation.

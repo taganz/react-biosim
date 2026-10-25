@@ -30,7 +30,7 @@ Sensors live in [CreatureSensors.ts](../../simulation/creature/brain/CreatureSen
 
 Add the sensor **at the end** of `data`. Inserting it in the middle changes the position of the sensors after it. Saved genomes then point to different sensors, but only in simulations where the new sensor is enabled.
 
-The Settings checkboxes and the network diagram labels are generated from `data`, so they need no change. Add the sensor to `enabledSensors` in a scenario or in [startupScenario.ts](../../simulation/startupScenario.ts) to switch it on by default. Then document it in [sensors-and-actions.md](../reference/sensors-and-actions.md).
+The Scenario tab checkboxes and the network diagram labels are generated from `data`, so they need no change. Add the sensor to `enabledSensors` in a scenario or in [startupScenario.ts](../../simulation/startupScenario.ts) to switch it on by default. Then document it in [sensors-and-actions.md](../reference/sensors-and-actions.md).
 
 **Test it** the way [CreatureSensors.test.ts](../../__tests__/CreatureSensors.test.ts) does: build a small world, place a creature and check `calculateOutputs()`.
 
@@ -56,7 +56,7 @@ If the action has a cost, use `creature._mass.consume(...)` so the water stays b
 ## Add a population strategy or a selection method
 
 1. Create a class that implements [PopulationStrategy](../../simulation/generations/population/PopulationStrategy.ts) (`name`, `populate(generations, parents?)`) or [SelectionMethod](../../simulation/generations/selection/SelectionMethod.ts) (`name`, `prettyName`, `isContinuous`, `fitnessValueName`, `shouldResetLastCreatureIdCreatedEveryGeneration`, `getSurvivors(generations)`).
-2. Register it in [populationStrategyOptions.ts](../../simulation/generations/population/populationStrategyOptions.ts) or [selectionMethodOptions.ts](../../simulation/generations/selection/selectionMethodOptions.ts): an entry in the options list (the Settings dropdown) and one in the map (used when loading files). The map key must equal the class's `name`.
+2. Register it in [populationStrategyOptions.ts](../../simulation/generations/population/populationStrategyOptions.ts) or [selectionMethodOptions.ts](../../simulation/generations/selection/selectionMethodOptions.ts): an entry in the options list (the Scenario tab dropdown) and one in the map (used when loading files). The map key must equal the class's `name`.
 
 Useful helpers:
 
@@ -76,7 +76,7 @@ Useful helpers:
 
 1. Set the scenario up in the app, then save it with **Files → Save to file**.
 2. Put the file in [public/](../../public/).
-3. Add an entry to [scenarioObjects.tsx](../../components/simulation/tabs/start/scenarioObjects.tsx):
+3. Add an entry to [scenarioObjects.tsx](../../components/simulation/tabs/scenario/scenarioObjects.tsx):
    ```ts
    scenarioObjects.push({ name: "My scenario", filename: "my scenario.sim", action: "startRun" });
    ```
@@ -85,6 +85,6 @@ Useful helpers:
 
 ## Change the startup scenario
 
-The app opens with `startUpScenarioSimulationData` from [startupScenario.ts](../../simulation/startupScenario.ts). It is the only set of default settings: the headless runner starts from it too, and the tests build `TEST_SIMULATION_DATA` from it. The constants (log options, colors, `DETECT_RADIUS`…) are in [constantsDefault.ts](../../simulation/constantsDefault.ts), together with `DEFAULT_GENUS_PROBABILITIES`, the genus list that Settings copies when Random Fixed Genera is chosen with an empty one.
+The app opens with `startUpScenarioSimulationData` from [startupScenario.ts](../../simulation/startupScenario.ts). It is the only set of default settings: the headless runner starts from it too, and the tests build `TEST_SIMULATION_DATA` from it. The constants (log options, colors, `DETECT_RADIUS`…) are in [constantsDefault.ts](../../simulation/constantsDefault.ts), together with `DEFAULT_GENUS_PROBABILITIES`, the genus list that the Scenario tab copies when Random Fixed Genera is chosen with an empty one.
 
 When you change a default, update the **Startup** column of [parameters.md](../reference/parameters.md).

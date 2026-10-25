@@ -10,24 +10,26 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 | `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the Map tab) |
 | `constants` | object | Advanced options that are not shown in the UI |
 
-The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Start** tab or a file from the **Files** tab replaces all of them.
+The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file from the **Files** tab replaces all of them.
 
 ## How changes are applied
 
-The **Settings** tab edits a draft. The running simulation keeps its own copy until you apply the draft with one of these buttons:
+The **Scenario** tab edits a draft. The running simulation keeps its own copy until you apply the draft with one of these buttons:
 
 - **Update simulation** applies the changes and keeps the current creatures, generation number and stats.
 - **Restart** applies the changes and starts again from generation 1. All evolution so far is lost.
 - **Discard changes** puts the draft back to the values of the running simulation.
 
-## Settings tab
+The **Simulation** tab has no draft: its options apply at once to the running simulation, and the draft gets them too, so they never show as pending changes. The seed is stored at once too, but it only matters when a run starts, so it takes effect at the next **Restart**.
+
+## Scenario tab
+
+The scenario list at the top loads a bundled scenario (see [Scenarios](../user/scenarios.md)). The settings below it are grouped in these sections.
 
 ### World
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Simulation code | `worldControllerData.simCode` | 1–20 letters, digits, `-` or `_` | random, 3 characters | A name for the run, used in the names of saved files and GIFs. **Restart** and the restart after an extinction pick a new random code unless you chose one, either in the draft or earlier with **Update simulation**. A loaded file, setup or scenario keeps its code until the next restart. A restart with a fixed seed and no pending changes repeats the same simulation, so it keeps the code; changes applied with **Update simulation** since the run started count as changes, logger options do not. |
-| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. **Update simulation** recolours the running creatures. |
 | Metabolism | `worldGenerationsData.metabolismEnabled` | checkbox | `false` | When on, creatures gain mass by photosynthesis or by eating prey, and spend it every step and when they move, attack or reproduce; they die at 0. When off, mass never changes, so the Reproduction action never succeeds. See [Creatures → Mass and metabolism](../model/creatures.md#mass-and-metabolism). |
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
 | Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell, and the world cannot be full. |
@@ -82,6 +84,23 @@ The startup scenario enables the first 10 sensors (positions, age, oscillator, r
 
 Water only matters when metabolism is on and creatures use the **Photosynthesis** action.
 
+## Simulation tab
+
+Options of the running simulation. They apply at once (see [How changes are applied](#how-changes-are-applied)).
+
+### Run
+
+| UI label | Key | Allowed values | Startup | Notes |
+|---|---|---|---|---|
+| Simulation code | `worldControllerData.simCode` | 1–20 letters, digits, `-` or `_` | random, 3 characters | A name for the run, used in the names of saved files, GIFs and logs. A change renames the running simulation at once. **Restart** and the restart after an extinction keep a code you chose; otherwise they pick a new random code. A loaded file, setup or scenario keeps its code until the next restart. A restart with a fixed seed and no pending changes repeats the same simulation, so it keeps the code; changes applied with **Update simulation** since the run started count as changes, the Simulation tab options and logger options do not, unless the seed is changed to a different one. |
+| Fixed seed, Seed | `worldControllerData.seed` | not set, or an integer from 0 to 4294967295 | not set | See [Random seed](#random-seed-worldcontrollerdata). Turning **Fixed seed** on fills in the seed of the running simulation, and **Fix this seed** does the same later. Takes effect at the next **Restart**. |
+
+### Display
+
+| UI label | Key | Allowed values | Startup | Notes |
+|---|---|---|---|---|
+| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. A change recolours the running creatures at once, also while paused. |
+
 ## Control bar: speed controls
 
 They open from the **Speed** button in the control bar. They change the running simulation immediately and are saved with the simulation. They are a viewer preference: Restart, loading a file or scenario, and **Update simulation** keep the values chosen in the control bar, and the values saved in a file are not used.
@@ -126,7 +145,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 
 | Key | Startup | Meaning |
 |---|---|---|
-| `seed` | not set | Seed of the random generator. Set it to repeat a run: the same seed, settings and map give the same simulation (same code version and JavaScript engine). Not set: every run, **Restart** included, picks a new random seed. Set it in Settings with **Fixed seed** (World section), or in the headless runner with `--seed`. Integer from 0 to 4294967295. |
+| `seed` | not set | Seed of the random generator. Set it to repeat a run: the same seed, settings and map give the same simulation (same code version and JavaScript engine). Not set: every run, **Restart** included, picks a new random seed. Set it in the Simulation tab with **Fixed seed**, or in the headless runner with `--seed`. Integer from 0 to 4294967295. |
 
 Every random decision of the engine (mutations, placement, the Random sensor, random moves, shuffles) comes from one generator in [random.ts](../../simulation/helpers/random.ts). After an extinction the run restarts without reseeding, so with a fixed seed it does not die out the same way again.
 
@@ -143,7 +162,7 @@ The simulation writes these values itself so that a saved file can resume where 
 | `DETECT_RADIUS` | 10 | Radius, in cells, of the prey sensors. |
 | `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Distance. |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
-| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in Settings fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1*. |
+| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1*. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
 | `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Stats → Logger*. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
 | `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |

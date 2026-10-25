@@ -1,6 +1,5 @@
 "use client";
 
-import { ReactNode } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import classNames from "classnames";
 import { selectionMethodOptions, selectSelectionMethod } from "@/simulation/generations/selection/selectionMethodOptions";
@@ -9,12 +8,10 @@ import { worldControllerAtom, simulationDataAtom } from "../../store";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
-import TextInput from "@/components/global/inputs/TextInput";
 import Button from "@/components/global/Button";
 import { Sensor, SensorName } from "@/simulation/creature/brain/CreatureSensors";
 import { Action, ActionName } from "@/simulation/creature/brain/CreatureActions";
 import { MutationMode } from "@/simulation/creature/brain/MutationMode";
-import { PhenoTypeColorMode } from "@/simulation/creature/PhenoTypeColorMode";
 import { SimulationType } from "@/simulation/generations/SimulationType";
 import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
@@ -23,6 +20,7 @@ import { WaterData } from "@/simulation/water/WaterData";
 import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
+import Section, { FIELDS_GRID } from "../Section";
 import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
@@ -35,20 +33,6 @@ const getSensorLabel = (sensor: Sensor) =>
   })`;
 
 const getActionLabel = (action: Action) => `${getPrettyName(action.name)} (1 neuron)`;
-
-function Section({ title, description, children }: {
-  title: string;
-  description?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h3 className="text-2xl font-bold">{title}</h3>
-      {description && <p className="text-sm">{description}</p>}
-      {children}
-    </section>
-  );
-}
 
 const GENERA: { genus: Genus; label: string }[] = [
   { genus: "plant", label: "Plant" },
@@ -191,27 +175,17 @@ function GenusListEditor({
   );
 }
 
-const FIELDS_GRID = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
-
-// the generator keeps 32 bits of the seed
-const MAX_SEED = 0xffffffff;
-
-// Edits a draft (simulationDataAtom). The running simulation keeps its own
+// Edits a draft (simulationDataAtom), the settings of the Scenario tab. The running simulation keeps its own
 // simulationData until the draft is applied with "Update simulation" or "Restart".
-export default function SettingsPanel() {
+export default function ScenarioSettings() {
   const worldController = useAtomValue(worldControllerAtom);
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
   const appliedSimulationData = useWorldValue((world) => world.simData, null);
   const hasPendingChanges =
     appliedSimulationData !== null && appliedSimulationData !== simulationData;
 
-  // the seed of the running simulation, which the draft may not have (random seed)
-  const runSeed = useWorldValue((world) => world.seed, null);
-  // startRun() writes the new code into the draft in place, which does not re-render this panel
-  useWorldValue((world) => world.simCode, null);
 
   const { worldControllerData, worldGenerationsData, waterData } = simulationData;
-  const isSeedFixed = worldControllerData.seed !== undefined;
   const { enabledSensors, enabledActions } = worldGenerationsData;
   const isContinuous = worldGenerationsData.simulationType === "continuous";
   // in continuous runs, new creatures only come from the Reproduction action
@@ -360,37 +334,6 @@ export default function SettingsPanel() {
       <Section title="World">
         <div className={FIELDS_GRID}>
           <div className="flex flex-col gap-1">
-            <TextInput
-              label="Simulation code"
-              value={worldControllerData.simCode}
-              onChange={(value) => setWorldValue("simCode", value)}
-              maxLength={20}
-              // it goes into file names
-              disallowed={/[^A-Za-z0-9_-]/g}
-            />
-            <p className="text-xs">
-              A name for this run, used in the names of saved files, images, GIFs and logs. Restart picks a
-              new random code unless you change it here (a code you change is kept by later restarts) or the seed is fixed
-              and nothing else has changed.
-            </p>
-          </div>
-          <div className="flex flex-col gap-1">
-            <SelectInput
-              label="Phenotype mode"
-              value={worldGenerationsData.phenotypeColorMode}
-              onChange={(value: string) =>
-                setGenerationsValue("phenotypeColorMode", value as PhenoTypeColorMode)
-              }
-            >
-              <option value="genome">Genome</option>
-              <option value="trophicLevel">Trophic level</option>
-            </SelectInput>
-            <ul className="text-xs">
-              <li><b>Genome:</b> the colour comes from the genome, so each species has its own colour.</li>
-              <li><b>Trophic level:</b> green for plants, blue for herbivores and red for carnivores. The shade comes from the genome.</li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-1">
             <CheckboxInput
               id="metabolismEnabled"
               label="Metabolism"
@@ -429,52 +372,6 @@ export default function SettingsPanel() {
             integer
             min={1}
           />
-        </div>
-        <div className={FIELDS_GRID}>
-          <div className="flex flex-col gap-1">
-            <CheckboxInput
-              id="fixedSeed"
-              label="Fixed seed"
-              checked={isSeedFixed}
-              // fixing the seed starts from the one the running simulation uses
-              onChange={(checked) => setWorldValue("seed", checked ? runSeed ?? 0 : undefined)}
-            />
-            {isSeedFixed && (
-              <NumberInput
-                label="Seed"
-                value={worldControllerData.seed ?? 0}
-                onChange={(value) => setWorldValue("seed", value)}
-                integer
-                min={0}
-                max={MAX_SEED}
-              />
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs">
-              {isSeedFixed
-                ? "Every Restart repeats the same simulation (same settings and map). Change the seed to get another one."
-                : "Every Restart picks a new random seed, so no two runs are the same."}{" "}
-              The seed is used when the simulation starts: apply it with Restart.
-            </p>
-            {runSeed !== null && (
-              <p className="text-xs">
-                The running simulation uses seed <b>{runSeed}</b>.
-                {worldControllerData.seed !== runSeed && (
-                  <>
-                    {" "}
-                    <button
-                      type="button"
-                      className="underline"
-                      onClick={() => setWorldValue("seed", runSeed)}
-                    >
-                      Fix this seed
-                    </button>
-                  </>
-                )}
-              </p>
-            )}
-          </div>
         </div>
       </Section>
 

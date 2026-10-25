@@ -12,9 +12,9 @@ The screen has three parts:
 
 ## 1. Load a scenario
 
-The app opens with a simple scenario already running: creatures must reach the darker area on the right. To try another one, open the **Start** tab and pick it from the **Scenario** list. A message confirms when it has loaded.
+The app opens with a simple scenario already running: creatures must reach the darker area on the right. To try another one, open the **Scenario** tab and pick it from the **Scenario** list. A message confirms when it has loaded.
 
-![Start tab](images/tab_start.png)
+![Scenario tab](images/tab_start.png)
 
 Some scenarios start from generation 1. Others resume a long run that has already evolved, so you can see the result straight away. [Scenarios](scenarios.md) describes each one.
 
@@ -25,7 +25,7 @@ Each **generation** lasts a fixed number of steps (300 by default). At every ste
 1. The creatures that reached the goal survive. In most scenarios, the goal is to stand inside a blue reproduction area.
 2. A new generation is created from copies of the survivors' genomes. A few copies mutate.
 
-In the first generations creatures move almost at random. After tens or hundreds of generations, most of them head for the goal. Open the **Stats** tab to watch the survival rate climb (see [Settings and stats](settings-and-stats.md)).
+In the first generations creatures move almost at random. After tens or hundreds of generations, most of them head for the goal. Open the **Stats** tab to watch the survival rate climb (see [Scenario, simulation and stats](settings-and-stats.md)).
 
 ## 3. Control the speed
 
@@ -52,7 +52,7 @@ Click any creature in the world. A ring marks it, and the **Population** tab sho
 ## Next steps
 
 - [Population and brains](population-and-brains.md): species, neural networks, genomes
-- [Settings and stats](settings-and-stats.md): change the rules and measure the results
+- [Scenario, simulation and stats](settings-and-stats.md): change the rules and measure the results
 - [Map editor](map-editor.md): draw your own world
 - [Files](files.md): your own scenarios, save, load, export images and GIFs
 - [Scenarios](scenarios.md): what each included scenario shows
