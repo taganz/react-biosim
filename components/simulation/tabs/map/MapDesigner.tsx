@@ -1,7 +1,6 @@
 "use client";
 
 import { useAtom, useAtomValue } from "jotai";
-import MapDesignerLayer from "./MapDesignerLayer";
 import {
   mapDesignerFullscreenAtom,
   mapDesignerObjectsAtom,
@@ -60,20 +59,11 @@ export default function MapDesigner() {
         <div className="flex flex-col gap-5 ">
           <MapDesignerHeader />
 
-          <div className="grid lg:grid-cols-3">
+          <div className="grid gap-5 lg:grid-cols-3">
             <MapDesignerCanvas />
 
-            <div className="w-full overflow-x-hidden overflow-y-scroll px-5 lg:aspect-[1/2]">
-              <h3 className="mb-1 text-2xl font-bold">Objects</h3>
-              <div className="flex flex-col gap-1">
-                {mapDesignerObjects.map((obstacle, index) => (
-                  <MapDesignerLayer key={index} index={index} obj={obstacle} />
-                ))}
-              </div>
-            </div>
+            <MapDesignerFooter />
           </div>
-
-          <MapDesignerFooter />
         </div>
       </div>
     </ToggleableFullscreen>

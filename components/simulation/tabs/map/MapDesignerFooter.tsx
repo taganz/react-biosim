@@ -105,7 +105,7 @@ export default function MapDesignerFooter() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="flex flex-col gap-5">
       <div>
         <SelectInput label="Add object" onChange={handleSelect}>
           <option value="placeholder">Select an object...</option>

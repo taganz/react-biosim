@@ -33,12 +33,25 @@ export default function MapDesignerCanvas() {
   const selectedObject =
     selectedObjectIndex != undefined ? objects[selectedObjectIndex] : undefined;
 
-  // The object being dragged: the handle (undefined to move it), and where the
-  // mouse and the object were when the drag started
+  // The object being dragged (by index, because selecting it only takes effect
+  // on the next render), the handle (undefined to move it), and where the mouse
+  // and the object were when the drag started
   const drag = useRef<
-    | { handle: number | undefined; startMouse: Coordinates; startTarget: Coordinates }
+    | {
+        index: number;
+        handle: number | undefined;
+        startMouse: Coordinates;
+        startTarget: Coordinates;
+      }
     | undefined
   >(undefined);
+
+  // Indices of the objects under the mouse, top (drawn last) first
+  const getObjectsAt = (position: Coordinates) =>
+    objects
+      .map((_, index) => index)
+      .filter((index) => areCoordinatesInsideObject(position, objects[index]))
+      .reverse();
 
   // Draw the objects, outlines and handles
   const draw = useCallback(() => {
@@ -63,12 +76,18 @@ export default function MapDesignerCanvas() {
     }
   }, [objects, selectedObjectIndex, worldSize]);
 
-  // the objects are atom state: apply the change to a clone of the selected one
-  const updateSelectedObject = (x: number, y: number, width: number, height: number) => {
+  // the objects are atom state: apply the change to a clone of the dragged one
+  const updateObject = (
+    targetIndex: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => {
     setObjects((value) =>
       value.map((obj, index) => {
         const copy = obj.clone();
-        if (index === selectedObjectIndex) {
+        if (index === targetIndex) {
           copy.x = x;
           copy.y = y;
           copy.width = width;
@@ -80,44 +99,62 @@ export default function MapDesignerCanvas() {
   };
 
   const onDragStart = (mousePosition: Coordinates) => {
-    if (!selectedObject || !canvas.current) return;
+    if (!canvas.current) return;
 
-    // Check if mouse is inside a handle
+    // Check if mouse is inside a handle of the selected object
     let targetHandle: undefined | number = undefined;
-    const normalizedHandles = getHandles(selectedObject);
-    const handleNormalizedSize = HANDLE_SIZE / canvas.current.width;
-    for (let index = 0; index < normalizedHandles.length; index++) {
-      const handle = normalizedHandles[index];
-      const xDistance = Math.abs(mousePosition.x - handle.x);
-      const yDistance = Math.abs(mousePosition.y - handle.y);
+    if (selectedObject) {
+      const normalizedHandles = getHandles(selectedObject);
+      const handleNormalizedSize = HANDLE_SIZE / canvas.current.width;
+      for (let index = 0; index < normalizedHandles.length; index++) {
+        const handle = normalizedHandles[index];
+        const xDistance = Math.abs(mousePosition.x - handle.x);
+        const yDistance = Math.abs(mousePosition.y - handle.y);
 
-      if (xDistance < handleNormalizedSize && yDistance < handleNormalizedSize) {
-        targetHandle = index;
-        break;
+        if (xDistance < handleNormalizedSize && yDistance < handleNormalizedSize) {
+          targetHandle = index;
+          break;
+        }
       }
     }
 
+    // Drag the selected object if the mouse is on it or on a handle,
+    // otherwise select and drag the top object under the mouse
+    let targetIndex: number | undefined = undefined;
     if (
-      targetHandle != undefined ||
-      areCoordinatesInsideObject(mousePosition, selectedObject)
+      selectedObjectIndex != undefined &&
+      selectedObject &&
+      (targetHandle != undefined ||
+        areCoordinatesInsideObject(mousePosition, selectedObject))
     ) {
+      targetIndex = selectedObjectIndex;
+    } else {
+      targetIndex = getObjectsAt(mousePosition)[0];
+      if (targetIndex != undefined) setSelectedObjectIndex(targetIndex);
+    }
+
+    if (targetIndex != undefined) {
       // Save the start position of the mouse and the object
+      const target = objects[targetIndex];
       drag.current = {
+        index: targetIndex,
         handle: targetHandle,
         startMouse: { x: mousePosition.x, y: mousePosition.y },
-        startTarget: { x: selectedObject.x, y: selectedObject.y },
+        startTarget: { x: target.x, y: target.y },
       };
     }
   };
 
   const onDrag = (normalizedMousePosition: Coordinates) => {
-    if (!drag.current || !selectedObject) return;
-    const { handle, startMouse, startTarget } = drag.current;
+    if (!drag.current) return;
+    const { index, handle, startMouse, startTarget } = drag.current;
+    const target = objects[index];
+    if (!target) return;
 
     if (handle != undefined) {
       // Resize the object: the handle follows the mouse, the opposite corner stays
       const mousePosition = roundCoordinates(normalizedMousePosition, worldSize);
-      const normalizedHandles = getHandles(selectedObject);
+      const normalizedHandles = getHandles(target);
 
       let anchor1 = { x: 0, y: 0 };
       let anchor2 = { x: 0, y: 0 };
@@ -139,12 +176,12 @@ export default function MapDesignerCanvas() {
       const newSize = { x: anchor2.x - anchor1.x, y: anchor2.y - anchor1.y };
 
       if (
-        selectedObject.x !== anchor1.x ||
-        selectedObject.y !== anchor1.y ||
-        selectedObject.width !== newSize.x ||
-        selectedObject.height !== newSize.y
+        target.x !== anchor1.x ||
+        target.y !== anchor1.y ||
+        target.width !== newSize.x ||
+        target.height !== newSize.y
       ) {
-        updateSelectedObject(anchor1.x, anchor1.y, newSize.x, newSize.y);
+        updateObject(index, anchor1.x, anchor1.y, newSize.x, newSize.y);
       }
     } else {
       // Move the object
@@ -157,13 +194,8 @@ export default function MapDesignerCanvas() {
       );
 
       // Only apply it if there were any change
-      if (selectedObject.x !== mousePosition.x || selectedObject.y !== mousePosition.y) {
-        updateSelectedObject(
-          mousePosition.x,
-          mousePosition.y,
-          selectedObject.width,
-          selectedObject.height
-        );
+      if (target.x !== mousePosition.x || target.y !== mousePosition.y) {
+        updateObject(index, mousePosition.x, mousePosition.y, target.width, target.height);
       }
     }
   };
@@ -172,20 +204,18 @@ export default function MapDesignerCanvas() {
     drag.current = undefined;
   };
 
-  // Select the top object under the mouse, other than the selected one
+  // Select the top object under the mouse. Clicking the selected object again
+  // selects the one below it, cycling through all the overlapping objects.
+  // Clicking an empty spot clears the selection.
   const onClick = (normalizedMousePosition: Coordinates) => {
-    const reversedObjects = [...objects].reverse();
-    for (let index = 0; index < reversedObjects.length; index++) {
-      const obj = reversedObjects[index];
-
-      if (
-        obj !== selectedObject &&
-        areCoordinatesInsideObject(normalizedMousePosition, obj)
-      ) {
-        setSelectedObjectIndex(objects.indexOf(obj));
-        break;
-      }
+    const hits = getObjectsAt(normalizedMousePosition);
+    if (hits.length === 0) {
+      setSelectedObjectIndex(undefined);
+      return;
     }
+
+    const current = selectedObjectIndex != undefined ? hits.indexOf(selectedObjectIndex) : -1;
+    setSelectedObjectIndex(hits[(current + 1) % hits.length]);
   };
 
   // Mouse interaction

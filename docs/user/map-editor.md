@@ -12,17 +12,17 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 |---|---|
 | Rectangle, Ellipse | **Obstacle.** Creatures cannot enter it. The touch sensors detect it. |
 | Rectangle Reproduction, Ellipse Reproduction | **Reproduction area** (blue). With the *Inside Reproduction Area* selection method, creatures standing here when the generation ends survive. With any other selection method, or in a continuous run, it has no effect, and the simulation canvas does not draw it (the map editor still does). |
-| Rectangle Spawn | **Spawn area** (yellow). With the *Asexual Zone* population strategy, new creatures are placed here. Use only one: only the first is used. |
+| Rectangle Spawn | **Spawn area** (yellow). With the *Asexual Zone* population strategy, new creatures are placed here. Use only one: if there are several, only the one furthest back is used. |
 | Rectangle Health, Ellipse Health | **Health area.** Drawn green for a positive **Health** value and red for a negative one. **It currently has no effect:** the code that applies it is disabled (see [World](../model/world.md#objects-and-areas)). |
 
 ## Editing
 
-- **Select** an object by clicking it in the **Objects** list on the right.
-- **Move** it by dragging it on the canvas.
-- **Resize** it by dragging the handles at its corners and edges.
-- **Fine-tune** it with **X**, **Y**, **Width** and **Height** below the canvas. Values are fractions of the world size: 0 is the top or left edge and 1 is the bottom or right edge. Positions snap to whole cells.
+- **Select** an object by clicking it on the canvas. A white outline marks it, and its properties appear on the right. Where objects overlap, the click selects the one on top; click again on the same spot to select the one below it, and so on. Clicking an empty spot clears the selection.
+- **Move** an object by dragging it on the canvas. Dragging an object that is not selected selects it first.
+- **Resize** the selected object by dragging the handles at its corners and edges.
+- **Fine-tune** it with **X**, **Y**, **Width** and **Height** on the right. Values are fractions of the world size: 0 is the top or left edge and 1 is the bottom or right edge. Positions snap to whole cells.
 - **Clone** duplicates the selected object. **Delete**, or the Delete key, removes it.
-- The **arrows** in the Objects list change the drawing order. Objects lower in the list are drawn on top.
+- **To front** and **To back** change the drawing order: the object is drawn on top of, or below, all the others. New objects are drawn on top. The order also decides which spawn area is used: only the one furthest back counts.
 - The **fullscreen** button (top right) gives you a bigger canvas.
 
 ## Applying the map
