@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { simulationDataAtom, worldControllerAtom } from "@/components/simulation/store";
+import { loadedSpeciesAtom, simulationDataAtom, worldControllerAtom } from "@/components/simulation/store";
 import { loadSavedSimulationAndStartRun, loadSavedWorldAndResumeRun } from "@/simulation/world/loadWorld";
+import { summarizeLoadedSpecies } from "@/simulation/creature/speciesSummary";
 
 export type LoadStatus =
   | { state: "idle" }
@@ -20,6 +21,7 @@ function describeError(error: unknown): string {
 export default function useSimulationLoader() {
   const worldController = useAtomValue(worldControllerAtom);
   const setSimulationData = useSetAtom(simulationDataAtom);
+  const setLoadedSpecies = useSetAtom(loadedSpeciesAtom);
   const [status, setStatus] = useState<LoadStatus>({ state: "idle" });
   // only the latest request may change the simulation, in case the user picks another file while one is loading
   const lastRequest = useRef(0);
@@ -43,6 +45,7 @@ export default function useSimulationLoader() {
             ? loadSavedSimulationAndStartRun(worldController, text)
             : loadSavedWorldAndResumeRun(worldController, text);
         setSimulationData(simulationData);
+        setLoadedSpecies({ sourceName, summary: summarizeLoadedSpecies(simulationData) });
 
         setStatus({
           state: "success",
@@ -57,7 +60,7 @@ export default function useSimulationLoader() {
         setStatus({ state: "error", message: `Could not load ${sourceName}: ${describeError(error)}` });
       }
     },
-    [worldController, setSimulationData]
+    [worldController, setSimulationData, setLoadedSpecies]
   );
 
   return { status, load };

@@ -5,6 +5,7 @@ import ScenariosSelection from "./ScenarioSelection";
 import LoadSimFile from "./LoadSimFile";
 import SavedScenarioSelection from "./SavedScenarioSelection";
 import ScenarioSettings from "./ScenarioSettings";
+import LoadedSpecies from "./LoadedSpecies";
 
 export default function ScenarioPanel() {
   return (
@@ -17,6 +18,7 @@ export default function ScenarioPanel() {
         </div>
       </Section>
       <ScenarioSettings />
+      <LoadedSpecies />
     </div>
   );
 }
