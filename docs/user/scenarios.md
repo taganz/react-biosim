@@ -1,6 +1,6 @@
 # Scenarios
 
-These scenarios are in the **Scenario** tab. Their files are in `public/`. You can load one, change its settings and map in the Scenario tab, and save it as your own in **Files → [My scenarios](files.md#my-scenarios)**.
+These scenarios are in the **Scenario** tab, under **Load scenario → Demo scenarios**. Their files are in `public/`. You can load one, change its settings and map in the Scenario tab, and save it as your own in **Files → [My scenarios](files.md#my-scenarios)**.
 
 All of them use the classic model: *Inside Reproduction Area* selection, and movement actions only.
 
@@ -34,4 +34,4 @@ All of them use the classic model: *Inside Reproduction Area* selection, and mov
 
 ## Older saved runs
 
-`_scenarios/` and `_simulation_examples_/` hold more saved runs from development, some with GIFs and stats screenshots. Load them with **Files → Load**. Some come from older versions and use features that are now experimental.
+`_scenarios/` and `_simulation_examples_/` hold more saved runs from development, some with GIFs and stats screenshots. Load them with **Scenario → Load scenario → Load .sim file**. Some come from older versions and use features that are now experimental.

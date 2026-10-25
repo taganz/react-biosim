@@ -14,23 +14,26 @@ Your own scenarios, stored in this browser. They are separate from the scenarios
 
 Positions, ages, mass and health are not stored. Give the scenario a name, or leave it empty to use `sim <code> generation <n>`.
 
-Each saved scenario has **Load**, **Export .sim** (downloads it as a file that **Load** below also accepts), **Rename** and **Delete**.
+Each saved scenario has **Load** (also in **Scenario → Load scenario → Load saved scenario**), **Export .sim** (downloads it as a file that **Scenario → Load scenario → Load .sim file** also accepts), **Rename** and **Delete**.
 
 Scenarios are stored in the browser's IndexedDB. They are lost if you clear the site data, and they are not shared between browsers or devices: use **Export .sim** to keep a copy.
 
 
 - **Save to file** downloads the whole simulation as `sim <code> generation <n>.sim`: settings, map, creatures, species and stats.
-- **Show JSON to copy** shows the same content as text, so you can paste it into a message or an issue.
+- **Show JSON to copy** shows the same content as text, so you can paste it into a message or an issue. It cannot be loaded back by pasting: save it as a `.sim` file first.
 - **Include the stats history** (off by default) adds the fitness history of every generation. In a long run it is most of the file. Without it the file is much smaller, and the Stats charts start empty when you load it.
 
 A saved file is plain JSON. You can open it in a text editor to change values that are not in the UI, such as the metabolism constants (see [parameters](../reference/parameters.md#not-in-the-ui)).
 
 ## Load
 
-- **Choose File** loads a `.sim`, `.txt` or `.json` file saved with **Save to file**. Files from older versions of the app, such as those in `_scenarios/`, may not load: if one fails, the message explains why.
-- **Or paste the JSON code** loads text you copied with **Show JSON to copy**. Click **Load**.
+Loading is in the **Scenario** tab, under **Load scenario**:
 
-Loading **resumes** the saved run: it continues from the saved generation with the saved creatures. The Scenario draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
+- **Demo scenarios** loads one of the [scenarios](scenarios.md) that come with the app.
+- **Load .sim file** loads a `.sim`, `.txt` or `.json` file saved with **Save to file** or **Export .sim**. Files from older versions of the app, such as those in `_scenarios/`, may not load: if one fails, the message explains why.
+- **Load saved scenario** loads one of [My scenarios](#my-scenarios).
+
+Loading a `.sim` file **resumes** the saved run: it continues from the saved generation with the saved creatures. The Scenario draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
 
 ## Images and GIFs
 

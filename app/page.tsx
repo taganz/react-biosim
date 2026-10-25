@@ -73,7 +73,7 @@ export default function Home() {
                     <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation and load it again in &apos;Files&apos;&nbsp;panel.</li>
+                    <li>Save a copy of current simulation in &apos;Files&apos;&nbsp;panel and load it again in &apos;Scenario&apos;&nbsp;panel.</li>
                   </ul>
                   <br/>
                   Source code:&nbsp;{" "}
