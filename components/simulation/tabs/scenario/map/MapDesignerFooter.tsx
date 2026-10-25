@@ -6,7 +6,7 @@ import { useAtom, useSetAtom } from "jotai";
 import {
   mapDesignerObjectsAtom,
   mapDesignerSelectedObjectIndexAtom,
-} from "../../store/mapDesignerAtoms";
+} from "../../../store/mapDesignerAtoms";
 import EllipseObject from "@/simulation/world/objects/EllipseObject";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";
@@ -105,7 +105,7 @@ export default function MapDesignerFooter() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="flex flex-col gap-5">
       <div>
         <SelectInput label="Add object" onChange={handleSelect}>
           <option value="placeholder">Select an object...</option>

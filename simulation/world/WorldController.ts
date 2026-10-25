@@ -10,6 +10,7 @@ import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
 import WorldWater from "../water/WorldWater";
 import { SimulationData } from "../SimulationData";
+import { PhenoTypeColorMode } from "../creature/PhenoTypeColorMode";
 import { randomSeed, setSeed, setRandomState } from "../helpers/random";
 import { findLivingCreatureById } from "../generations/creatureQueries";
 
@@ -22,6 +23,14 @@ const MAX_TICK_MS = 30;
 // Extintion detection and restart
 // Pause/resume
 // Logger
+/** options of the Simulation tab; WorldController.setRunOptions() applies them at once */
+export interface RunOptions {
+  simCode?: string;
+  /** null: a new random seed for every run */
+  seed?: number | null;
+  phenotypeColorMode?: PhenoTypeColorMode;
+}
+
 export default class WorldController {
   static instance?: WorldController ;
 
@@ -545,6 +554,40 @@ export default class WorldController {
       this.eventLogger.pause();
       this.eventLogger.deleteLog();
     }
+    this.notifyStateChange();
+    return this.simData;
+  }
+
+  /**
+   * Changes the run options of the Simulation tab, which apply at once: the simulation
+   * code (renames the running simulation, and later restarts keep it), the seed (used by
+   * the next restart; null makes it random) and the phenotype color mode.
+   * simData is replaced, not mutated, like in setLogOptions(). Returns the new simData.
+   */
+  setRunOptions(options: RunOptions) : SimulationData {
+    const { simCode, seed, phenotypeColorMode } = options;
+    const worldControllerData = { ...this.simData.worldControllerData };
+    const worldGenerationsData = { ...this.simData.worldGenerationsData };
+    if (simCode !== undefined) {
+      this.simCode = simCode;
+      this.isSimCodeRandom = false;
+      worldControllerData.simCode = simCode;
+    }
+    if (seed !== undefined) {
+      if (seed === null) delete worldControllerData.seed;
+      else worldControllerData.seed = seed;
+    }
+    if (phenotypeColorMode !== undefined) {
+      this.generations.phenotypeColorMode = phenotypeColorMode;
+      worldGenerationsData.phenotypeColorMode = phenotypeColorMode;
+    }
+    // a restart still repeats the run unless the seed now differs from the one the run used
+    const isRunStart = this.simData === this.runStartSimData
+      && (worldControllerData.seed === undefined || worldControllerData.seed === this.seed);
+    this.simData = { ...this.simData, worldControllerData, worldGenerationsData };
+    if (isRunStart) this.runStartSimData = this.simData;
+    // the colors change also while paused
+    if (phenotypeColorMode !== undefined) this.dispatchRedraw();
     this.notifyStateChange();
     return this.simData;
   }

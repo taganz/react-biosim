@@ -1,16 +1,16 @@
-# Settings and stats
+# Scenario, simulation and stats
 
-Use **Settings** to change the rules of a simulation and **Stats** to see whether the change worked.
+Use **Scenario** to change the rules of a simulation, **Simulation** for the options of the run itself, and **Stats** to see whether the change worked.
 
-## Settings
+## Scenario
 
-![Settings tab](images/tab_settings.png)
+![Scenario tab](images/tab_settings.png)
 
-The tab is grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
+The scenario list at the top loads one of the bundled scenarios (see [Scenarios](scenarios.md)). Below it, the settings are grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
 
 ### Applying changes
 
-Your edits are a **draft**. The simulation keeps running with its old settings until you apply them. When the draft differs from the running simulation, the bar at the top says "You have changes that are not applied yet" and offers three buttons:
+Your edits are a **draft**. The simulation keeps running with its old settings until you apply them. When the draft differs from the running simulation, the bar above the settings says "You have changes that are not applied yet" and offers three buttons:
 
 | Button | Effect |
 |---|---|
@@ -22,11 +22,8 @@ Some changes behave differently depending on how you apply them:
 
 - **World size and map:** **Update simulation** rebuilds the world straight away. Creatures that no longer fit are removed: those outside a smaller world, or on a cell that is now an obstacle.
 - **Initial population** and the population strategy take effect when the next generation is created. Choosing *Random Fixed Genera* or *Plant/Herbivore* also enables the actions their genera need (Photosynthesis, Attack Plant, Attack Animal, and Reproduction for all of them) and turns metabolism on, so use **Restart** after choosing them (see Sensors and actions below). With *Random Fixed Genera*, the **Genera of generation 1** box lets you see and change the probability of each genus, and so how generation 1 genomes are built ([details](../reference/population-and-selection.md#random-fixed-genera-randomfixedgenepopulation)).
-- **Simulation type:** with **Update simulation**, the current creatures carry on in the new mode, and the change takes effect at the end of the current generation. In continuous mode, Settings warns you if no creature can be born: metabolism is off, or the Reproduction action is not enabled.
-- **Phenotype mode** only changes how creatures are coloured. **Update simulation** recolours them straight away.
+- **Simulation type:** with **Update simulation**, the current creatures carry on in the new mode, and the change takes effect at the end of the current generation. In continuous mode, the tab warns you if no creature can be born: metabolism is off, or the Reproduction action is not enabled.
 - **Metabolism:** with **Update simulation**, the creatures keep their current mass and start gaining or losing it from the next step.
-- **Simulation code:** **Update simulation** renames the running simulation. **Restart**, and the automatic restart after an extinction, keep a code you chose, also one applied earlier with **Update simulation**. They also keep the code when the seed is fixed and no setting has changed, because the restart repeats the same simulation. Otherwise they pick a new random one.
-- **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect with **Restart**: **Update simulation** keeps the current random sequence.
 - **Sensors and actions:** genes point to sensors and actions by their position in the list of enabled items. If you change the list and click **Update simulation**, existing brains are rewired. Use **Restart** unless that is what you want.
 - **Invalid values:** a field rejects a value out of range and shows the allowed range. When you leave the field, it goes back to the last valid value.
 
@@ -39,6 +36,14 @@ Some changes behave differently depending on how you apply them:
 | How much does a single sense matter? | Disable Horizontal Position and restart. |
 | Reward travelling instead of a place | Selection method: Greatest Distance. |
 | Harder goal | Make the reproduction area smaller in the [Map editor](map-editor.md). |
+
+## Simulation
+
+The options of the running simulation. They have no draft: a change applies at once, also while paused, and never shows as a pending change in the Scenario tab. **Update simulation** and **Restart** keep them.
+
+- **Simulation code:** a name for the run, used in the names of saved files, images, GIFs and logs. Changing it renames the running simulation straight away. **Restart**, and the automatic restart after an extinction, keep a code you chose. They also keep the code when the seed is fixed and the scenario has not changed, because the restart repeats the same simulation. Otherwise they pick a new random one.
+- **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect at the next **Restart**: the running simulation keeps its random sequence.
+- **Phenotype mode** (Display) only changes how creatures are coloured: by genome, so each species has its own colour, or by trophic level (green plants, blue herbivores, red carnivores). The creatures are recoloured straight away.
 
 ## Stats
 
@@ -88,7 +93,7 @@ To record, choose **From** (*Next generation*, or *Generation 1*, which waits fo
 
 A warning in red appears under **Creature to log** when the logger follows a single creature and it dies, with the generation and step of its death. No more events of it are logged. The warning goes away when a creature with that id is alive again, for example in the next generation of a method that restarts the ids.
 
-**Logger options**, below, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. Settings does not show them as pending changes, and **Update simulation** and **Restart** keep them.
+**Logger options**, below, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. The Scenario tab does not show them as pending changes, and **Update simulation** and **Restart** keep them.
 
 - **Step totals** writes, for each step, how many times each creature event happened (default off, as the rows add up fast in long recordings). The generation totals and the world events are always written.
 - **Maximum events** is the number of rows at which the logger stops.

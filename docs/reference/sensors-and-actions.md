@@ -2,7 +2,7 @@
 
 A creature's brain is a small neural network. **Sensors** are its inputs, **actions** are its outputs, and internal **neurons** sit in between. Each **gene** in the genome is one connection between two of them.
 
-Sensors and actions are switched on and off in **Settings → Sensors / Actions**. Source code: [CreatureSensors.ts](../../simulation/creature/brain/CreatureSensors.ts) and [CreatureActions.ts](../../simulation/creature/brain/CreatureActions.ts).
+Sensors and actions are switched on and off in **Scenario → Sensors / Actions**. Source code: [CreatureSensors.ts](../../simulation/creature/brain/CreatureSensors.ts) and [CreatureActions.ts](../../simulation/creature/brain/CreatureActions.ts).
 
 ## Genus
 
@@ -95,7 +95,7 @@ So the same gene can mean different connections in simulations with different se
 
 ## Known issues
 
-- **PredatorDistance and PredatorDirection produce no value.** `calculateOutputs` never computes them, so they are disabled by default. They can still be enabled in Settings: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.
+- **PredatorDistance and PredatorDirection produce no value.** `calculateOutputs` never computes them, so they are disabled by default. They can still be enabled in the Scenario tab: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.
 - **Reproduction never succeeds without metabolism.** It needs more than 3 × birth mass, and without metabolism mass never changes (see [Creatures → Reproduction](../model/creatures.md#reproduction)).
 - **The prey sensors never see the last row and column of the world.** `detectClosest` clamps the search area to `size − 1` and uses it as an exclusive end. It is kept so that existing simulations behave the same.
 - **Plants with prey sensors detect any creature.** Plants have no prey genus (`preyGenus` is `undefined`), and `detectClosest` without a genus returns the closest creature of any genus.

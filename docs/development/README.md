@@ -60,7 +60,7 @@ simulation/              The engine: plain TypeScript, no React
   helpers/                 random.ts (the seeded random generator), helpers.ts
   constantsDefault.ts      Default constants and genus list
   startupScenario.ts       The default SimulationData: the app opens with it
-public/                  Scenario .sim files served to the Start tab
+public/                  Scenario .sim files served to the Scenario tab
 scripts/                 sim.ts: command line of the headless runner (npm run sim, with tsx)
 __tests__/               Jest tests for the engine; support/ holds TEST_SIMULATION_DATA
 ```
@@ -75,7 +75,7 @@ The reference pages are lists taken from the code. Update them in the same chang
 
 | If you change… | Update |
 |---|---|
-| A field in `SimulationData`, a Settings input, or a startup value | [parameters.md](../reference/parameters.md) |
+| A field in `SimulationData`, a Scenario or Simulation tab input, or a startup value | [parameters.md](../reference/parameters.md) |
 | A sensor, an action or the gene encoding | [sensors-and-actions.md](../reference/sensors-and-actions.md) |
 | A population strategy or a selection method | [population-and-selection.md](../reference/population-and-selection.md) |
 | A tab or a button | the matching page in [docs/user/](../user/), and its screenshot if the layout changed |

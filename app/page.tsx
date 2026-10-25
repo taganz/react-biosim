@@ -5,10 +5,9 @@ import Tabs from "@/components/global/tabs/Tabs";
 import ControlBar from "@/components/simulation/controlbar/ControlBar";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
 import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
-import MapPanel from "@/components/simulation/tabs/map/MapPanel";
-import StartPanel from "@/components/simulation/tabs/start/StartPanel";
+import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
+import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
-import SettingsPanel from "@/components/simulation/tabs/settings/SettingsPanel";
 import StatsPanel from "@/components/simulation/tabs/stats/StatsPanel";
 import { Metadata } from "next";
 
@@ -31,41 +30,30 @@ export default function Home() {
             <div>
               <Tabs>
                 <TabList label="Simulation panels">
-                  <Tab index={0}>Start</Tab>
-                  <Tab index={1}>Population</Tab>
-                  <Tab index={2}>Stats</Tab>
-                  <Tab index={3}>Settings</Tab>
-                  <Tab index={4}>Map</Tab>
-                  <Tab index={5}>Files</Tab>
-                  <Tab index={6}>About</Tab>
+                  <Tab index={0}>Scenario</Tab>
+                  <Tab index={1}>Simulation</Tab>
+                  <Tab index={2}>Export</Tab>
+                  <Tab index={3}>Tools</Tab>
+                  <Tab index={4}>About</Tab>
+                  {/* Old tabs: their components move to the new ones above */}
+                  <Tab index={5}>Population</Tab>
+                  <Tab index={6}>Stats</Tab>
+                  <Tab index={7}>Files</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
-                  <StartPanel />
+                  <ScenarioPanel />
                 </TabPanel>
 
                 <TabPanel index={1}>
-                  <PopulationPanel />
+                  <SimulationPanel />
                 </TabPanel>
 
-                <TabPanel index={2}>
-                  <StatsPanel />
-                </TabPanel>
+                <TabPanel index={2}></TabPanel>
 
-                <TabPanel index={3}>
-                  <SettingsPanel />
-                </TabPanel>
+                <TabPanel index={3}></TabPanel>
 
                 <TabPanel index={4}>
-                  <MapPanel />
-                </TabPanel>
-
-                <TabPanel index={5}>
-                  <FilesPanel />
-                </TabPanel>
-
-                <TabPanel index={6}>
-                  
                   <p>
                       This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
                       <a
@@ -79,11 +67,11 @@ export default function Home() {
                   <br/>
                   <p>How to use:</p>
                   <ul className="list-disc pl-6">
-                    <li>Start by using one of the simulations based on the video in the &apos;Start&apos;&nbsp;panel.</li>
+                    <li>Start by using one of the simulations based on the video in the &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Adjust simulation speed and restart in the control bar at the top.</li>
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
-                    <li>Modify scenario parameters and run your simulation in &apos;Settings&apos;&nbsp;panel.</li>
-                    <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
+                    <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
+                    <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
                     <li>Save a copy of current simulation and load it again in &apos;Files&apos;&nbsp;panel.</li>
                   </ul>
@@ -106,6 +94,18 @@ export default function Home() {
                   </a>
                   . Thanks to Carlos
                   <br/>
+                </TabPanel>
+
+                <TabPanel index={5}>
+                  <PopulationPanel />
+                </TabPanel>
+
+                <TabPanel index={6}>
+                  <StatsPanel />
+                </TabPanel>
+
+                <TabPanel index={7}>
+                  <FilesPanel />
                 </TabPanel>
               </Tabs>
             </div>

@@ -9,7 +9,7 @@
 │      │       (subscribes to events)       │        on worldController           │
 │      ▼                                    ▼                                     │
 │  ┌───────────── Jotai store (components/simulation/store) ──────────────────┐   │
-│  │ worldControllerAtom   simulationDataAtom (Settings draft)   selected*Atom │   │
+│  │ worldControllerAtom   simulationDataAtom (Scenario draft)   selected*Atom │   │
 │  └──────────────────────────────┬───────────────────────────────────────────┘   │
 └─────────────────────────────────┼───────────────────────────────────────────────┘
                                   │ the same WorldController instance
@@ -46,11 +46,11 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 |---|---|
 | `worldControllerAtom` | The single `WorldController` (or `null` before mount). |
 | `worldCanvasAtom` | The `WorldCanvas`. |
-| `simulationDataAtom` | The **draft** `SimulationData` edited in the Settings tab. It is not the running configuration: that lives in `worldController.simData`. |
+| `simulationDataAtom` | The **draft** `SimulationData` edited in the Scenario tab. The Simulation tab writes its options to the controller with `WorldController.setRunOptions()` and copies them into the draft. It is not the running configuration: that lives in `worldController.simData`. |
 | `selectedCreatureAtom`, `selectedSpeciesAtom` | The selection made on the canvas or in the Population tab. |
 | `eventLoggerAtom` | The controller's `EventLogger`. |
 | `pauseBetweenStepsAtom`, `pauseBetweenGenerationsAtom`, `immediateStepsAtom` | Speed controls in the control bar. `useSpeedSync()`, called by `ControlBar`, passes them to `worldController.setSpeed()` when they change and again on every `initializeWorld`, because starting or loading a run reads the speed from the simulation data. |
-| `mapDesigner*Atom` | Map editor state (objects, selection, fullscreen). |
+| `mapDesigner*Atom` | Map editor state. `mapDesignerObjectsAtom` and `mapDesignerWorldSizeAtom` read (and the first writes) `worldObjects` and `size` of the Scenario draft; selection and fullscreen are its own. |
 | `gif.ts` atoms | GIF recorder state. |
 
 ## Engine → UI: events
@@ -83,7 +83,7 @@ Heavy views, such as the species list, listen to `startGeneration` directly and 
 ## UI → engine: applying settings
 
 ```
-Settings tab ──edits──▶ simulationDataAtom (draft)
+Scenario tab ──edits──▶ simulationDataAtom (draft)
                           │
       "Update simulation" │  worldControllerSimDataHotChange(controller, draft)
                           │    copies the run state (generation, step, counters,
@@ -95,9 +95,9 @@ Settings tab ──edits──▶ simulationDataAtom (draft)
               worldController.simData === draft
 ```
 
-The Settings tab shows "pending changes" when `simulationDataAtom` is a different object from `worldController.simData`. Every edit creates a new object (`{...prev, …}`), so this reference comparison is enough.
+The Scenario tab shows "pending changes" when `simulationDataAtom` is a different object from `worldController.simData`. Every edit creates a new object (`{...prev, …}`), so this reference comparison is enough.
 
-The map editor's **Use Map** does the same as Update simulation: it writes the objects into the draft and calls `worldControllerSimDataHotChange`.
+The map editor in the Scenario tab edits `worldObjects` of the draft, so map changes are applied by Update simulation or Restart like any other setting.
 
 `resumeRun(sim, creatures?)` takes its creatures from the `creatures` argument when one is given, and from `sim.species` otherwise. The hot change passes `worldController.generations.currentCreatures`, the creatures alive right now. Loading a file passes nothing, so the saved species are used.
 
@@ -123,4 +123,4 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## Logging
 
-[EventLogger](../../simulation/logger/EventLogger.ts) collects creature and generation events (see [LogEvent.ts](../../simulation/logger/LogEvent.ts)) and saves them as CSV (the format is in [The log file](../reference/log-file.md)). It is configured through the `LOG_*` constants, which *Stats → Logger options* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Settings draft may share its `constants` object. Its UI is in *Stats → Logger*.
+[EventLogger](../../simulation/logger/EventLogger.ts) collects creature and generation events (see [LogEvent.ts](../../simulation/logger/LogEvent.ts)) and saves them as CSV (the format is in [The log file](../reference/log-file.md)). It is configured through the `LOG_*` constants, which *Stats → Logger options* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Scenario draft may share its `constants` object. Its UI is in *Stats → Logger*.

@@ -6,7 +6,7 @@
 
 ![My scenarios](images/tab_files_scenarios.png)
 
-Your own scenarios, stored in this browser. They are separate from the scenarios in the **Start** tab, which are part of the app.
+Your own scenarios, stored in this browser. They are separate from the scenarios in the **Scenario** tab, which are part of the app.
 
 - **Save setup** stores the settings and the map. Loading it starts a new run from generation 1, like the scenarios in Start, with the simulation code of the file.
 - **Save generation start** also stores the genomes of the current generation, as they were when the generation started. Creatures that died since then are included. Loading it starts that generation again: the same genomes, without mutation, placed like in generation 1 (around the spawn area if there is one, otherwise at random). The generation number and the simulation code are kept.
@@ -30,7 +30,7 @@ A saved file is plain JSON. You can open it in a text editor to change values th
 - **Choose File** loads a `.sim`, `.txt` or `.json` file saved with **Save to file**. Files from older versions of the app, such as those in `_scenarios/`, may not load: if one fails, the message explains why.
 - **Or paste the JSON code** loads text you copied with **Show JSON to copy**. Click **Load**.
 
-Loading **resumes** the saved run: it continues from the saved generation with the saved creatures. The Settings draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
+Loading **resumes** the saved run: it continues from the saved generation with the saved creatures. The Scenario draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
 
 ## Images and GIFs
 

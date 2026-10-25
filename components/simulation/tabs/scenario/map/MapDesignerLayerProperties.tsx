@@ -5,12 +5,12 @@ import { useAtom } from "jotai";
 import {
   mapDesignerObjectsAtom,
   mapDesignerSelectedObjectIndexAtom,
-} from "../../store/mapDesignerAtoms";
+} from "../../../store/mapDesignerAtoms";
 import Button from "@/components/global/Button";
 import { useCallback, useEffect } from "react";
 import { HealthArea } from "@/simulation/world/areas/health/HealthArea";
 import WorldObject from "@/simulation/world/objects/WorldObject";
-import { FaClone, FaTrash } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaClone, FaTrash } from "react-icons/fa";
 
 export default function MapDesignerLayerProperties() {
   const [objects, setObjects] = useAtom(mapDesignerObjectsAtom);
@@ -81,6 +81,17 @@ export default function MapDesignerLayerProperties() {
       newObjects.splice(selectedObjectIndex, 0, selectedObject.clone());
       setObjects(newObjects);
       setSelectedObjectIndex(selectedObjectIndex + 1);
+    }
+  };
+
+  // Objects later in the list are drawn on top
+  const handleMove = (toFront: boolean) => {
+    if (selectedObjectIndex !== undefined && selectedObject) {
+      const newObjects = objects.filter((_, index) => index !== selectedObjectIndex);
+      if (toFront) newObjects.push(selectedObject);
+      else newObjects.unshift(selectedObject);
+      setObjects(newObjects);
+      setSelectedObjectIndex(toFront ? newObjects.length - 1 : 0);
     }
   };
 
@@ -155,6 +166,12 @@ export default function MapDesignerLayerProperties() {
             </Button>
             <Button variant="danger" onClick={handleDelete} icon={<FaTrash />}>
               Delete
+            </Button>
+            <Button onClick={() => handleMove(true)} variant="grey" icon={<FaArrowUp />}>
+              To front
+            </Button>
+            <Button onClick={() => handleMove(false)} variant="grey" icon={<FaArrowDown />}>
+              To back
             </Button>
           </div>
         </>

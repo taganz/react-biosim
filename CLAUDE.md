@@ -20,7 +20,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 - Genes address sensors and actions by their **position in the enabled list**, which follows the order of the `data` table in `CreatureSensors` / `CreatureActions`.
   - Add new sensors and actions at the end of that table.
   - `calculateOutputs()` must push one value per enabled sensor, in table order. `executeActions()` must advance the index for every enabled action.
-- `simulationDataAtom` is the Settings **draft**. The running configuration is `worldController.simData`.
+- `simulationDataAtom` is the Scenario tab **draft**. The running configuration is `worldController.simData`.
 - Read engine values in components with `useWorldValue(getter, default)`. The getter must return a primitive or a stable reference.
 - Population strategies, selection methods and map objects are saved by class `name`. Register new ones in `populationMap`, `selectionMap` and `objectFormatters` respectively.
 - Engine code draws random numbers only with `random()`, `randomInt()` and `shuffle()` from `simulation/helpers/random.ts`, never `Math.random()`, or seeded runs stop repeating.
