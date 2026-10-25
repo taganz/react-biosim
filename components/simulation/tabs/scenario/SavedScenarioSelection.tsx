@@ -6,7 +6,7 @@ import StatusMessage from "@/components/global/StatusMessage";
 import useSimulationLoader from "@/hooks/useSimulationLoader";
 import { UserScenarioInfo, listUserScenarios, readUserScenario } from "@/helpers/userScenarios";
 
-// Scenarios saved in this browser from the Files tab
+// Scenarios saved in this browser from the Export tab
 export default function SavedScenarioSelection() {
   const [selectedId, setSelectedId] = useState("");
   const [scenarios, setScenarios] = useState<UserScenarioInfo[]>([]);
@@ -34,7 +34,7 @@ export default function SavedScenarioSelection() {
   };
 
   return (
-    // the list can change in the Files tab, so it is read again when the combo gets the focus
+    // the list can change in the Export tab, so it is read again when the combo gets the focus
     <div className="flex flex-col gap-2" onFocus={refresh}>
       <SelectInput label="Load saved scenario" value={selectedId} onChange={handleSelection}>
         <option value="">

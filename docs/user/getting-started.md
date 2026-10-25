@@ -38,7 +38,7 @@ In the first generations creatures move almost at random. After tens or hundreds
 | Pause between steps (ms) | Slows the simulation down. Use 50 or 200 to follow individual creatures. |
 | Pause between generations (ms) | Holds the last step of each generation on screen so you can see who survived. |
 | Immediate steps | Steps computed before the world is redrawn. **200 runs at full speed.** Choosing 20 or 200 sets both pauses to 0. |
-| Restart | Starts again from generation 1 straight away, without asking: all evolution so far is lost, so save it first in the Files tab if you want to keep it. |
+| Restart | Starts again from generation 1 straight away, without asking: all evolution so far is lost, so save it first in the Export tab if you want to keep it. |
 | Play / Pause | Stops and resumes the simulation. |
 
 The speed controls open from the **Speed** button, in a panel over the page. Click anywhere else to close it. Survivors is shown on screens at least 1024 px wide. On phones the Speed and Restart buttons show only their icons.
@@ -54,5 +54,5 @@ Click any creature in the world. A ring marks it, and the **Population** tab sho
 - [Population and brains](population-and-brains.md): species, neural networks, genomes
 - [Scenario, simulation and stats](settings-and-stats.md): change the rules and measure the results
 - [Map editor](map-editor.md): draw your own world
-- [Files](files.md): your own scenarios, save, load, export images and GIFs
+- [Export](export.md): your own scenarios, save, load, export images and GIFs
 - [Scenarios](scenarios.md): what each included scenario shows

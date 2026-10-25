@@ -10,7 +10,7 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 | `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the [Map editor](../user/map-editor.md), in the Scenario tab) |
 | `constants` | object | Advanced options that are not shown in the UI |
 
-The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file from the **Files** tab replaces all of them.
+The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file with **Load .sim file** replaces all of them.
 
 ## How changes are applied
 

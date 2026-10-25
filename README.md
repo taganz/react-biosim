@@ -47,7 +47,7 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 | Stats | Plot fitness per generation, check the logger and water |
 | Settings | Change world, generations, neural networks, mutations, sensors and actions, then apply with **Update simulation** (keeps the creatures) or **Restart** |
 | Map | Draw obstacles and areas, then apply the map to the simulation |
-| Files | Save the simulation to a `.sim` file or as JSON, load one back, export images and GIFs |
+| Export | Save your own scenarios, save the simulation to a `.sim` file or as JSON, export images and GIFs |
 | About | Credits and links |
 
 ## Documentation

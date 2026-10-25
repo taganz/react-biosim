@@ -40,4 +40,4 @@ Two buttons above the map work on the map only:
 - **Reset map** throws away your map edits and goes back to the map of the running simulation. Other draft changes are kept.
 - **Clear map** removes every object.
 
-To keep a map, apply it and then save the simulation or the scenario from the [Files](files.md) tab: they save the running simulation, not the draft.
+To keep a map, apply it and then save the simulation or the scenario from the [Export](export.md) tab: they save the running simulation, not the draft.

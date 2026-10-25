@@ -1,6 +1,6 @@
 # Save format
 
-**Save to file** in the Files tab writes one JSON document, which [serializeSimulationData](../../simulation/serialization/formatters/simulationDataSerialization.ts) builds from the running controller. Its type is [SavedSimulationData](../../simulation/serialization/data/SavedSimulationData.ts). The `.sim` extension is only a convention.
+**Save to file** in the Export tab writes one JSON document, which [serializeSimulationData](../../simulation/serialization/formatters/simulationDataSerialization.ts) builds from the running controller. Its type is [SavedSimulationData](../../simulation/serialization/data/SavedSimulationData.ts). The `.sim` extension is only a convention.
 
 ## Structure
 
@@ -74,7 +74,7 @@ When a run resumes, every saved creature is rebuilt for the new world (see [Arch
 
 ## User scenarios
 
-**My scenarios** in the Files tab writes the same format, through two other serializers in [simulationDataSerialization.ts](../../simulation/serialization/formatters/simulationDataSerialization.ts):
+**My scenarios** in the Export tab writes the same format, through two other serializers in [simulationDataSerialization.ts](../../simulation/serialization/formatters/simulationDataSerialization.ts):
 
 | Serializer | Content | Loaded with |
 |---|---|---|

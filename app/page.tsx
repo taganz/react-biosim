@@ -4,7 +4,7 @@ import TabPanel from "@/components/global/tabs/TabPanel";
 import Tabs from "@/components/global/tabs/Tabs";
 import ControlBar from "@/components/simulation/controlbar/ControlBar";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
-import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
+import ExportPanel from "@/components/simulation/tabs/export/ExportPanel";
 import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
 import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
@@ -38,7 +38,6 @@ export default function Home() {
                   {/* Old tabs: their components move to the new ones above */}
                   <Tab index={5}>Population</Tab>
                   <Tab index={6}>Stats</Tab>
-                  <Tab index={7}>Files</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -49,7 +48,9 @@ export default function Home() {
                   <SimulationPanel />
                 </TabPanel>
 
-                <TabPanel index={2}></TabPanel>
+                <TabPanel index={2}>
+                  <ExportPanel />
+                </TabPanel>
 
                 <TabPanel index={3}></TabPanel>
 
@@ -72,8 +73,8 @@ export default function Home() {
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
                     <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
-                    <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
-                    <li>Save a copy of current simulation in &apos;Files&apos;&nbsp;panel and load it again in &apos;Scenario&apos;&nbsp;panel.</li>
+                    <li>Create a gif or save an image of current generation in &apos;Export&apos;&nbsp;panel.</li>
+                    <li>Save a copy of current simulation in &apos;Export&apos;&nbsp;panel and load it again in &apos;Scenario&apos;&nbsp;panel.</li>
                   </ul>
                   <br/>
                   Source code:&nbsp;{" "}
@@ -102,10 +103,6 @@ export default function Home() {
 
                 <TabPanel index={6}>
                   <StatsPanel />
-                </TabPanel>
-
-                <TabPanel index={7}>
-                  <FilesPanel />
                 </TabPanel>
               </Tabs>
             </div>

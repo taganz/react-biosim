@@ -74,7 +74,7 @@ Useful helpers:
 
 ## Add a scenario
 
-1. Set the scenario up in the app, then save it with **Files → Save to file**.
+1. Set the scenario up in the app, then save it with **Export → Save to file**.
 2. Put the file in [public/](../../public/).
 3. Add an entry to [scenarioObjects.tsx](../../components/simulation/tabs/scenario/scenarioObjects.tsx):
    ```ts

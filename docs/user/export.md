@@ -1,6 +1,6 @@
-# Files: save, load and export
+# Export: save, load and export
 
-![Files tab](images/tab_files.png)
+![Export tab](images/tab_files.png)
 
 ## My scenarios
 
