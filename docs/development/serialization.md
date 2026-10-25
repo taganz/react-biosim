@@ -6,9 +6,10 @@
 
 ```jsonc
 {
+  "version": 2,                      // SAVE_FORMAT_VERSION; missing in older files (version 1)
   "constants": { ... },              // SimulationData.constants, as is
   "worldGenerationsData": {          // SavedWorldGenerationData
-    "simulationType": "generational", "maxAge": 1000,     // missing in older files
+    "simulationType": "generational", "maxAge": 1000,
     "populationStrategy": "AsexualZonePopulation",        // class name
     "selectionMethod": "InsideReproductionAreaSelection", // class name
     "initialPopulation": 500,
@@ -18,7 +19,7 @@
     "enabledSensors": ["HorizontalPosition", ...],
     "enabledActions": ["MoveNorth", ...],
     "metabolismEnabled": false, "phenotypeColorMode": "genome",
-    "plantGenes": "[-2071543808,-2071486464]",   // a JSON string, not an array
+    "plantGenes": [-2071543808, -2071486464],      // a JSON string in version 1
     "lastCreatureIdCreated": 500, ...              // run state
   },
   "worldControllerData": { ... },    // WorldControllerData, as is (size, steps, metabolism constants, speed, run state)
@@ -46,7 +47,7 @@
 Notes:
 
 - **Strategies and methods** are saved by their `name`, and loading looks the name up in `populationMap` / `selectionMap`. An unknown name falls back to *Asexual Random* or *Inside Reproduction Area*, with a console warning.
-- **Older files** have no `simulationType` or `maxAge`. They load as generational runs with a maximum age of 1000. A file with the removed `ContinuousPopulation` or `ContinuousSelection` loads as a continuous run, with *Random Fixed Genera* and *Inside Reproduction Area* in their place ([worldGenerationDataSerialization.ts](../../simulation/serialization/formatters/worldGenerationDataSerialization.ts)).
+- **Older files** are brought to the current format by [migrateSavedSimulationData](../../simulation/serialization/migrateSavedSimulationData.ts) before anything else reads them (see [Compatibility](#compatibility)).
 - **Map objects** are saved by class name. Each type needs an entry in `objectFormatters` in [objectsSerialization.ts](../../simulation/serialization/formatters/objectsSerialization.ts): `RectangleObject`, `EllipseObject`, the reproduction and health areas in both shapes, and `RectangleSpawnArea`.
 - **Creatures** are grouped by species, because creatures of a species share a genome. Only position, movement, mass and age are saved for each creature. Ids, health and `distanceCovered` are not saved: they restart when the file is loaded. Files saved before October 2026 have no `age`, so their creatures start again at age 0: in a continuous run none of them dies of old age until `maxAge` steps have passed.
 - **`cellWater`** is saved with the creatures, so a resumed run continues with the water the cells had. Files without it (older files, setups, generation starts) give the cells the first rain. Resuming checks that it fits the world (same number of cells, and no more water than the total): otherwise it also falls back to the first rain.
@@ -62,7 +63,7 @@ Notes:
 
 | Function | Used by | Effect |
 |---|---|---|
-| `loadSavedWorldAndResumeRun` | Files → Load, scenarios marked `resumeRun` | `resumeRun()`: same generation, same creatures, same stats |
+| `loadSavedWorldAndResumeRun` | Scenario → Load .sim file, scenarios marked `resumeRun` | `resumeRun()`: same generation, same creatures, same stats |
 | `loadSavedSimulationAndStartRun` | Scenarios marked `startRun` | `startRun()`: same settings and map, from generation 1, new simulation code |
 
 `loadSavedWorldAndResumeRun` checks for `startGenomes` first: a file that has them calls `startGeneration()` instead of `resumeRun()` (see below).
@@ -88,10 +89,21 @@ The JSON is stored in the browser's IndexedDB by [helpers/userScenarios.ts](../.
 
 ## Compatibility
 
-The format has **no version number**. Fields are read by name, so:
+Every file has a `version`, `SAVE_FORMAT_VERSION` when it was saved; a file without one is version 1. `deserializeSimulationData` first calls [migrateSavedSimulationData](../../simulation/serialization/migrateSavedSimulationData.ts), which turns a file of any older version into the current format, so the deserializers only read the current one. A file from a newer version is refused with a message.
 
-- **Adding** a field to `SimulationData` breaks old files unless the deserializer gives it a default. Old files leave the field `undefined`.
+Version 1 files are changed like this:
+
+- `plantGenes` is parsed from its JSON string. Files older than the setting get none.
+- Files without `simulationType` or `maxAge` load as generational runs with a maximum age of 1000. A file with the removed `ContinuousPopulation` or `ContinuousSelection` loads as a continuous run, with *Random Fixed Genera* and *Inside Reproduction Area* in their place.
+- The removed `ATTACK_MULTIPLE_MASS_AT_BIRTH` and `MASS_COST_PER_EXECUTE_ACTION` are dropped. A missing `ACTION_ATTACK_OFFSET` takes `ACTION_REPRODUCTION_OFFSET`, and a missing `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` takes `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`.
+- `LOG_LEVEL` is converted (see `migrateLogConstants`).
+- The oldest files, from before metabolism and water, have no `constants` and no `waterData`, and keep `worldObjects` (and `waterFirstRainPerCell`) inside `worldControllerData`. Those are moved to their place, and any missing `constants`, water or `worldControllerData` setting takes the startup value.
+
+Fields are read by name, so:
+
+- **Adding** a field to `SimulationData`: older files leave it `undefined`. Give it a default in the migration, or make it optional.
+- **Changing the format** of a saved field: increase `SAVE_FORMAT_VERSION` and add a step to the migration (`fromVersion2`, and so on) that converts the files of the previous version. Add a test to [migrateSavedSimulationData.test.ts](../../__tests__/migrateSavedSimulationData.test.ts).
 - **Renaming** a sensor, action, strategy, method or object class breaks every file that uses the old name.
 - **Reordering** sensors or actions does not change what saved genes mean, because a gene points to a position in the *enabled* list (see [gene encoding](../reference/sensors-and-actions.md#gene-encoding)). The enabled list follows the order of the `data` table in `CreatureSensors` and `CreatureActions`. So reordering that table *does* change what every saved genome means.
 
-Before changing any of these, load the files in `public/` to check that they still work. They are the scenarios users see first.
+Before changing any of these, check that the files in `public/` still load: they are the scenarios users see first. `migrateSavedSimulationData.test.ts` loads each of them.

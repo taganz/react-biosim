@@ -116,4 +116,4 @@ Claude then picks the options, runs one `npm run sim` per experiment with a diff
 - A run is repeatable with the same seed, but one run is still one sample: to compare settings, run several seeds and compare averages.
 - Resuming `final.sim` is deterministic (the same file always continues the same way), but it does not give exactly the generations an uninterrupted run would have: restored creatures act in a different order. See [Save format](../development/serialization.md).
 - Nothing is drawn, so there are no images or GIFs. Load `final.sim` in the app to see the world.
-- `.sim` files older than the `plantGenes` setting do not load, in the runner or in the app. See [Known issues](../known-issues.md).
+- `public/sim W19 generation 16_herbivores.sim` does not load, in the runner or in the app. See [Known issues](../known-issues.md).
