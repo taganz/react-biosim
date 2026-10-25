@@ -6,6 +6,7 @@ import { atom } from "jotai";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario"
 import EventLogger from "@/simulation/logger/EventLogger";
 import { GridPosition } from "@/simulation/world/grid/Grid";
+import { LoadedSpeciesSummary } from "@/simulation/creature/speciesSummary";
 
 
 
@@ -20,6 +21,8 @@ export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
 export const selectedSpeciesAtom = atom<Species | undefined>(undefined);
+// the top species of the last file loaded in Scenario → Load scenario; null until one is loaded
+export const loadedSpeciesAtom = atom<{ sourceName: string; summary: LoadedSpeciesSummary } | null>(null);
 // an empty cell clicked on the world; null while a creature is selected
 export const selectedCellAtom = atom<GridPosition | null>(null);
 // the "Select creature id" field of the Population tab. It is emptied when that creature is selected,
