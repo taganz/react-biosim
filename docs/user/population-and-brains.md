@@ -6,7 +6,7 @@ The **Population** tab shows what is alive and how it thinks.
 
 ## Summary line
 
-The line at the top shows the generation and step, how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
+The line at the top shows how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
 
 ## Species
 

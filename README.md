@@ -44,10 +44,10 @@ Details: [sensors and actions](docs/reference/sensors-and-actions.md), [populati
 |---|---|
 | Scenario | Load a demo scenario, a `.sim` file or a saved scenario; change world, generations, neural networks, mutations, sensors, actions and the map, then apply with **Update simulation** (keeps the creatures) or **Restart** |
 | Simulation | Simulation code, seed and display options; plot fitness per generation and check the water |
+| Population | See the top species, a creature's genome and its neural network, live or as a diagram |
 | Export | Save your own scenarios, save the simulation to a `.sim` file or as JSON, export images and GIFs |
 | Tools | Record the simulation events with the logger |
 | About | Credits and links |
-| Population | See the top species, a creature's genome and its neural network, live or as a diagram |
 
 ## Documentation
 

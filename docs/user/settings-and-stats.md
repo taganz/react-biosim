@@ -41,11 +41,11 @@ Some changes behave differently depending on how you apply them:
 
 The options of the running simulation. They have no draft: a change applies at once, also while paused, and never shows as a pending change in the Scenario tab. **Update simulation** and **Restart** keep them.
 
+There are three collapsible sections, closed at first (click a title to open it): **Run** has the simulation code, the seed and the phenotype mode, and the other two show how the run is going.
+
 - **Simulation code:** a name for the run, used in the names of saved files, images, GIFs and logs. Changing it renames the running simulation straight away. **Restart**, and the automatic restart after an extinction, keep a code you chose. They also keep the code when the seed is fixed and the scenario has not changed, because the restart repeats the same simulation. Otherwise they pick a new random one.
 - **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect at the next **Restart**: the running simulation keeps its random sequence.
-- **Phenotype mode** (Display) only changes how creatures are coloured: by genome, so each species has its own colour, or by trophic level (green plants, blue herbivores, red carnivores). The creatures are recoloured straight away.
-
-Below the options, two collapsible sections show how the run is going. Both start closed: click the title to open them.
+- **Phenotype mode** only changes how creatures are coloured: by genome, so each species has its own colour, or by trophic level (green plants, blue herbivores, red carnivores). The creatures are recoloured straight away.
 
 ### Fitness chart
 

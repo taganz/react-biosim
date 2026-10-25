@@ -6,7 +6,8 @@ import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import TextInput from "@/components/global/inputs/TextInput";
 import { PhenoTypeColorMode } from "@/simulation/creature/PhenoTypeColorMode";
 import useWorldValue from "@/hooks/useWorldValue";
-import Section, { FIELDS_GRID } from "../Section";
+import { FIELDS_GRID } from "../Section";
+import CollapsibleSection from "../CollapsibleSection";
 import useSetRunOptions from "./useSetRunOptions";
 import FitnessGraph from "./FitnessGraph";
 import WorldWaterStatus from "./WorldWaterStatus";
@@ -29,9 +30,8 @@ export default function SimulationPanel() {
   const isSeedFixed = seed !== undefined;
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* === RUN === */}
-      <Section title="Run">
+    <div className="flex flex-col gap-4">
+      <CollapsibleSection title="Run">
         <div className={FIELDS_GRID}>
           <div className="flex flex-col gap-1">
             <TextInput
@@ -95,10 +95,6 @@ export default function SimulationPanel() {
             )}
           </div>
         </div>
-      </Section>
-
-      {/* === DISPLAY === */}
-      <Section title="Display">
         <div className={FIELDS_GRID}>
           <div className="flex flex-col gap-1">
             <SelectInput
@@ -117,13 +113,9 @@ export default function SimulationPanel() {
             </ul>
           </div>
         </div>
-      </Section>
-
-      {/* === STATS === */}
-      <div className="flex flex-col gap-4">
-        <FitnessGraph />
-        <WorldWaterStatus />
-      </div>
+      </CollapsibleSection>
+      <FitnessGraph />
+      <WorldWaterStatus />
     </div>
   );
 }

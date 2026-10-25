@@ -32,11 +32,10 @@ export default function Home() {
                 <TabList label="Simulation panels">
                   <Tab index={0}>Scenario</Tab>
                   <Tab index={1}>Simulation</Tab>
-                  <Tab index={2}>Export</Tab>
-                  <Tab index={3}>Tools</Tab>
-                  <Tab index={4}>About</Tab>
-                  {/* Old tabs: their components move to the new ones above */}
-                  <Tab index={5}>Population</Tab>
+                  <Tab index={2}>Population</Tab>
+                  <Tab index={3}>Export</Tab>
+                  <Tab index={4}>Tools</Tab>
+                  <Tab index={5}>About</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -48,14 +47,18 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={2}>
-                  <ExportPanel />
+                  <PopulationPanel />
                 </TabPanel>
 
                 <TabPanel index={3}>
-                  <ToolsPanel />
+                  <ExportPanel />
                 </TabPanel>
 
                 <TabPanel index={4}>
+                  <ToolsPanel />
+                </TabPanel>
+
+                <TabPanel index={5}>
                   <p>
                       This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
                       <a
@@ -96,10 +99,6 @@ export default function Home() {
                   </a>
                   . Thanks to Carlos
                   <br/>
-                </TabPanel>
-
-                <TabPanel index={5}>
-                  <PopulationPanel />
                 </TabPanel>
               </Tabs>
             </div>
