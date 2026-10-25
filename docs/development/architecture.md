@@ -50,7 +50,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `selectedCreatureAtom`, `selectedSpeciesAtom` | The selection made on the canvas or in the Population tab. |
 | `eventLoggerAtom` | The controller's `EventLogger`. |
 | `pauseBetweenStepsAtom`, `pauseBetweenGenerationsAtom`, `immediateStepsAtom` | Speed controls in the control bar. `useSpeedSync()`, called by `ControlBar`, passes them to `worldController.setSpeed()` when they change and again on every `initializeWorld`, because starting or loading a run reads the speed from the simulation data. |
-| `mapDesigner*Atom` | Map editor state (objects, selection, fullscreen). |
+| `mapDesigner*Atom` | Map editor state. `mapDesignerObjectsAtom` and `mapDesignerWorldSizeAtom` read (and the first writes) `worldObjects` and `size` of the Scenario draft; selection and fullscreen are its own. |
 | `gif.ts` atoms | GIF recorder state. |
 
 ## Engine → UI: events
@@ -97,7 +97,7 @@ Scenario tab ──edits──▶ simulationDataAtom (draft)
 
 The Scenario tab shows "pending changes" when `simulationDataAtom` is a different object from `worldController.simData`. Every edit creates a new object (`{...prev, …}`), so this reference comparison is enough.
 
-The map editor's **Use Map** does the same as Update simulation: it writes the objects into the draft and calls `worldControllerSimDataHotChange`.
+The map editor in the Scenario tab edits `worldObjects` of the draft, so map changes are applied by Update simulation or Restart like any other setting.
 
 `resumeRun(sim, creatures?)` takes its creatures from the `creatures` argument when one is given, and from `sim.species` otherwise. The hot change passes `worldController.generations.currentCreatures`, the creatures alive right now. Loading a file passes nothing, so the saved species are used.
 

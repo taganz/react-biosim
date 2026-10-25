@@ -6,7 +6,7 @@ import { useAtom, useSetAtom } from "jotai";
 import {
   mapDesignerObjectsAtom,
   mapDesignerSelectedObjectIndexAtom,
-} from "../../store/mapDesignerAtoms";
+} from "../../../store/mapDesignerAtoms";
 import EllipseObject from "@/simulation/world/objects/EllipseObject";
 import RectangleReproductionArea from "@/simulation/world/areas/reproduction/RectangleReproductionArea";
 import EllipseReproductionArea from "@/simulation/world/areas/reproduction/EllipseReproductionArea";

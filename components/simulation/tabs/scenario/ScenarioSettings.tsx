@@ -21,6 +21,7 @@ import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
 import Section, { FIELDS_GRID } from "../Section";
+import MapDesigner from "./map/MapDesigner";
 import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
@@ -373,6 +374,14 @@ export default function ScenarioSettings() {
             min={1}
           />
         </div>
+      </Section>
+
+      {/* === MAP === */}
+      <Section
+        title="Map"
+        description="Obstacles and areas. Like the other settings, changes are applied with Update simulation or Restart."
+      >
+        <MapDesigner />
       </Section>
 
       {/* === GENERATIONS === */}

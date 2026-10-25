@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { worldControllerAtom } from "../../store";
+import { worldControllerAtom } from "../../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { useWindowSize } from "react-use";
 import {
@@ -9,7 +9,7 @@ import {
   mapDesignerWorldSizeAtom,
   mapDesignerSelectedObjectIndexAtom,
   mapDesignerFullscreenAtom,
-} from "../../store/mapDesignerAtoms";
+} from "../../../store/mapDesignerAtoms";
 import useMouseClickAndDrag from "@/hooks/useMouseClickAndDrag";
 import { Coordinates, roundCoordinates } from "@/helpers/coordinates";
 import {

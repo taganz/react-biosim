@@ -70,7 +70,7 @@ Useful helpers:
 
 1. Create the class in [simulation/world/objects/](../../simulation/world/objects/) or [simulation/world/areas/](../../simulation/world/areas/). Implement [WorldObject](../../simulation/world/objects/WorldObject.ts), or extend an existing shape. An object with no `areaType` is **solid**. Areas use 0 (reproduction), 1 (health) and 2 (spawn). Use `areaEffectOnCreature(creature)` for an effect on the creatures standing in it, but note that `WorldGenerations.step()` does not call it at present.
 2. Add a formatter to `objectFormatters` in [objectsSerialization.ts](../../simulation/serialization/formatters/objectsSerialization.ts), keyed by the class `name`, so maps can be saved.
-3. Add a preset to `addPresets` in [MapDesignerFooter.tsx](../../components/simulation/tabs/map/MapDesignerFooter.tsx), so the map editor can create it.
+3. Add a preset to `addPresets` in [MapDesignerFooter.tsx](../../components/simulation/tabs/scenario/map/MapDesignerFooter.tsx), so the map editor can create it.
 
 ## Add a scenario
 

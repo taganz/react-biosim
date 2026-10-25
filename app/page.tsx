@@ -5,7 +5,6 @@ import Tabs from "@/components/global/tabs/Tabs";
 import ControlBar from "@/components/simulation/controlbar/ControlBar";
 import SimulationCanvas from "@/components/simulation/SimulationCanvas";
 import FilesPanel from "@/components/simulation/tabs/files/FilesPanel";
-import MapPanel from "@/components/simulation/tabs/map/MapPanel";
 import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
 import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
@@ -39,8 +38,7 @@ export default function Home() {
                   {/* Old tabs: their components move to the new ones above */}
                   <Tab index={5}>Population</Tab>
                   <Tab index={6}>Stats</Tab>
-                  <Tab index={7}>Map</Tab>
-                  <Tab index={8}>Files</Tab>
+                  <Tab index={7}>Files</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -73,7 +71,7 @@ export default function Home() {
                     <li>Adjust simulation speed and restart in the control bar at the top.</li>
                     <li>See fitness evolution in &apos;Stats&apos;&nbsp;panel.</li>
                     <li>Modify scenario parameters in &apos;Scenario&apos;&nbsp;panel, and run options such as the seed in &apos;Simulation&apos;&nbsp;panel.</li>
-                    <li>Edit the map in &apos;Map&apos;&nbsp;panel.</li>
+                    <li>Edit the map in &apos;Scenario&apos;&nbsp;panel.</li>
                     <li>Create a gif or save an image of current generation in &apos;Files&apos;&nbsp;panel.</li>
                     <li>Save a copy of current simulation and load it again in &apos;Files&apos;&nbsp;panel.</li>
                   </ul>
@@ -107,10 +105,6 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={7}>
-                  <MapPanel />
-                </TabPanel>
-
-                <TabPanel index={8}>
                   <FilesPanel />
                 </TabPanel>
               </Tabs>

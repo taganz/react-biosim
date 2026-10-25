@@ -1,6 +1,6 @@
 # Scenarios
 
-These scenarios are in the **Scenario** tab. Their files are in `public/`. You can load one, change it in the Scenario tab or in the Map tab, and save it as your own in **Files → [My scenarios](files.md#my-scenarios)**.
+These scenarios are in the **Scenario** tab. Their files are in `public/`. You can load one, change its settings and map in the Scenario tab, and save it as your own in **Files → [My scenarios](files.md#my-scenarios)**.
 
 All of them use the classic model: *Inside Reproduction Area* selection, and movement actions only.
 

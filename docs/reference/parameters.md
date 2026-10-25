@@ -7,7 +7,7 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 | `worldControllerData` | [WorldControllerData](../../simulation/world/WorldControllerData.ts) | World size, generation length, speed, metabolism constants, run state |
 | `worldGenerationsData` | [WorldGenerationsData](../../simulation/generations/WorldGenerationsData.ts) | Population, selection, genome, mutations, sensors, actions |
 | `waterData` | [WaterData](../../simulation/water/WaterData.ts) | Water and rain |
-| `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the Map tab) |
+| `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the [Map editor](../user/map-editor.md), in the Scenario tab) |
 | `constants` | object | Advanced options that are not shown in the UI |
 
 The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file from the **Files** tab replaces all of them.

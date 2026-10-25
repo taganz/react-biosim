@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import {
   mapDesignerObjectsAtom,
   mapDesignerSelectedObjectIndexAtom,
-} from "../../store/mapDesignerAtoms";
+} from "../../../store/mapDesignerAtoms";
 import Button from "@/components/global/Button";
 import { useCallback, useEffect } from "react";
 import { HealthArea } from "@/simulation/world/areas/health/HealthArea";

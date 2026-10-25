@@ -136,4 +136,4 @@ Each creature keeps these values. Nothing in the simulation reads them; they are
 | `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
 | `killedBySpecies` | For `attacked`, the species of the attacker. |
 
-**Update simulation** and **Use Map** keep these values. Save files do not store them, so creatures loaded from a file start with an empty history.
+**Update simulation** keeps these values, also when it applies a new map. Save files do not store them, so creatures loaded from a file start with an empty history.

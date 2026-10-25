@@ -1,8 +1,8 @@
 # Map editor
 
-The **Map** tab is where you draw the world: obstacles and areas.
+The map editor is the **Map** section of the **Scenario** tab. It is where you draw the world: obstacles and areas.
 
-![Map tab](images/tab_map.png)
+![Map editor](images/tab_map.png)
 
 ## Object types
 
@@ -27,11 +27,17 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 
 ## Applying the map
 
-- **Use Map** sends the map to the running simulation. The creatures and the generation count are kept, so the population has to adapt to the new world. Creatures standing where a new obstacle is placed are removed.
-- **Reset Designer** throws away your edits and loads the map of the running simulation into the designer.
+The editor shows the map of the Scenario draft, drawn at the draft's world size. When you load a scenario, a file or one of **My scenarios**, it shows that map.
 
-The designer remembers your map in the browser's local storage, even after you close the page. It does **not** follow the scenario that is running.
+Your edits are part of the draft, like the other Scenario settings: the bar at the top of the tab says that there are changes not applied yet, and you apply them with its buttons (see [Applying changes](settings-and-stats.md#applying-changes)):
 
-> **The designer can start empty.** The first time you open it, or after loading a new scenario, it may show an empty map or an old one. Click **Reset Designer** to load the current map before you edit it.
+- **Update simulation** sends the map to the running simulation. The creatures and the generation count are kept, so the population has to adapt to the new world. Creatures standing where a new obstacle is placed are removed.
+- **Restart** starts again from generation 1 with the new map.
+- **Discard changes** throws away all the draft changes, the map included.
 
-To keep a map, save the whole simulation from the [Files](files.md) tab. The map is part of the saved file.
+Two buttons above the map work on the map only:
+
+- **Reset map** throws away your map edits and goes back to the map of the running simulation. Other draft changes are kept.
+- **Clear map** removes every object.
+
+To keep a map, apply it and then save the simulation or the scenario from the [Files](files.md) tab: they save the running simulation, not the draft.

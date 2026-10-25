@@ -25,9 +25,7 @@ Checked against the code in October 2026. Each item links to the page that expla
 
 ### User interface
 
-| Bug | Effect | Details |
-|---|---|---|
-| **The map editor can start empty** | It restores a saved map from local storage, which is an empty list the first time. Click **Reset Designer**. | [Map editor](user/map-editor.md#applying-the-map) |
+None known.
 
 ### Older reports, not re-checked
 
@@ -58,6 +56,7 @@ These items were on the old list, or found while writing these docs, and are now
 - **Update simulation** after loading a file set the stats history back to the one in the file. Loading a file without stats kept the history of the previous run.
 - **Save to file** can leave out the stats history.
 - **Save to file** wrote the generation, step and simulation code from load time instead of the current ones. It also saved each creature's position from the previous step, and loading ignored the saved mass.
+- The map editor is in the Scenario tab and edits the draft, so it always shows the map of the loaded scenario. It no longer keeps a map in local storage, which made it start empty or with an old map. **Use Map** is gone: Update simulation applies the map.
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.
 - Selected creature information in the Population tab: identity, life, body, movement and brain, updated at every step, in collapsible sections
 - The population percentage of a species was divided by Initial population instead of the creatures alive
