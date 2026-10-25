@@ -8,9 +8,9 @@
 
 Your own scenarios, stored in this browser. They are separate from the scenarios in the **Scenario** tab, which are part of the app.
 
-- **Save setup** stores the settings and the map. Loading it starts a new run from generation 1, like the scenarios in Start, with the simulation code of the file.
+- **Save setup** stores the settings and the map. Loading it starts a new run from generation 1, like the demo scenarios, with the simulation code of the file.
 - **Save generation start** also stores the genomes of the current generation, as they were when the generation started. Creatures that died since then are included. Loading it starts that generation again: the same genomes, without mutation, placed like in generation 1 (around the spawn area if there is one, otherwise at random). The generation number and the simulation code are kept.
-- **Include the stats history** adds the fitness history of every previous generation. A long run has one row per generation, so this is most of the size. Without it, the Stats charts start empty from the loaded generation.
+- **Include the stats history** adds the fitness history of every previous generation. A long run has one row per generation, so this is most of the size. Without it, the fitness chart in the Simulation tab starts empty from the loaded generation.
 
 Positions, ages, mass and health are not stored. Give the scenario a name, or leave it empty to use `sim <code> generation <n>`.
 
@@ -21,7 +21,7 @@ Scenarios are stored in the browser's IndexedDB. They are lost if you clear the 
 
 - **Save to file** downloads the whole simulation as `sim <code> generation <n>.sim`: settings, map, creatures, species and stats.
 - **Show JSON to copy** shows the same content as text, so you can paste it into a message or an issue. It cannot be loaded back by pasting: save it as a `.sim` file first.
-- **Include the stats history** (off by default) adds the fitness history of every generation. In a long run it is most of the file. Without it the file is much smaller, and the Stats charts start empty when you load it.
+- **Include the stats history** (off by default) adds the fitness history of every generation. In a long run it is most of the file. Without it the file is much smaller, and the fitness chart starts empty when you load it.
 
 A saved file is plain JSON. You can open it in a text editor to change values that are not in the UI, such as the metabolism constants (see [parameters](../reference/parameters.md#not-in-the-ui)).
 

@@ -36,7 +36,7 @@ export const userSelectCreatureAtom = atom(null, (get, set, creature: Creature |
   }
 });
 
-// when and for how long Start recording records, in Stats → Logger; not saved
+// when and for how long Start recording records, in Tools → Logger; not saved
 export const logFromFirstGenerationAtom = atom(false);
 export const logOneGenerationAtom = atom(true);
 

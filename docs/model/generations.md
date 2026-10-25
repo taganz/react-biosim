@@ -34,7 +34,7 @@ This page describes **generational** runs, the default. The **Simulation type** 
 
 - Generations are numbered from 1, and steps from 1 to *Steps per generation*.
 - **Extinction:** if every creature dies during a step, the simulation waits one second and starts again from generation 1, with a new random simulation code. In the classic model creatures do not die, so this only happens with metabolism or attacks.
-- **Stats:** after every generation, the [GenerationRegistry](../../simulation/world/stats/GenerationRegistry.ts) records the generation number, the number of survivors, the fitness value, and the births and deaths during the generation. The Stats tab plots the fitness value, and all of it is saved with the simulation.
+- **Stats:** after every generation, the [GenerationRegistry](../../simulation/world/stats/GenerationRegistry.ts) records the generation number, the number of survivors, the fitness value, and the births and deaths during the generation. The fitness chart in the Simulation tab plots the fitness value, and all of it is saved with the simulation.
 
 ## Timing and speed
 

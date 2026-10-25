@@ -62,7 +62,7 @@ export default function CreatureToolbar({ creature }: Props) {
 
   const logCreature = () => {
     setLogOptions({ LOG_CREATURE_ID: creature.id });
-    setLogMessage(`Creature to log is #${creature.id}. It is used when a recording starts, in Stats → Logger.`);
+    setLogMessage(`Creature to log is #${creature.id}. It is used when a recording starts, in Tools → Logger.`);
   };
 
   return (

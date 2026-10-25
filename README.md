@@ -10,10 +10,10 @@ Creatures live on a grid and are controlled by small neural networks built from 
 
 ## Quick start
 
-1. Open the **Start** tab and pick a scenario.
+1. Open the **Scenario** tab and pick a scenario in **Demo scenarios**.
 2. Watch the fitness curve rise in the **Simulation** tab (**Survival rate (%)**).
 3. Click a species in the **Population** tab to see its brain.
-4. Change the rules in **Settings** or draw a new map in **Map**, then click **Restart**.
+4. Change the rules or draw a new map in the **Scenario** tab, then click **Restart**.
 
 Use the control bar at the top to pause the simulation or change its speed. Set **Immediate steps** to 200 to run at full speed.
 
@@ -80,7 +80,7 @@ Project layout:
 | `simulation/` | The simulation engine, written in plain TypeScript with no React |
 | `hooks/` | React hooks |
 | `__tests__/` | Unit tests for the engine |
-| `public/` | Scenario files loaded by the Start tab |
+| `public/` | Demo scenario files loaded by the Scenario tab |
 
 Built with TypeScript, React, Next.js, Jotai, Tailwind CSS, Chart.js and D3.
 

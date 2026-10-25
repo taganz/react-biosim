@@ -103,7 +103,7 @@ export default function SimulationCanvas({ className }: Props) {
 
   }, [worldController, worldCanvas, setEventLogger]);
 
-  // the water layer is a viewer option from Stats → Water; redraws at once, also while paused
+  // the water layer is a viewer option from Simulation → Water; redraws at once, also while paused
   useEffect(
     function syncShowWater() {
       worldCanvas?.setShowWater(showWater);

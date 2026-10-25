@@ -12,7 +12,7 @@ The screen has three parts:
 
 ## 1. Load a scenario
 
-The app opens with a simple scenario already running: creatures must reach the darker area on the right. To try another one, open the **Scenario** tab and pick it from the **Scenario** list. A message confirms when it has loaded.
+The app opens with a simple scenario already running: creatures must reach the darker area on the right. To try another one, open the **Scenario** tab and pick it from the **Demo scenarios** list, under **Load scenario**. A message confirms when it has loaded.
 
 ![Scenario tab](images/tab_start.png)
 

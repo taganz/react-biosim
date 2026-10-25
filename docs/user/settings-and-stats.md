@@ -6,7 +6,7 @@ Use **Scenario** to change the rules of a simulation, **Simulation** for the opt
 
 ![Scenario tab](images/tab_settings.png)
 
-The scenario list at the top loads one of the bundled scenarios (see [Scenarios](scenarios.md)). Below it, the settings are grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
+**Load scenario** at the top loads one of the demo scenarios (see [Scenarios](scenarios.md)), a `.sim` file or one of your saved scenarios (see [Export](export.md#load)). Below it, the settings are grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
 
 ### Applying changes
 
