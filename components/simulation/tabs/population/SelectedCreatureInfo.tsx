@@ -83,7 +83,7 @@ export default function SelectedCreatureInfo({ creature }: Props) {
 
   const actionLabels = useMemo(() => getNetworkLabels(creature).actions, [creature]);
 
-  const { genus, preyGenus, predatorGenus, generations } = creature;
+  const { genus, preyGenus, generations } = creature;
   const massData = creature._mass;
   const metabolismEnabled = massData._metabolismEnabled;
   const network = creature.brain.brain;
@@ -111,8 +111,6 @@ export default function SelectedCreatureInfo({ creature }: Props) {
             </span>
           </Field>
           <Field label="Genus">{GENUS_LABELS[genus]}</Field>
-          {preyGenus && <Field label="Eats">{GENUS_LABELS[preyGenus]}s</Field>}
-          {predatorGenus && <Field label="Eaten by">{GENUS_LABELS[predatorGenus]}s</Field>}
           <Field label="Parent">
             {creature.parentId !== null
               ? `#${creature.parentId}, born in generation ${creature.parentBirthGen}`

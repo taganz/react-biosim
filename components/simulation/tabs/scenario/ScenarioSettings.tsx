@@ -22,6 +22,7 @@ import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
 import Section, { FIELDS_GRID } from "../Section";
 import MapDesigner from "./map/MapDesigner";
+import ScenarioConstants from "./ScenarioConstants";
 import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
@@ -612,6 +613,9 @@ export default function ScenarioSettings() {
           </SelectInput>
         </div>
       </Section>
+
+      {/* === CONSTANTS === */}
+      <ScenarioConstants onGenusProbabilityChange={handleGenusProbabilityChange} />
     </div>
   );
 }

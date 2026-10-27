@@ -6,7 +6,9 @@ Use **Scenario** to change the rules of a simulation, **Simulation** for the opt
 
 ![Scenario tab](images/tab_settings.png)
 
-**Load scenario** at the top loads one of the demo scenarios (see [Scenarios](scenarios.md)), a `.sim` file or one of your saved scenarios (see [Export](export.md#load)). Below it, the settings are grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions and Water. Every field is described in the [parameters reference](../reference/parameters.md).
+**Load scenario** at the top loads one of the demo scenarios (see [Scenarios](scenarios.md)), a `.sim` file or one of your saved scenarios (see [Export](export.md#load)). Below it, the settings are grouped in sections: World, Generations, Neuronal networks, Mutations, Sensors, Actions, Water and Constants. Every field is described in the [parameters reference](../reference/parameters.md).
+
+**Constants**, at the end, lists every value of the constants file and the model constants (mass, reproduction, movement and attack), one per line: name, field and a short description, grouped by topic. They are applied with **Update simulation** or **Restart** like the other settings, except the **Logger** group, which applies at once as in *Tools → Logger*. Map colors accept any CSS color; the map editor shows them at once, and they apply to every obstacle and area of the map.
 
 After a scenario or file is loaded, **Top species in the loaded file** at the end of the tab lists up to 10 species with most creatures in it, most numerous first, leaving out those with less than 1% of the creatures. Each one shows its share of all the creatures in the file (%), its number of creatures and its hexadecimal genome, with a button that copies the genome. A line below the list sums up the species left out: how many there are, their share and their creatures. The list describes the file as it was loaded and does not change while the run goes on. A setup file has no creatures, so the section says so instead.
 

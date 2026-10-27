@@ -19,10 +19,5 @@ export default function HealthAreaMixin<TBase extends WorldObjectType>(
     areaEffectOnCreature(creature: Creature) {
       creature.health += this.health;
     }
-
-    draw(context: CanvasRenderingContext2D, worldSize: number) {
-      this.color = this.health >= 0 ? CONSTANTS_DEFAULT.colors.healing : CONSTANTS_DEFAULT.colors.danger;
-      super.draw(context, worldSize);
-    }
   };
 }

@@ -1,5 +1,6 @@
 import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import WorldObject from "./WorldObject";
+import objectColor, { ObjectColors } from "./objectColor";
 
 export default class RectangleObject implements WorldObject {
   name = "RectangleObject";
@@ -58,8 +59,8 @@ export default class RectangleObject implements WorldObject {
     }
   }
 
-  draw(context: CanvasRenderingContext2D) {
-    context.fillStyle = this.color;
+  draw(context: CanvasRenderingContext2D, _worldSize?: number, colors?: Partial<ObjectColors>) {
+    context.fillStyle = objectColor(this, colors);
 
     context.beginPath();
     context.rect(
