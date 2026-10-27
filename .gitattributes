@@ -1,0 +1,9 @@
+# Every text file is stored and checked out with LF line endings, whatever core.autocrlf says
+* text=auto eol=lf
+
+# binary files, never converted
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp4 binary
+*.pbix binary
