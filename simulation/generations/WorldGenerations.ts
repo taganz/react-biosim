@@ -65,7 +65,7 @@ export default class WorldGenerations {
   deathsThisGeneration: number = 0;
   lastBirths: number = 0;
   lastDeaths: number = 0;
-  // genomes of the creatures placed at the start of the current generation, for "save generation start"
+  // genomes of the creatures placed at the start of the current generation, for "Save generation"
   startGenomes : Genome[] = [];
   
 

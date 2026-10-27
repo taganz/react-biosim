@@ -57,6 +57,8 @@ These items were on the old list, or found while writing these docs, and are now
 - Saving a simulation without its creatures: **My scenarios** in the Export tab saves the setup, or the genomes at the start of a generation.
 - **Update simulation** after loading a file set the stats history back to the one in the file. Loading a file without stats kept the history of the previous run.
 - **Save to file** can leave out the stats history.
+- **Save to file** also put the whole file, prettified, in the JSON box, which could freeze the page in a long run. It now only says the file was saved.
+- Saving during the pause between generations wrote a generation that had already ended, so loading it ran its last step again; saving during the wait after an extinction wrote no creatures. Both buttons now wait until the next generation has started.
 - **Save to file** wrote the generation, step and simulation code from load time instead of the current ones. It also saved each creature's position from the previous step, and loading ignored the saved mass.
 - The map editor is in the Scenario tab and edits the draft, so it always shows the map of the loaded scenario. It no longer keeps a map in local storage, which made it start empty or with an old map. **Use Map** is gone: Update simulation applies the map.
 - **Update simulation** and **Use Map** keep the running creatures. They used to lose them, or put back the population from load time. Creatures restored from a file now use the new grid and settings.

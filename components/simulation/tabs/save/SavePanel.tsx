@@ -6,36 +6,64 @@ import { useAtomValue } from "jotai";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import type WorldController from "@/simulation/world/WorldController";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
+import StatusMessage from "@/components/global/StatusMessage";
+import { LoadStatus } from "@/hooks/useSimulationLoader";
 import { useState } from "react";
 import { saveAs } from "file-saver";
 import CanvasToGIF from "./CanvasToGif";
 import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
 import { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 
+function describeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 export default function SavePanel() {
   const simulationData = useAtomValue(simulationDataAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const [dataSavedWorld, setDataSavedWorld] = useState("");
   const [includeStats, setIncludeStats] = useState(false);
+  const [status, setStatus] = useState<LoadStatus>({ state: "idle" });
 
   const toJson = (worldController: WorldController, prettify: boolean) => {
     const savedWorld : SavedSimulationData = serializeSimulationData(worldController, includeStats);
     return prettify ? JSON.stringify(savedWorld, null, 2) : JSON.stringify(savedWorld);
   };
 
-  const handleSave = () => {
-    if (worldController) {
-      setDataSavedWorld(toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_COPY));
+  // during the pause between generations, or the wait after an extinction, the world is half way:
+  // wait until it is between two steps, then save
+  const whenBetweenSteps = async (worldController: WorldController) => {
+    if (worldController.isWaiting) {
+      setStatus({ state: "loading", message: "Waiting for the next generation to start…" });
+      await worldController.untilBetweenSteps();
     }
   };
 
-  const handleSaveToFile = () => {
-    if (worldController) {
-      const jsonSavedWorld = toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_FILE);
-      setDataSavedWorld(jsonSavedWorld);
+  const handleSave = async () => {
+    if (!worldController) return;
+    try {
+      await whenBetweenSteps(worldController);
+      setDataSavedWorld(toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_COPY));
+      setStatus({ state: "idle" });
+    } catch (error) {
+      setStatus({ state: "error", message: `Could not save the simulation: ${describeError(error)}` });
+    }
+  };
 
-      const blob = new Blob ([jsonSavedWorld]  , { type: 'text/plain;charset=utf-8'})
-      saveAs( blob, `sim ${worldController.simCode} generation ${worldController.currentGen.toString()}.sim` ); 
+  const handleSaveToFile = async () => {
+    if (!worldController) return;
+    try {
+      await whenBetweenSteps(worldController);
+      const jsonSavedWorld = toJson(worldController, simulationData.constants.PRETTIFY_OUTPUT_TO_FILE);
+      // the file is not shown: a long run is several MB, and any JSON shown before is now out of date
+      setDataSavedWorld("");
+
+      const fileName = `sim ${worldController.simCode} generation ${worldController.currentGen.toString()}.sim`;
+      const blob = new Blob([jsonSavedWorld], { type: "application/json;charset=utf-8" });
+      saveAs(blob, fileName);
+      setStatus({ state: "success", message: `Saved "${fileName}".` });
+    } catch (error) {
+      setStatus({ state: "error", message: `Could not save the simulation: ${describeError(error)}` });
     }
   };
 
@@ -56,6 +84,7 @@ export default function SavePanel() {
           <Button onClick={handleSaveToFile}>Save to file</Button>
           <Button onClick={handleSave}>Show JSON to copy</Button>
         </div>
+        <StatusMessage status={status} />
         {dataSavedWorld && (
           <CopyToClipboardTextarea
             value={dataSavedWorld}

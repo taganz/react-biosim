@@ -115,7 +115,7 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## The loop
 
-`WorldController.mainLoop()` runs one "tick" of up to *Immediate steps* steps (or 30 ms), then schedules the next tick with `setTimeout(pauseBetweenSteps)`. A run id guards against stale ticks: `startRun`, `resumeRun` and extinction restarts increase it, and any tick from an older run stops. See [Generations](../model/generations.md) for what happens in a step and at the end of a generation.
+`WorldController.mainLoop()` runs one "tick" of up to *Immediate steps* steps (or 30 ms), then schedules the next tick with `setTimeout(pauseBetweenSteps)`. A run id guards against stale ticks: `startRun`, `resumeRun` and extinction restarts increase it, and any tick from an older run stops. During the pause between generations and the wait before an extinction restart, the world is half way through a change: `isWaiting` is true, and `untilBetweenSteps()` resolves once it is complete (or a new run has started). The Export tab saves only after it. See [Generations](../model/generations.md) for what happens in a step and at the end of a generation.
 
 ## Drawing
 

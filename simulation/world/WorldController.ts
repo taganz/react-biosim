@@ -83,6 +83,8 @@ export default class WorldController {
   private _paused = true;
   // a tick can be waiting inside an await (pause between generations, extinction restart)
   private _tickInFlight = false;
+  // set during those two waits: the generation or the restart is half done, so it must not be saved
+  private _wait?: { done: Promise<void>; resolve: () => void };
 
   constructor(sim: SimulationData) {
     this.simData = sim;
@@ -344,8 +346,33 @@ export default class WorldController {
     this._timeoutId = undefined;
     this._runId++;
     this._tickInFlight = false;
+    // the new world is complete; the wait of the previous run no longer matters
+    this.endWait(this._wait);
     this._paused = false;
     this.mainLoop();
+  }
+
+  private beginWait(): { done: Promise<void>; resolve: () => void } {
+    let resolve = () => {};
+    const done = new Promise<void>((r) => { resolve = r; });
+    this._wait = { done, resolve };
+    return this._wait;
+  }
+
+  private endWait(wait: { done: Promise<void>; resolve: () => void } | undefined): void {
+    if (!wait) return;
+    if (this._wait === wait) this._wait = undefined;
+    wait.resolve();
+  }
+
+  /** true during the pause between generations and the wait after an extinction */
+  get isWaiting(): boolean {
+    return this._wait !== undefined;
+  }
+
+  /** resolves when the world is between two steps, so that it can be saved */
+  async untilBetweenSteps(): Promise<void> {
+    while (this._wait) await this._wait.done;
   }
 
   private async runStep(runId: number): Promise<"continue" | "generationEnded" | "restarted"> {
@@ -381,18 +408,23 @@ export default class WorldController {
     if (numberOfSurvivorsThisStep == 0) {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
       // Small pause
+      const wait = this.beginWait();
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
       // the user may have restarted or loaded another simulation during the wait
       if (runId === this._runId) {
         // not reseeded: with a fixed seed it would die out the same way again
         this.startRun(this.simData, this.restartSimCode(this.simData), false);
       }
+      this.endWait(wait);
       return "restarted";
     }
 
 
     if (this.currentStep == this.stepsPerGen) {
+      // the survivors are selected before the pause and the next generation is made after it
+      const wait = this.pauseBetweenGenerations > 0 ? this.beginWait() : undefined;
       await this.endGeneration(runId);
+      this.endWait(wait);
       return "generationEnded";
     }
     this.currentStep++;
