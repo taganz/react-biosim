@@ -19,9 +19,11 @@ Each saved scenario has **Load** (also in **Scenario → Load scenario → Load 
 Scenarios are stored in the browser's IndexedDB. They are lost if you clear the site data, and they are not shared between browsers or devices: use **Export .sim** to keep a copy.
 
 
-- **Save to file** downloads the whole simulation as `sim <code> generation <n>.sim`: settings, map, creatures, species and stats.
+- **Save to file** downloads the whole simulation as `sim <code> generation <n>.sim`: settings, map, creatures, species and stats. It does not show the file's content.
 - **Show JSON to copy** shows the same content as text, so you can paste it into a message or an issue. It cannot be loaded back by pasting: save it as a `.sim` file first.
 - **Include the stats history** (off by default) adds the fitness history of every generation. In a long run it is most of the file. Without it the file is much smaller, and the fitness chart starts empty when you load it.
+
+During a **pause between generations**, or the one-second wait before a restart after every creature dies, both buttons wait until the next generation has started and then save it.
 
 A saved file is plain JSON. You can open it in a text editor to change values that are not in the UI, such as the metabolism constants (see [parameters](../reference/parameters.md#not-in-the-ui)).
 

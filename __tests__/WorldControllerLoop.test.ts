@@ -2,6 +2,8 @@ import WorldController from "@/simulation/world/WorldController";
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
+import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
+import { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 
 /* main loop control: restart, pause and resume must never leave two loops running */
 
@@ -77,6 +79,74 @@ describe("WorldController main loop", () => {
     // the generation that was ending is completed, not left half done
     expect(worldController.currentGen).toBe(2);
     expect(worldController.currentStep).toBe(1);
+  });
+
+  test("saving waits for the pause between generations to end", async () => {
+    configure(0, 2, 1000);
+    worldController.startRun(simulationData);
+    await jest.advanceTimersByTimeAsync(10);  // survivors selected, next generation not made yet
+    expect(worldController.isWaiting).toBe(true);
+
+    let saved: SavedSimulationData | undefined;
+    worldController.untilBetweenSteps().then(() => {
+      saved = serializeSimulationData(worldController);
+      worldController.pause();
+    });
+    await jest.advanceTimersByTimeAsync(500);
+    expect(saved).toBeUndefined();
+
+    await jest.advanceTimersByTimeAsync(600);
+    expect(worldController.isWaiting).toBe(false);
+    expect(saved!.worldControllerData.currentGen).toBe(2);
+    expect(saved!.worldControllerData.currentStep).toBe(1);
+    expect(saved!.species!.flatMap((s) => s.creatures)).toHaveLength(10);
+  });
+
+  test("saving waits for the restart after an extinction", async () => {
+    configure(10, 100000, 0);
+    worldController.startRun(simulationData);
+    worldController.generations.currentCreatures.forEach((creature) => (creature.health = 0));
+    await jest.advanceTimersByTimeAsync(10);  // nobody survived the step: waiting to restart
+    expect(worldController.isWaiting).toBe(true);
+    expect(worldController.generations.currentCreatures).toHaveLength(0);
+
+    let saved: SavedSimulationData | undefined;
+    worldController.untilBetweenSteps().then(() => {
+      saved = serializeSimulationData(worldController);
+    });
+    await jest.advanceTimersByTimeAsync(1000);
+
+    expect(saved!.species!.flatMap((s) => s.creatures)).toHaveLength(10);
+  });
+
+  test("restarting during a wait does not keep the save waiting", async () => {
+    configure(0, 2, 1000);
+    worldController.startRun(simulationData);
+    await jest.advanceTimersByTimeAsync(10);
+    expect(worldController.isWaiting).toBe(true);
+
+    let done = false;
+    worldController.untilBetweenSteps().then(() => { done = true; });
+    configure(10, 100000, 0);
+    worldController.startRun(simulationData);
+    // runs the pending promise callbacks only: the old 1000ms pause has not ended
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(done).toBe(true);
+    expect(worldController.isWaiting).toBe(false);
+  });
+
+  test("without a pause between generations the world is never waiting", async () => {
+    configure(0, 2, 0);
+    let waited = false;
+    worldController.events.addEventListener(WorldEvents.endStep, () => {
+      waited ||= worldController.isWaiting;
+    });
+    worldController.startRun(simulationData);
+    await jest.advanceTimersByTimeAsync(50);
+
+    expect(worldController.currentGen).toBeGreaterThan(2);
+    expect(waited).toBe(false);
   });
 
   test("pause and resume while a tick is waiting keeps a single loop", async () => {
