@@ -161,7 +161,7 @@ export default function UserScenariosPanel() {
             Save setup
           </Button>
           <Button onClick={() => handleSave("generationStart")} disabled={!worldController}>
-            Save generation start
+            Save generation
           </Button>
         </div>
       </div>

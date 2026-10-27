@@ -9,7 +9,7 @@
 Your own scenarios, stored in this browser. They are separate from the scenarios in the **Scenario** tab, which are part of the app.
 
 - **Save setup** stores the settings and the map. Loading it starts a new run from generation 1, like the demo scenarios, with the simulation code of the file.
-- **Save generation start** also stores the genomes of the current generation, as they were when the generation started. Creatures that died since then are included. Loading it starts that generation again: the same genomes, without mutation, placed like in generation 1 (around the spawn area if there is one, otherwise at random). The generation number and the simulation code are kept.
+- **Save generation** also stores the genomes of the current generation, as they were when the generation started. Creatures that died since then are included. Loading it starts that generation again: the same genomes, without mutation, placed like in generation 1 (around the spawn area if there is one, otherwise at random). The generation number and the simulation code are kept.
 - **Include the stats history** adds the fitness history of every previous generation. A long run has one row per generation, so this is most of the size. Without it, the fitness chart in the Simulation tab starts empty from the loaded generation.
 
 Positions, ages, mass and health are not stored. Give the scenario a name, or leave it empty to use `sim <code> generation <n>`.
