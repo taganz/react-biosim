@@ -1,5 +1,6 @@
 import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import WorldObject from "./WorldObject";
+import objectColor, { ObjectColors } from "./objectColor";
 
 export default class EllipseObject implements WorldObject {
   name = "EllipseObject";
@@ -60,8 +61,8 @@ export default class EllipseObject implements WorldObject {
     }
   }
 
-  draw(context: CanvasRenderingContext2D, worldSize: number) {
-    context.fillStyle = this.color;
+  draw(context: CanvasRenderingContext2D, worldSize: number, colors?: Partial<ObjectColors>) {
+    context.fillStyle = objectColor(this, colors);
 
     if (this.drawIndividualPixels) {
       for (let pixelIdx = 0; pixelIdx < this.pixels.length; pixelIdx++) {

@@ -1,4 +1,5 @@
 import Creature from "../../creature/Creature";
+import type { ObjectColors } from "./objectColor";
 
 /** An obstacle or area of the map. See docs/model/world.md */
 export default interface WorldObject {
@@ -15,7 +16,8 @@ export default interface WorldObject {
   color: string;
 
   computePixels(worldSize: number): void;
-  draw(context: CanvasRenderingContext2D, worldSize: number): void;
+  /** colors: the `colors` constants of the simulation, see objectColor() */
+  draw(context: CanvasRenderingContext2D, worldSize: number, colors?: Partial<ObjectColors>): void;
   clone(): WorldObject;
 
   /** 0 reproduction, 1 health, 2 spawn; undefined means a solid obstacle */

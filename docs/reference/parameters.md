@@ -8,7 +8,7 @@ Every value that defines a simulation lives in a `SimulationData` object ([simul
 | `worldGenerationsData` | [WorldGenerationsData](../../simulation/generations/WorldGenerationsData.ts) | Population, selection, genome, mutations, sensors, actions |
 | `waterData` | [WaterData](../../simulation/water/WaterData.ts) | Water and rain |
 | `worldObjects` | `WorldObject[]` | The map: obstacles and areas (see the [Map editor](../user/map-editor.md), in the Scenario tab) |
-| `constants` | object | Advanced options that are not shown in the UI |
+| `constants` | object | Advanced options, edited under **Constants** at the end of the Scenario tab |
 
 The **Startup** column below shows the values loaded when the app opens ([simulation/startupScenario.ts](../../simulation/startupScenario.ts)). Loading a scenario from the **Scenario** tab or a file with **Load .sim file** replaces all of them.
 
@@ -113,7 +113,7 @@ They open from the **Speed** button in the control bar. They change the running 
 
 ## Not in the UI
 
-You can change these values only by editing a saved simulation file and loading it again.
+The metabolism constants and the `constants` object are edited under **Constants**, at the end of the Scenario tab, one per line. The `LOG_*` constants there apply at once; the rest are applied with **Update simulation** or **Restart**. The other values of this section can only be changed by editing a saved simulation file and loading it again.
 
 ### Metabolism constants (`worldControllerData`)
 
@@ -162,8 +162,9 @@ The simulation writes these values itself so that a saved file can resume where 
 | `DETECT_RADIUS` | 10 | Radius, in cells, of the prey sensors. |
 | `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Distance. |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
-| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1*. |
+| `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1* or under *Constants*. |
+| `POPULATION_DEFAULT_SPECIES` | `[]` | List of `{name, genome}`, edited as JSON. Not used by any strategy. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
-| `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Tools → Logger*. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
-| `colors` | — | Colours of map areas: reproduction, obstacle, healing, danger and spawn. |
+| `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Tools → Logger* or under *Constants*, and apply at once. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
+| `colors` | — | Colours of the map: reproduction, obstacle, healing, danger and spawn areas. Any CSS color. They apply to every obstacle and area, so the `color` saved with each obstacle is no longer drawn. |
 | `SIM_CODE_LENGTH` | 3 | Length of the generated simulation code. |

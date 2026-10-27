@@ -91,7 +91,7 @@ export default class WorldCanvas {
     for (let i = 0; i < this.worldController.objects.length; i++) {
       const obj = this.worldController.objects[i];
       if (obj.areaType === 0 && !showReproductionAreas) continue;
-      obj.draw(this.ctx, this.size);
+      obj.draw(this.ctx, this.size, this.worldController.simData.constants?.colors);
     }
 
     // Draw generation #

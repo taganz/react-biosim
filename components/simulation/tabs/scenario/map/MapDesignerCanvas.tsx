@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { worldControllerAtom } from "../../../store";
+import { simulationDataAtom, worldControllerAtom } from "../../../store";
 import { useAtom, useAtomValue } from "jotai";
 import { useWindowSize } from "react-use";
 import {
@@ -23,6 +23,8 @@ export default function MapDesignerCanvas() {
   const worldController = useAtomValue(worldControllerAtom);
   const canvas = useRef<HTMLCanvasElement>(null);
   const isFullscreen = useAtomValue(mapDesignerFullscreenAtom);
+  // the colors of the draft, so editing them in the Scenario tab shows at once here
+  const colors = useAtomValue(simulationDataAtom).constants?.colors;
 
   const { width } = useWindowSize();
   const worldSize = useAtomValue(mapDesignerWorldSizeAtom);
@@ -66,7 +68,7 @@ export default function MapDesignerCanvas() {
       // Draw every object
       objects.forEach((obj) => {
         obj.computePixels(worldSize);
-        obj.draw(context, worldSize);
+        obj.draw(context, worldSize, colors);
       });
 
       // Draw outlines
@@ -74,7 +76,7 @@ export default function MapDesignerCanvas() {
         if (index === selectedObjectIndex) drawOutline(context, obj);
       });
     }
-  }, [objects, selectedObjectIndex, worldSize]);
+  }, [objects, selectedObjectIndex, worldSize, colors]);
 
   // the objects are atom state: apply the change to a clone of the dragged one
   const updateObject = (
