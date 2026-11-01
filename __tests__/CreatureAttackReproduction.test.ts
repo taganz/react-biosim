@@ -145,6 +145,58 @@ describe('attack and reproduction', () => {
         expect(attacker.findPreyDirection()).toBeNull();
     });
 
+    // same genus as spawn(genus), but another genome and so another species
+    function spawnOtherSpecies(genus: Genus, position: GridPosition) : Creature {
+        const gene = CreatureGenus.mainGeneForGenus(worldController.generations, genus);
+        const creature = worldController.generations.newCreature(position, true, new Genome([gene, gene]));
+        expect(creature.genus).toBe(genus);
+        return creature;
+    }
+
+    test('by default another species of the same genus cannot be eaten', () => {
+        const attacker = spawn("attack_plant", [2, 2]);
+        const other = spawnOtherSpecies("attack_plant", [3, 2]);
+        other._mass._mass = attacker.mass / 4;
+
+        expect(attacker.findPreyDirection()).toBeNull();
+    });
+
+    test('with ATTACK_SAME_GENUS another species of the same genus can be eaten', () => {
+        worldController.simData.worldControllerData.ATTACK_SAME_GENUS = true;
+        const attacker = spawn("attack_plant", [2, 2]);
+        const other = spawnOtherSpecies("attack_plant", [3, 2]);
+        other._mass._mass = attacker.mass / 4;
+
+        attacker.attack(1, attacker.findPreyDirection());
+
+        expect(other.deathCause).toBe("attacked");
+        expect(attacker.killCount).toBe(1);
+    });
+
+    test('with ATTACK_SAME_GENUS the own species cannot be eaten', () => {
+        worldController.simData.worldControllerData.ATTACK_SAME_GENUS = true;
+        const attacker = spawn("attack_plant", [2, 2]);
+        const sameSpecies = worldController.generations.newCreature([3, 2], true, attacker.brain.genome.clone());
+        sameSpecies._mass._mass = attacker.mass / 4;
+
+        expect(attacker.findPreyDirection()).toBeNull();
+    });
+
+    test('with ATTACK_SAME_GENUS a parent can make room by eating another species of its genus', () => {
+        worldController.simData.worldControllerData.ATTACK_SAME_GENUS = true;
+        const parent = spawn("attack_plant", [2, 2]);
+        const other = spawnOtherSpecies("attack_plant", [3, 3]);
+        other._mass._mass = parent.mass / 4;
+        // the other neighbours are of the parent's species, so they are not eaten
+        const siblings : GridPosition[] = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]];
+        for (const position of siblings) {
+            const sibling = worldController.generations.newCreature(position, true, parent.brain.genome.clone());
+            sibling._mass._mass = parent.mass / 4;
+        }
+
+        expect(parent.eatNeighbourForOffspring()).toEqual([3, 3]);
+    });
+
     test('a plant never eats', () => {
         const plant = spawn("plant", [2, 2]);
         const attacker = spawn("attack_plant", [3, 2]);

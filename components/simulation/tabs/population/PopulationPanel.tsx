@@ -9,8 +9,10 @@ import { Species } from "../../../../simulation/creature/Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import PopulationSummary from "./PopulationSummary";
+import HerbivoreGenomeSummary from "./HerbivoreGenomeSummary";
 import CreatureIdSearch from "./CreatureIdSearch";
 import SpeciesFilter from "./SpeciesFilter";
+import SpeciesOrder, { SpeciesOrderKey } from "./SpeciesOrder";
 import {
   getEnabledSensorAndActionNames,
   getUsedSensorsAndActions,
@@ -101,7 +103,16 @@ export default function PopulationPanel() {
 
   const [sensorFilter, setSensorFilter] = useState("");
   const [actionFilter, setActionFilter] = useState("");
-  const filteredSpecies = species.filter((s) => {
+  const [order, setOrder] = useState<SpeciesOrderKey>("creatures");
+  // species is ordered by population and the sort is stable, so that breaks the ties of genome size
+  const orderedSpecies = useMemo(
+    () =>
+      order === "genomeSize"
+        ? [...species].sort((a, b) => b.genome.genes.length - a.genome.genes.length)
+        : species,
+    [species, order]
+  );
+  const filteredSpecies = orderedSpecies.filter((s) => {
     const used = usedBySpecies.get(s.genomeKey)!;
     return (
       (sensorFilter === "" || used.sensors.has(sensorFilter)) &&
@@ -133,6 +144,7 @@ export default function PopulationPanel() {
   return (
     <div className="flex flex-col gap-6">
       <PopulationSummary speciesCount={species.length} />
+      <HerbivoreGenomeSummary />
       <CreatureIdSearch />
       <SpeciesFilter
         sensors={enabledNames.sensors}
@@ -145,11 +157,13 @@ export default function PopulationPanel() {
           isFiltered
             ? `${filteredSpecies.length} of ${species.length} species match` +
               (filteredSpecies.length > renderedSpecies.length
-                ? `, showing the ${renderedSpecies.length} largest.`
+                ? `, showing the ${renderedSpecies.length} ` +
+                  (order === "genomeSize" ? "with the largest genomes." : "largest.")
                 : ".")
             : ""
         }
       />
+      <SpeciesOrder order={order} onChange={setOrder} />
 
       <div className="flex gap-4">
         <div className="min-w-0 grow">

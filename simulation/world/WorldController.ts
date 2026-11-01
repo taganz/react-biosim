@@ -436,6 +436,7 @@ export default class WorldController {
   private async endGeneration(runId: number): Promise<void> {
 
     this.logEndGeneration();
+    this.generations.closeHerbivoreGenomeStats();
     if (!this.generations.isContinuous) {
       // selected now so that the survivors row belongs to the generation that ends
       const survivors = this.generations.selectSurvivors();

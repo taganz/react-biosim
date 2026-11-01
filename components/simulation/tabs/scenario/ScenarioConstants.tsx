@@ -18,7 +18,7 @@ import Section from "../Section";
 
 type Constants = typeof CONSTANTS_DEFAULT;
 type MassConstant = {
-  [K in keyof WorldControllerData]-?: K extends Uppercase<K> ? K : never;
+  [K in keyof WorldControllerData]-?: K extends Uppercase<K> ? (WorldControllerData[K] extends number ? K : never) : never;
 }[keyof WorldControllerData];
 
 
@@ -220,6 +220,20 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
                 />
               </ConstantRow>
             ))}
+            {group.title === "Attack" && (
+              <ConstantRow name="ATTACK_SAME_GENUS" description="Attackers can eat other species of their genus, never their own species.">
+                <CheckboxInput
+                  id="const-attack-same-genus"
+                  checked={Boolean(worldControllerData.ATTACK_SAME_GENUS)}
+                  onChange={(checked) =>
+                    setSimulationData((prev) => ({
+                      ...prev,
+                      worldControllerData: { ...prev.worldControllerData, ATTACK_SAME_GENUS: checked },
+                    }))
+                  }
+                />
+              </ConstantRow>
+            )}
           </ConstantGroup>
         ))}
 

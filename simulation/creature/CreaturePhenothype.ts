@@ -3,6 +3,13 @@ import CreatureBrain from "./brain/CreatureBrain";
 import {Genus} from "./CreatureGenus";
 import { PhenoTypeColorMode } from "./PhenoTypeColorMode";
 
+// hues reserved for plants in the "greenPlants" mode. The rest of creatures avoid
+// a wider range, so that no yellow-green or blue-green can pass for a plant
+const PLANT_HUE_MIN = 95;
+const PLANT_HUE_MAX = 140;
+const GREEN_HUE_MIN = 70;
+const GREEN_HUE_MAX = 170;
+
 export default class CreaturePhenothype {
     
     constructor() {
@@ -26,6 +33,8 @@ export default class CreaturePhenothype {
            case "trophicLevel":
                 return CreaturePhenothype.trophicLevelColorAssign(genus, brain.genome.getColorNumber());
                 break;
+           case "greenPlants":
+                return CreaturePhenothype.greenPlantsColorAssign(genus, brain.genome.getHash());
             default:
                 throw new Error("error PHENOTYPE_COLOR_MODE")
         }
@@ -49,6 +58,27 @@ export default class CreaturePhenothype {
         }
         return color;
     }
-    
+
+    // plants get a shade of green, the rest any colour outside the greens
+    static greenPlantsColorAssign(genus: Genus, genomeHash: number): string {
+        const hueBits = genomeHash & 0xFFFF;
+        const saturationBits = (genomeHash >>> 16) & 0xFF;
+        const lightnessBits = genomeHash >>> 24;
+
+        if (genus == "plant") {
+            const hue = PLANT_HUE_MIN + (hueBits % (PLANT_HUE_MAX - PLANT_HUE_MIN + 1));
+            const saturation = 55 + (saturationBits % 46);
+            const lightness = 22 + (lightnessBits % 39);
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        // the free hues wrap around 360, from the end of the greens to the start
+        const freeHues = 360 - (GREEN_HUE_MAX - GREEN_HUE_MIN + 1);
+        const hue = (GREEN_HUE_MAX + 1 + (hueBits % freeHues)) % 360;
+        const saturation = 65 + (saturationBits % 36);
+        const lightness = 40 + (lightnessBits % 26);
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+
 
 }

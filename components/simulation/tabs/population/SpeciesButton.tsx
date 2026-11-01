@@ -16,6 +16,7 @@ export default function SpeciesButton({ species, isSelected, onClick }: Props) {
     species.genome.getHexColor(),
     genus !== "unknown" && GENUS_LABELS[genus],
     `${creatures.length} creature${creatures.length === 1 ? "" : "s"}`,
+    `${species.genome.genes.length} gene${species.genome.genes.length === 1 ? "" : "s"}`,
   ]
     .filter(Boolean)
     .join(" · ");

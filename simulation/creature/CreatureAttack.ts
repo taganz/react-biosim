@@ -19,11 +19,15 @@ export default class CreatureAttack {
         this.worldControllerData = this.creature.generations.worldController.simData.worldControllerData;
     }
 
-    // only attack genus eat, never their own genus nor a prey heavier than mass / ATTACK_MIN_PREY_MASS_FACTOR
+    // only attack genus eat, never a prey heavier than mass / ATTACK_MIN_PREY_MASS_FACTOR, nor their own
+    // genus, or with ATTACK_SAME_GENUS only their own species
     canEat(prey: Creature | null) : boolean {
         if (prey == null || prey === this.creature || !prey.isAlive) return false;
         if (this.creature._genus !== "attack_plant" && this.creature._genus !== "attack_animal") return false;
-        if (prey._genus == this.creature._genus) return false;
+        if (prey._genus == this.creature._genus) {
+            if (!this.worldControllerData.ATTACK_SAME_GENUS) return false;
+            if (prey.brain.genome.compare(this.creature.brain.genome)) return false;
+        }
         return prey.mass * this.worldControllerData.ATTACK_MIN_PREY_MASS_FACTOR <= this.creature.mass;
     }
 

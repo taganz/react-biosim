@@ -31,6 +31,8 @@ export default interface WorldControllerData {
     ATTACK_COST_PER_MASS_TRY : number, 
     ATTACK_COST_PER_MASS_DO : number, 
     ATTACK_MIN_PREY_MASS_FACTOR : number
+    /** attackers can eat other species of their genus, never their own species. Missing: off */
+    ATTACK_SAME_GENUS? : boolean
 
     // user values
     pauseBetweenSteps: number;

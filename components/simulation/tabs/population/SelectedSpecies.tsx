@@ -83,7 +83,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
       <div className="flex max-w-md flex-col gap-6 text-lg">
         <p className="mb-2">
           The colorful boxes to the right are the top species on the current
-          generation. The list is ordered by population.
+          generation, in the order chosen above.
         </p>
         <p>
           Click one of the boxes to see more information about that species

@@ -88,12 +88,14 @@ The **Reproduction** action creates a child during the generation, in one of the
 
 ### Attack
 
-**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_ATTACK_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus**, and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
+**AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_ATTACK_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus** (see `ATTACK_SAME_GENUS` below), and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
 
 1. costs `ATTACK_COST_PER_MASS_TRY`. Whether the prey can be eaten is decided before paying it. There is no minimum mass to attack: a creature lighter than that cost dies trying;
 2. kills the target, and the attacker gains the target's mass, up to its maximum mass.
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.
+
+With `ATTACK_SAME_GENUS` on, the target can also be of the attacker's genus, as long as it is of another [species](#species), that is, its genome is not identical. The same rule applies when a parent eats a neighbour to make room for its child. The prey sensors do not change: they still look only for the prey genus, so a creature cannot sense the relatives it can eat.
 
 ## Genus
 

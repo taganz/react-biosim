@@ -49,7 +49,7 @@ There are three collapsible sections, closed at first (click a title to open it)
 
 - **Simulation code:** a name for the run, used in the names of saved files, images, GIFs and logs. Changing it renames the running simulation straight away. **Restart**, and the automatic restart after an extinction, keep a code you chose. They also keep the code when the seed is fixed and the scenario has not changed, because the restart repeats the same simulation. Otherwise they pick a new random one.
 - **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect at the next **Restart**: the running simulation keeps its random sequence.
-- **Phenotype mode** only changes how creatures are coloured: by genome, so each species has its own colour, or by trophic level (green plants, blue herbivores, red carnivores). The creatures are recoloured straight away.
+- **Phenotype mode** only changes how creatures are coloured: by genome, so each species has its own colour; by trophic level (green plants, blue herbivores, red carnivores); or with green plants, where plants are shades of green and every other species has its own colour that is not green. The creatures are recoloured straight away.
 
 ### Fitness chart
 

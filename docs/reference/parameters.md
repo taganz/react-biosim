@@ -99,7 +99,7 @@ Options of the running simulation. They apply at once (see [How changes are appl
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. A change recolours the running creatures at once, also while paused. |
+| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level), `greenPlants` (Green plants) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. `greenPlants`: a shade of green for each plant species and a non-green colour for each species of any other genus, both from a hash of the genome, so related species do not look alike. A change recolours the running creatures at once, also while paused. |
 
 ## Control bar: speed controls
 
@@ -138,6 +138,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
+| `ATTACK_SAME_GENUS` | false | Attackers can eat other species of their genus, never their own species (identical genome). Off, they cannot eat their genus at all. Files saved without it have it off. |
 | `ACTION_ATTACK_OFFSET` | 0.6 | The minimum neuron output that triggers the attack actions. Files saved without it take the value of `ACTION_REPRODUCTION_OFFSET`, which the attacks used before. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Not used. |
 
