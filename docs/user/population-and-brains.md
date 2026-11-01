@@ -38,6 +38,7 @@ The top of the panel shows what is selected: the species (colour code, genus, al
 
 | Section | Shown when | Open at first |
 |---|---|---|
+| **Species stats** | a species is selected | yes |
 | **Creature #id** | a creature is selected | yes |
 | **Cell (x, y)** | an empty cell is selected | yes |
 | **Neuronal network** | a species is selected | yes |
@@ -45,6 +46,17 @@ The top of the panel shows what is selected: the species (colour code, genus, al
 | **Genome** | a species is selected | no |
 
 A section you close stays closed when you select another species.
+
+## Species stats
+
+Averages of the selected species, so species of different sizes can be compared. The section is updated while the simulation runs:
+
+- **Population**: the living creatures out of those known, how many there were when the species were grouped, how many living ones were born since, and how many of them have died. These are counts, to show how many creatures are behind the averages.
+- **Average of the living**: age, mass, health and distance index.
+- **Average per creature, dead or alive**: children, kills, attacks, and the water from photosynthesis and from prey. Young creatures have had less time for these, so compare species of a similar average age.
+- **Deaths**: the average age of the dead when they died, and the share of the deaths of each cause. Creatures still alive are not included, so while a species is young this age is low even if it lives long.
+
+In continuous runs, a creature born after the species were grouped that has already died is not counted, so the last two groups can differ from the real values.
 
 ## Selected creature
 

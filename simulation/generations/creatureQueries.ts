@@ -1,5 +1,23 @@
-import Creature from "../creature/Creature";
+import Creature, { DeathCause } from "../creature/Creature";
 import WorldGenerations from "./WorldGenerations";
+
+export type SpeciesStats = {
+  alive: number;
+  /** creatures of the species when the generation was grouped */
+  started: number;
+  /** living creatures that were not there when the generation was grouped */
+  bornSince: number;
+  /** the started and born since that have died */
+  died: number;
+  /** averages of the living, null when none is alive */
+  living: { age: number; mass: number; health: number; distance: number } | null;
+  /** averages of every known creature, dead or alive; null when there are none */
+  perCreature: { children: number; kills: number; attacks: number; photosynthesis: number; fromPrey: number } | null;
+  /** average age of the dead when they died, null when none has died */
+  averageAgeAtDeath: number | null;
+  /** share of the deaths, 0-100, the most frequent first */
+  deathCauses: { cause: DeathCause; percentage: number }[];
+};
 
 // true when both creatures have the same genes, so they belong to the same species
 export function haveSameGenome(a: Creature, b: Creature): boolean {
@@ -19,6 +37,54 @@ export function countLivingWithGenes(generations: WorldGenerations, genes: reado
     if (other.length === genes.length && other.every((gene, index) => gene === genes[index])) members++;
   }
   return { members, alive };
+}
+
+// Averages of one species, so species of different sizes can be compared. startCreatures are its
+// creatures when the generation was grouped: the living are read from the world, but a member born
+// later that has already died is not known to anything, so it is not counted
+export function computeSpeciesStats(generations: WorldGenerations, genes: readonly number[], startCreatures: readonly Creature[]): SpeciesStats {
+  const living = generations.currentCreatures.filter((creature) => {
+    const other = creature.brain.genome.genes;
+    return creature.isAlive && other.length === genes.length && other.every((gene, index) => gene === genes[index]);
+  });
+  const known = new Set<Creature>([...startCreatures, ...living]);
+  const dead = Array.from(known).filter((creature) => !creature.isAlive);
+
+  const average = (creatures: Iterable<Creature>, count: number, value: (creature: Creature) => number) => {
+    let sum = 0;
+    for (const creature of creatures) sum += value(creature);
+    return sum / count;
+  };
+
+  const causeCounts = new Map<DeathCause, number>();
+  for (const creature of dead) {
+    const cause = creature.deathCause ?? "unknown";
+    causeCounts.set(cause, (causeCounts.get(cause) ?? 0) + 1);
+  }
+
+  return {
+    alive: living.length,
+    started: startCreatures.length,
+    bornSince: known.size - startCreatures.length,
+    died: dead.length,
+    living: living.length > 0 ? {
+      age: average(living, living.length, (creature) => creature._age),
+      mass: average(living, living.length, (creature) => creature.mass),
+      health: average(living, living.length, (creature) => creature.health),
+      distance: average(living, living.length, (creature) => creature.distanceCovered),
+    } : null,
+    perCreature: known.size > 0 ? {
+      children: average(known, known.size, (creature) => creature.childrenCount),
+      kills: average(known, known.size, (creature) => creature.killCount),
+      attacks: average(known, known.size, (creature) => creature.attackCount),
+      photosynthesis: average(known, known.size, (creature) => creature.waterFromPhotosynthesis),
+      fromPrey: average(known, known.size, (creature) => creature.waterFromPrey),
+    } : null,
+    // the age stops changing when a creature dies
+    averageAgeAtDeath: dead.length > 0 ? average(dead, dead.length, (creature) => creature._age) : null,
+    deathCauses: Array.from(causeCounts, ([cause, count]) => ({ cause, percentage: (count / dead.length) * 100 }))
+      .sort((a, b) => b.percentage - a.percentage),
+  };
 }
 
 // the living creatures of the same species as `creature` (itself included if alive), ordered by id
