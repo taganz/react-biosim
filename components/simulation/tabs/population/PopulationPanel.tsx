@@ -79,6 +79,13 @@ export default function PopulationPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worldController, generationKey]);
 
+  // the selected species may come from a click on the world or an earlier generation,
+  // so its own creature list is not the one of the current generation
+  const selectedStartCreatures = useMemo(
+    () => species.find((s) => s.genomeKey === selectedSpecies?.genomeKey)?.creatures ?? [],
+    [species, selectedSpecies]
+  );
+
   // sensors and actions each species' network uses, for the filter
   const usedBySpecies = useMemo(
     () => new Map(species.map((s) => [s.genomeKey, getUsedSensorsAndActions(s.creatures[0])])),
@@ -146,7 +153,7 @@ export default function PopulationPanel() {
 
       <div className="flex gap-4">
         <div className="min-w-0 grow">
-          <SelectedSpecies selectedSpecies={selectedSpecies} />
+          <SelectedSpecies selectedSpecies={selectedSpecies} startCreatures={selectedStartCreatures} />
         </div>
 
         <div

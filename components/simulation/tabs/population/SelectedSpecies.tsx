@@ -2,9 +2,11 @@ import { useAtomValue, useAtom } from "jotai";
 import { worldControllerAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
 import { useMemo, useRef, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
+import Creature from "@/simulation/creature/Creature";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreatureInfo from "./SelectedCreatureInfo";
 import SelectedCellInfo from "./SelectedCellInfo";
+import SpeciesStats from "./SpeciesStats";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
@@ -21,9 +23,11 @@ import { countLivingWithGenes } from "@/simulation/generations/creatureQueries";
 
 interface Props {
   selectedSpecies?: Species;
+  /** the creatures of the selected species when the generation was grouped */
+  startCreatures: Creature[];
 }
 
-export default function SelectedSpeciesPanel({ selectedSpecies }: Props) {
+export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
@@ -139,6 +143,12 @@ export default function SelectedSpeciesPanel({ selectedSpecies }: Props) {
           </div>
         )}
       </div>
+
+      {selectedSpecies && (
+        <CollapsibleSection title="Species stats" defaultOpen>
+          <SpeciesStats species={selectedSpecies} startCreatures={startCreatures} />
+        </CollapsibleSection>
+      )}
 
       {selectedCell && (
         <CollapsibleSection title={`Cell (${selectedCell[0]}, ${selectedCell[1]})`} defaultOpen>
