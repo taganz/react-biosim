@@ -138,6 +138,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
+| `ATTACK_SAME_GENUS` | false | Attackers can eat other species of their genus, never their own species (identical genome). Off, they cannot eat their genus at all. Files saved without it have it off. |
 | `ACTION_ATTACK_OFFSET` | 0.6 | The minimum neuron output that triggers the attack actions. Files saved without it take the value of `ACTION_REPRODUCTION_OFFSET`, which the attacks used before. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Not used. |
 

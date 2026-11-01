@@ -91,6 +91,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           ATTACK_COST_PER_MASS_TRY : 0.02,
           ATTACK_COST_PER_MASS_DO : 0,
           ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
+          ATTACK_SAME_GENUS : false,
 
         // user values
         pauseBetweenSteps: 10,
