@@ -17,6 +17,7 @@ import WorldGenerationsData from "./WorldGenerationsData";
 import { SensorName } from "../creature/brain/CreatureSensors";
 import { ActionName } from "../creature/brain/CreatureActions";
 import { SimulationType } from "./SimulationType";
+import { addHerbivoreOldAgeDeath, computeHerbivoreGenomeStats, HerbivoreGenomeStats, HerbivoreOldAgeDeaths } from "./creatureQueries";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -65,6 +66,9 @@ export default class WorldGenerations {
   deathsThisGeneration: number = 0;
   lastBirths: number = 0;
   lastDeaths: number = 0;
+  // herbivores that died of old age during the current generation, and the stats of the last one
+  private herbivoreOldAgeDeaths: HerbivoreOldAgeDeaths = new Map();
+  lastHerbivoreGenomeStats: HerbivoreGenomeStats | null = null;
   // genomes of the creatures placed at the start of the current generation, for "Save generation"
   startGenomes : Genome[] = [];
   
@@ -271,6 +275,9 @@ public step(): number {
         this.grid.removeCreature(creature);
         this.currentCreatures.splice(i, 1);
         this.deathsThisGeneration++;
+        if (creature.deathCause === "old" && creature.genus === "attack_plant") {
+          addHerbivoreOldAgeDeath(this.herbivoreOldAgeDeaths, creature);
+        }
       }
     }
 
@@ -288,6 +295,12 @@ public endTimeWindow(): void {
   this.closeBirthAndDeathCounts();
   // the population at the start of the next window
   this.lastCreatureCount = this.currentCreatures.length;
+}
+
+// called when the generation ends, while its creatures are still in the world
+public closeHerbivoreGenomeStats(): void {
+  this.lastHerbivoreGenomeStats = computeHerbivoreGenomeStats(this.currentGen, this.currentCreatures, this.herbivoreOldAgeDeaths);
+  this.herbivoreOldAgeDeaths = new Map();
 }
 
 private closeBirthAndDeathCounts(): void {

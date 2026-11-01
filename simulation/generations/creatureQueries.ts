@@ -19,6 +19,84 @@ export type SpeciesStats = {
   deathCauses: { cause: DeathCause; percentage: number }[];
 };
 
+export type HerbivoreSpeciesRef = {
+  /** colour code of the genome, as shown for the selected species */
+  code: string;
+  color: string;
+  genomeSize: number;
+};
+
+export type HerbivoreOldAgeDeaths = Map<string, { species: HerbivoreSpeciesRef; deaths: number }>;
+
+export type HerbivoreGenomeStats = {
+  generation: number;
+  /** herbivores alive when the generation ended */
+  alive: number;
+  /** the largest genome among them; when several species have it, the one with most creatures */
+  largest: { species: HerbivoreSpeciesRef; creatures: number } | null;
+  averageGenomeSize: number | null;
+  /** of the herbivores that died of old age during the generation; the first to reach it wins a tie */
+  mostOldAgeDeaths: { species: HerbivoreSpeciesRef; deaths: number } | null;
+};
+
+function herbivoreSpeciesRef(creature: Creature): HerbivoreSpeciesRef {
+  return {
+    code: creature.brain.genome.getHexColor(),
+    color: creature.getColor(),
+    genomeSize: creature.brain.genome.genes.length,
+  };
+}
+
+// counts a herbivore that died of old age for the stats of the generation
+export function addHerbivoreOldAgeDeath(deaths: HerbivoreOldAgeDeaths, creature: Creature): void {
+  const key = creature.brain.genome.toDecimalString(false);
+  const entry = deaths.get(key);
+  if (entry) entry.deaths++;
+  else deaths.set(key, { species: herbivoreSpeciesRef(creature), deaths: 1 });
+}
+
+// Genome sizes of the living herbivores and the species with most deaths of old age
+export function computeHerbivoreGenomeStats(generation: number, creatures: readonly Creature[], oldAgeDeaths: HerbivoreOldAgeDeaths): HerbivoreGenomeStats {
+  const herbivores = creatures.filter((creature) => creature.isAlive && creature.genus === "attack_plant");
+
+  let maxSize = 0;
+  let totalSize = 0;
+  for (const creature of herbivores) {
+    const size = creature.brain.genome.genes.length;
+    totalSize += size;
+    if (size > maxSize) maxSize = size;
+  }
+
+  // only the genomes of the largest size are converted to a key
+  const largestCounts = new Map<string, { creature: Creature; creatures: number }>();
+  for (const creature of herbivores) {
+    if (creature.brain.genome.genes.length !== maxSize) continue;
+    const key = creature.brain.genome.toDecimalString(false);
+    const entry = largestCounts.get(key);
+    if (entry) entry.creatures++;
+    else largestCounts.set(key, { creature, creatures: 1 });
+  }
+  let largest: HerbivoreGenomeStats["largest"] = null;
+  for (const { creature, creatures } of largestCounts.values()) {
+    if (!largest || creatures > largest.creatures) {
+      largest = { species: herbivoreSpeciesRef(creature), creatures };
+    }
+  }
+
+  let mostOldAgeDeaths: HerbivoreGenomeStats["mostOldAgeDeaths"] = null;
+  for (const entry of oldAgeDeaths.values()) {
+    if (!mostOldAgeDeaths || entry.deaths > mostOldAgeDeaths.deaths) mostOldAgeDeaths = entry;
+  }
+
+  return {
+    generation,
+    alive: herbivores.length,
+    largest,
+    averageGenomeSize: herbivores.length > 0 ? totalSize / herbivores.length : null,
+    mostOldAgeDeaths,
+  };
+}
+
 // true when both creatures have the same genes, so they belong to the same species
 export function haveSameGenome(a: Creature, b: Creature): boolean {
   const genesA = a.brain.genome.genes;

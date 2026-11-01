@@ -8,13 +8,22 @@ The **Population** tab shows what is alive and how it thinks.
 
 The line at the top shows how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
 
+## Herbivores
+
+Below the summary line, three indicators describe the herbivores of the last generation that ended. They change only when a generation ends, and are hidden until then or if the generation had no herbivores to report.
+
+- **Largest genome**: the largest genome among the herbivores alive at the end of the generation, in genes, and the colour code of its species. If several species have that size, the one with most creatures is shown.
+- **Average genome**: the average genome size of those herbivores, counting each creature.
+- **Most deaths of old age**: the herbivore species with most deaths of old age during the generation, how many, and its genome size. If species tie, the first to reach that number is shown. Creatures only die of old age in continuous runs, so in generational runs this shows **none**.
+
 ## Species
 
-Creatures with exactly the same genome belong to the same **species**. Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus.
+Creatures with exactly the same genome belong to the same **species**. Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus, and with `greenPlants` plants are shades of green and the other species have their own non-green colour.
 
-- The coloured boxes on the right are the 42 largest species, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus and size.
+- The coloured boxes on the right are the first 42 species in the chosen order, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus, number of creatures and genome size.
 - Click a box to select that species. One of its living creatures is selected too, with a ring around it in the world, so the live values of its network are shown. If the selected creature already belongs to that species, it stays selected. Click the box again to clear both the species and the creature.
-- **Filter species by** shows only the species whose network uses a given **Sensor** and/or **Action**: the ones with at least one connection from that sensor or to that action, as drawn in the network diagram. The lists contain the enabled sensors and actions. With both set, a species must use both. A line below says how many species match; the boxes show the 42 largest of them. **Clear filter** sets both back to **Any**. The filter only hides boxes: it does not change the selection.
+- **Filter species by** shows only the species whose network uses a given **Sensor** and/or **Action**: the ones with at least one connection from that sensor or to that action, as drawn in the network diagram. The lists contain the enabled sensors and actions. With both set, a species must use both. A line below says how many species match; the boxes show the first 42 of them in the chosen order. **Clear filter** sets both back to **Any**. The filter only hides boxes: it does not change the selection.
+- **Order species by**, below the filter, sorts the boxes by **Number of creatures** (the default) or **Genome size**, largest first. Species with the same genome size are sorted by number of creatures.
 
 Many species in the list have the same colour (in `trophicLevel` mode, species of the same genus have similar shades) and the same count. Usually these are close relatives that differ by one mutation.
 
