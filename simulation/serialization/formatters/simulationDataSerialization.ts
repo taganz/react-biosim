@@ -30,7 +30,7 @@ export default function deserializeSimulationData(worldController: WorldControll
 }
     
 
-// includeStats: false leaves out the stats history, which is most of the size of a long run
+// includeStats: false leaves out the stats history, one short row per generation
 export function serializeSimulationData(worldController: WorldController, includeStats: boolean = true) : SavedSimulationData {
   const sim = worldController.simData;  
   const serializedSimulationData : SavedSimulationData = {
@@ -61,8 +61,7 @@ export function serializeSetup(worldController: WorldController) : SavedSimulati
 
 /**
  * Settings, map and the genomes of the current generation as it started, without positions:
- * loading it starts that generation again. The stats history is optional because it is
- * most of the size of a long run.
+ * loading it starts that generation again. The stats history is optional.
  */
 export function serializeGenerationStart(worldController: WorldController, includeStats: boolean) : SavedSimulationData {
   // a generation starts with the first rain, so the cell water is not saved either

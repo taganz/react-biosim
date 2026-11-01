@@ -78,7 +78,7 @@ export default function SavePanel() {
           id="save-include-stats"
           checked={includeStats}
           onChange={setIncludeStats}
-          label="Include the stats history (larger for long runs)"
+          label="Include the stats history (one short row per generation)"
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleSaveToFile}>Save to file</Button>

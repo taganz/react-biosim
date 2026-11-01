@@ -10,7 +10,7 @@ Your own scenarios, stored in this browser. They are separate from the scenarios
 
 - **Save setup** stores the settings and the map. Loading it starts a new run from generation 1, like the demo scenarios, with the simulation code of the file.
 - **Save generation** also stores the genomes of the current generation, as they were when the generation started. Creatures that died since then are included. Loading it starts that generation again: the same genomes, without mutation, placed like in generation 1 (around the spawn area if there is one, otherwise at random). The generation number and the simulation code are kept.
-- **Include the stats history** adds the fitness history of every previous generation. A long run has one row per generation, so this is most of the size. Without it, the fitness chart in the Simulation tab starts empty from the loaded generation.
+- **Include the stats history** adds the fitness history of every previous generation. It has one short row per generation, about 70 KB for 500 generations. Without it, the fitness chart in the Simulation tab starts empty from the loaded generation.
 
 Positions, ages, mass and health are not stored. Give the scenario a name, or leave it empty to use `sim <code> generation <n>`.
 
@@ -21,7 +21,7 @@ Scenarios are stored in the browser's IndexedDB. They are lost if you clear the 
 
 - **Save to file** downloads the whole simulation as `sim <code> generation <n>.sim`: settings, map, creatures, species and stats. It does not show the file's content.
 - **Show JSON to copy** shows the same content as text, so you can paste it into a message or an issue. It cannot be loaded back by pasting: save it as a `.sim` file first.
-- **Include the stats history** (off by default) adds the fitness history of every generation. In a long run it is most of the file. Without it the file is much smaller, and the fitness chart starts empty when you load it.
+- **Include the stats history** (off by default) adds the fitness history of every generation. It has one short row per generation, about 70 KB for 500 generations, while the genomes usually take far more: in a save with about 5,000 creatures it was 4% of the file. Without it the fitness chart starts empty when you load the file.
 
 During a **pause between generations**, or the one-second wait before a restart after every creature dies, both buttons wait until the next generation has started and then save it.
 

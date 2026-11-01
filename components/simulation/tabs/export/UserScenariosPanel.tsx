@@ -154,7 +154,7 @@ export default function UserScenariosPanel() {
           id="user-scenario-include-stats"
           checked={includeStats}
           onChange={setIncludeStats}
-          label="Include the stats history (larger for long runs)"
+          label="Include the stats history (one short row per generation)"
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => handleSave("setup")} disabled={!worldController}>
