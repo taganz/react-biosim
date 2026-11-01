@@ -46,7 +46,7 @@ export default function SpeciesStats({ species, startCreatures }: Props) {
   }, "");
   if (value === "") return null;
 
-  const { alive, started, bornSince, died, living, perCreature, deathCauses } = JSON.parse(value) as Stats;
+  const { alive, started, bornSince, died, living, perCreature, averageAgeAtDeath, deathCauses } = JSON.parse(value) as Stats;
 
   return (
     <div className="flex flex-col gap-3">
@@ -78,9 +78,10 @@ export default function SpeciesStats({ species, startCreatures }: Props) {
         </div>
       )}
 
-      {deathCauses.length > 0 && (
+      {averageAgeAtDeath !== null && (
         <div title={UNCOUNTED_DEATHS}>
-          <Group title="Causes of death">
+          <Group title="Deaths">
+            <Field label="Average age">{averageAgeAtDeath.toFixed(1)}</Field>
             {deathCauses.map(({ cause, percentage }) => (
               <Field key={cause} label={DEATH_CAUSES[cause]}>{percentage.toFixed(0)}%</Field>
             ))}

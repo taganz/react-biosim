@@ -112,9 +112,17 @@ describe('creature queries', () => {
             expect(deathCauses[0].percentage).toBeCloseTo(66.67);
         });
 
+        test('the average age at death only counts the dead', () => {
+            a1._age = 10;
+            a2._age = 500;
+            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).averageAgeAtDeath).toBeNull();
+            a1.health = 0;
+            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).averageAgeAtDeath).toBe(10);
+        });
+
         test('has no averages without creatures', () => {
             expect(computeSpeciesStats(worldController.generations, [12345], [])).toEqual({
-                alive: 0, started: 0, bornSince: 0, died: 0, living: null, perCreature: null, deathCauses: [],
+                alive: 0, started: 0, bornSince: 0, died: 0, living: null, perCreature: null, averageAgeAtDeath: null, deathCauses: [],
             });
         });
     });

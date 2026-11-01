@@ -13,6 +13,8 @@ export type SpeciesStats = {
   living: { age: number; mass: number; health: number; distance: number } | null;
   /** averages of every known creature, dead or alive; null when there are none */
   perCreature: { children: number; kills: number; attacks: number; photosynthesis: number; fromPrey: number } | null;
+  /** average age of the dead when they died, null when none has died */
+  averageAgeAtDeath: number | null;
   /** share of the deaths, 0-100, the most frequent first */
   deathCauses: { cause: DeathCause; percentage: number }[];
 };
@@ -78,6 +80,8 @@ export function computeSpeciesStats(generations: WorldGenerations, genes: readon
       photosynthesis: average(known, known.size, (creature) => creature.waterFromPhotosynthesis),
       fromPrey: average(known, known.size, (creature) => creature.waterFromPrey),
     } : null,
+    // the age stops changing when a creature dies
+    averageAgeAtDeath: dead.length > 0 ? average(dead, dead.length, (creature) => creature._age) : null,
     deathCauses: Array.from(causeCounts, ([cause, count]) => ({ cause, percentage: (count / dead.length) * 100 }))
       .sort((a, b) => b.percentage - a.percentage),
   };
