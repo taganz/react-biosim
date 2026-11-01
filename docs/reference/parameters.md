@@ -99,7 +99,7 @@ Options of the running simulation. They apply at once (see [How changes are appl
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. A change recolours the running creatures at once, also while paused. |
+| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level), `greenPlants` (Green plants) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. `greenPlants`: a shade of green for each plant species and a non-green colour for each species of any other genus, both from a hash of the genome, so related species do not look alike. A change recolours the running creatures at once, also while paused. |
 
 ## Control bar: speed controls
 

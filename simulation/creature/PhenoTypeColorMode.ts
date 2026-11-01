@@ -1,1 +1,1 @@
-export type PhenoTypeColorMode = "genome" | "trophicLevel";
+export type PhenoTypeColorMode = "genome" | "trophicLevel" | "greenPlants";

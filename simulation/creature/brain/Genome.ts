@@ -275,6 +275,18 @@ export default class Genome {
     return sum;
   }
 
+  // Unsigned 32 bit hash of the genes (FNV-1a, with a final mix). Unlike
+  // getColorNumber(), genomes that differ in one gene get unrelated values
+  getHash(): number {
+    let hash = 0x811c9dc5;
+    for (let geneIdx = 0; geneIdx < this.genes.length; geneIdx++) {
+      hash = Math.imul(hash ^ this.genes[geneIdx], 0x01000193);
+    }
+    hash = Math.imul(hash ^ (hash >>> 16), 0x85ebca6b);
+    hash = Math.imul(hash ^ (hash >>> 13), 0xc2b2ae35);
+    return (hash ^ (hash >>> 16)) >>> 0;
+  }
+
   getColor(): string {
     return numberToRGBColor(this.getColorNumber());
   }
