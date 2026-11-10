@@ -60,6 +60,12 @@ export function detectAll(grid: Grid, origin: GridPosition, radius: number): Det
     return detected;
 }
 
+// the creature in cell (i, j) if it is of the given genus (any genus if undefined), otherwise null
+function matching(grid: Grid, i: number, j: number, genus?: Genus): Creature | null {
+    const creature = grid.cell(i, j).creature;
+    return creature != null && (genus === undefined || creature._genus === genus) ? creature : null;
+}
+
 // returns the closest creature inside radius distance, of the given genus if there is one.
 // The prey sensors call it for every creature at every step, so instead of collecting every
 // creature around (detectAll) it searches ring by ring and stops at the first ring with a match.
@@ -78,28 +84,30 @@ export function detectClosest(grid: Grid, origin: GridPosition, radius: number, 
         const toX = Math.min(x0 + distance, endX - 1);
         const fromY = Math.max(y0 - distance, minY);
         const toY = Math.min(y0 + distance, endY - 1);
-        // typed with "as": TypeScript does not see the assignments inside check()
-        let found = null as Creature | null;
+        // keeps the last match, like the order of detectAll.
+        // No closure here: this runs for every creature at every step, and a closure created per ring
+        // is slow under tsx (headless runner), which wraps every function it creates to keep its name
+        let found: Creature | null = null;
         let foundX = 0;
         let foundY = 0;
-        // keeps the last match, like the order of detectAll
-        const check = (i: number, j: number) => {
-            const creature = grid.cell(i, j).creature;
-            if (creature != null && (genus === undefined || creature._genus === genus)) {
-                found = creature;
-                foundX = i;
-                foundY = j;
-            }
-        };
 
         for (let i = fromX; i <= toX; i++) {
             if (i === x0 - distance || i === x0 + distance) {
                 // a side of the ring: the whole column
-                for (let j = fromY; j <= toY; j++) check(i, j);
+                for (let j = fromY; j <= toY; j++) {
+                    const creature = matching(grid, i, j, genus);
+                    if (creature) { found = creature; foundX = i; foundY = j; }
+                }
             } else {
                 // inside the ring: only its top and bottom cells
-                if (y0 - distance >= fromY) check(i, y0 - distance);
-                if (y0 + distance <= toY) check(i, y0 + distance);
+                if (y0 - distance >= fromY) {
+                    const creature = matching(grid, i, y0 - distance, genus);
+                    if (creature) { found = creature; foundX = i; foundY = y0 - distance; }
+                }
+                if (y0 + distance <= toY) {
+                    const creature = matching(grid, i, y0 + distance, genus);
+                    if (creature) { found = creature; foundX = i; foundY = y0 + distance; }
+                }
             }
         }
         if (found) {
