@@ -3,6 +3,10 @@ import { detectClosest } from "@/simulation/world/grid/GridDetect";
 import Creature from "../Creature";
 import { Genus } from "../CreatureGenus";
 import { Direction4 } from "@/simulation/world/direction";
+import Connection from "./Connection";
+import { NeuronType } from "./Neuron";
+
+const preySensorNames: SensorName[] = ["PreyDistance", "PreyNorth", "PreyEast", "PreySouth", "PreyWest"];
 
 const adjacentTilesLookup: [number, number][] = [
   [-1, 1],
@@ -324,7 +328,16 @@ export default class CreatureSensors {
     ).map(item => {return item.name});;
   }
 
-  calculateOutputs(creature: Creature): number[] {  
+  // whether one of the connections reads a prey sensor
+  readsPreySensors(connections: Connection[]): boolean {
+    const preyIds = preySensorNames.map((name) => this.sensorNameToId(name)).filter((id) => id >= 0);
+    return connections.some((connection) =>
+      connection.sourceType === NeuronType.SENSOR && preyIds.includes(connection.sourceId));
+  }
+
+  // needPrey false skips the prey search, the most expensive sensor: the prey sensors still
+  // push one value each (0), which no connection reads
+  calculateOutputs(creature: Creature, needPrey: boolean = true): number[] {  
     const values: number[] = [];
     const worldSize = creature.generations.grid.size;
 
@@ -468,7 +481,7 @@ export default class CreatureSensors {
     // the distance and direction sensors share one search, the most expensive part of a step
     const preyDirectionEnabled = this.data.PreyNorth.enabled || this.data.PreyEast.enabled ||
        this.data.PreySouth.enabled || this.data.PreyWest.enabled;
-    const prey = this.data.PreyDistance.enabled || preyDirectionEnabled
+    const prey = needPrey && (this.data.PreyDistance.enabled || preyDirectionEnabled)
       ? detectClosest(creature.generations.grid, creature.position,
           creature.generations.worldController.simData.constants.DETECT_RADIUS,
           creature.preyGenus)
@@ -476,7 +489,7 @@ export default class CreatureSensors {
 
     // PreyDistance
     if (this.data.PreyDistance.enabled) {
-      values.push(prey?.distance ?? 999999);
+      values.push(needPrey ? prey?.distance ?? 999999 : 0);
       }
     
     // PreyDirection
