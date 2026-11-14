@@ -78,6 +78,15 @@ export default class WorldController {
   _lastPauseDate: Date | undefined = new Date();
   _pauseTime: number = 0;
   _timeoutId?: number;
+  // without a pause between steps the next tick is not a timeout: browsers clamp chained
+  // setTimeout calls to ~4 ms. In the browser it is a MessageChannel message, which cannot be
+  // cancelled: each message carries a number and only the one in _pendingTick runs (0: none)
+  private _tickChannel?: MessageChannel;
+  private _pendingTick = 0;
+  private _lastTick = 0;
+  // Node has setImmediate instead
+  private _immediateId?: ReturnType<typeof setImmediate>;
+  private _runTick = () => { this.mainLoop(); };
   // incremented when the world is replaced (start/resume run), so a loop from the previous run stops
   private _runId = 0;
   private _paused = true;
@@ -307,12 +316,14 @@ export default class WorldController {
   }
 
   // generations enters mainLoop() with currentCreatures already populated
-  // Runs several steps per timer tick: browsers clamp chained setTimeout calls
-  // to ~4ms, so one step per tick would cap the simulation at ~250 steps/s.
+  // Runs several steps per tick (up to Immediate steps or MAX_TICK_MS). Without a pause between
+  // steps the next tick is a MessageChannel message (setImmediate in Node, see scheduleTick),
+  // which browsers do not clamp to ~4 ms like chained setTimeout calls.
   private async mainLoop(): Promise<void> {
 
     const runId = this._runId;
     this._timeoutId = undefined;
+    this._immediateId = undefined;
     this._tickInFlight = true;
 
     const maxSteps = this.pauseBetweenSteps > 0 ? 1 : Math.max(1, this.immediateSteps);
@@ -332,18 +343,45 @@ export default class WorldController {
 
     // loop after pause
     if (!this._paused) {
-      this._timeoutId = window.setTimeout(
-          this.mainLoop.bind(this),
-          this.pauseBetweenSteps
-        );
+      this.scheduleTick();
     }
 
   }
 
-  // stops any loop left from the previous run and starts a new one
-  private startLoop(): void {
+  private scheduleTick(): void {
+    if (this.pauseBetweenSteps > 0) {
+      this._timeoutId = window.setTimeout(this._runTick, this.pauseBetweenSteps);
+    } else if (typeof setImmediate === "function") {
+      // Node (headless runner, Jest): not clamped either, and Jest's fake timers control it
+      this._immediateId = setImmediate(this._runTick);
+    } else if (typeof MessageChannel !== "undefined") {
+      if (!this._tickChannel) {
+        this._tickChannel = new MessageChannel();
+        this._tickChannel.port1.onmessage = (event: MessageEvent) => {
+          // a cancelled tick, or one replaced by a newer one: running it would start a second loop
+          if (event.data !== this._pendingTick) return;
+          this._pendingTick = 0;
+          this.mainLoop();
+        };
+      }
+      this._pendingTick = ++this._lastTick;
+      this._tickChannel.port2.postMessage(this._pendingTick);
+    } else {
+      this._timeoutId = window.setTimeout(this._runTick, 0);
+    }
+  }
+
+  private cancelTick(): void {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = undefined;
+    if (this._immediateId !== undefined) clearImmediate(this._immediateId);
+    this._immediateId = undefined;
+    this._pendingTick = 0;
+  }
+
+  // stops any loop left from the previous run and starts a new one
+  private startLoop(): void {
+    this.cancelTick();
     this._runId++;
     this._tickInFlight = false;
     // the new world is complete; the wait of the previous run no longer matters
@@ -535,8 +573,7 @@ export default class WorldController {
   pause(): void {
     if (!this._paused) {
       this._paused = true;
-      window.clearTimeout(this._timeoutId);
-      this._timeoutId = undefined;
+      this.cancelTick();
       this._lastPauseDate = new Date();
     }
     this.notifyStateChange();
