@@ -73,7 +73,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 const currentGen = useWorldValue((world) => world.currentGen, 0);
 ```
 
-It is built on `useSyncExternalStore`. It subscribes to `initializeWorld`, `startGeneration`, `endStep` and `stateChange`, and coalesces them into at most **one re-render per animation frame**. Two rules:
+It is built on `useSyncExternalStore`. All its uses share **one subscription per `WorldController`**: the first one registers a listener on `initializeWorld`, `startGeneration`, `endStep` and `stateChange`, and the last one to unmount removes it. The events are coalesced into a single notification per animation frame, which asks every component using the hook to re-check its value, so there is at most **one re-render per animation frame**. Two rules:
 
 - The getter must return a primitive or a stable reference: React compares snapshots with `Object.is`. Do not build a new array or object in the getter.
 - The default value must also be stable. Define it outside the component, as `NO_GENERATIONS` in `StatsPanel` does.

@@ -11,28 +11,51 @@ const WORLD_CHANGE_EVENTS = [
   WorldEvents.stateChange,
 ];
 
-// endStep can fire thousands of times per second, so notifications are
-// coalesced and React is asked to re-check values at most once per frame
-function subscribeToWorld(worldController: WorldController, onChange: () => void) {
-  let frame: number | undefined;
-  const scheduleChange = () => {
-    if (frame === undefined) {
-      frame = requestAnimationFrame(() => {
-        frame = undefined;
-        onChange();
-      });
-    }
-  };
+type WorldSubscription = {
+  listeners: Set<() => void>;
+  frame: number | undefined;
+  scheduleChange: () => void;
+};
 
-  WORLD_CHANGE_EVENTS.forEach((event) =>
-    worldController.events.addEventListener(event, scheduleChange)
-  );
+// One subscription per WorldController, shared by every useWorldValue: dozens of components
+// read engine values, and each registering its own listeners made every endStep call them all.
+// endStep can fire thousands of times per second, so notifications are coalesced and
+// React is asked to re-check values at most once per frame
+const subscriptions = new WeakMap<WorldController, WorldSubscription>();
+
+export function subscribeToWorld(worldController: WorldController, onChange: () => void) {
+  let subscription = subscriptions.get(worldController);
+  if (!subscription) {
+    const created: WorldSubscription = {
+      listeners: new Set(),
+      frame: undefined,
+      scheduleChange: () => {
+        if (created.frame === undefined) {
+          created.frame = requestAnimationFrame(() => {
+            created.frame = undefined;
+            // a copy: a re-render can unsubscribe or subscribe components
+            for (const listener of Array.from(created.listeners)) listener();
+          });
+        }
+      },
+    };
+    WORLD_CHANGE_EVENTS.forEach((event) =>
+      worldController.events.addEventListener(event, created.scheduleChange)
+    );
+    subscriptions.set(worldController, created);
+    subscription = created;
+  }
+  const shared = subscription;
+  shared.listeners.add(onChange);
 
   return () => {
+    shared.listeners.delete(onChange);
+    if (shared.listeners.size > 0) return;
     WORLD_CHANGE_EVENTS.forEach((event) =>
-      worldController.events.removeEventListener(event, scheduleChange)
+      worldController.events.removeEventListener(event, shared.scheduleChange)
     );
-    if (frame !== undefined) cancelAnimationFrame(frame);
+    if (shared.frame !== undefined) cancelAnimationFrame(shared.frame);
+    subscriptions.delete(worldController);
   };
 }
 
