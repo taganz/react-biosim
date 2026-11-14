@@ -12,6 +12,7 @@ import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
 import CreatureGenus, {Genus} from "./CreatureGenus";
 import WorldControllerData from "../world/WorldControllerData";
+import { PhenoTypeColorMode } from "./PhenoTypeColorMode";
 
 export const maxHealth = 100;
 
@@ -131,8 +132,18 @@ export default class Creature {
     return undefined;    
   }
 
+  // the genome and the genus do not change after birth, the colour mode can: the colour is
+  // computed again only when the mode changes (the canvas asks for it on every redraw)
+  private _color: string | null = null;
+  private _colorMode: PhenoTypeColorMode | null = null;
+
   getColor(): string {
-    return CreaturePhenothype.getColor(this.generations.phenotypeColorMode, this._genus, this.brain);
+    const mode = this.generations.phenotypeColorMode;
+    if (this._color === null || this._colorMode !== mode) {
+      this._color = CreaturePhenothype.getColor(mode, this._genus, this.brain);
+      this._colorMode = mode;
+    }
+    return this._color;
   }
 
   // in generational runs creatures are replaced before they get this old

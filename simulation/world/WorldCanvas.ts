@@ -40,17 +40,19 @@ export default class WorldCanvas {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
+  // assigning width or height reallocates and clears the canvas even when the size is the same
   private resizeCanvas(): void {
-    this.canvas.width = this.canvas.clientWidth;
-    this.canvas.height = this.canvas.clientHeight;
+    if (this.canvas.width !== this.canvas.clientWidth) this.canvas.width = this.canvas.clientWidth;
+    if (this.canvas.height !== this.canvas.clientHeight) this.canvas.height = this.canvas.clientHeight;
   }
 
   public redraw(): void {
     // in case worldController restarted with a different size
     this.size = this.worldController.simData.worldControllerData.size;    
-    this.worldController.generations.currentCreatures;
-    this.clearCanvas();
     this.resizeCanvas();
+    this.clearCanvas();
+    // the canvas is not reset on every redraw anymore: keep the state of one redraw from leaking into the next
+    this.ctx.save();
     // RD
     this.ctx.fillStyle = 'rgba(200, 200, 200, 1)'; // Grey color - ok gif
     this.ctx.fillRect(0, 0,this.canvas.width,this.canvas.height);
@@ -59,25 +61,26 @@ export default class WorldCanvas {
     //this.selectionMethod?.onDrawBeforeCreatures?.(this);
 
     // Draw creatures 
-    for (let i = 0; i < this.worldController.generations.currentCreatures.length; i++) {
-      const creature = this.worldController.generations.currentCreatures[i];
+    const creatures = this.worldController.generations.currentCreatures;
+    const ctx = this.ctx;
+    const size = this.size;
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    const absoluteSize = 1 / size;
+    const cellWidth = absoluteSize * width;
+    const cellHeight = absoluteSize * height;
+    for (let i = 0; i < creatures.length; i++) {
+      const creature = creatures[i];
 
       if (creature.isAlive) {
         const position = creature.position;
-
-        const normalizedX = position[0] / this.size;
-        const normalizedY = position[1] / this.size;
-        const absoluteSize = 1 / this.size;
-
-        this.ctx.fillStyle = creature.getColor();
-        this.ctx.beginPath();
-        this.ctx.rect(
-          normalizedX * this.canvas.width,
-          normalizedY * this.canvas.height,
-          absoluteSize * this.canvas.width,
-          absoluteSize * this.canvas.height
+        ctx.fillStyle = creature.getColor();
+        ctx.fillRect(
+          (position[0] / size) * width,
+          (position[1] / size) * height,
+          cellWidth,
+          cellHeight
         );
-        this.ctx.fill();
       }
     }
 
@@ -98,7 +101,7 @@ export default class WorldCanvas {
     this.ctx.fillStyle = "#000";
     this.ctx.font = "18px Courier";
     this.ctx.fillText("Gen ".concat(this.worldController.currentGen.toString()), 10, 20);
-    
+    this.ctx.restore();
 }
 
 

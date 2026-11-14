@@ -119,7 +119,7 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## Drawing
 
-[WorldCanvas.ts](../../simulation/world/WorldCanvas.ts) redraws the whole world on each `redraw` event: background, objects, then one square per creature in its phenotype colour. The selection ring is drawn on a separate overlay canvas, so it can be updated while the simulation is paused without repainting the world.
+[WorldCanvas.ts](../../simulation/world/WorldCanvas.ts) redraws the whole world on each `redraw` event: background, then one square per creature in its phenotype colour, then the objects. It only resizes the canvas when its size on screen changed, and wraps the drawing in `save()`/`restore()` so that no drawing state carries over to the next redraw. Each creature keeps its colour (`Creature.getColor()`) and only computes it again when the phenotype colour mode changes. The selection ring is drawn on a separate overlay canvas, so it can be updated while the simulation is paused without repainting the world.
 
 ## Logging
 
