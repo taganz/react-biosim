@@ -153,15 +153,19 @@ export default class Creature {
     this._age++;
 
     const basalMetabolismConsumed = this._mass.basalMetabolism();
-    this.log(LogEvent.METABOLISM, "mass", this.mass);
-    this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
+    if (!this.eventLogger?.isPaused) {
+      this.log(LogEvent.METABOLISM, "mass", this.mass);
+      this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
+    }
     if (!this.isAlive) {
       this.die("basalConsumption");
       return;
     }
 
     // read sensors and activate actions that will update urgeToMove and call other creature functions
-    this.urgeToMove = [0, 0];
+    // reused: nothing else keeps a reference to it
+    this.urgeToMove[0] = 0;
+    this.urgeToMove[1] = 0;
     this.brain.step();
 
     // Calculate probability of movement
@@ -380,6 +384,8 @@ export default class Creature {
 
 
   logBasicData(when: string = "") {
+    // runs at every birth and death: skip building the names when nothing is recorded
+    if (this.eventLogger?.isPaused) return;
     this.log(LogEvent.INFO, when + " " +"mass", this.mass);
     this.log(LogEvent.INFO, when + " " +"gen", this.generations.worldController.currentGen);
     this.log(LogEvent.INFO, when + " " +"neuronsCount", this.brain.actions.neuronsCount);
