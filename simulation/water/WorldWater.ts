@@ -149,26 +149,33 @@ export default class WorldWater {
                 return;
         }
 
-        let rf : ((x: number, y:number)=> number);
-        switch(this.waterData.rainType) {
+        // continuous runs rain every step, so the loop avoids closures, arrays and repeated sines.
+        // The amount of each cell is computed as before: (rainValue * sin x) * sin y
+        const rainType = this.waterData.rainType;
+        let sines: Float64Array | null = null;
+        switch(rainType) {
             case "rainTypeSinSin":
-                rf = ((x: number, y: number) => 
-                    rainValue * Math.sin(Math.PI * x/grid._size) * Math.sin(Math.PI * y/grid._size));
+                sines = this.rainSines(grid._size);
                 break;
             case "rainTypeUniform":
-                 rf = ( (x: number, y: number) => rainValue);
-                 break;
             case "rainTypeUniformNE":
-                 rf = ( (x: number, y: number) => { return ((x > (grid.size *0.5) && y < (grid.size * 0.5)) ? rainValue : (rainValue * 0.5)) });
-                 break;
+                break;
             default:
-                throw new Error ("unknown rainType: ".concat(this.waterData.rainType as string));
+                throw new Error ("unknown rainType: ".concat(rainType as string));
             }
+        const half = grid.size * 0.5;
+        const cells = grid._grid;
         for (let y = 0; y < grid._size; y++) {
             for (let x = 0; x < grid._size; x++) {
-                let waterToAdd = rf(x,y);
+                let waterToAdd: number;
+                if (sines !== null) waterToAdd = rainValue * sines[x] * sines[y];
+                else if (rainType === "rainTypeUniform") waterToAdd = rainValue;
+                else waterToAdd = (x > half && y < half) ? rainValue : (rainValue * 0.5);
                 waterToAdd = Math.min(waterToAdd, this.waterInCloud);
-                const waterAdded = grid.addWater([x, y], waterToAdd);
+                // same as grid.addWater
+                const cell = cells[x][y];
+                const waterAdded = Math.min(waterToAdd, cell.waterCapacity - cell.water);
+                cell.water += waterAdded;
                 this.waterInCloud-=waterAdded;
                 this.waterInCells+=waterAdded;
                 if (this.waterInCloud <= 0) {
@@ -176,6 +183,18 @@ export default class WorldWater {
                 }
             }
         }
+    }
+
+    // sin(PI * i / size) for every row or column, computed once per world size
+    private _rainSines: Float64Array | null = null;
+    private rainSines(size: number): Float64Array {
+        if (this._rainSines === null || this._rainSines.length !== size) {
+            this._rainSines = new Float64Array(size);
+            for (let i = 0; i < size; i++) {
+                this._rainSines[i] = Math.sin(Math.PI * i/size);
+            }
+        }
+        return this._rainSines;
     }
 
     // attack_plant some water from cells to clouds to redistribute it
