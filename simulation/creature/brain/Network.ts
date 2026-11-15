@@ -23,8 +23,9 @@ function packConnections(connections: Connection[]): number[] {
 export class Network {
   outputs: number[] = [];
   neuronAccumulators: number[] = [];  // neurons stores value for next step
-  // sensor values of the last step, kept so the UI can show the network activity
-  inputs: number[] = [];
+  // Sensor values of the last step. The brain writes into it the sensors that the connections
+  // read, the others stay 0. Each network has its own, so the UI can show its activity
+  inputs: number[];
 
   // feedForward runs for every creature at every step, so the connections are compiled once
   // into flat arrays. `connections` stays as it is for the UI and CreatureGenus.
@@ -44,6 +45,7 @@ export class Network {
     public connections: Connection[]
   ) {
     this.outputs = Array(this.outputCount).fill(0);
+    this.inputs = Array(this.inputCount).fill(0);
     this.neuronAccumulators = Array(this.neurons.length).fill(0);
 
     let firstAction = connections.findIndex((connection) => connection.sinkType === NeuronType.ACTION);
@@ -55,7 +57,7 @@ export class Network {
   }
 
   feedForward(inputs: number[]): number[] {
-    // sensors create a new array every step, so keeping the reference is enough
+    // the brain passes this.inputs; other callers (tests) pass their own array
     this.inputs = inputs;
     const outputs = this.outputs;
     const accumulators = this.neuronAccumulators;

@@ -1,12 +1,19 @@
 import { random } from "@/simulation/helpers/random";
-import { detectClosest } from "@/simulation/world/grid/GridDetect";
+import { DetectedCreature, detectClosest } from "@/simulation/world/grid/GridDetect";
 import Creature from "../Creature";
 import { Genus } from "../CreatureGenus";
-import { Direction4 } from "@/simulation/world/direction";
 import Connection from "./Connection";
 import { NeuronType } from "./Neuron";
 
 const preySensorNames: SensorName[] = ["PreyDistance", "PreyNorth", "PreyEast", "PreySouth", "PreyWest"];
+
+// The sensors in the order of the data table, for the switch of writeOutputs
+const enum SensorCode {
+  HorizontalPosition, VerticalPosition, Age, Oscillator, Random, HorizontalSpeed, VerticalSpeed,
+  HorizontalBorderDistance, VerticalBorderDistance, BorderDistance,
+  TouchNorth, TouchEast, TouchSouth, TouchWest, Pain, PopulationDensity, Mass,
+  PreyDistance, PreyNorth, PreyEast, PreySouth, PreyWest, PredatorDistance, PredatorDirection,
+}
 
 const adjacentTilesLookup: [number, number][] = [
   [-1, 1],
@@ -246,6 +253,8 @@ export default class CreatureSensors {
 
   neuronsCount: number = 0;
   enabledSensors : SensorName[] = [];
+  // the code of each enabled sensor, by enabled id
+  private enabledCodes: SensorCode[] = [];
 
   private getList() {
     const list: SensorName[] = [];
@@ -265,6 +274,16 @@ export default class CreatureSensors {
 
     this.updateInternalValues();
     this.enabledSensors = this.getList();
+    this.updateCodes();
+  }
+
+  // the codes follow the enabled flags of the table
+  private updateCodes() {
+    const tableNames = Object.keys(this.data) as SensorName[];
+    this.enabledCodes = [];
+    tableNames.forEach((name, code) => {
+      if (this.data[name].enabled) this.enabledCodes.push(code);
+    });
   }
 
   private updateInternalValues() {
@@ -345,188 +364,151 @@ export default class CreatureSensors {
     return this.readsSensors(connections, ["Random"]);
   }
 
-  // needPrey false skips the prey search, the most expensive sensor: the prey sensors still
-  // push one value each (0), which no connection reads.
-  // needRandom false skips the draw of the Random sensor, which pushes 0 instead
-  calculateOutputs(creature: Creature, needPrey: boolean = true, needRandom: boolean = true): number[] {  
-    const values: number[] = [];
-    const worldSize = creature.generations.grid.size;
-
-    // HorizontalPosition
-    if (this.data.HorizontalPosition.enabled) {
-      values.push(creature.position[0] / worldSize);
+  // the enabled ids of the sensors that the connections read, in ascending order
+  readSensorIds(connections: Connection[]): number[] {
+    const ids = new Set<number>();
+    for (const connection of connections) {
+      if (connection.sourceType === NeuronType.SENSOR) ids.add(connection.sourceId);
     }
+    return Array.from(ids).sort((a, b) => a - b);
+  }
 
-    // VerticalPosition
-    if (this.data.VerticalPosition.enabled) {
-      values.push(creature.position[1] / worldSize);
+  // The values of all the enabled sensors, one per enabled sensor in table order.
+  // needPrey false skips the prey search and needRandom false the draw of the Random sensor:
+  // those sensors are set to 0
+  calculateOutputs(creature: Creature, needPrey: boolean = true, needRandom: boolean = true): number[] {
+    // not used by the step: it reads the flags again, which tests change directly
+    this.updateCodes();
+    const ids: number[] = [];
+    for (let id = 0; id < this.enabledCodes.length; id++) {
+      const code = this.enabledCodes[id];
+      if (!needRandom && code === SensorCode.Random) continue;
+      if (!needPrey && code >= SensorCode.PreyDistance && code <= SensorCode.PreyWest) continue;
+      ids.push(id);
     }
-
-    // Age: generational runs, time since the start of the generation (0 to 1);
-    // continuous runs, the age of the creature over maxAge (0 to 1)
-    if (this.data.Age.enabled) {
-      values.push(creature.generations.isContinuous
-        ? creature._age / creature.generations.maxAge
-        : creature.generations.worldController.currentStep / creature.generations.worldController.stepsPerGen);
-    }
-
-    // Oscillator
-    if (this.data.Oscillator.enabled) {
-      values.push((Math.sin(creature.generations.worldController.currentStep / 10) + 1) / 2);
-    }
-
-    // Random
-    if (this.data.Random.enabled) {
-      values.push(needRandom ? random() : 0);
-    }
-
-    // HorizontalSpeed
-    if (this.data.HorizontalSpeed.enabled) {
-      values.push((creature.position[0] - creature.lastPosition[0] + 1) / 2);
-    }
-
-    // VerticalSpeed
-    if (this.data.VerticalSpeed.enabled) {
-      values.push((creature.position[1] - creature.lastPosition[1] + 1) / 2);
-    }
-
-    const horizontalDistance = Math.min(
-      creature.position[0],
-      worldSize - creature.position[0]
-    );
-    // HorizontalBorderDistance
-    if (this.data.HorizontalBorderDistance.enabled) {
-      values.push((horizontalDistance / worldSize) * 2);
-    }
-
-    const verticalDistance = Math.min(
-      creature.position[1],
-      worldSize - creature.position[1]
-    );
-    // VerticalBorderDistance
-    if (this.data.VerticalBorderDistance.enabled) {
-      values.push((verticalDistance / worldSize) * 2);
-    }
-
-    // BorderDistance
-    if (this.data.BorderDistance.enabled) {
-      values.push(
-        (Math.min(horizontalDistance, verticalDistance) / worldSize) *
-          2
-      );
-    }
-
-    //TouchNorth
-    if (this.data.TouchNorth.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
-      // Top
-      let x = creature.position[0];
-      let y = creature.position[1] - 1;
-      values.push(y >= 0 ? touchValue(creature, x, y) : 1.0);
-    }
-
-    //TouchEast
-    if (this.data.TouchEast.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
-      // Right
-      let x = creature.position[0] + 1;
-      let y = creature.position[1];
-      values.push(x < worldSize ? touchValue(creature, x, y) : 1.0);
-    }
-
-    //TouchSouth
-    if (this.data.TouchSouth.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
-      // Bottom
-      let x = creature.position[0];
-      let y = creature.position[1] + 1;
-      values.push(y < worldSize ? touchValue(creature, x, y) : 1.0);
-    }
-
-    //TouchWest
-    if (this.data.TouchWest.enabled) {
-      // Outputs: 0.0 -> empty, 1.0 -> creature, solid cell or world border
-      // Left
-      let x = creature.position[0] - 1;
-      let y = creature.position[1];
-      values.push(x >= 0 ? touchValue(creature, x, y) : 1.0);
-    }
-  
-    // Pain/Health
-    if (this.data.Pain.enabled) {
-      values.push((100 - creature.health) / 100);
-    }
-
-    // Population Density
-    if (this.data.PopulationDensity.enabled) {
-      let populationCount = 0;
-
-      for (
-        let tileIndex = 0;
-        tileIndex < adjacentTilesLookup.length;
-        tileIndex++
-      ) {
-        const x = creature.position[0] + adjacentTilesLookup[tileIndex][0];
-        const y = creature.position[1] + adjacentTilesLookup[tileIndex][1];
-
-        if (
-          x >= 0 &&
-          y >= 0 &&
-          x < worldSize &&
-          y < worldSize
-        ) {
-          if (creature.generations.grid.cell(x,y).creature) {
-            populationCount++;
-          }
-        }
-      }
-
-      values.push(populationCount * 0.125);
-    }
-
-    // Mass
-    if (this.data.Mass.enabled) {
-      values.push(creature.mass);
-    }
-
-    // the distance and direction sensors share one search, the most expensive part of a step
-    const preyDirectionEnabled = this.data.PreyNorth.enabled || this.data.PreyEast.enabled ||
-       this.data.PreySouth.enabled || this.data.PreyWest.enabled;
-    const prey = needPrey && (this.data.PreyDistance.enabled || preyDirectionEnabled)
-      ? detectClosest(creature.generations.grid, creature.position,
-          creature.generations.worldController.simData.constants.DETECT_RADIUS,
-          creature.preyGenus)
-      : null;
-
-    // PreyDistance
-    if (this.data.PreyDistance.enabled) {
-      values.push(needPrey ? prey?.distance ?? 999999 : 0);
-      }
-    
-    // PreyDirection
-    let preyDirection : Direction4[] = [];
-
-    if (preyDirectionEnabled) {
-      if (prey) {
-        if (prey?.position[0] < creature.position[0]) preyDirection.push("W");
-        if (prey?.position[0] > creature.position[0]) preyDirection.push("E");
-        if (prey?.position[1] < creature.position[1]) preyDirection.push("N");
-        if (prey?.position[1] > creature.position[1]) preyDirection.push("S");
-      }
-    }
-
-    if (this.data.PreyNorth.enabled) {
-      values.push(preyDirection?.includes("N") ? 1 : 0);
-    }
-    if (this.data.PreyEast.enabled) {
-      values.push(preyDirection?.includes("E") ? 1 : 0);
-    }
-    if (this.data.PreySouth.enabled) {
-      values.push(preyDirection?.includes("S") ? 1 : 0);
-    }
-    if (this.data.PreyWest.enabled) {
-      values.push(preyDirection?.includes("W") ? 1 : 0);
-    }   
+    const values: number[] = Array(this.enabledCodes.length).fill(0);
+    this.writeOutputs(creature, ids, values);
     return values;
+  }
+
+  // Writes the value of the sensors in ids (enabled ids, ascending) at their id in values and
+  // leaves the other values as they are. Only Random draws a number and only the prey sensors
+  // search the prey (once for all of them), so a brain computes only the sensors it reads
+  writeOutputs(creature: Creature, ids: number[], values: number[]): void {
+    const codes = this.enabledCodes;
+    const position = creature.position;
+    const worldSize = creature.generations.grid.size;
+    let preySearched = false;
+    let prey: DetectedCreature | null = null;
+
+    for (let k = 0; k < ids.length; k++) {
+      const id = ids[k];
+      const code = codes[id];
+      let value: number;
+
+      if (code >= SensorCode.PreyDistance && code <= SensorCode.PreyWest) {
+        // the distance and direction sensors share one search, the most expensive part of a step
+        if (!preySearched) {
+          prey = detectClosest(creature.generations.grid, position,
+            creature.generations.worldController.simData.constants.DETECT_RADIUS,
+            creature.preyGenus);
+          preySearched = true;
+        }
+        switch (code) {
+          case SensorCode.PreyDistance:
+            value = prey?.distance ?? 999999;
+            break;
+          case SensorCode.PreyNorth:
+            value = prey && prey.position[1] < position[1] ? 1 : 0;
+            break;
+          case SensorCode.PreyEast:
+            value = prey && prey.position[0] > position[0] ? 1 : 0;
+            break;
+          case SensorCode.PreySouth:
+            value = prey && prey.position[1] > position[1] ? 1 : 0;
+            break;
+          default:  // PreyWest
+            value = prey && prey.position[0] < position[0] ? 1 : 0;
+        }
+        values[id] = value;
+        continue;
+      }
+
+      switch (code) {
+        case SensorCode.HorizontalPosition:
+          value = position[0] / worldSize;
+          break;
+        case SensorCode.VerticalPosition:
+          value = position[1] / worldSize;
+          break;
+        case SensorCode.Age:
+          // generational runs, time since the start of the generation (0 to 1);
+          // continuous runs, the age of the creature over maxAge (0 to 1)
+          value = creature.generations.isContinuous
+            ? creature._age / creature.generations.maxAge
+            : creature.generations.worldController.currentStep / creature.generations.worldController.stepsPerGen;
+          break;
+        case SensorCode.Oscillator:
+          value = (Math.sin(creature.generations.worldController.currentStep / 10) + 1) / 2;
+          break;
+        case SensorCode.Random:
+          value = random();
+          break;
+        case SensorCode.HorizontalSpeed:
+          value = (position[0] - creature.lastPosition[0] + 1) / 2;
+          break;
+        case SensorCode.VerticalSpeed:
+          value = (position[1] - creature.lastPosition[1] + 1) / 2;
+          break;
+        case SensorCode.HorizontalBorderDistance:
+          value = (Math.min(position[0], worldSize - position[0]) / worldSize) * 2;
+          break;
+        case SensorCode.VerticalBorderDistance:
+          value = (Math.min(position[1], worldSize - position[1]) / worldSize) * 2;
+          break;
+        case SensorCode.BorderDistance:
+          value = (Math.min(
+            Math.min(position[0], worldSize - position[0]),
+            Math.min(position[1], worldSize - position[1])) / worldSize) * 2;
+          break;
+        // Touch: 0.0 -> empty, 1.0 -> creature, solid cell or world border
+        case SensorCode.TouchNorth:
+          value = position[1] - 1 >= 0 ? touchValue(creature, position[0], position[1] - 1) : 1.0;
+          break;
+        case SensorCode.TouchEast:
+          value = position[0] + 1 < worldSize ? touchValue(creature, position[0] + 1, position[1]) : 1.0;
+          break;
+        case SensorCode.TouchSouth:
+          value = position[1] + 1 < worldSize ? touchValue(creature, position[0], position[1] + 1) : 1.0;
+          break;
+        case SensorCode.TouchWest:
+          value = position[0] - 1 >= 0 ? touchValue(creature, position[0] - 1, position[1]) : 1.0;
+          break;
+        case SensorCode.Pain:
+          value = (100 - creature.health) / 100;
+          break;
+        case SensorCode.PopulationDensity: {
+          let populationCount = 0;
+          for (let tileIndex = 0; tileIndex < adjacentTilesLookup.length; tileIndex++) {
+            const x = position[0] + adjacentTilesLookup[tileIndex][0];
+            const y = position[1] + adjacentTilesLookup[tileIndex][1];
+            if (x >= 0 && y >= 0 && x < worldSize && y < worldSize &&
+                creature.generations.grid.cell(x, y).creature) {
+              populationCount++;
+            }
+          }
+          value = populationCount * 0.125;
+          break;
+        }
+        case SensorCode.Mass:
+          value = creature.mass;
+          break;
+        default:
+          // PredatorDistance and PredatorDirection are not implemented: a connection that reads
+          // them gets no value and the brain computes NaN, as before (see docs/known-issues.md)
+          value = NaN;
+      }
+      values[id] = value;
+    }
   }
 }

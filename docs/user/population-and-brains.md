@@ -127,7 +127,7 @@ The view follows the simulation step by step only when **Immediate steps** (in *
 
 ![Live network values](images/population_network_live.png)
 
-- The value under each sensor is its current reading.
+- The value under each sensor is its current reading. Only the sensors the network reads are drawn, and they are the only ones the brain computes.
 - The value under each action is its output. Green values (above 0) make the creature act.
 - Brighter nodes and thicker lines carry stronger signals (value × weight).
 

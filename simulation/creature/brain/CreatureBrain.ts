@@ -22,6 +22,8 @@ export default class CreatureBrain {
     usesPreySensors: boolean = false;
     // whether a final connection reads the Random sensor: without one it draws no number
     usesRandomSensor: boolean = false;
+    // the enabled ids of the sensors that the final connections read: only these are computed
+    sensorIds: number[] = [];
 
     constructor(creature: Creature, genome: Genome) {
 
@@ -47,8 +49,10 @@ export default class CreatureBrain {
 
     step() : void  {
 
-        const calculateSensorOutputs = this.sensors.calculateOutputs(this.creature, this.usesPreySensors, this.usesRandomSensor);
-        const outputs = this.brain.feedForward(calculateSensorOutputs);
+        // each network keeps its own sensor values: the UI shows those of the selected creature
+        const inputs = this.brain.inputs;
+        this.sensors.writeOutputs(this.creature, this.sensorIds, inputs);
+        const outputs = this.brain.feedForward(inputs);
         this.actions.executeActions(this.creature, outputs);
 
     }
@@ -238,6 +242,7 @@ export default class CreatureBrain {
             );
         this.usesPreySensors = this.sensors.readsPreySensors(finalConnections);
         this.usesRandomSensor = this.sensors.readsRandomSensor(finalConnections);
+        this.sensorIds = this.sensors.readSensorIds(finalConnections);
     }
 
 }
