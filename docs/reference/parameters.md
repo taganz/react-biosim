@@ -150,6 +150,8 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 
 Every random decision of the engine (mutations, placement, the Random sensor, random moves, shuffles) comes from one generator in [random.ts](../../simulation/helpers/random.ts). After an extinction the run restarts without reseeding, so with a fixed seed it does not die out the same way again.
 
+A seed repeats a run only with the same version of the engine. Versions from before November 2026 drew more random numbers (to choose a neighbour cell and for the Random sensor), so a seeded run from one of them does not repeat in the current version: it gives a different run with the same statistical behaviour. A `.sim` file saved by those versions still loads, but from that point it continues differently.
+
 ### Run state (`worldControllerData`, `worldGenerationsData`)
 
 The simulation writes these values itself so that a saved file can resume where it stopped. Do not edit them by hand.

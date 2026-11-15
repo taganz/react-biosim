@@ -3,7 +3,7 @@ import WorldGenerations from "@/simulation/generations/WorldGenerations";
 import Creature from "../../creature/Creature";
 import WorldObject from "../objects/WorldObject";
 import {Direction4} from '@/simulation/world/direction';
-import { random, shuffle } from "@/simulation/helpers/random";
+import { random, randomInt, shuffle } from "@/simulation/helpers/random";
 
 
 export type GridCell = {
@@ -16,6 +16,13 @@ export type GridCell = {
 
  
 export type GridPosition = [number, number];
+
+// offsets of the 8 neighbours of a cell
+export const neighbours8X = [-1, -1, 1, 1, -1, 1, 0, 0];
+export const neighbours8Y = [0, 1, -1, 1, -1, 0, -1, 1];
+// indices of the free neighbours found by getNearByAvailablePosition. Shared, but filled and read
+// within one call that calls nothing that could use it again
+const freeNeighbours = new Int8Array(8);
 
 // export type Grid = Array<Array<GridPoint>>;
 
@@ -255,24 +262,22 @@ export class Grid {
 
 
 
+  // a random free cell among the 8 around (x, y), or null if there is none. Every free cell has the
+  // same probability, as with taking the first free cell of a shuffled list, but with one draw
+  // (none when there are 0 or 1 free cells) and no new arrays
   public getNearByAvailablePosition(x: number, y: number): [number, number] | null {
-    const directions = shuffle([[-1, 0], [-1, 1],[1, -1],[1, 1],[-1, -1], [1, 0], [0, -1], [0, 1]]); // Possible directions
-
-    for (const [dx, dy] of directions) {
-        const newX = x + dx;
-        const newY = y + dy;
-
-        // Check if the new position is within the grid bounds
-        if (newX >= 0 && newX < this._grid.length && newY >= 0 && newY < this._grid[0].length) {
-            // Check if the cell is free
-            if (this.isTileEmpty(newX, newY)) {
-                return [newX, newY]; // Return the position of the free cell
-            }
-        }
+    let count = 0;
+    for (let i = 0; i < 8; i++) {
+      const newX = x + neighbours8X[i];
+      const newY = y + neighbours8Y[i];
+      if (newX >= 0 && newX < this._size && newY >= 0 && newY < this._size && this.isTileEmpty(newX, newY)) {
+        freeNeighbours[count++] = i;
+      }
     }
-
-    return null; // Return null if no free cell is found nearby
-}
+    if (count === 0) return null;
+    const i = freeNeighbours[count === 1 ? 0 : randomInt(count)];
+    return [x + neighbours8X[i], y + neighbours8Y[i]];
+  }
 
  
 public debugPrintGridCreatures(maxColumns = 10) {
