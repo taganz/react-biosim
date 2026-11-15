@@ -1,4 +1,5 @@
 import { useAtomValue, useAtom } from "jotai";
+import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import { worldControllerAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
 import { useMemo, useRef, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
@@ -77,6 +78,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
   const showLive = liveCreature !== undefined && networkView === "live";
 
   const genus = selectedSpecies?.creatures[0]?.genus ?? "unknown";
+  const speciesBrain = selectedSpecies?.creatures[0]?.brain;
 
   if (!worldController || (!selectedSpecies && !selectedCreature && !selectedCell)) {
     return (
@@ -182,6 +184,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
                 Click a creature of this species on the world to see its live network values.
               </p>
             )}
+            {speciesBrain && <StaminaNote brain={speciesBrain} />}
             {showLive ? (
               <LiveNetworkDiagram
                 creature={liveCreature}
@@ -215,6 +218,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
           <div>
             <strong>Genome size:</strong> {selectedSpecies.genome.genes.length}
           </div>
+          {speciesBrain && <StaminaNote brain={speciesBrain} />}
 
           <div>
             <strong>Hexadecimal genome:</strong>
@@ -230,5 +234,23 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
         </CollapsibleSection>
       )}
     </div>
+  );
+}
+
+// The stamina is a gene but not a connection, so the network diagram does not draw it.
+// Nothing is shown when the Stamina action is disabled
+function StaminaNote({ brain }: { brain: CreatureBrain }) {
+  if (!brain.actions.data.Stamina.enabled) return null;
+  const [first, ...ignored] = brain.staminaGeneIndexes;
+  return (
+    <p className="text-xs">
+      <strong>Stamina:</strong> {brain.stamina.toFixed(2)}
+      {first === undefined
+        ? " (no Stamina gene: STAMINA_DEFAULT)"
+        : ` (gene ${first + 1} of ${brain.genome.genes.length}${ignored.length > 0
+          ? `; ${ignored.length === 1 ? "gene" : "genes"} ${ignored.map((index) => index + 1).join(", ")} also drive Stamina and are ignored`
+          : ""})`}
+      . The brain runs in this share of the steps. Stamina genes are not part of the network.
+    </p>
   );
 }

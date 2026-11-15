@@ -127,8 +127,10 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `MASS_AT_BIRTH_ATTACK` | 2 | Birth mass of the old "attack" genus (no longer used). |
 | `MASS_AT_BIRTH_ATTACK_ANIMAL` | 6 | Birth mass of a carnivore. |
 | `MASS_MAX_MULTIPLE_MASS_AT_BIRT` | 5 | Maximum mass, as a multiple of birth mass. |
-| `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome, except the primary genes. |
+| `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent for each gene in the genome, except the primary genes, in every step the brain runs: every step, unless the Stamina action is enabled (see [Stamina](sensors-and-actions.md#stamina)). |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` | 0.01 | Mass spent per step for each primary gene: the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis. A plant has at most two, any other genus at most one. Files saved without it take the value of `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`, which every gene cost before. |
+| `STAMINA_DEFAULT` | 1 | With the Stamina action enabled, the stamina of a genome without a Stamina gene. 1 thinks every step. Files saved without it take 1. |
+| `STAMINA_MIN` | 0.05 | With the Stamina action enabled, the lowest stamina a Stamina gene can give, so that no brain stops running. Files saved without it take 0.05. |
 | `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass to reproduce (plus `REPRODUCTION_COST_PER_MASS_DO` with metabolism). |
 | `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell and nothing to eat around, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |

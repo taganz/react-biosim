@@ -79,10 +79,10 @@ The section is updated at every step:
 
 - **Identity**: id, species, genus and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
-- **Body**: mass against the maximum mass, mass at birth and basal consumption per step. "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
+- **Body**: mass against the maximum mass, mass at birth and basal consumption per step (with stamina below 1, what it spends in the steps it thinks and in the others). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
 - **Activity**: children, attacks and kills (for herbivores and carnivores), and the water it got from photosynthesis and from its prey (with metabolism).
-- **Brain**: genes, neurons and connections, and the action with the highest output in this step.
+- **Brain**: genes, neurons and connections, the stamina and how many steps the brain has run (see [Stamina](../reference/sensors-and-actions.md#stamina)), and the action with the highest output in this step.
 
 If the creature dies, the section says why (old age, out of mass, eaten and by which species, or health), when, and keeps the values of its last step. In generational runs most creatures do not die: they are replaced when the generation ends, and the section says so.
 
@@ -101,9 +101,9 @@ Selecting a creature or a species box clears the cell. To clear it yourself, use
 ## Selected species
 
 - **Alive / percentage**: how many members of the species are alive now and their share of all the living creatures. Unlike the boxes, it is live, so it also counts species born during the generation (continuous runs). With **Immediate steps** at 20 or 200 it is recounted only when the world is redrawn, because counting compares the genes of every creature. If every member has died, it shows **Extinct**.
-- **Neuronal network**: the brain shared by every member of the species.
+- **Neuronal network**: the brain shared by every member of the species. With the Stamina action enabled, a line above the diagram gives the species' stamina and which gene sets it, or says that it has no Stamina gene and takes `STAMINA_DEFAULT`. Stamina genes are not connections, so the diagram does not draw them (see [Stamina](../reference/sensors-and-actions.md#stamina)).
 - **What drives each action**: a summary of the network.
-- **Genome**: genome size and the raw genes in hexadecimal and binary. Use the clipboard button to copy them.
+- **Genome**: genome size, the stamina line (with the Stamina action enabled) and the raw genes in hexadecimal and binary. Use the clipboard button to copy them.
 
 ### Neuronal network: Structure view
 

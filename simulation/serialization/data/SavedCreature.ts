@@ -8,4 +8,8 @@ export default interface SavedCreature {
   massAtBirth : number,
   /** steps lived; older files do not have it */
   age?: number
+  /** with stamina below 1: the charge towards the next thought and the urge to move of the
+   *  last one (inertia). Older files do not have them */
+  thinkCharge?: number
+  urgeToMove?: [number, number]
 }

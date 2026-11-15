@@ -1,6 +1,7 @@
 import WorldGenerations from "../generations/WorldGenerations";
 import Genome from "./brain/Genome";
 import { probabilityToBool } from "../helpers/helpers";
+import { random } from "../helpers/random";
 import {GridPosition } from "../world/grid/Grid";
 import CreatureMass from "./CreatureMass";
 import CreatureAttack from "./CreatureAttack";
@@ -55,6 +56,8 @@ export default class Creature {
   brain : CreatureBrain;
   _genus : Genus;
   _age : number = 0;
+  // stamina accumulated towards the next run of the brain: it runs when this reaches 1
+  thinkCharge : number = 0;
 
   // Life history, shown in the Population tab
   parentId : number | null = null;   // null for creatures of the first generation
@@ -63,6 +66,7 @@ export default class Creature {
   childrenCount : number = 0;
   attackCount : number = 0;          // every attack action, including the ones without enough mass
   killCount : number = 0;
+  thinkCount : number = 0;           // steps in which the brain ran
   waterFromPhotosynthesis : number = 0;
   waterFromPrey : number = 0;        // the prey's mass it kept, up to its maximum mass
   deathCause : DeathCause | null = null;
@@ -108,6 +112,9 @@ export default class Creature {
       this.brain = new CreatureBrain(this, genome);
     }
     this._genus = CreatureGenus.getGenus(this.brain); 
+    // a random phase, so that creatures with the same stamina do not think in the same steps.
+    // Drawn only with stamina below 1, so runs without the Stamina action repeat as before
+    if (this.brain.stamina < 1) this.thinkCharge = random();
     
     //this._worldWater = this.generations.worldController.worldWater;
     this._mass = new CreatureMass(this, firstGeneration);
@@ -163,7 +170,16 @@ export default class Creature {
     }
     this._age++;
 
-    const basalMetabolismConsumed = this._mass.basalMetabolism();
+    // the brain runs in a share of the steps equal to the stamina
+    let thinks = true;
+    const stamina = this.brain.stamina;
+    if (stamina < 1) {
+      this.thinkCharge += stamina;
+      if (this.thinkCharge >= 1) this.thinkCharge -= 1;
+      else thinks = false;
+    }
+
+    const basalMetabolismConsumed = this._mass.basalMetabolism(thinks);
     if (!this.eventLogger?.isPaused) {
       this.log(LogEvent.METABOLISM, "mass", this.mass);
       this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
@@ -173,11 +189,16 @@ export default class Creature {
       return;
     }
 
-    // read sensors and activate actions that will update urgeToMove and call other creature functions
-    // reused: nothing else keeps a reference to it
-    this.urgeToMove[0] = 0;
-    this.urgeToMove[1] = 0;
-    this.brain.step();
+    // read sensors and activate actions that will update urgeToMove and call other creature functions.
+    // In the steps it does not think, the creature keeps the urge to move of its last thought
+    // (inertia) and does no other action
+    if (thinks) {
+      // reused: nothing else keeps a reference to it
+      this.urgeToMove[0] = 0;
+      this.urgeToMove[1] = 0;
+      this.brain.step();
+      this.thinkCount++;
+    }
 
     // Calculate probability of movement
     const moveX = Math.tanh(this.urgeToMove[0]);

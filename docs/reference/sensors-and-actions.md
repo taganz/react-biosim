@@ -52,7 +52,7 @@ The # column is the position in the full list. Genes do not use this number: the
 
 ## Actions
 
-Each action reads the output of its neuron once per step. Unless stated otherwise, the action runs when the output is above 0.
+Each action reads the output of its neuron once per step in which the brain runs (every step, unless the Stamina action is enabled). Unless stated otherwise, the action runs when the output is above 0.
 
 | # | Action | Effect | P | H | C |
 |---|---|---|---|---|---|
@@ -66,6 +66,7 @@ Each action reads the output of its neuron once per step. Unless stated otherwis
 | 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. With no free cell, herbivores and carnivores eat a neighbour to make room. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
 | 8 | AttackPlant | Only when the output is above `ACTION_ATTACK_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. | | ✓ | ✓ |
 | 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
+| 10 | Stamina | Not executed: the weight of the first gene that drives it sets the creature's stamina, how often its brain runs. Disabled by default. See [Stamina](#stamina). | ✓ | ✓ | ✓ |
 
 **Movement.** The urges from all movement actions are added up separately for x and for y. On each axis the creature moves one cell, in the direction of the urge, with probability `|tanh(urge)|`. So it moves at most one cell per axis per step, and only if the target cell is free.
 
@@ -74,6 +75,18 @@ Each action reads the output of its neuron once per step. Unless stated otherwis
 **Sensors a brain does not read.** A brain computes only the sensors that one of its connections reads; the others stay at 0, a value nothing reads. Which sensors a brain reads is decided once, when the brain is built. This matters for two sensors: the five prey sensors share one search, the most expensive sensor, which a brain with no connection from them skips; and the Random sensor draws a number only for a brain that reads it, so brains that do not read it leave the random sequence alone.
 
 **Attack.** The target is a neighbour the attacker can eat: one of a different genus (with `ATTACK_SAME_GENUS`, also another species of its genus), at most half as heavy as the attacker (`ATTACK_MIN_PREY_MASS_FACTOR`, 2). Neighbours that cannot be eaten are skipped, and with none the action does nothing. A successful attack kills the prey. See [Creatures → Attack](../model/creatures.md#attack).
+
+## Stamina
+
+With the **Stamina** action enabled, each creature has a *stamina* between `STAMINA_MIN` (0.05) and 1: the share of the steps in which its brain runs. Without the action every creature has stamina 1 and thinks every step, as before.
+
+- **Where it comes from.** Stamina is in the genome: the first gene whose sink is the Stamina action gives it, from its weight (−4 to +4 becomes 0 to 1, then kept between `STAMINA_MIN` and 1). The source of that gene does not matter. A genome without such a gene has `STAMINA_DEFAULT` (1). It is read once, at birth, so it is inherited and mutates like any other gene: a bit or hex digit mutation of the weight changes it a little, a whole-gene mutation sets a new one, and the gene can also be lost or gained.
+- **Not part of the network.** Stamina genes are left out of the brain: they read no sensor, feed no neuron and do not show in the network diagram. They still count as genes for the basal consumption. The Population tab shows the stamina and the gene that sets it above the diagram and in the Genome section.
+- **When the brain runs.** Every step the creature adds its stamina to a charge; when the charge reaches 1 the brain runs and 1 is subtracted. A stamina of 0.25 thinks one step in four. The charge starts at a random value at birth, so creatures with the same stamina do not think in the same steps. That draw happens only for stamina below 1, so runs without the Stamina action repeat as before.
+- **Inertia.** In the steps it does not think, the creature keeps the urge to move of its last thought and still moves (paying the move costs), but does no other action: no photosynthesis, reproduction or attack.
+- **Cost.** The primary genes cost basal consumption every step; the other genes (`MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`) only in the steps the brain runs. So a high stamina means more actions and a higher basal cost.
+- **Sensors.** A brain reads its sensors only when it runs, so they show the world at that step. The speed sensors give the move of the step before. The neurons' memory (the previous output) is the one of the previous thought, not of the previous step. The Oscillator (period about 63 steps) is sampled at least every 20 steps with the default `STAMINA_MIN`, often enough to follow it.
+- **Old genomes.** Enabling the action changes the number of enabled actions, so every action gene of a genome saved with another list of actions points to a different action (see [Gene encoding](#gene-encoding)). Enable it for new runs.
 
 ## Gene encoding
 

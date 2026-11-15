@@ -17,6 +17,11 @@ export default interface WorldControllerData {
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number, 
     MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : number,
 
+    /** with the Stamina action enabled: stamina of a genome without a Stamina gene (0 to 1). Missing: 1 */
+    STAMINA_DEFAULT? : number,
+    /** with the Stamina action enabled: the lowest stamina a gene can give (0 to 1). Missing: 0.05 */
+    STAMINA_MIN? : number,
+
     REPRODUCTION_COST_PER_MASS_TRY : number, 
     REPRODUCTION_COST_PER_MASS_DO : number, 
     REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : number,     

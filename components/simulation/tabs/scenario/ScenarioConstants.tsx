@@ -9,6 +9,7 @@ import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
+import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrain";
 import { ObjectColors } from "@/simulation/world/objects/objectColor";
 import { AllowedLogEvents, LogEvent } from "@/simulation/logger/LogEvent";
 import { Genus } from "@/simulation/creature/CreatureGenus";
@@ -18,7 +19,7 @@ import Section from "../Section";
 
 type Constants = typeof CONSTANTS_DEFAULT;
 type MassConstant = {
-  [K in keyof WorldControllerData]-?: K extends Uppercase<K> ? (WorldControllerData[K] extends number ? K : never) : never;
+  [K in keyof WorldControllerData]-?: K extends Uppercase<K> ? (NonNullable<WorldControllerData[K]> extends number ? K : never) : never;
 }[keyof WorldControllerData];
 
 
@@ -114,8 +115,15 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["MASS_AT_BIRTH_ATTACK_ANIMAL", 0.1, "Birth mass of a carnivore."],
       ["MASS_AT_BIRTH_ATTACK", 0.1, "Birth mass of the old \"attack\" genus (no longer used)."],
       ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 0.1, "Maximum mass, as a multiple of birth mass."],
-      ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent per step for each gene, except the primary genes."],
+      ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent for each gene, except the primary genes, every step the brain runs."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Mass spent per step for each primary gene (Reproduction, and Photosynthesis in plants)."],
+    ],
+  },
+  {
+    title: "Stamina",
+    rows: [
+      ["STAMINA_DEFAULT", 0.05, "With the Stamina action enabled, stamina of a genome without a Stamina gene (1: thinks every step)."],
+      ["STAMINA_MIN", 0.01, "With the Stamina action enabled, the lowest stamina a Stamina gene can give."],
     ],
   },
   {
@@ -213,7 +221,8 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
             {group.rows.map(([key, step, description]) => (
               <ConstantRow key={key} name={key} description={description}>
                 <NumberInput
-                  value={worldControllerData[key] ?? 0}
+                  value={worldControllerData[key] ?? (key in STAMINA_MISSING_VALUES
+                    ? STAMINA_MISSING_VALUES[key as keyof typeof STAMINA_MISSING_VALUES] : 0)}
                   onChange={(value) => setWorldValue(key, value)}
                   step={step}
                   min={0}

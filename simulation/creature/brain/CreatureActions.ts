@@ -15,7 +15,8 @@ export type ActionName =
   | "Photosynthesis"
   | "Reproduction"
   | "AttackPlant"
-  | "AttackAnimal";
+  | "AttackAnimal"
+  | "Stamina";
 
 export type Action = {
   name: ActionName;
@@ -90,6 +91,14 @@ export default class CreatureActions {
       enabled: true,
       compatibleGenus: ["attack_animal"],
       mainGenus: "attack_animal",
+    },
+    // not executed: the weight of the first gene that drives it is the creature's stamina,
+    // read once at birth (see CreatureBrain)
+    Stamina: {
+      name: "Stamina", // 10
+      enabled: false,
+      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
     },
 
   };
@@ -316,6 +325,11 @@ export default class CreatureActions {
     input = values[currentIndex];
   }
 
+  // Stamina: read at birth, nothing to execute
+  if (this.data.Stamina.enabled) {
+    currentIndex++;
+    input = values[currentIndex];
+  }
 
   }
 }

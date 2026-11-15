@@ -10,7 +10,8 @@ import { Genus } from "./CreatureGenus";
 export default class CreatureMass {
     //_massAtBirth : number;
     _mass : number = 0;
-    _basalConsumption : number;
+    _basalConsumption : number;          // in the steps the brain runs
+    _basalConsumptionPrimary : number;   // in the other steps: only the primary genes
     _metabolismEnabled : boolean;
     _massAtBirth : number; 
     _maxMass : number;
@@ -43,7 +44,9 @@ export default class CreatureMass {
             this._worldWater.getWaterFromCloud(this.massAtBirth);
         }
 
-        this._basalConsumption = CreatureMass.basalConsumption(creature.generations, creature.brain.genome.genes, creature._genus);
+        const basal = CreatureMass.basalConsumptionParts(creature.generations, creature.brain.genome.genes, creature._genus);
+        this._basalConsumption = basal.primary + basal.brain;
+        this._basalConsumptionPrimary = basal.primary;
         this._metabolismEnabled = creature.generations.metabolismEnabled;
         this._maxMass = this._massAtBirth 
                 * creature.generations.worldController.simData.worldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
@@ -52,6 +55,12 @@ export default class CreatureMass {
     // the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis cost
     // MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY; every other gene costs MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
     static basalConsumption(generations: WorldGenerations, genes: Gene[], genus: Genus): number {
+        const { primary, brain } = CreatureMass.basalConsumptionParts(generations, genes, genus);
+        return primary + brain;
+    }
+
+    // the primary genes are paid every step, the rest (brain) only in the steps the brain runs
+    static basalConsumptionParts(generations: WorldGenerations, genes: Gene[], genus: Genus): { primary: number, brain: number } {
         const data = generations.worldController.simData.worldControllerData;
         const primaryActions: ActionName[] = genus === "plant" ? ["Photosynthesis", "Reproduction"] : ["Reproduction"];
         const primaryFound = new Set<ActionName>();
@@ -62,8 +71,10 @@ export default class CreatureMass {
             if (primaryActions.includes(action)) primaryFound.add(action);
         }
         const primaryGenes = primaryFound.size;
-        return data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * primaryGenes
-            + data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * (genes.length - primaryGenes);
+        return {
+            primary: data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * primaryGenes,
+            brain: data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * (genes.length - primaryGenes),
+        };
     }
 
     get isAlive() {
@@ -79,8 +90,9 @@ export default class CreatureMass {
     }
 
 
-    basalMetabolism() : number {
-        return this.consume(this._basalConsumption);
+    // thinks false: a step in which the brain does not run (see stamina), only the primary genes cost
+    basalMetabolism(thinks: boolean = true) : number {
+        return this.consume(thinks ? this._basalConsumption : this._basalConsumptionPrimary);
     }
 
     

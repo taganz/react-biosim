@@ -33,7 +33,10 @@ export default function serializeSpecies(worldController: WorldController) : Sav
         position: creature.position,
         mass: creature.mass,
         massAtBirth: creature.massAtBirth,
-        age: creature._age
+        age: creature._age,
+        ...(creature.brain.stamina < 1
+          ? { thinkCharge: creature.thinkCharge, urgeToMove: [creature.urgeToMove[0], creature.urgeToMove[1]] as [number, number] }
+          : {}),
       });
     }
   
@@ -91,6 +94,12 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       // without it, a resumed continuous run has no deaths of old age until maxAge steps have passed
       if (savedCreature.age !== undefined) {
         creature._age = savedCreature.age;
+      }
+      if (savedCreature.thinkCharge !== undefined) {
+        creature.thinkCharge = savedCreature.thinkCharge;
+      }
+      if (savedCreature.urgeToMove !== undefined) {
+        creature.urgeToMove = [savedCreature.urgeToMove[0], savedCreature.urgeToMove[1]];
       }
 
       return creature;

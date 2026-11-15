@@ -142,7 +142,11 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           </Field>
           <Field label="Mass at birth">{formatMass(creature.massAtBirth)}</Field>
           {metabolismEnabled ? (
-            <Field label="Basal consumption">{formatMass(massData._basalConsumption)} per step</Field>
+            <Field label="Basal consumption">
+              {creature.brain.stamina < 1
+                ? `${formatMass(massData._basalConsumption)} when it thinks, ${formatMass(massData._basalConsumptionPrimary)} otherwise`
+                : `${formatMass(massData._basalConsumption)} per step`}
+            </Field>
           ) : (
             <Field label="Metabolism">off: mass does not change</Field>
           )}
@@ -194,6 +198,9 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           <Field label="Genes">{creature.brain.genome.genes.length}</Field>
           <Field label="Neurons">{network.neurons.length}</Field>
           <Field label="Connections">{network.connections.length}</Field>
+          <Field label="Stamina">
+            {`${creature.brain.stamina.toFixed(2)} (thought in ${creature.thinkCount} of ${creature._age} steps)`}
+          </Field>
           <Field label="Strongest action">
             {strongestAction >= 0
               ? `${actionLabels[strongestAction] ?? `Action ${strongestAction}`} ${formatWeight(network.outputs[strongestAction])}`

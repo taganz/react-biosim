@@ -9,6 +9,9 @@ import NeuronNode from "./NeuronNode";
 
 export const initialNeuronOutput = 0.5;
 
+// the stamina settings of files saved without them
+export const STAMINA_MISSING_VALUES = { STAMINA_DEFAULT: 1, STAMINA_MIN: 0.05 };
+
 export default class CreatureBrain {
     creature : Creature;
     sensors: CreatureSensors;   // shortcut to generations.sensors
@@ -24,6 +27,11 @@ export default class CreatureBrain {
     usesRandomSensor: boolean = false;
     // the enabled ids of the sensors that the final connections read: only these are computed
     sensorIds: number[] = [];
+    // share of the steps in which the brain runs, from STAMINA_MIN to 1. Always 1 without the
+    // Stamina action; otherwise the weight of the first Stamina gene, or STAMINA_DEFAULT
+    stamina: number = 1;
+    // the genes that drive the Stamina action: their positions in the genome, the first one gives the stamina
+    staminaGeneIndexes: number[] = [];
 
     constructor(creature: Creature, genome: Genome) {
 
@@ -60,8 +68,16 @@ export default class CreatureBrain {
     private createBrainFromGenome() {
         // Create connections from genes
         const connections: Connection[] = [];
+        // Stamina genes are not connections: the first one gives the stamina and all are left out
+        const staminaId = this.actions.data.Stamina.enabled ? this.actions.actionNameToId("Stamina") : -1;
+        let staminaWeight: number | null = null;
         for (let geneIdx = 0; geneIdx < this.genome.genes.length; geneIdx++) {
             const connection = Genome.geneToConnection(this.genome.genes[geneIdx], this.creature.generations);
+            if (connection.sinkType === NeuronType.ACTION && connection.sinkId === staminaId) {
+                if (staminaWeight === null) staminaWeight = connection.weight;
+                this.staminaGeneIndexes.push(geneIdx);
+                continue;
+            }
             /*
             // Renumber sourceId: from random number to one of the available options<
             if (connection.sourceType === NeuronType.SENSOR) {
@@ -243,6 +259,18 @@ export default class CreatureBrain {
         this.usesPreySensors = this.sensors.readsPreySensors(finalConnections);
         this.usesRandomSensor = this.sensors.readsRandomSensor(finalConnections);
         this.sensorIds = this.sensors.readSensorIds(finalConnections);
+        if (staminaId >= 0) {
+            this.stamina = CreatureBrain.staminaFromWeight(
+                staminaWeight, this.creature.generations.worldController.simData.worldControllerData);
+        }
+    }
+
+    // weight -4..4 to stamina 0..1, kept between STAMINA_MIN and 1; no weight: STAMINA_DEFAULT
+    static staminaFromWeight(weight: number | null,
+            data: { STAMINA_DEFAULT?: number, STAMINA_MIN?: number }): number {
+        const value = weight === null ? data.STAMINA_DEFAULT ?? STAMINA_MISSING_VALUES.STAMINA_DEFAULT : (weight + 4) / 8;
+        const min = Math.min(1, Math.max(0.001, data.STAMINA_MIN ?? STAMINA_MISSING_VALUES.STAMINA_MIN));
+        return Math.min(1, Math.max(min, value));
     }
 
 }
