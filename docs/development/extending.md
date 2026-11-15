@@ -19,20 +19,21 @@ Sensors live in [CreatureSensors.ts](../../simulation/creature/brain/CreatureSen
      mainGenus: null,                       // always null for sensors
    },
    ```
-3. **Value.** In `calculateOutputs()`, push the value **at the same position** as the entry in `data`:
+3. **Code.** Add the sensor to the `SensorCode` enum at the top of the file, at the same position as its entry in `data`.
+4. **Value.** In `writeOutputs()`, add a `case` that computes the value:
    ```ts
-   if (this.data.MySensor.enabled) {
-     values.push(/* a number, ideally in [0, 1] */);
-   }
+   case SensorCode.MySensor:
+     value = /* a number, ideally in [0, 1] */;
+     break;
    ```
 
-`calculateOutputs()` must push exactly one value per enabled sensor, **in the order of the `data` table**. The network reads inputs by position, so a missing or misplaced `push` shifts every later sensor. This is the bug behind `PredatorDistance` and `PredatorDirection` (see [known issues](../reference/sensors-and-actions.md#known-issues)).
+`writeOutputs()` writes each sensor at its id, its position among the enabled sensors in the order of the `data` table, and computes only the sensors the brain reads (`CreatureBrain.sensorIds`). The network reads inputs by id, so `SensorCode` must follow the order of `data`. A sensor with no `case` gets `NaN`: this is the bug behind `PredatorDistance` and `PredatorDirection` (see [known issues](../reference/sensors-and-actions.md#known-issues)). A sensor that draws random numbers must draw them only in its `case`, so that brains that do not read it leave the random sequence alone.
 
 Add the sensor **at the end** of `data`. Inserting it in the middle changes the position of the sensors after it. Saved genomes then point to different sensors, but only in simulations where the new sensor is enabled.
 
 The Scenario tab checkboxes and the network diagram labels are generated from `data`, so they need no change. Add the sensor to `enabledSensors` in a scenario or in [startupScenario.ts](../../simulation/startupScenario.ts) to switch it on by default. Then document it in [sensors-and-actions.md](../reference/sensors-and-actions.md).
 
-**Test it** the way [CreatureSensors.test.ts](../../__tests__/CreatureSensors.test.ts) does: build a small world, place a creature and check `calculateOutputs()`.
+**Test it** the way [CreatureSensors.test.ts](../../__tests__/CreatureSensors.test.ts) does: build a small world, place a creature and check `calculateOutputs()`, which computes every enabled sensor with `writeOutputs()`.
 
 ## Add an action
 
