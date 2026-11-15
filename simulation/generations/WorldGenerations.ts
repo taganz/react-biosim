@@ -257,8 +257,13 @@ export default class WorldGenerations {
 public step(): number {
 
     let creaturesStillLive = 0;
-    for (let i= this.currentCreatures.length -1; i >= 0; i--) {
-      const creature = this.currentCreatures[i];
+    // the dead are set to null and taken out after the loop, keeping the order: splicing each
+    // one moved the rest of the list. Nothing reads the list during the loop but newCreature,
+    // which only pushes at the end, past the creatures the loop visits
+    const creatures = this.currentCreatures as (Creature | null)[];
+    let firstRemoved = creatures.length;
+    for (let i= creatures.length -1; i >= 0; i--) {
+      const creature = creatures[i]!;
       if (creature.isAlive) {
         creaturesStillLive++;
         /*
@@ -276,13 +281,21 @@ public step(): number {
       } 
       if (!creature.isAlive) {
         this.grid.removeCreature(creature);
-        this.currentCreatures.splice(i, 1);
+        creatures[i] = null;
+        firstRemoved = i;
         this.deathsThisGeneration++;
         if (creature.deathCause === "old" && creature.genus === "attack_plant") {
           addHerbivoreOldAgeDeath(this.herbivoreOldAgeDeaths, creature);
         }
       }
     }
+
+    let kept = firstRemoved;
+    for (let i = firstRemoved; i < creatures.length; i++) {
+      const creature = creatures[i];
+      if (creature !== null) creatures[kept++] = creature;
+    }
+    creatures.length = kept;
 
   return creaturesStillLive;
   
