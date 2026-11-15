@@ -71,6 +71,8 @@ Each action reads the output of its neuron once per step. Unless stated otherwis
 
 **Prey.** Herbivores hunt plants and carnivores hunt herbivores. Plants have no prey, so the prey sensors read "no prey" for them.
 
+The five prey sensors share one search, the most expensive sensor. A creature whose brain has no connection from a prey sensor skips it: its prey sensors are set to 0, a value nothing reads. Whether a brain reads them is decided once, when the brain is built.
+
 **Attack.** The target is a neighbour the attacker can eat: one of a different genus (with `ATTACK_SAME_GENUS`, also another species of its genus), at most half as heavy as the attacker (`ATTACK_MIN_PREY_MASS_FACTOR`, 2). Neighbours that cannot be eaten are skipped, and with none the action does nothing. A successful attack kills the prey. See [Creatures → Attack](../model/creatures.md#attack).
 
 ## Gene encoding

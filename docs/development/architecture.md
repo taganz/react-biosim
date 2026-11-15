@@ -73,7 +73,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 const currentGen = useWorldValue((world) => world.currentGen, 0);
 ```
 
-It is built on `useSyncExternalStore`. It subscribes to `initializeWorld`, `startGeneration`, `endStep` and `stateChange`, and coalesces them into at most **one re-render per animation frame**. Two rules:
+It is built on `useSyncExternalStore`. All its uses share **one subscription per `WorldController`**: the first one registers a listener on `initializeWorld`, `startGeneration`, `endStep` and `stateChange`, and the last one to unmount removes it. The events are coalesced into a single notification per animation frame, which asks every component using the hook to re-check its value, so there is at most **one re-render per animation frame**. Two rules:
 
 - The getter must return a primitive or a stable reference: React compares snapshots with `Object.is`. Do not build a new array or object in the getter.
 - The default value must also be stable. Define it outside the component, as `NO_GENERATIONS` in `StatsPanel` does.
@@ -115,11 +115,11 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## The loop
 
-`WorldController.mainLoop()` runs one "tick" of up to *Immediate steps* steps (or 30 ms), then schedules the next tick with `setTimeout(pauseBetweenSteps)`. A run id guards against stale ticks: `startRun`, `resumeRun` and extinction restarts increase it, and any tick from an older run stops. During the pause between generations and the wait before an extinction restart, the world is half way through a change: `isWaiting` is true, and `untilBetweenSteps()` resolves once it is complete (or a new run has started). The Export tab saves only after it. See [Generations](../model/generations.md) for what happens in a step and at the end of a generation.
+`WorldController.mainLoop()` runs one "tick" of up to *Immediate steps* steps (or 30 ms), then schedules the next tick (`scheduleTick()`). With a pause between steps that is `setTimeout(pauseBetweenSteps)`. Without one it is a `MessageChannel` message in the browser, because browsers make chained `setTimeout` calls wait at least ~4 ms; in Node (headless runner, Jest) it is `setImmediate`, which Jest's fake timers control. A message cannot be cancelled, so each one carries a number and only the last one scheduled runs: `pause()` and a restart clear it. A run id guards against stale ticks: `startRun`, `resumeRun` and extinction restarts increase it, and any tick from an older run stops. During the pause between generations and the wait before an extinction restart, the world is half way through a change: `isWaiting` is true, and `untilBetweenSteps()` resolves once it is complete (or a new run has started). The Export tab saves only after it. See [Generations](../model/generations.md) for what happens in a step and at the end of a generation.
 
 ## Drawing
 
-[WorldCanvas.ts](../../simulation/world/WorldCanvas.ts) redraws the whole world on each `redraw` event: background, objects, then one square per creature in its phenotype colour. The selection ring is drawn on a separate overlay canvas, so it can be updated while the simulation is paused without repainting the world.
+[WorldCanvas.ts](../../simulation/world/WorldCanvas.ts) redraws the whole world on each `redraw` event: background, then one square per creature in its phenotype colour, then the objects. It only resizes the canvas when its size on screen changed, and wraps the drawing in `save()`/`restore()` so that no drawing state carries over to the next redraw. Each creature keeps its colour (`Creature.getColor()`) and only computes it again when the phenotype colour mode changes. The selection ring is drawn on a separate overlay canvas, so it can be updated while the simulation is paused without repainting the world.
 
 ## Logging
 

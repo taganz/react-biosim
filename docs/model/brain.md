@@ -51,6 +51,8 @@ Every step, `Network.feedForward(sensorValues)`:
 
 `tanh` here is a fast rational approximation that is clamped to ±1 beyond ±3.
 
+A brain with no connection into an action skips step 3, so its neurons keep their outputs. For speed, `Network` packs the two groups of connections into flat arrays when it is created; `connections` and `neurons` stay as they are for the diagrams and the genus.
+
 Some consequences:
 
 - **Neurons give the brain memory.** Connections between neurons, including a neuron's connection to itself, use the value from the previous step, so the network can keep state over time.
