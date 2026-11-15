@@ -328,16 +328,27 @@ export default class CreatureSensors {
     ).map(item => {return item.name});;
   }
 
+  // whether one of the connections reads one of the sensors named
+  private readsSensors(connections: Connection[], names: SensorName[]): boolean {
+    const ids = names.map((name) => this.sensorNameToId(name)).filter((id) => id >= 0);
+    return connections.some((connection) =>
+      connection.sourceType === NeuronType.SENSOR && ids.includes(connection.sourceId));
+  }
+
   // whether one of the connections reads a prey sensor
   readsPreySensors(connections: Connection[]): boolean {
-    const preyIds = preySensorNames.map((name) => this.sensorNameToId(name)).filter((id) => id >= 0);
-    return connections.some((connection) =>
-      connection.sourceType === NeuronType.SENSOR && preyIds.includes(connection.sourceId));
+    return this.readsSensors(connections, preySensorNames);
+  }
+
+  // whether one of the connections reads the Random sensor
+  readsRandomSensor(connections: Connection[]): boolean {
+    return this.readsSensors(connections, ["Random"]);
   }
 
   // needPrey false skips the prey search, the most expensive sensor: the prey sensors still
-  // push one value each (0), which no connection reads
-  calculateOutputs(creature: Creature, needPrey: boolean = true): number[] {  
+  // push one value each (0), which no connection reads.
+  // needRandom false skips the draw of the Random sensor, which pushes 0 instead
+  calculateOutputs(creature: Creature, needPrey: boolean = true, needRandom: boolean = true): number[] {  
     const values: number[] = [];
     const worldSize = creature.generations.grid.size;
 
@@ -366,7 +377,7 @@ export default class CreatureSensors {
 
     // Random
     if (this.data.Random.enabled) {
-      values.push(random());
+      values.push(needRandom ? random() : 0);
     }
 
     // HorizontalSpeed

@@ -20,6 +20,8 @@ export default class CreatureBrain {
     _maxNumberNeurons: number;
     // whether a final connection reads a prey sensor: without one the prey search is skipped
     usesPreySensors: boolean = false;
+    // whether a final connection reads the Random sensor: without one it draws no number
+    usesRandomSensor: boolean = false;
 
     constructor(creature: Creature, genome: Genome) {
 
@@ -45,7 +47,7 @@ export default class CreatureBrain {
 
     step() : void  {
 
-        const calculateSensorOutputs = this.sensors.calculateOutputs(this.creature, this.usesPreySensors);
+        const calculateSensorOutputs = this.sensors.calculateOutputs(this.creature, this.usesPreySensors, this.usesRandomSensor);
         const outputs = this.brain.feedForward(calculateSensorOutputs);
         this.actions.executeActions(this.creature, outputs);
 
@@ -235,6 +237,7 @@ export default class CreatureBrain {
             finalConnections
             );
         this.usesPreySensors = this.sensors.readsPreySensors(finalConnections);
+        this.usesRandomSensor = this.sensors.readsRandomSensor(finalConnections);
     }
 
 }
