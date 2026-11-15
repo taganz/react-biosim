@@ -28,12 +28,17 @@ export default class CreatureAttack {
     // genus, or with ATTACK_SAME_GENUS only their own species
     canEat(prey: Creature | null) : boolean {
         if (prey == null || prey === this.creature || !prey.isAlive) return false;
-        if (this.creature._genus !== "attack_plant" && this.creature._genus !== "attack_animal") return false;
+        if (!this.isAttackGenus) return false;
         if (prey._genus == this.creature._genus) {
             if (!this.worldControllerData.ATTACK_SAME_GENUS) return false;
             if (prey.brain.genome.compare(this.creature.brain.genome)) return false;
         }
         return prey.mass * this.worldControllerData.ATTACK_MIN_PREY_MASS_FACTOR <= this.creature.mass;
+    }
+
+    // only these genera eat: for the others canEat is always false
+    private get isAttackGenus() : boolean {
+        return this.creature._genus === "attack_plant" || this.creature._genus === "attack_animal";
     }
 
     private creatureAt(x: number, y: number) : Creature | null {
@@ -44,6 +49,7 @@ export default class CreatureAttack {
     // a random neighbour (N, E, S or W) that can be eaten, every one with the same probability;
     // null if there is none
     findPreyDirection() : Direction4 {
+        if (!this.isAttackGenus) return null;
         const [x, y] = this.creature.position;
         let count = 0;
         for (let i = 0; i < 4; i++) {
@@ -56,6 +62,7 @@ export default class CreatureAttack {
     // a random neighbour in the 8 surrounding cells that can be eaten, every one with the same
     // probability; null if there is none
     findPreyAround() : Creature | null {
+        if (!this.isAttackGenus) return null;
         const [x, y] = this.creature.position;
         let count = 0;
         for (let i = 0; i < 8; i++) {
