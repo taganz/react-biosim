@@ -235,8 +235,9 @@ export default function SimulationCanvas({ className }: Props) {
   );
 
   return (
-    // self-start: as a grid item the wrapper would stretch to the height of the tabs column
-    <div className="relative self-start">
+    // self-start: as a grid item the wrapper would stretch to the height of the tabs column.
+    // lg:sticky: in two columns the world stays in view, under the control bar, while the tabs scroll
+    <div className="relative self-start lg:sticky lg:top-[calc(var(--control-bar-height)+1.25rem)]">
       {/* block, so the wrapper has exactly the canvas height and the overlay lines up */}
       <canvas className={`block ${className ?? ""}`} id="simCanvas" ref={canvasRef}></canvas>
       <canvas

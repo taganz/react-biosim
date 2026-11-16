@@ -25,7 +25,8 @@ export default function Home() {
       <div className="min-h-screen">
         <div className="section-container py-5">
           <div className="grid gap-8 lg:grid-cols-2">
-            <SimulationCanvas className="aspect-square w-full bg-grey-light" />
+            {/* the world is sticky in two columns, so it never grows taller than the window */}
+            <SimulationCanvas className="aspect-square w-full bg-grey-light lg:max-w-[calc(100vh-var(--control-bar-height)-2.5rem)]" />
 
             <div>
               <Tabs>
