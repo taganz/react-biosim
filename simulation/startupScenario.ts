@@ -76,9 +76,14 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
           MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : 0.01,   // the first Reproduction gene and, in plants, the first Photosynthesis gene
+          MASS_COST_PER_SENSOR : 0,   // in every step the brain runs, for each sensor it reads
+          MASS_COST_PER_ACTION : 0,   // and for each action it is connected to
+          SENSOR_COSTS : {},
+          ACTION_COSTS : {},
 
           STAMINA_DEFAULT : 1,   // a genome without a Stamina gene thinks every step
           STAMINA_MIN : 0.05,
+          STAMINA_MUTATION_STEP : 0.05,
 
           REPRODUCTION_COST_PER_MASS_TRY : 0.1,    
           REPRODUCTION_COST_PER_MASS_DO : 0.25, // 0.3

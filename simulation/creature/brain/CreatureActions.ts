@@ -198,9 +198,10 @@ export default class CreatureActions {
   }
 
 
+  // the targets of the random genes of a new genome; not Stamina, whose gene is added on its own
   enabledActionsForGenus(genus: Genus) : ActionName[] {
     return Object.values(this.data).filter(action =>
-        action.compatibleGenus.includes(genus) && action.enabled === true
+        action.compatibleGenus.includes(genus) && action.enabled === true && action.name !== "Stamina"
     ).map(item => {return item.name});;
   }
   

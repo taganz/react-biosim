@@ -8,6 +8,9 @@ import { NeuronType } from "@/simulation/creature/brain/Neuron";
 import { ActionName } from "@/simulation/creature/brain/CreatureActions";
 import { getRandomState } from "@/simulation/helpers/random";
 import serializeSpecies from "@/simulation/serialization/formatters/speciesSerialization";
+import Creature from "@/simulation/creature/Creature";
+import CreatureGenus from "@/simulation/creature/CreatureGenus";
+import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 
 const ACTIONS: ActionName[] = [
   "MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward",
@@ -81,8 +84,81 @@ describe("stamina", () => {
 
   test("a genome without a Stamina gene takes STAMINA_DEFAULT", () => {
     const world = makeWorld(true);
-    const creature = world.generations.newCreature([1, 1], true, new Genome([geneTo(world, "MoveEast", 1)]));
+    // as a creature of an older file is restored, without newCreature
+    const creature = new Creature(world.generations, [1, 1], false, new Genome([geneTo(world, "MoveEast", 1)]));
     expect(creature.brain.stamina).toBe(0.8);
+  });
+
+  test("newCreature gives every genome without one a Stamina gene with a random stamina", () => {
+    const world = makeWorld(true);
+    const generations = world.generations;
+    const rules = generations.staminaGeneRules()!;
+    const given = generations.newCreature([1, 1], true, new Genome([geneTo(world, "MoveEast", 1)]));
+    const random = generations.newCreature([2, 2], true);
+    const child = generations.newCreature([3, 3], false, new Genome([geneTo(world, "MoveEast", 1)]));
+    for (const creature of [given, random, child]) {
+      expect(creature.brain.genome.genes.filter(rules.isStaminaGene).length).toBe(1);
+    }
+    expect(given.brain.genome.genes.length).toBe(2);
+    expect(random.brain.genome.genes.length).toBe(generations.initialGenomeSize + 1);
+    // the genomes made by genus get no Stamina gene among their random genes either
+    expect(generations.actions.enabledActionsForGenus("plant")).not.toContain("Stamina");
+    for (let i = 0; i < 50; i++) {
+      const genes = CreatureGenus.geneArrayForGenus(generations, "plant", 6);
+      expect(genes.some(rules.isStaminaGene)).toBe(false);
+      const random = generations.newCreature([i % 10, 5], true);
+      expect(random.brain.genome.genes.filter(rules.isStaminaGene).length).toBe(1);
+    }
+    // uniform between 0 and 1
+    const values = Array.from({ length: 400 }, (_, i) =>
+      generations.newCreature([i % 10, Math.floor(i / 10) % 10], true, new Genome([geneTo(world, "MoveEast", 1)])).brain.stamina);
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    expect(mean).toBeGreaterThan(0.45);
+    expect(mean).toBeLessThan(0.6);
+    expect(Math.max(...values)).toBeGreaterThan(0.9);
+    // and a genome that has one keeps it as it is
+    const kept = generations.newCreature([4, 4], true, new Genome([geneTo(world, "Stamina", 0)]));
+    expect(kept.brain.genome.genes.length).toBe(1);
+    expect(kept.brain.stamina).toBe(0.5);
+  });
+
+  test("without the Stamina action there are no stamina rules and genomes are not changed", () => {
+    const world = makeWorld(false);
+    expect(world.generations.staminaGeneRules()).toBeUndefined();
+    const creature = world.generations.newCreature([1, 1], true, new Genome([geneTo(world, "MoveEast", 1)]));
+    expect(creature.brain.genome.genes.length).toBe(1);
+  });
+
+  test("cloning never deletes the Stamina gene and keeps at least one other gene", () => {
+    const world = makeWorld(true);
+    const rules = world.generations.staminaGeneRules()!;
+    const genes = [geneTo(world, "Stamina", 0), geneTo(world, "MoveEast", 1), geneTo(world, "MoveWest", 1)];
+    let genome = new Genome(genes);
+    for (let i = 0; i < 20; i++) {
+      genome = genome.clone(true, MutationMode.wholeGene, 20, 0, 1, 1, rules);   // always a deletion
+    }
+    expect(genome.genes.length).toBe(2);
+    expect(genome.genes.filter(rules.isStaminaGene)).toEqual([genes[0]]);
+  });
+
+  test.each([MutationMode.wholeGene, MutationMode.singleBit, MutationMode.singleHexDigit])(
+    "with mutation mode %s the Stamina gene only moves its weight a small step and no other gene becomes one", (mode) => {
+    const world = makeWorld(true);
+    const rules = world.generations.staminaGeneRules()!;
+    const staminaOf = (genome: Genome) => {
+      const gene = genome.genes.find(rules.isStaminaGene)!;
+      return ((gene & 65535) / 8192) / 8;
+    };
+    let genome = new Genome([geneTo(world, "Stamina", 0), geneTo(world, "MoveEast", 1)]);
+    for (let i = 0; i < 500; i++) {
+      const before = staminaOf(genome);
+      // a mutation every time, and insertions up to 6 genes
+      genome = genome.clone(true, mode, 6, 1, 0.5, 0, rules);
+      expect(genome.genes.filter(rules.isStaminaGene).length).toBe(1);
+      expect(Math.abs(staminaOf(genome) - before)).toBeLessThanOrEqual(0.05 + 1e-4);
+    }
+    // the stamina did move
+    expect(staminaOf(genome)).not.toBe(0.5);
   });
 
   test("the brain runs in a share of the steps equal to the stamina", () => {
@@ -118,21 +194,44 @@ describe("stamina", () => {
     expect(creature.urgeToMove).toEqual([0.7, 0]);
   });
 
-  test("in the steps it does not think, only the primary genes cost basal consumption", () => {
+  test("the genes cost every step, the sensors and actions of the brain only in the steps it thinks", () => {
     const world = makeWorld(true, true);
-    const genes = [geneTo(world, "Reproduction", 1), geneTo(world, "MoveEast", 1), geneTo(world, "Stamina", 0)];
+    const data = world.simData.worldControllerData;
+    data.MASS_COST_PER_SENSOR = 0.002;
+    data.MASS_COST_PER_ACTION = 0.003;
+    data.SENSOR_COSTS = { VerticalPosition: 0.02 };
+    data.ACTION_COSTS = { MoveEast: 0.03 };
+    const fromSensor = (sensor: number, action: ActionName) => Genome.connectionToGene({
+      sourceType: NeuronType.SENSOR, sourceId: sensor,
+      sinkType: NeuronType.ACTION, sinkId: world.generations.actions.actionNameToId(action), weight: 1,
+    });
+    // sensors 0 (HorizontalPosition) and 1 (VerticalPosition, own cost); Reproduction twice, MoveEast (own cost)
+    const genes = [fromSensor(0, "Reproduction"), fromSensor(1, "Reproduction"), fromSensor(1, "MoveEast"), geneTo(world, "Stamina", 0)];
     const creature = world.generations.newCreature([1, 1], true, new Genome(genes));
+    // each sensor and action once: 0.002 + 0.02 + 0.003 + 0.03; the Stamina gene is neither
+    expect(creature.brain.thinkCost).toBeCloseTo(0.055);
     const mass = creature._mass;
-    const parts = CreatureMass.basalConsumptionParts(world.generations, genes, creature.genus);
-    expect(parts.primary).toBeCloseTo(0.01);
-    expect(parts.brain).toBeCloseTo(0.08);   // the Stamina gene costs like any other gene
-    expect(mass._basalConsumption).toBe(CreatureMass.basalConsumption(world.generations, genes, creature.genus));
+    // primary 0.01 + two genes 0.04 each; the Stamina gene costs nothing
+    expect(mass._basalConsumption).toBeCloseTo(0.09);
+    expect(mass._thinkCost).toBeCloseTo(0.055);
 
     const start = mass.mass;
     mass.basalMetabolism(false);
-    expect(start - mass.mass).toBeCloseTo(0.01);
+    expect(start - mass.mass).toBeCloseTo(0.09);
     mass.basalMetabolism(true);
-    expect(start - mass.mass).toBeCloseTo(0.10);
+    expect(start - mass.mass).toBeCloseTo(0.09 + 0.145);
+  });
+
+  test("files saved without the thinking costs spend nothing for thinking", () => {
+    const world = makeWorld(true, true);
+    const data = world.simData.worldControllerData;
+    delete data.MASS_COST_PER_SENSOR;
+    delete data.MASS_COST_PER_ACTION;
+    delete data.SENSOR_COSTS;
+    delete data.ACTION_COSTS;
+    const creature = world.generations.newCreature([1, 1], true, new Genome([geneTo(world, "Reproduction", 1)]));
+    expect(creature.brain.thinkCost).toBe(0);
+    expect(creature._mass._basalConsumption).toBeCloseTo(0.01);
   });
 
   test("a save keeps the think charge and the urge to move of creatures with stamina below 1", () => {

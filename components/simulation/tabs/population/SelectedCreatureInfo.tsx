@@ -142,11 +142,14 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           </Field>
           <Field label="Mass at birth">{formatMass(creature.massAtBirth)}</Field>
           {metabolismEnabled ? (
-            <Field label="Basal consumption">
-              {creature.brain.stamina < 1
-                ? `${formatMass(massData._basalConsumption)} when it thinks, ${formatMass(massData._basalConsumptionPrimary)} otherwise`
-                : `${formatMass(massData._basalConsumption)} per step`}
-            </Field>
+            <>
+              <Field label="Basal consumption">{formatMass(massData._basalConsumption)} per step</Field>
+              <Field label="Thinking cost">
+                {creature.brain.stamina < 1
+                  ? `${formatMass(massData._thinkCost)} in each step it thinks`
+                  : `${formatMass(massData._thinkCost)} per step`}
+              </Field>
+            </>
           ) : (
             <Field label="Metabolism">off: mass does not change</Field>
           )}

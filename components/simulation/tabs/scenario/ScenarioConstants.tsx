@@ -115,15 +115,18 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["MASS_AT_BIRTH_ATTACK_ANIMAL", 0.1, "Birth mass of a carnivore."],
       ["MASS_AT_BIRTH_ATTACK", 0.1, "Birth mass of the old \"attack\" genus (no longer used)."],
       ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 0.1, "Maximum mass, as a multiple of birth mass."],
-      ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent for each gene, except the primary genes, every step the brain runs."],
+      ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent per step for each gene, except the primary genes and the Stamina gene."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Mass spent per step for each primary gene (Reproduction, and Photosynthesis in plants)."],
+      ["MASS_COST_PER_SENSOR", 0.01, "Mass spent in every step the brain runs for each sensor it reads. A sensor can have its own cost in the Sensors section."],
+      ["MASS_COST_PER_ACTION", 0.01, "Mass spent in every step the brain runs for each action it is connected to. An action can have its own cost in the Actions section."],
     ],
   },
   {
     title: "Stamina",
     rows: [
-      ["STAMINA_DEFAULT", 0.05, "With the Stamina action enabled, stamina of a genome without a Stamina gene (1: thinks every step)."],
+      ["STAMINA_DEFAULT", 0.05, "With the Stamina action enabled, stamina of a genome without a Stamina gene, such as those of older files, until their children get one (1: thinks every step)."],
       ["STAMINA_MIN", 0.01, "With the Stamina action enabled, the lowest stamina a Stamina gene can give."],
+      ["STAMINA_MUTATION_STEP", 0.01, "With the Stamina action enabled, the largest change of stamina in one mutation of the Stamina gene."],
     ],
   },
   {

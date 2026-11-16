@@ -79,7 +79,7 @@ The section is updated at every step:
 
 - **Identity**: id, species, genus and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
-- **Body**: mass against the maximum mass, mass at birth and basal consumption per step (with stamina below 1, what it spends in the steps it thinks and in the others). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
+- **Body**: mass against the maximum mass, mass at birth, basal consumption per step and thinking cost (what the sensors and actions of its brain cost in each step it thinks). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
 - **Activity**: children, attacks and kills (for herbivores and carnivores), and the water it got from photosynthesis and from its prey (with metabolism).
 - **Brain**: genes, neurons and connections, the stamina and how many steps the brain has run (see [Stamina](../reference/sensors-and-actions.md#stamina)), and the action with the highest output in this step.

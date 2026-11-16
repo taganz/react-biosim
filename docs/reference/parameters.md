@@ -48,7 +48,7 @@ The scenario list at the top loads a bundled scenario (see [Scenarios](../user/s
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Initial genome size | `worldGenerationsData.initialGenomeSize` | integer, 1 – max genome size | 4 | Number of genes in the random genomes of generation 1. Each gene is one connection in the brain. |
+| Initial genome size | `worldGenerationsData.initialGenomeSize` | integer, 1 – max genome size | 4 | Number of genes in the random genomes of generation 1. Each gene is one connection in the brain. With the Stamina action enabled, they also get a Stamina gene. |
 | Max genome size | `worldGenerationsData.maxGenomeSize` | integer ≥ initial genome size | 4 | Insertion mutations cannot grow a genome beyond this size. |
 | Max neurons | `worldGenerationsData.maxNumberNeurons` | integer ≥ 1 | 1 | Number of internal (hidden) neurons a gene can point to. |
 
@@ -66,6 +66,8 @@ Every time a child is created from a parent, its genome is copied and may mutate
 ### Sensors and actions
 
 One checkbox for each [sensor](sensors-and-actions.md#sensors) (`worldGenerationsData.enabledSensors`) and each [action](sensors-and-actions.md#actions) (`worldGenerationsData.enabledActions`). At least one of each must stay enabled.
+
+Below each enabled sensor and action, **Cost** is the mass a brain that reads that sensor, or is connected to that action, spends in every step it runs (see `MASS_COST_PER_SENSOR` and `MASS_COST_PER_ACTION` in [Mass and metabolism](#mass-and-metabolism)). It shows the general cost until it is changed; a changed cost is marked *own* and saved in `worldControllerData.SENSOR_COSTS` or `ACTION_COSTS`, by name. The Stamina action has no cost, since its gene is not a connection.
 
 The startup scenario enables the first 10 sensors (positions, age, oscillator, random, speeds and border distances) and the six movement actions.
 
@@ -127,10 +129,13 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `MASS_AT_BIRTH_ATTACK` | 2 | Birth mass of the old "attack" genus (no longer used). |
 | `MASS_AT_BIRTH_ATTACK_ANIMAL` | 6 | Birth mass of a carnivore. |
 | `MASS_MAX_MULTIPLE_MASS_AT_BIRT` | 5 | Maximum mass, as a multiple of birth mass. |
-| `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent for each gene in the genome, except the primary genes, in every step the brain runs: every step, unless the Stamina action is enabled (see [Stamina](sensors-and-actions.md#stamina)). |
+| `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome, except the primary genes and the Stamina gene. |
+| `MASS_COST_PER_SENSOR` | 0 | Mass spent in every step the brain runs for each sensor it reads, counted once however many genes read it. A sensor can have its own cost instead (`SENSOR_COSTS`, set below each sensor in the Sensors section). Without the Stamina action the brain runs every step. Files saved without it take 0. |
+| `MASS_COST_PER_ACTION` | 0 | Mass spent in every step the brain runs for each action it is connected to, counted once and whether the action fires or not. An action can have its own cost instead (`ACTION_COSTS`, set below each action in the Actions section). Files saved without it take 0. |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY` | 0.01 | Mass spent per step for each primary gene: the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis. A plant has at most two, any other genus at most one. Files saved without it take the value of `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE`, which every gene cost before. |
-| `STAMINA_DEFAULT` | 1 | With the Stamina action enabled, the stamina of a genome without a Stamina gene. 1 thinks every step. Files saved without it take 1. |
+| `STAMINA_DEFAULT` | 1 | With the Stamina action enabled, the stamina of a genome without a Stamina gene: only creatures restored from a file saved without the action, or kept by *Update simulation*, since new genomes always get one. 1 thinks every step. Files saved without it take 1. |
 | `STAMINA_MIN` | 0.05 | With the Stamina action enabled, the lowest stamina a Stamina gene can give, so that no brain stops running. Files saved without it take 0.05. |
+| `STAMINA_MUTATION_STEP` | 0.05 | With the Stamina action enabled, the largest change of stamina, up or down, in one mutation of the Stamina gene. Files saved without it take 0.05. |
 | `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` | 3 | A creature needs more than this multiple of its birth mass to reproduce (plus `REPRODUCTION_COST_PER_MASS_DO` with metabolism). |
 | `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell and nothing to eat around, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |

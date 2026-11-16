@@ -88,6 +88,8 @@ When a child is created from a parent, `Genome.clone()` copies the genes and may
 
 So each child has at most one point mutation and one insertion or deletion. Generation-1 creatures are not mutated.
 
+With the Stamina action enabled, the Stamina gene follows its own rules: a point mutation only moves its weight a small step, deletions never remove it, and no other gene can become one (see [Stamina](../reference/sensors-and-actions.md#stamina)).
+
 What the mutation modes mean in practice:
 
 - `wholeGene` makes big jumps: the connection can change source, target and weight all at once.

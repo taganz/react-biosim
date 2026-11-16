@@ -10,7 +10,7 @@ import NeuronNode from "./NeuronNode";
 export const initialNeuronOutput = 0.5;
 
 // the stamina settings of files saved without them
-export const STAMINA_MISSING_VALUES = { STAMINA_DEFAULT: 1, STAMINA_MIN: 0.05 };
+export const STAMINA_MISSING_VALUES = { STAMINA_DEFAULT: 1, STAMINA_MIN: 0.05, STAMINA_MUTATION_STEP: 0.05 };
 
 export default class CreatureBrain {
     creature : Creature;
@@ -32,6 +32,8 @@ export default class CreatureBrain {
     stamina: number = 1;
     // the genes that drive the Stamina action: their positions in the genome, the first one gives the stamina
     staminaGeneIndexes: number[] = [];
+    // mass spent in each step the brain runs: the costs of the sensors it reads and the actions it is connected to
+    thinkCost: number = 0;
 
     constructor(creature: Creature, genome: Genome) {
 
@@ -259,10 +261,32 @@ export default class CreatureBrain {
         this.usesPreySensors = this.sensors.readsPreySensors(finalConnections);
         this.usesRandomSensor = this.sensors.readsRandomSensor(finalConnections);
         this.sensorIds = this.sensors.readSensorIds(finalConnections);
+        this.thinkCost = this.computeThinkCost(finalConnections);
         if (staminaId >= 0) {
             this.stamina = CreatureBrain.staminaFromWeight(
                 staminaWeight, this.creature.generations.worldController.simData.worldControllerData);
         }
+    }
+
+    // each sensor read and each action connected counts once, however many connections it has
+    private computeThinkCost(connections: Connection[]): number {
+        const data = this.creature.generations.worldController.simData.worldControllerData;
+        const perSensor = data.MASS_COST_PER_SENSOR ?? 0;
+        const perAction = data.MASS_COST_PER_ACTION ?? 0;
+        const sensorCosts = data.SENSOR_COSTS;
+        const actionCosts = data.ACTION_COSTS;
+        let cost = 0;
+        for (const id of this.sensorIds) {
+            cost += sensorCosts?.[this.sensors.enabledSensors[id]] ?? perSensor;
+        }
+        const actionIds = new Set<number>();
+        for (const connection of connections) {
+            if (connection.sinkType === NeuronType.ACTION) actionIds.add(connection.sinkId);
+        }
+        for (const id of actionIds) {
+            cost += actionCosts?.[this.actions.enabledActions[id]] ?? perAction;
+        }
+        return cost;
     }
 
     // weight -4..4 to stamina 0..1, kept between STAMINA_MIN and 1; no weight: STAMINA_DEFAULT

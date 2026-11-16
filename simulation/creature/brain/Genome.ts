@@ -54,6 +54,14 @@ export const geneArrayToString = (generations: WorldGenerations, geneArray: Gene
 }
 
 
+// With the Stamina action enabled, the genome always keeps exactly one Stamina gene:
+// cloning never deletes it, mutates only its weight, and never makes another one
+export type StaminaGeneRules = {
+  isStaminaGene: (gene: Gene) => boolean;
+  // the same gene with its weight moved a small random step
+  mutateStaminaGene: (gene: Gene) => Gene;
+};
+
 export default class Genome {
   genes: Gene[];
 
@@ -67,7 +75,8 @@ export default class Genome {
     genomeMaxLength: number = 0,
     mutationProbability: number = 0,
     geneInsertionDeletionProbability: number = 0,
-    deletionRate: number = 0
+    deletionRate: number = 0,
+    staminaRules?: StaminaGeneRules
   ): Genome {
     const newGenes = this.genes.slice();
 
@@ -77,7 +86,10 @@ export default class Genome {
         const geneIndex = this.getRandomGeneIndex();
         const originalGene = this.genes[geneIndex];
 
-        if (mutationMode === MutationMode.singleBit) {
+        if (staminaRules?.isStaminaGene(originalGene)) {
+          // whatever the mode, the Stamina gene only changes its weight a little
+          newGenes[geneIndex] = staminaRules.mutateStaminaGene(originalGene);
+        } else if (mutationMode === MutationMode.singleBit) {
           // Select a mask for a random bit in the 32 bits of the gene
           const randomBitMask = 1 << Math.round(random() * geneBitSize);
           // Swap bit in the gene
@@ -147,18 +159,29 @@ export default class Genome {
             }
           }
         }
+
+        // another gene does not become a Stamina gene: the mutation is dropped
+        if (staminaRules && !staminaRules.isStaminaGene(originalGene)
+            && staminaRules.isStaminaGene(newGenes[geneIndex])) {
+          newGenes[geneIndex] = originalGene;
+        }
       }
 
       if (random() < geneInsertionDeletionProbability) {
         if (random() < deletionRate) {
-          // Deletion
-          if (newGenes.length > 1) {
-            const randomIndex = Math.floor(random() * newGenes.length);
+          // Deletion: never the Stamina genes, and at least one other gene stays
+          const isStamina = (gene: Gene) => staminaRules?.isStaminaGene(gene) ?? false;
+          const deletable = staminaRules ? newGenes.filter((gene) => !isStamina(gene)).length : newGenes.length;
+          if (deletable > 1) {
+            let randomIndex = Math.floor(random() * newGenes.length);
+            while (isStamina(newGenes[randomIndex])) randomIndex = (randomIndex + 1) % newGenes.length;
             newGenes.splice(randomIndex, 1);
           }
         } else if (newGenes.length < genomeMaxLength) {
-          // Insertion
-          newGenes.push(Genome.generateRandomGene());
+          // Insertion: drawn again until it is not a Stamina gene
+          let newGene = Genome.generateRandomGene();
+          while (staminaRules?.isStaminaGene(newGene)) newGene = Genome.generateRandomGene();
+          newGenes.push(newGene);
         }
       }
     }

@@ -7,7 +7,10 @@ import PopulationStrategy from "./population/PopulationStrategy";
 import SelectionMethod from "./selection/SelectionMethod";
 import CreatureSensors from "../creature/brain/CreatureSensors";
 import {Grid, GridPosition} from "../world/grid/Grid"
-import Genome from "@/simulation/creature/brain/Genome";
+import Genome, { Gene, StaminaGeneRules } from "@/simulation/creature/brain/Genome";
+import { NeuronType } from "@/simulation/creature/brain/Neuron";
+import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrain";
+import { random } from "@/simulation/helpers/random";
 import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
 import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
@@ -175,6 +178,35 @@ export default class WorldGenerations {
     this.recordStartGenomes();
   }
 
+  // Without the Stamina action: undefined, and genomes are cloned as before
+  public staminaGeneRules(): StaminaGeneRules | undefined {
+    if (!this.actions.data.Stamina.enabled) return undefined;
+    const staminaId = this.actions.actionNameToId("Stamina");
+    const data = this.worldController.simData.worldControllerData;
+    // a stamina step is 8 times as big in weight (-4..4 is stamina 0..1)
+    const weightStep = 8 * (data.STAMINA_MUTATION_STEP ?? STAMINA_MISSING_VALUES.STAMINA_MUTATION_STEP);
+    return {
+      isStaminaGene: (gene: Gene) => {
+        const connection = Genome.geneToConnection(gene, this);
+        return connection.sinkType === NeuronType.ACTION && connection.sinkId === staminaId;
+      },
+      mutateStaminaGene: (gene: Gene) => {
+        const weight = (gene & 65535) / 8192 - 4;
+        const newWeight = Math.min(4 - 1 / 8192, Math.max(-4, weight + (random() * 2 - 1) * weightStep));
+        return (gene & ~65535) | Math.round((newWeight + 4) * 8192);
+      },
+    };
+  }
+
+  // a Stamina gene with a random stamina between 0 and 1; its source is not used
+  private newStaminaGene(): Gene {
+    return Genome.connectionToGene({
+      sourceType: NeuronType.SENSOR, sourceId: 0,
+      sinkType: NeuronType.ACTION, sinkId: this.actions.actionNameToId("Stamina"),
+      weight: -4 + 8 * random(),
+    });
+  }
+
   // genomes are not changed after birth, so keeping the references is enough
   private recordStartGenomes() {
     this.startGenomes = this.currentCreatures.map((creature) => creature.brain.genome);
@@ -184,20 +216,32 @@ export default class WorldGenerations {
   // creates a new creature, add to currentCreatures, add to grid, mutate genome.
   // parent is the creature the genome comes from, recorded for the lineage
   public newCreature(position : GridPosition, firstGeneration: boolean, genome?: Genome, parent?: Creature) : Creature {
+    const staminaRules = this.staminaGeneRules();
     if (genome && !firstGeneration) {
-      let genomeOffspring = genome.clone(
+      genome = genome.clone(
         true,
         this.mutationMode,
         this.maxGenomeSize,
         this.mutationProbability,
         this.geneInsertionDeletionProbability,
-        this.deletionRatio
+        this.deletionRatio,
+        staminaRules
       )
-      var creature = new Creature(this, position, firstGeneration, genomeOffspring);
     }
-    else {
-      var creature = new Creature(this, position, firstGeneration, genome);
+    else if (!genome && staminaRules) {
+      // the random genome the creature would make, made here to add the Stamina gene;
+      // its genes are drawn again until they are not Stamina genes
+      genome = new Genome([...new Array(this.initialGenomeSize)].map(() => {
+        let gene = Genome.generateRandomGene();
+        while (staminaRules.isStaminaGene(gene)) gene = Genome.generateRandomGene();
+        return gene;
+      }));
     }
+    // with the Stamina action, every new genome has a Stamina gene: older genomes get one
+    if (genome && staminaRules && !genome.genes.some(staminaRules.isStaminaGene)) {
+      genome = new Genome([...genome.genes, this.newStaminaGene()]);
+    }
+    const creature = new Creature(this, position, firstGeneration, genome);
     if (parent) {
       creature.parentId = parent.id;
       creature.parentBirthGen = parent.birthGen;

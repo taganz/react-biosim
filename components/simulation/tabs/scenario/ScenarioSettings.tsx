@@ -217,6 +217,23 @@ export default function ScenarioSettings() {
       waterData: { ...prev.waterData, [key]: value },
     }));
 
+  // The cost of thinking with a sensor or an action: its own if it has one, otherwise the general
+  // MASS_COST_PER_SENSOR / MASS_COST_PER_ACTION. A cost equal to the general one is not kept as its own
+  const sensorCost = (name: SensorName) =>
+    worldControllerData.SENSOR_COSTS?.[name] ?? worldControllerData.MASS_COST_PER_SENSOR ?? 0;
+  const actionCost = (name: ActionName) =>
+    worldControllerData.ACTION_COSTS?.[name] ?? worldControllerData.MASS_COST_PER_ACTION ?? 0;
+  const setSensorCost = (name: SensorName, value: number) => {
+    const { [name]: _old, ...others } = worldControllerData.SENSOR_COSTS ?? {};
+    setWorldValue("SENSOR_COSTS",
+      value === (worldControllerData.MASS_COST_PER_SENSOR ?? 0) ? others : { ...others, [name]: value });
+  };
+  const setActionCost = (name: ActionName, value: number) => {
+    const { [name]: _old, ...others } = worldControllerData.ACTION_COSTS ?? {};
+    setWorldValue("ACTION_COSTS",
+      value === (worldControllerData.MASS_COST_PER_ACTION ?? 0) ? others : { ...others, [name]: value });
+  };
+
   // at least one sensor and one action must stay enabled
   const handleSensorChange = (name: SensorName, checked: boolean) => {
     if (checked) {
@@ -529,17 +546,25 @@ export default function ScenarioSettings() {
       {/* === SENSORS === */}
       <Section
         title="Sensors"
-        description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development."
+        description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development. With metabolism, each enabled sensor has a cost: the mass a brain that reads it spends in every step it runs (MASS_COST_PER_SENSOR unless changed here)."
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {sensors.map((sensor) => (
-            <CheckboxInput
-              id={sensor.name}
-              key={sensor.name}
-              label={getSensorLabel(sensor)}
-              checked={enabledSensors.includes(sensor.name)}
-              onChange={(checked) => handleSensorChange(sensor.name, checked)}
-            />
+            <div key={sensor.name} className="flex flex-col gap-1">
+              <CheckboxInput
+                id={sensor.name}
+                label={getSensorLabel(sensor)}
+                checked={enabledSensors.includes(sensor.name)}
+                onChange={(checked) => handleSensorChange(sensor.name, checked)}
+              />
+              {enabledSensors.includes(sensor.name) && (
+                <CostInput
+                  value={sensorCost(sensor.name)}
+                  isOwn={worldControllerData.SENSOR_COSTS?.[sensor.name] !== undefined}
+                  onChange={(value) => setSensorCost(sensor.name, value)}
+                />
+              )}
+            </div>
           ))}
         </div>
       </Section>
@@ -547,17 +572,26 @@ export default function ScenarioSettings() {
       {/* === ACTIONS === */}
       <Section
         title="Actions"
-        description="At least one action must stay enabled. Photosynthesis, reproduction and attack actions are under development."
+        description="At least one action must stay enabled. Photosynthesis, reproduction and attack actions are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (MASS_COST_PER_ACTION unless changed here)."
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {actions.map((action) => (
-            <CheckboxInput
-              id={action.name}
-              key={action.name}
-              label={getActionLabel(action)}
-              checked={enabledActions.includes(action.name)}
-              onChange={(checked) => handleActionChange(action.name, checked)}
-            />
+            <div key={action.name} className="flex flex-col gap-1">
+              <CheckboxInput
+                id={action.name}
+                label={getActionLabel(action)}
+                checked={enabledActions.includes(action.name)}
+                onChange={(checked) => handleActionChange(action.name, checked)}
+              />
+              {/* the Stamina gene is not a connection: it has no cost */}
+              {enabledActions.includes(action.name) && action.name !== "Stamina" && (
+                <CostInput
+                  value={actionCost(action.name)}
+                  isOwn={worldControllerData.ACTION_COSTS?.[action.name] !== undefined}
+                  onChange={(value) => setActionCost(action.name, value)}
+                />
+              )}
+            </div>
           ))}
         </div>
       </Section>
@@ -619,3 +653,19 @@ export default function ScenarioSettings() {
     </div>
   );
 }
+
+// the cost of a sensor or an action; "own" when it is not the general one
+function CostInput({ value, isOwn, onChange }: { value: number; isOwn: boolean; onChange: (value: number) => void }) {
+  return (
+    <div className="ml-6 w-32 text-xs">
+      <NumberInput
+        label={<span className="text-xs">Cost{isOwn ? " (own)" : ""}</span>}
+        value={value}
+        onChange={onChange}
+        step={0.01}
+        min={0}
+      />
+    </div>
+  );
+}
+
