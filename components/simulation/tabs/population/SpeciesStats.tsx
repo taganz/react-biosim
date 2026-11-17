@@ -2,10 +2,10 @@
 
 import { useRef } from "react";
 import useWorldValue from "@/hooks/useWorldValue";
-import Creature, { DeathCause } from "@/simulation/creature/Creature";
+import Creature, { DeathCause, maxHealth } from "@/simulation/creature/Creature";
 import { Species } from "@/simulation/creature/Species";
 import { computeSpeciesStats, SpeciesStats as Stats } from "@/simulation/generations/creatureQueries";
-import { Field, Group } from "./SelectedCreatureInfo";
+import { CostFields, Field, formatMass, GeneFields, Group, MassBalanceFields } from "./InfoFields";
 
 interface Props {
   species: Species;
@@ -47,9 +47,14 @@ export default function SpeciesStats({ species, startCreatures }: Props) {
   if (value === "") return null;
 
   const { alive, started, bornSince, died, living, perCreature, averageAgeAtDeath, deathCauses } = JSON.parse(value) as Stats;
+  // every member shares the genome, so any of them has the values that come from the genes
+  const member = species.creatures[0];
+  const metabolismEnabled = member?._mass._metabolismEnabled ?? false;
+  const eatsPrey = member?.preyGenus !== undefined;
+  const network = member?.brain.brain;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-4">
       <Group title="Population">
         <Field label="Alive">{alive} of {started + bornSince} known</Field>
         <Field label="Started generation">{started}</Field>
@@ -58,22 +63,55 @@ export default function SpeciesStats({ species, startCreatures }: Props) {
       </Group>
 
       {living && (
-        <Group title="Average of the living">
-          <Field label="Age">{living.age.toFixed(1)}</Field>
-          <Field label="Mass">{living.mass.toFixed(2)}</Field>
-          <Field label="Health">{living.health.toFixed(1)}</Field>
+        <Group title="Life (average of the living)">
+          <Field label="Health">{living.health.toFixed(1)} / {maxHealth}</Field>
+          <Field label="Age">{living.age.toFixed(1)} steps</Field>
+        </Group>
+      )}
+
+      {member && (
+        <Group title="Body">
+          {living && <Field label="Mass (average of the living)">{formatMass(living.mass)}</Field>}
+          <Field label="Mass at birth">{formatMass(member.massAtBirth)}</Field>
+          {metabolismEnabled ? (
+            <CostFields creature={member} />
+          ) : (
+            <Field label="Metabolism">off: mass does not change</Field>
+          )}
+          {living && (
+            <>
+              <Field label="Enough mass to move">{living.canMove.toFixed(0)}% of the living</Field>
+              <Field label="Enough mass to reproduce">{living.canReproduce.toFixed(0)}% of the living</Field>
+            </>
+          )}
+        </Group>
+      )}
+
+      {living && (
+        <Group title="Movement (average of the living)">
           <Field label="Distance index">{living.distance.toFixed(1)}</Field>
+          <Field label="Steps stopped">{living.stepsStopped.toFixed(1)}</Field>
         </Group>
       )}
 
       {perCreature && (
         <div title={UNCOUNTED_DEATHS}>
-          <Group title="Average per creature, dead or alive">
+          <Group title="Activity (average per creature, dead or alive)">
             <Field label="Children">{perCreature.children.toFixed(2)}</Field>
-            <Field label="Kills">{perCreature.kills.toFixed(2)}</Field>
-            <Field label="Attacks">{perCreature.attacks.toFixed(2)}</Field>
-            <Field label="Photosynthesis">{perCreature.photosynthesis.toFixed(2)}</Field>
-            <Field label="From prey">{perCreature.fromPrey.toFixed(2)}</Field>
+            {eatsPrey && (
+              <>
+                <Field label="Attacks">{perCreature.attacks.toFixed(2)}</Field>
+                <Field label="Kills">{perCreature.kills.toFixed(2)}</Field>
+              </>
+            )}
+          </Group>
+        </div>
+      )}
+
+      {perCreature && metabolismEnabled && (
+        <div title={UNCOUNTED_DEATHS}>
+          <Group title="Mass balance (average per creature, dead or alive)">
+            <MassBalanceFields balance={perCreature.balance} eatsPrey={eatsPrey} endLabel="= Mass now or at death" />
           </Group>
         </div>
       )}
@@ -87,6 +125,15 @@ export default function SpeciesStats({ species, startCreatures }: Props) {
             ))}
           </Group>
         </div>
+      )}
+
+      {member && network && (
+        <Group title="Brain">
+          <GeneFields creature={member} />
+          <Field label="Neurons">{network.neurons.length}</Field>
+          <Field label="Connections">{network.connections.length}</Field>
+          <Field label="Stamina">{member.brain.stamina.toFixed(2)}</Field>
+        </Group>
       )}
     </div>
   );

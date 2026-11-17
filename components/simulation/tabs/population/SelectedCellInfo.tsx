@@ -6,7 +6,7 @@ import useWorldValue from "@/hooks/useWorldValue";
 import { GridPosition } from "@/simulation/world/grid/Grid";
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import { Species } from "@/simulation/creature/Species";
-import { Group, Field, Meter } from "./SelectedCreatureInfo";
+import { Group, Field, Meter } from "./InfoFields";
 
 interface Props {
   position: GridPosition;

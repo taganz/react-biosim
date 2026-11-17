@@ -89,7 +89,7 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       creature.massAtBirth = savedCreature.massAtBirth;
       // files from older versions may not have it
       if (savedCreature.mass !== undefined) {
-        creature._mass._mass = savedCreature.mass;
+        creature._mass.setStartMass(savedCreature.mass);
       }
       // without it, a resumed continuous run has no deaths of old age until maxAge steps have passed
       if (savedCreature.age !== undefined) {

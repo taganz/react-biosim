@@ -7,6 +7,9 @@ import { NeuronType } from "./brain/Neuron";
 import { ActionName } from "./brain/CreatureActions";
 import { Genus } from "./CreatureGenus";
 
+// primary: the first Reproduction gene and, in plants, the first Photosynthesis gene
+export interface GeneCounts { primary: number; stamina: number; other: number }
+
 export default class CreatureMass {
     //_massAtBirth : number;
     _mass : number = 0;
@@ -18,6 +21,15 @@ export default class CreatureMass {
     _maxMass : number;
     _worldWater: WorldWater;
     _creature : Creature;
+    // mass spent over the creature's life, shown in the creature panel
+    totalBasal : number = 0;            // the genes (basal consumption)
+    totalThinking : number = 0;         // the sensors and actions of the brain, in the steps it thinks
+    totalMoving : number = 0;           // moving
+    totalAttacking : number = 0;        // attacking (the mass eaten is Creature.waterFromPrey)
+    totalReproductionCost : number = 0; // reproduction attempts and births
+    totalGivenToChildren : number = 0;  // birth mass of the children
+    startMass : number;                 // the mass it got at birth, or had when it was loaded from a file
+    genes : GeneCounts;                 // the genes by how much they cost
     
     constructor(creature: Creature, firstGeneration: boolean) {
 
@@ -40,12 +52,14 @@ export default class CreatureMass {
         }
 
         this._mass = this._massAtBirth;
+        this.startMass = this._mass;
         if (firstGeneration) {
             // if first generation, water should be obtained from cloud
             this._worldWater.getWaterFromCloud(this.massAtBirth);
         }
 
-        this._basalConsumption = CreatureMass.basalConsumption(creature.generations, creature.brain.genome.genes, creature._genus);
+        this.genes = CreatureMass.geneCounts(creature.generations, creature.brain.genome.genes, creature._genus);
+        this._basalConsumption = CreatureMass.basalFromCounts(creature.generations, this.genes);
         this._thinkCost = creature.brain.thinkCost;
         this._basalConsumptionThinking = this._basalConsumption + this._thinkCost;
         this._metabolismEnabled = creature.generations.metabolismEnabled;
@@ -57,7 +71,16 @@ export default class CreatureMass {
     // MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY; every other gene costs MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE
     // Paid every step. Stamina genes cost nothing: with the Stamina action every genome has one
     static basalConsumption(generations: WorldGenerations, genes: Gene[], genus: Genus): number {
+        return CreatureMass.basalFromCounts(generations, CreatureMass.geneCounts(generations, genes, genus));
+    }
+
+    static basalFromCounts(generations: WorldGenerations, genes: GeneCounts): number {
         const data = generations.worldController.simData.worldControllerData;
+        return data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * genes.primary
+            + data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * genes.other;
+    }
+
+    static geneCounts(generations: WorldGenerations, genes: Gene[], genus: Genus): GeneCounts {
         const primaryActions: ActionName[] = genus === "plant" ? ["Photosynthesis", "Reproduction"] : ["Reproduction"];
         const primaryFound = new Set<ActionName>();
         let staminaGenes = 0;
@@ -68,9 +91,8 @@ export default class CreatureMass {
             if (primaryActions.includes(action)) primaryFound.add(action);
             if (action === "Stamina") staminaGenes++;
         }
-        const primaryGenes = primaryFound.size;
-        return data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * primaryGenes
-            + data.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * (genes.length - primaryGenes - staminaGenes);
+        const primary = primaryFound.size;
+        return { primary, stamina: staminaGenes, other: genes.length - primary - staminaGenes };
     }
 
     get isAlive() {
@@ -88,7 +110,33 @@ export default class CreatureMass {
 
     // the genes every step, and the sensors and actions of the brain when it runs (see stamina)
     basalMetabolism(thinks: boolean = true) : number {
-        return this.consume(thinks ? this._basalConsumptionThinking : this._basalConsumption);
+        const consumed = this.consume(thinks ? this._basalConsumptionThinking : this._basalConsumption);
+        // the genes are paid first
+        const basal = Math.min(consumed, this._basalConsumption);
+        this.totalBasal += basal;
+        this.totalThinking += consumed - basal;
+        return consumed;
+    }
+
+    // the cost of moving
+    consumeForMove(mass: number) : number {
+        const consumed = this.consume(mass);
+        this.totalMoving += consumed;
+        return consumed;
+    }
+
+    // the cost of attacking
+    consumeForAttack(mass: number) : number {
+        const consumed = this.consume(mass);
+        this.totalAttacking += consumed;
+        return consumed;
+    }
+
+    // the cost of a reproduction attempt or birth, as a fraction of massAtBirth
+    consumeForReproduction(massFraction: number) : number {
+        const consumed = this.consumeMassFraction(massFraction);
+        this.totalReproductionCost += consumed;
+        return consumed;
     }
 
     
@@ -129,11 +177,29 @@ export default class CreatureMass {
         return this.consume(this._massAtBirth * massFraction);
     }
 
+    // the mass of a newborn child, or of a creature loaded from a file: where its balance starts
+    setStartMass(mass: number) {
+        this._mass = mass;
+        this.startMass = mass;
+    }
+
+    // keeps the balance of a creature recreated in a new run
+    copyTotals(source: CreatureMass) {
+        this.startMass = source.startMass;
+        this.totalBasal = source.totalBasal;
+        this.totalThinking = source.totalThinking;
+        this.totalMoving = source.totalMoving;
+        this.totalAttacking = source.totalAttacking;
+        this.totalReproductionCost = source.totalReproductionCost;
+        this.totalGivenToChildren = source.totalGivenToChildren;
+    }
+
     // gives mass to a newborn child: the water stays inside creatures. Returns the mass given
     giveToChild(mass: number): number {
         if (!this._metabolismEnabled) {return mass}
         const given = Math.min(mass, this._mass);
         this._mass -= given;
+        this.totalGivenToChildren += given;
         return given;
     }
     

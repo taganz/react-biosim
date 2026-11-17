@@ -26,12 +26,12 @@ export default class CreatureReproduction {
         ?? this._creature.eatNeighbourForOffspring();
       if (offspringPosition) {
         const child = this._creature.generations.newCreature(offspringPosition, false, this._creature.brain.genome, this._creature);
-        this._creature._mass.consumeMassFraction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_DO);    //TODO only if isMetabolismEnabled
+        this._creature._mass.consumeForReproduction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_DO);    //TODO only if isMetabolismEnabled
         // the child's birth mass comes from the parent, so the total water is kept
-        child._mass._mass = this._creature._mass.giveToChild(child.massAtBirth);
+        child._mass.setStartMass(this._creature._mass.giveToChild(child.massAtBirth));
         return true;
       }
-      const consumed = this._creature._mass.consumeMassFraction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY);    
+      const consumed = this._creature._mass.consumeForReproduction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY);    
       this._creature.log(LogEvent.REPRODUCE_TRY, "mass consumed", consumed);
       return false;
     }

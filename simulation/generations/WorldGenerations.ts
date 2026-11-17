@@ -287,6 +287,7 @@ export default class WorldGenerations {
     creature.lastDirection = source.lastDirection;
     creature.massAtBirth = source.massAtBirth;
     creature._mass._mass = source.mass;
+    creature._mass.copyTotals(source._mass);
     // the world water is new, so the water in this creature is taken from the cloud
     this.worldController.worldWater.getWaterFromCloud(source.mass);
     this.grid.addCreature(creature);

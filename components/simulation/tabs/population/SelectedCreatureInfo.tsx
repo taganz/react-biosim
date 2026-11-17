@@ -1,56 +1,18 @@
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import Creature, { DeathCause, maxHealth } from "@/simulation/creature/Creature";
 import useWorldValue from "@/hooks/useWorldValue";
 import { getNetworkLabels } from "@/simulation/creature/brain/Helpers/networkLabels";
 import { GENUS_LABELS } from "./genusLabels";
-import { formatWeight, NETWORK_COLORS } from "./NetworkDiagram";
+import { formatWeight } from "./NetworkDiagram";
+import { creatureMassBalance } from "@/simulation/generations/creatureQueries";
+import { CostFields, Field, formatMass, GeneFields, Group, MassBalanceFields, Meter, YesNo } from "./InfoFields";
 
 interface Props {
   creature: Creature;
 }
 
-export function Group({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div>
-      <h5 className="mb-1 font-bold">{title}</h5>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm tabular-nums">{children}</dl>
-    </div>
-  );
-}
-
-export function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <>
-      <dt className="text-grey-light">{label}</dt>
-      <dd>{children}</dd>
-    </>
-  );
-}
-
-// a value with a bar that shows how full it is
-export function Meter({ value, max, text }: { value: number; max: number; text: string }) {
-  const fraction = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
-  return (
-    <span className="flex items-center gap-2">
-      <span aria-hidden="true" className="inline-block h-2 w-20 shrink-0 rounded-sm bg-grey-mid">
-        <span className="block h-2 rounded-sm bg-grey-light" style={{ width: `${fraction * 100}%` }} />
-      </span>
-      <span className="whitespace-nowrap">{text}</span>
-    </span>
-  );
-}
-
-function YesNo({ value }: { value: boolean }) {
-  return (
-    <span style={{ color: value ? NETWORK_COLORS.positive : NETWORK_COLORS.negative }}>
-      {value ? "● yes" : "○ no"}
-    </span>
-  );
-}
-
-const formatMass = (value: number) => value.toFixed(2);
 
 // each one starts the sentence that says when the creature died
 const DEATH_CAUSES: Record<DeathCause, string> = {
@@ -142,14 +104,7 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           </Field>
           <Field label="Mass at birth">{formatMass(creature.massAtBirth)}</Field>
           {metabolismEnabled ? (
-            <>
-              <Field label="Basal consumption">{formatMass(massData._basalConsumption)} per step</Field>
-              <Field label="Thinking cost">
-                {creature.brain.stamina < 1
-                  ? `${formatMass(massData._thinkCost)} in each step it thinks`
-                  : `${formatMass(massData._thinkCost)} per step`}
-              </Field>
-            </>
+            <CostFields creature={creature} />
           ) : (
             <Field label="Metabolism">off: mass does not change</Field>
           )}
@@ -189,16 +144,21 @@ export default function SelectedCreatureInfo({ creature }: Props) {
               <Field label="Kills">{creature.killCount}</Field>
             </>
           )}
-          {metabolismEnabled && (
-            <Field label="Water from photosynthesis">{formatMass(creature.waterFromPhotosynthesis)}</Field>
-          )}
-          {metabolismEnabled && preyGenus && (
-            <Field label="Water from prey">{formatMass(creature.waterFromPrey)}</Field>
-          )}
         </Group>
 
+        {metabolismEnabled && (
+          <Group title="Mass balance">
+            <MassBalanceFields
+              balance={creatureMassBalance(creature)}
+              eatsPrey={preyGenus !== undefined}
+              endLabel={isInWorld ? "= Mass now" : "= Mass at death"}
+              realMass={isInWorld ? creature.mass : undefined}
+            />
+          </Group>
+        )}
+
         <Group title="Brain">
-          <Field label="Genes">{creature.brain.genome.genes.length}</Field>
+          <GeneFields creature={creature} />
           <Field label="Neurons">{network.neurons.length}</Field>
           <Field label="Connections">{network.connections.length}</Field>
           <Field label="Stamina">

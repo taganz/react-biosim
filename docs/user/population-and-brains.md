@@ -58,12 +58,18 @@ A section you close stays closed when you select another species.
 
 ## Species stats
 
-Averages of the selected species, so species of different sizes can be compared. The section is updated while the simulation runs:
+The selected species, with the same groups as a [selected creature](#selected-creature) so the two can be compared. Every member has the same genes, so what comes from the genes is shown once; the rest are averages, so species of different sizes can be compared. Each group says in its title which creatures it averages. The section is updated while the simulation runs:
 
 - **Population**: the living creatures out of those known, how many there were when the species were grouped, how many living ones were born since, and how many of them have died. These are counts, to show how many creatures are behind the averages.
-- **Average of the living**: age, mass, health and distance index.
-- **Average per creature, dead or alive**: children, kills, attacks, and the water from photosynthesis and from prey. Young creatures have had less time for these, so compare species of a similar average age.
+- **Life** (average of the living): health and age.
+- **Body**: the average mass of the living; the mass at birth, basal consumption and thinking cost, which are the same for every member; and the share of the living with enough mass to move and to reproduce.
+- **Movement** (average of the living): distance index and steps without moving.
+- **Activity** (average per creature, dead or alive): children, and attacks and kills (herbivores and carnivores).
+- **Mass balance** (average per creature, dead or alive; with metabolism): the average of each line of the creature's mass balance. Since the balance is a sum, the averages add up too: the last line is the average of the mass of the living and the mass the dead had when they died.
 - **Deaths**: the average age of the dead when they died, and the share of the deaths of each cause. Creatures still alive are not included, so while a species is young this age is low even if it lives long.
+- **Brain**: the genes split by what they cost, neurons, connections and stamina, the same for every member.
+
+Young creatures have had less time for the per creature averages, so compare species of a similar average age.
 
 In continuous runs, a creature born after the species were grouped that has already died is not counted, so the last two groups can differ from the real values.
 
@@ -81,8 +87,9 @@ The section is updated at every step:
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
 - **Body**: mass against the maximum mass, mass at birth, basal consumption per step and thinking cost (what the sensors and actions of its brain cost in each step it thinks). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
-- **Activity**: children, attacks and kills (for herbivores and carnivores), and the water it got from photosynthesis and from its prey (with metabolism).
-- **Brain**: genes, neurons and connections, the stamina and how many steps the brain has run (see [Stamina](../reference/sensors-and-actions.md#stamina)), and the action with the highest output in this step.
+- **Activity**: children, and attacks and kills (for herbivores and carnivores).
+- **Mass balance** (with metabolism): where its mass came from and went since it was born, as a sum. It starts from the mass it got at birth, adds the water from photosynthesis and the mass eaten from prey (with the net of the attacks: eaten minus what attacking cost), and takes away the basal consumption of its genes, the actions (thinking, moving and attacking) and reproduction (the cost of the attempts and births, and the birth mass given to its children). The last line is the result, which should be its mass; if it is not, its real mass is shown in red. For a dead creature it is the mass it had when it died. A creature loaded from a file starts from the mass it had when it was saved.
+- **Brain**: genes, split by what they cost every step (the primary genes, the free Stamina gene and the others; see [Mass and metabolism](../model/creatures.md#mass-and-metabolism)), neurons and connections, the stamina and how many steps the brain has run (see [Stamina](../reference/sensors-and-actions.md#stamina)), and the action with the highest output in this step.
 
 If the creature dies, the section says why (old age, out of mass, eaten and by which species, or health), when, and keeps the values of its last step. In generational runs most creatures do not die: they are replaced when the generation ends, and the section says so.
 

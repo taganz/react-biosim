@@ -80,7 +80,7 @@ export default class CreatureAttack {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
         // check before paying the try: the cost could leave the attacker too light for the prey it found
         const canEat = this.canEat(prey);
-        this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);
+        this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);
         if (!canEat) {
             return 0;
         }
@@ -97,7 +97,7 @@ export default class CreatureAttack {
         const preyMass = prey.mass;
         this.creature.waterFromPrey += this.creature._mass.eat(prey._mass);
         prey.killedByAttack(this.creature.specie);
-        this.creature._mass.consume(this.worldControllerData.ATTACK_COST_PER_MASS_DO);
+        this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_DO);
         return preyMass;
    }
 

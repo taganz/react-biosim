@@ -4,7 +4,7 @@ import { SimulationData } from "@/simulation/SimulationData";
 import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
-import { computeSpeciesStats, countLivingWithGenes, findLivingCreatureById, findLivingParent, haveSameGenome, speciesMembers } from "@/simulation/generations/creatureQueries";
+import { computeSpeciesStats, countLivingWithGenes, creatureMassBalance, findLivingCreatureById, findLivingParent, haveSameGenome, speciesMembers } from "@/simulation/generations/creatureQueries";
 
 describe('creature queries', () => {
 
@@ -97,6 +97,31 @@ describe('creature queries', () => {
             const { perCreature } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
             expect(perCreature?.children).toBe(1.5);
             expect(perCreature?.fromPrey).toBe(2);
+        });
+
+        test('the mass balance sums to its mass and is averaged line by line', () => {
+            a1._mass.setStartMass(2);
+            a1.waterFromPhotosynthesis = 1;
+            a1._mass.totalBasal = 0.5;
+            a1._mass.totalMoving = 0.25;
+            a1._mass.totalGivenToChildren = 1;
+            expect(creatureMassBalance(a1).end).toBeCloseTo(1.25);
+            a2._mass.setStartMass(1);
+            a2._mass.totalBasal = 0.5;
+            const { perCreature } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
+            expect(perCreature?.balance.start).toBe(1.5);
+            expect(perCreature?.balance.basal).toBe(0.5);
+            expect(perCreature?.balance.end).toBeCloseTo((1.25 + 0.5) / 2);
+        });
+
+        test('the shares of the living with enough mass', () => {
+            jest.spyOn(a1, 'hasEnoughMassToMove').mockReturnValue(true);
+            jest.spyOn(a2, 'hasEnoughMassToMove').mockReturnValue(false);
+            a1.stepsStopped = 4;
+            a2.stepsStopped = 2;
+            const { living } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
+            expect(living?.canMove).toBe(50);
+            expect(living?.stepsStopped).toBe(3);
         });
 
         test('the causes of death are shares of the deaths, the most frequent first', () => {

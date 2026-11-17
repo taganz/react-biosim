@@ -1,6 +1,41 @@
 import Creature, { DeathCause } from "../creature/Creature";
 import WorldGenerations from "./WorldGenerations";
 
+/** where the mass of a creature came from and went since it was born (see CreatureMass) */
+export type MassBalance = {
+  start: number;
+  photosynthesis: number;
+  fromPrey: number;
+  basal: number;
+  thinking: number;
+  moving: number;
+  attacking: number;
+  reproductionCost: number;
+  givenToChildren: number;
+  /** start plus the gains minus the costs: its mass, or the mass it had when it died */
+  end: number;
+};
+
+export function creatureMassBalance(creature: Creature): MassBalance {
+  const mass = creature._mass;
+  const balance = {
+    start: mass.startMass,
+    photosynthesis: creature.waterFromPhotosynthesis,
+    fromPrey: creature.waterFromPrey,
+    basal: mass.totalBasal,
+    thinking: mass.totalThinking,
+    moving: mass.totalMoving,
+    attacking: mass.totalAttacking,
+    reproductionCost: mass.totalReproductionCost,
+    givenToChildren: mass.totalGivenToChildren,
+  };
+  return {
+    ...balance,
+    end: balance.start + balance.photosynthesis + balance.fromPrey - balance.basal - balance.thinking
+      - balance.moving - balance.attacking - balance.reproductionCost - balance.givenToChildren,
+  };
+}
+
 export type SpeciesStats = {
   alive: number;
   /** creatures of the species when the generation was grouped */
@@ -10,9 +45,17 @@ export type SpeciesStats = {
   /** the started and born since that have died */
   died: number;
   /** averages of the living, null when none is alive */
-  living: { age: number; mass: number; health: number; distance: number } | null;
+  living: {
+    age: number; mass: number; health: number; distance: number; stepsStopped: number;
+    /** shares of the living, 0-100 */
+    canMove: number; canReproduce: number;
+  } | null;
   /** averages of every known creature, dead or alive; null when there are none */
-  perCreature: { children: number; kills: number; attacks: number; photosynthesis: number; fromPrey: number } | null;
+  perCreature: {
+    children: number; kills: number; attacks: number; photosynthesis: number; fromPrey: number;
+    /** the average of each line of the mass balance */
+    balance: MassBalance;
+  } | null;
   /** average age of the dead when they died, null when none has died */
   averageAgeAtDeath: number | null;
   /** share of the deaths, 0-100, the most frequent first */
@@ -150,6 +193,9 @@ export function computeSpeciesStats(generations: WorldGenerations, genes: readon
       mass: average(living, living.length, (creature) => creature.mass),
       health: average(living, living.length, (creature) => creature.health),
       distance: average(living, living.length, (creature) => creature.distanceCovered),
+      stepsStopped: average(living, living.length, (creature) => creature.stepsStopped),
+      canMove: average(living, living.length, (creature) => creature.hasEnoughMassToMove() ? 100 : 0),
+      canReproduce: average(living, living.length, (creature) => creature.reproduction.hasEnoughtMassToReproduce ? 100 : 0),
     } : null,
     perCreature: known.size > 0 ? {
       children: average(known, known.size, (creature) => creature.childrenCount),
@@ -157,12 +203,25 @@ export function computeSpeciesStats(generations: WorldGenerations, genes: readon
       attacks: average(known, known.size, (creature) => creature.attackCount),
       photosynthesis: average(known, known.size, (creature) => creature.waterFromPhotosynthesis),
       fromPrey: average(known, known.size, (creature) => creature.waterFromPrey),
+      balance: averageBalance(Array.from(known, creatureMassBalance)),
     } : null,
     // the age stops changing when a creature dies
     averageAgeAtDeath: dead.length > 0 ? average(dead, dead.length, (creature) => creature._age) : null,
     deathCauses: Array.from(causeCounts, ([cause, count]) => ({ cause, percentage: (count / dead.length) * 100 }))
       .sort((a, b) => b.percentage - a.percentage),
   };
+}
+
+// the average of each line; at least one balance
+function averageBalance(balances: MassBalance[]): MassBalance {
+  const result = { ...balances[0] };
+  const keys = Object.keys(result) as (keyof MassBalance)[];
+  for (const key of keys) {
+    let sum = 0;
+    for (const balance of balances) sum += balance[key];
+    result[key] = sum / balances.length;
+  }
+  return result;
 }
 
 // the living creatures of the same species as `creature` (itself included if alive), ordered by id

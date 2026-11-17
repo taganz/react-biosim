@@ -306,8 +306,8 @@ export default class Creature {
       return false;
     }
     this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
-    this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);
-    this._mass.consume(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
+    this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);
+    this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
     
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
