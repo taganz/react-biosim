@@ -19,6 +19,9 @@ export default class CreatureMass {
     _metabolismEnabled : boolean;
     _massAtBirth : number; 
     _maxMass : number;
+    // share of what it takes that becomes mass (ASSIMILATION_EFFICIENCY of its genus); the rest goes to the cloud
+    _photosynthesisEfficiency : number;
+    _preyEfficiency : number;
     _worldWater: WorldWater;
     _creature : Creature;
     // mass spent over the creature's life, shown in the creature panel
@@ -65,6 +68,15 @@ export default class CreatureMass {
         this._metabolismEnabled = creature.generations.metabolismEnabled;
         this._maxMass = this._massAtBirth 
                 * creature.generations.worldController.simData.worldControllerData.MASS_MAX_MULTIPLE_MASS_AT_BIRT;
+        const efficiency = creature._genus === "unknown" ? undefined
+            : creature.generations.worldController.simData.worldControllerData.ASSIMILATION_EFFICIENCY?.[creature._genus];
+        this._photosynthesisEfficiency = CreatureMass.efficiency(efficiency?.photosynthesis);
+        this._preyEfficiency = CreatureMass.efficiency(efficiency?.prey);
+    }
+
+    // missing or not a number: 1, as before the setting existed; kept between 0 and 1
+    static efficiency(value: number | undefined): number {
+        return typeof value === "number" && Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 1;
     }
 
     // the first gene that drives Reproduction and, in plants only, the first that drives Photosynthesis cost
@@ -140,27 +152,40 @@ export default class CreatureMass {
     }
 
     
-    // takes the prey's mass, up to the maximum mass; the water stays inside creatures.
-    // Called before the prey dies, so whatever is left returns to its cell. Returns the mass taken
+    // takes the prey's mass, as much as fits below the maximum mass once the assimilation efficiency
+    // is applied: that share becomes mass and the rest goes to the cloud. Called before the prey dies,
+    // so whatever is not taken returns to its cell. Returns the mass gained
     eat(prey: CreatureMass): number {
         if (!this._metabolismEnabled) {return 0}
-        const eaten = Math.max(0, Math.min(prey._mass, this._maxMass - this._mass));
-        prey._mass -= eaten;
-        this._mass += eaten;
-        return eaten;
+        const efficiency = this._preyEfficiency;
+        if (efficiency <= 0) return 0;
+        const room = Math.max(0, this._maxMass - this._mass);
+        const taken = Math.max(0, Math.min(prey._mass, room / efficiency));
+        const gained = taken * efficiency;
+        prey._mass -= taken;
+        this._mass += gained;
+        // the prey's water is already inside creatures
+        if (taken > gained) this._worldWater.dissipateWater(taken - gained);
+        return gained;
     }
 
+    // photosynthesis: takes up to massWanted water from the cell; the assimilation efficiency of
+    // its genus becomes mass and the rest goes to the cloud. Returns the mass gained
     addFromGrid(cell: GridCell, massWanted: number) {
 
         if (!this._metabolismEnabled) {return 0}
-        // never take more water than fits, or it would be lost
+        const efficiency = this._photosynthesisEfficiency;
+        if (efficiency <= 0) return 0;
+        // never take more water than fits once assimilated, or it would be lost
         const room = Math.max(0, this._maxMass - this._mass);
-        const waterGotFromCell = this._worldWater.getWaterFromCell(cell, Math.min(massWanted, room));
-        this._mass += waterGotFromCell;
-        this._mass = this._mass < this._maxMass 
-                    ? this._mass 
+        const waterGotFromCell = this._worldWater.getWaterFromCell(cell, Math.min(massWanted, room / efficiency));
+        const gained = waterGotFromCell * efficiency;
+        this._mass += gained;
+        this._mass = this._mass < this._maxMass
+                    ? this._mass
                     : this._maxMass;
-        return waterGotFromCell;
+        if (waterGotFromCell > gained) this._worldWater.dissipateWater(waterGotFromCell - gained);
+        return gained;
     }
 
     consume(mass: number) : number {

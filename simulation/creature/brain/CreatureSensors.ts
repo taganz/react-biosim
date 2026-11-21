@@ -5,7 +5,9 @@ import { Genus } from "../CreatureGenus";
 import Connection from "./Connection";
 import { NeuronType } from "./Neuron";
 
-const preySensorNames: SensorName[] = ["PreyDistance", "PreyNorth", "PreyEast", "PreySouth", "PreyWest"];
+const preySensorNames: SensorName[] = [
+  "PreyDistance", "PreyNorth", "PreyEast", "PreySouth", "PreyWest", "PreyProximity",
+];
 
 // The sensors in the order of the data table, for the switch of writeOutputs
 const enum SensorCode {
@@ -13,6 +15,12 @@ const enum SensorCode {
   HorizontalBorderDistance, VerticalBorderDistance, BorderDistance,
   TouchNorth, TouchEast, TouchSouth, TouchWest, Pain, PopulationDensity, Mass,
   PreyDistance, PreyNorth, PreyEast, PreySouth, PreyWest, PredatorDistance, PredatorDirection,
+  PreyProximity,
+}
+
+// the sensors that read the closest prey, found by one search shared by all of them
+function isPreyCode(code: SensorCode): boolean {
+  return (code >= SensorCode.PreyDistance && code <= SensorCode.PreyWest) || code === SensorCode.PreyProximity;
 }
 
 const adjacentTilesLookup: [number, number][] = [
@@ -57,7 +65,8 @@ export type SensorName =
   | "PreySouth"              // 20
   | "PreyWest"              // 21
   | "PredatorDistance"      // 22
-  | "PredatorDirection";    // 23
+  | "PredatorDirection"     // 23
+  | "PreyProximity";        // 24
 
 export type Sensor = {
   name: SensorName;
@@ -248,6 +257,13 @@ export default class CreatureSensors {
       compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
+    PreyProximity: {
+      name: "PreyProximity",
+      enabled: false,
+      neuronCount: 1,
+      compatibleGenus: ["attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
   };
 
 
@@ -383,7 +399,7 @@ export default class CreatureSensors {
     for (let id = 0; id < this.enabledCodes.length; id++) {
       const code = this.enabledCodes[id];
       if (!needRandom && code === SensorCode.Random) continue;
-      if (!needPrey && code >= SensorCode.PreyDistance && code <= SensorCode.PreyWest) continue;
+      if (!needPrey && isPreyCode(code)) continue;
       ids.push(id);
     }
     const values: number[] = Array(this.enabledCodes.length).fill(0);
@@ -391,27 +407,36 @@ export default class CreatureSensors {
     return values;
   }
 
+  // the closest prey within DETECT_RADIUS, or null: the search the prey sensors and the
+  // MoveToPrey action share
+  static searchPrey(creature: Creature): DetectedCreature | null {
+    return detectClosest(creature.generations.grid, creature.position,
+      creature.generations.worldController.simData.constants.DETECT_RADIUS,
+      creature.preyGenus);
+  }
+
   // Writes the value of the sensors in ids (enabled ids, ascending) at their id in values and
   // leaves the other values as they are. Only Random draws a number and only the prey sensors
-  // search the prey (once for all of them), so a brain computes only the sensors it reads
-  writeOutputs(creature: Creature, ids: number[], values: number[]): void {
+  // search the prey (once for all of them), so a brain computes only the sensors it reads.
+  // sensedPrey is the result of a search already made in this step (null: no prey); undefined
+  // searches here if a prey sensor needs it
+  writeOutputs(creature: Creature, ids: number[], values: number[],
+      sensedPrey?: DetectedCreature | null): void {
     const codes = this.enabledCodes;
     const position = creature.position;
     const worldSize = creature.generations.grid.size;
-    let preySearched = false;
-    let prey: DetectedCreature | null = null;
+    let preySearched = sensedPrey !== undefined;
+    let prey: DetectedCreature | null = sensedPrey ?? null;
 
     for (let k = 0; k < ids.length; k++) {
       const id = ids[k];
       const code = codes[id];
       let value: number;
 
-      if (code >= SensorCode.PreyDistance && code <= SensorCode.PreyWest) {
+      if (isPreyCode(code)) {
         // the distance and direction sensors share one search, the most expensive part of a step
         if (!preySearched) {
-          prey = detectClosest(creature.generations.grid, position,
-            creature.generations.worldController.simData.constants.DETECT_RADIUS,
-            creature.preyGenus);
+          prey = CreatureSensors.searchPrey(creature);
           preySearched = true;
         }
         switch (code) {
@@ -427,6 +452,12 @@ export default class CreatureSensors {
           case SensorCode.PreySouth:
             value = prey && prey.position[1] > position[1] ? 1 : 0;
             break;
+          case SensorCode.PreyProximity: {
+            // 1 for a neighbour, falling to 1 / DETECT_RADIUS at the edge of the radius; 0 without prey
+            const radius = Math.abs(creature.generations.worldController.simData.constants.DETECT_RADIUS);
+            value = prey ? (radius + 1 - prey.distance) / radius : 0;
+            break;
+          }
           default:  // PreyWest
             value = prey && prey.position[0] < position[0] ? 1 : 0;
         }

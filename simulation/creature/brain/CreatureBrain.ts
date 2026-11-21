@@ -6,6 +6,7 @@ import { Network } from "./Network";
 import Connection from "./Connection";
 import Neuron, { NeuronType } from "./Neuron";
 import NeuronNode from "./NeuronNode";
+import { DetectedCreature } from "@/simulation/world/grid/GridDetect";
 
 export const initialNeuronOutput = 0.5;
 
@@ -23,6 +24,10 @@ export default class CreatureBrain {
     _maxNumberNeurons: number;
     // whether a final connection reads a prey sensor: without one the prey search is skipped
     usesPreySensors: boolean = false;
+    // whether the brain needs the closest prey: it reads a prey sensor or is connected to MoveToPrey
+    usesPreySearch: boolean = false;
+    // the closest prey found at the start of the last thought (null: none, or no search)
+    sensedPrey: DetectedCreature | null = null;
     // whether a final connection reads the Random sensor: without one it draws no number
     usesRandomSensor: boolean = false;
     // the enabled ids of the sensors that the final connections read: only these are computed
@@ -61,7 +66,13 @@ export default class CreatureBrain {
 
         // each network keeps its own sensor values: the UI shows those of the selected creature
         const inputs = this.brain.inputs;
-        this.sensors.writeOutputs(this.creature, this.sensorIds, inputs);
+        // one search for the prey sensors and MoveToPrey, before any action changes the grid
+        if (this.usesPreySearch) {
+            this.sensedPrey = CreatureSensors.searchPrey(this.creature);
+            this.sensors.writeOutputs(this.creature, this.sensorIds, inputs, this.sensedPrey);
+        } else {
+            this.sensors.writeOutputs(this.creature, this.sensorIds, inputs);
+        }
         const outputs = this.brain.feedForward(inputs);
         this.actions.executeActions(this.creature, outputs);
 
@@ -259,6 +270,9 @@ export default class CreatureBrain {
             finalConnections
             );
         this.usesPreySensors = this.sensors.readsPreySensors(finalConnections);
+        const moveToPreyId = this.actions.data.MoveToPrey.enabled ? this.actions.actionNameToId("MoveToPrey") : -1;
+        this.usesPreySearch = this.usesPreySensors || finalConnections.some((connection) =>
+            connection.sinkType === NeuronType.ACTION && connection.sinkId === moveToPreyId);
         this.usesRandomSensor = this.sensors.readsRandomSensor(finalConnections);
         this.sensorIds = this.sensors.readSensorIds(finalConnections);
         this.thinkCost = this.computeThinkCost(finalConnections);

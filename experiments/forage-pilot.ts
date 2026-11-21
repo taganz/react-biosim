@@ -17,6 +17,8 @@
  *                with a positive effect (directly, or through a neuron with a positive product of weights)
  *   anyMoveGenes share of herbivores with a gene driving a movement action
  *   photoGenes   share of herbivores with a gene driving Photosynthesis (a way to gain mass without eating)
+ *   massPhoto, massNoPhoto, killsPhoto, killsNoPhoto   mean final mass and plants eaten, herbivores with / without that gene
+ *   moveToPreyGenes share of herbivores with a gene driving the MoveToPrey action (not counted in chaseGenes)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -43,7 +45,7 @@ if (process.env.WORLD_SIZE) config.overrides.worldControllerData.size = Number(p
 const DIRS: [string, string][] = [
   ["PreyNorth", "MoveNorth"], ["PreySouth", "MoveSouth"], ["PreyEast", "MoveEast"], ["PreyWest", "MoveWest"],
 ];
-const MOVES = new Set(["MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward"]);
+const MOVES = new Set(["MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward", "MoveToPrey"]);
 
 function genomeTraits(wc: WorldController, creature: Creature) {
   const gens = wc.generations;
@@ -68,6 +70,7 @@ function genomeTraits(wc: WorldController, creature: Creature) {
     chase,
     anyMove: conns.some((c) => MOVES.has(actionName(c) ?? "")),
     photo: conns.some((c) => actionName(c) === "Photosynthesis"),
+    moveToPrey: conns.some((c) => actionName(c) === "MoveToPrey"),
   };
 }
 
@@ -76,7 +79,7 @@ let tracked = new Map<number, Tracked>();
 let herbivoreSteps = 0;
 let moveSteps = 0;
 let currentGen = -1;
-const rows: string[] = ["generation;herbivores;moveRate;movers;kills;eaters;meanMass;maxMass;chaseGenes;anyMoveGenes;photoGenes;massPhoto;massNoPhoto;killsPhoto;killsNoPhoto"];
+const rows: string[] = ["generation;herbivores;moveRate;movers;kills;eaters;meanMass;maxMass;chaseGenes;anyMoveGenes;photoGenes;massPhoto;massNoPhoto;killsPhoto;killsNoPhoto;moveToPreyGenes"];
 
 function groupStats(wc: WorldController, all: Tracked[]) {
   const stat = (photo: boolean) => {
@@ -110,6 +113,7 @@ function finishGeneration(wc: WorldController) {
     share(traits.filter((t) => t.anyMove).length),
     share(traits.filter((t) => t.photo).length),
     ...groupStats(wc, all),
+    share(traits.filter((t) => t.moveToPrey).length),
   ].join(";"));
 }
 

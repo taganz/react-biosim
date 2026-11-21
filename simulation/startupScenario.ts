@@ -100,6 +100,12 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           ATTACK_COST_PER_MASS_DO : 0,
           ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
           ATTACK_SAME_GENUS : false,
+          // share of what is taken that becomes mass, by genus; the rest goes to the cloud
+          ASSIMILATION_EFFICIENCY : {
+            plant: { photosynthesis: 1, prey: 1 },
+            attack_plant: { photosynthesis: 1, prey: 1 },
+            attack_animal: { photosynthesis: 1, prey: 1 },
+          },
 
         // user values
         pauseBetweenSteps: 10,
