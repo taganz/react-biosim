@@ -1,7 +1,7 @@
 /*
  * Builds the start file of foraging phase 2: a continuous run seeded with the hunters of phase 1.
  *
- *   npx tsx experiments/forage-phase2-build.ts <phase1 final.sim> <out.sim> <rainMaxPerCell>
+ *   npx tsx experiments/forage-phase2-build.ts <phase1 final.sim> <out.sim> <rainMaxPerCell> [hunters (400)]
  *
  * - takes the most common herbivore genome of the phase 1 run;
  * - phase 1 had no Reproduction action: enabling it shifts the actions after it in the enabled list,
@@ -12,7 +12,7 @@
  */
 import fs from "node:fs";
 
-const [phase1File, outFile, rainArg] = process.argv.slice(2);
+const [phase1File, outFile, rainArg, huntersArg] = process.argv.slice(2);
 const phase1 = JSON.parse(fs.readFileSync(phase1File, "utf8"));
 const S: string[] = phase1.worldGenerationsData.enabledSensors;
 const A1: string[] = phase1.worldGenerationsData.enabledActions;
@@ -46,6 +46,6 @@ out.worldGenerationsData = {
 };
 out.worldControllerData = { ...phase1.worldControllerData, currentGen: 1, currentStep: 1, seed: undefined, rngState: undefined };
 out.waterData = { ...phase1.waterData, waterRainMaxPerCell: Number(rainArg), rainType: "rainTypeSinSin" };
-out.startGenomes = [{ genes: hunter, count: 400 }, { genes: plant, count: 2000 }];
+out.startGenomes = [{ genes: hunter, count: Number(huntersArg ?? 400) }, { genes: plant, count: 2000 }];
 fs.writeFileSync(outFile, JSON.stringify(out, null, 2));
 console.log("hunter genes", herbivores[0].creatures.length, "creatures in phase 1:", hunter.length);
