@@ -68,12 +68,28 @@ When it is on, mass is the creature's energy:
 
 | Gains mass | Loses mass |
 |---|---|
-| **Photosynthesis:** takes `MASS_WATER_TO_MASS_PER_STEP × action output` of water from its cell, or less if it would go over its maximum mass. | Basal metabolism and action cost, every step |
-| **Attack:** a successful attack takes the prey's mass, up to the maximum mass. The rest returns to the prey's cell when it dies. | Moving, attacking, reproducing (see [parameters](../reference/parameters.md#metabolism-constants-worldcontrollerdata)) |
+| **Photosynthesis:** takes `MASS_WATER_TO_MASS_PER_STEP × action output` of water from its cell, or less if it would go over its maximum mass. It gains the [assimilation efficiency](#assimilation-efficiency) of that water. | Basal metabolism and action cost, every step |
+| **Attack:** a successful attack takes the prey's mass, up to the maximum mass, and gains the assimilation efficiency of it. What it does not take returns to the prey's cell when it dies. | Moving, attacking, reproducing (see [parameters](../reference/parameters.md#metabolism-constants-worldcontrollerdata)) |
 
 - Mass is capped at `MASS_MAX_MULTIPLE_MASS_AT_BIRT × birth mass`.
 - A creature with no mass left dies.
 - All mass is water, so it is conserved (see [World → Water](world.md#water)). A child's birth mass comes from its parent; in generational runs, the mass of each new generation comes from the cloud.
+
+### Assimilation efficiency
+
+Not everything a creature takes becomes its own mass. `ASSIMILATION_EFFICIENCY` gives, for each genus (plant, herbivore, carnivore), the share that does, separately for the two ways of gaining mass:
+
+- **`photosynthesis`**: of the water taken from the cell;
+- **`prey`**: of the prey's mass, in an attack and when a parent eats a neighbour to make room for its child.
+
+The rest goes to the cloud, like the mass spent on metabolism: it is the energy lost between trophic levels. It does not go to the cell, which would water the plants right next to the creature that ate.
+
+- With 1 (the startup value, and the value of any genus or source missing from a file) everything becomes mass, as before the setting existed.
+- With 0 the creature takes nothing: a herbivore with photosynthesis 0 cannot photosynthesise, and an attacker with prey 0 kills its prey without gaining anything, so all the prey's mass returns to its cell.
+- Values are kept between 0 and 1.
+- **Uptake and efficiency are separate.** The uptake stays as it was (`MASS_WATER_TO_MASS_PER_STEP` per step, or the whole prey), and the efficiency is applied to what is taken. So a plant with efficiency 0.5 takes the same water from its cell but grows half as fast.
+- **The maximum mass applies after the efficiency.** A creature takes only as much as fits below its maximum mass once assimilated. Near the maximum, a herbivore with prey efficiency 0.5 and room for 1 takes 2 of the prey: it gains 1, 1 goes to the cloud, and the rest of the prey returns to the prey's cell.
+- Creatures of genus `unknown` have neither photosynthesis nor attack genes, so they have no row.
 
 ### Reproduction
 
@@ -91,7 +107,7 @@ The **Reproduction** action creates a child during the generation, in one of the
 **AttackPlant** and **AttackAnimal** fire when their output is above `ACTION_ATTACK_OFFSET` (0.6) and one of the 4 neighbouring cells (N, E, S, W) holds a creature the attacker can eat: alive, of a **different genus** (see `ATTACK_SAME_GENUS` below), and with at most `1 / ATTACK_MIN_PREY_MASS_FACTOR` (half) of the attacker's mass. If several can be eaten, one is chosen at random; neighbours that cannot be eaten are skipped, and with none the action does nothing. Plants never eat. The attack:
 
 1. costs `ATTACK_COST_PER_MASS_TRY`. Whether the prey can be eaten is decided before paying it. There is no minimum mass to attack: a creature lighter than that cost dies trying;
-2. kills the target, and the attacker gains the target's mass, up to its maximum mass.
+2. kills the target, and the attacker gains the target's mass, up to its maximum mass, times its [assimilation efficiency](#assimilation-efficiency) for prey.
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.
 
@@ -133,8 +149,8 @@ Each creature keeps these values. Nothing in the simulation reads them; they are
 | `birthGen` | The generation it was born in. `stepBirth` is the step within that generation. |
 | `childrenCount` | How many creatures got their genome from it. |
 | `attackCount`, `killCount` | Attack actions executed and prey killed. |
-| `waterFromPhotosynthesis` | Total water taken from its cell by Photosynthesis. |
-| `waterFromPrey` | Total mass taken from the prey it killed. It only counts what fitted below its maximum mass: the rest of the prey returns to the prey's cell. |
+| `waterFromPhotosynthesis` | Total mass gained by Photosynthesis: the water taken from its cell times the [assimilation efficiency](#assimilation-efficiency). |
+| `waterFromPrey` | Total mass gained from the prey it killed: what fitted below its maximum mass, times the assimilation efficiency. The rest of the prey returns to the prey's cell. |
 | `deathCause`, `deathStep`, `deathGen` | Set the first time `die()` runs: `old`, `basalConsumption` (out of mass), `attacked`, `health`. Creatures replaced at the end of a generation never die, so these stay `null`. |
 | `killedBySpecies` | For `attacked`, the species of the attacker. |
 

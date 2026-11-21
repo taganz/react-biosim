@@ -1,5 +1,9 @@
 import type { SensorName } from "../creature/brain/CreatureSensors";
 import type { ActionName } from "../creature/brain/CreatureActions";
+import type { Genus } from "../creature/CreatureGenus";
+
+/** share of what a creature takes that becomes its own mass: from its cell by photosynthesis, or from its prey */
+export type AssimilationEfficiency = { photosynthesis?: number, prey?: number };
 
 
 
@@ -50,6 +54,9 @@ export default interface WorldControllerData {
     ATTACK_MIN_PREY_MASS_FACTOR : number
     /** attackers can eat other species of their genus, never their own species. Missing: off */
     ATTACK_SAME_GENUS? : boolean
+    /** by genus, the share of the water taken by photosynthesis and of the prey eaten that becomes mass;
+     *  the rest goes to the cloud. Missing: 1 */
+    ASSIMILATION_EFFICIENCY? : Partial<Record<Exclude<Genus, "unknown">, AssimilationEfficiency>>
 
     // user values
     pauseBetweenSteps: number;

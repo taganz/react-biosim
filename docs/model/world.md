@@ -55,6 +55,7 @@ The total amount of water is fixed and is split between three stores ([WorldWate
 - **Creatures of generation 1** take their birth mass from the cloud.
 - **Photosynthesis** moves water from the creature's cell into the creature.
 - **Spending mass** (moving, metabolism, reproducing…) sends that water back to the cloud.
+- **Assimilation losses**, when [`ASSIMILATION_EFFICIENCY`](creatures.md#assimilation-efficiency) is below 1, go to the cloud too: the part of the water taken by photosynthesis, or of the prey eaten, that does not become mass.
 - **Death** returns the creature's remaining mass to its cell, up to the cell's capacity. The rest goes to the cloud.
 - **Rain**, at the end of every generation, adds water to every cell using the **Rain type** pattern, with **Rain max per cell** as the maximum. It only rains if the cloud can cover the maximum everywhere. In continuous runs it rains every step instead, `1 ÷ steps per generation` of that amount each time.
   - `rainTypeUniform`: the same amount everywhere.

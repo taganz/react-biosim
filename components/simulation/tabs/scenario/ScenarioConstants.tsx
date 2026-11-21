@@ -7,7 +7,7 @@ import { simulationDataAtom } from "../../store";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import CheckboxInput from "@/components/global/inputs/CheckboxInput";
-import WorldControllerData from "@/simulation/world/WorldControllerData";
+import WorldControllerData, { AssimilationEfficiency } from "@/simulation/world/WorldControllerData";
 import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrain";
 import { ObjectColors } from "@/simulation/world/objects/objectColor";
@@ -171,6 +171,14 @@ const GENERA: { genus: Genus; label: string }[] = [
   { genus: "attack_animal", label: "Carn." },
 ];
 
+type AssimilationGenus = keyof NonNullable<WorldControllerData["ASSIMILATION_EFFICIENCY"]>;
+
+// ASSIMILATION_EFFICIENCY, one row per source with one value per genus
+const ASSIMILATION_ROWS: [keyof AssimilationEfficiency, string][] = [
+  ["photosynthesis", "Share of the water taken by photosynthesis that becomes mass, by genus (plant, herbivore, carnivore). The rest goes to the cloud. 0: the genus cannot photosynthesise."],
+  ["prey", "Share of the prey eaten that becomes mass, by genus. The rest goes to the cloud. Plants never eat."],
+];
+
 const LOG_EVENTS = Object.values(LogEvent);
 
 const LOCALES = ["es-ES", "en-US"];
@@ -207,6 +215,18 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
       },
     }));
 
+  const setAssimilation = (genus: AssimilationGenus, source: keyof AssimilationEfficiency, value: number) =>
+    setSimulationData((prev) => {
+      const table = prev.worldControllerData.ASSIMILATION_EFFICIENCY ?? {};
+      return {
+        ...prev,
+        worldControllerData: {
+          ...prev.worldControllerData,
+          ASSIMILATION_EFFICIENCY: { ...table, [genus]: { ...table[genus], [source]: value } },
+        },
+      };
+    });
+
   const setWorldValue = (key: MassConstant, value: number) =>
     setSimulationData((prev) => ({
       ...prev,
@@ -230,6 +250,23 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
                   step={step}
                   min={0}
                 />
+              </ConstantRow>
+            ))}
+            {group.title === "Mass and metabolism" && ASSIMILATION_ROWS.map(([source, description]) => (
+              <ConstantRow key={source} name={`ASSIMILATION_EFFICIENCY ${source}`} description={description}>
+                <div className="grid grid-cols-3 gap-1">
+                  {GENERA.map(({ genus, label }) => (
+                    <NumberInput
+                      key={genus}
+                      label={<span className="text-xs">{label}</span>}
+                      value={worldControllerData.ASSIMILATION_EFFICIENCY?.[genus as AssimilationGenus]?.[source] ?? 1}
+                      onChange={(value) => setAssimilation(genus as AssimilationGenus, source, value)}
+                      step={0.05}
+                      min={0}
+                      max={1}
+                    />
+                  ))}
+                </div>
               </ConstantRow>
             ))}
             {group.title === "Attack" && (

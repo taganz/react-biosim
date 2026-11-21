@@ -68,7 +68,7 @@ export default class Creature {
   killCount : number = 0;
   thinkCount : number = 0;           // steps in which the brain ran
   waterFromPhotosynthesis : number = 0;
-  waterFromPrey : number = 0;        // the prey's mass it kept, up to its maximum mass
+  waterFromPrey : number = 0;        // the mass it gained from its prey, up to its maximum mass
   deathCause : DeathCause | null = null;
   deathStep : number | null = null;
   deathGen : number | null = null;
