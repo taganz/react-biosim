@@ -17,7 +17,7 @@ const phase1 = JSON.parse(fs.readFileSync(phase1File, "utf8"));
 const S: string[] = phase1.worldGenerationsData.enabledSensors;
 const A1: string[] = phase1.worldGenerationsData.enabledActions;
 const A2 = ["MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward",
-  "Photosynthesis", "Reproduction", "AttackPlant"];
+  "Photosynthesis", "Reproduction", "AttackPlant", ...(A1.includes("MoveToPrey") ? ["MoveToPrey"] : [])];
 
 const sinkIsAction = (g: number) => ((g >>> 23) & 1) === 1;
 const actionOf = (g: number) => A1[((g >>> 16) & 127) % A1.length];

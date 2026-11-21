@@ -93,7 +93,31 @@ Cada opción nueva necesita: un campo en `WorldControllerData`, el valor por def
 
 **Siguiente paso**: implementar las cuatro opciones y repetir la fase 2 con `MASS_BASAL_CONSUMPTION_PER_MASS` y `ATTACK_MASS_EFFICIENCY`. Si los cazadores siguen perdiendo, la siguiente palanca sería una lluvia que se desplace con el tiempo (código nuevo).
 
-## 7. Herramientas y archivos
+## 7. Con el sensor PreyProximity y la acción MoveToPrey (21 de noviembre)
+
+`MoveToPrey` empuja hacia la presa más cercana con un solo gen. Para probarlo, se añade al final de `enabledActions` con `EXTRA='{"worldGenerationsData":{"enabledActions":[…, "MoveToPrey"]}}'`. `forage.csv` tiene una columna nueva, `moveToPreyGenes`; `chaseGenes` sigue contando solo `PreyX → MoveX`.
+
+**Fase 1** (`results/mtp100-*`, `results/mtp200-*`, 8 ejecuciones de 300 generaciones): **en las 8** el 97–100 % de los herbívoros usa MoveToPrey, frente a 4 de 8 con alguna forma de persecución antes.
+- Aparece en 3 generaciones, frente a las 13 que tardaba la persecución antigua.
+- Genomas de **2 genes** (`N0 → MoveToPrey` + `N0 → AttackPlant`).
+- Comen más (3,6–4,1 plantas) moviéndose menos (4–10 % de los pasos), porque solo se mueven cuando hay presa.
+- Funciona igual con comida densa que dispersa: ya no hace falta la fase 1b.
+
+**Fase 2** (`results/m2-*`, empezando con 400 cazadores de `mtp200-mid-s1`):
+
+| Variante | Resultado |
+|---|---|
+| Género fijo, con y sin comer para hacer sitio (gen 0.03) | Los herbívoros se extinguen en la generación 1 |
+| Genes baratos (0.005), género fijo, sin comer para hacer sitio | Arrasan las plantas y todo se extingue 4 veces |
+| **Base** (gen 0.03, sin restricciones) | Se extingue 2 veces; en el tercer arranque, **con genomas aleatorios**, evolucionan herbívoros móviles que **duran 100 generaciones**: el 67 % se mueve, con un 40 % de los pasos en movimiento, y el MoveToPrey sube hasta el 85 %. Los ciclos de auge y caída son fuertes (entre 2 y 735 herbívoros). |
+
+**Qué cambia en el estudio**:
+- El cazador ya cuesta casi lo mismo que el sedentario (2–3 genes frente a 2), así que **el sedentarismo deja de ganar siempre**. Es la primera vez que aparecen herbívoros móviles en continuo.
+- El problema principal pasa a ser el **exceso de eficacia**: arrasan las plantas y se extinguen.
+- La propuesta más urgente pasa a ser `ATTACK_MASS_EFFICIENCY`, para frenar los auges. `MASS_BASAL_CONSUMPTION_PER_MASS` queda en segundo plano.
+- Falta confirmar el resultado de "base" con más semillas, porque es una sola ejecución inestable.
+
+## 8. Herramientas y archivos
 
 Todo esto está sin confirmar en git.
 
@@ -113,5 +137,7 @@ Todo esto está sin confirmar en git.
   - `p2t-*`: fase 2, variantes iniciales;
   - `p2f-*`: género fijo;
   - `p2n-*`: sin comer para hacer sitio;
-  - `p2r-*`: niveles de lluvia.
+  - `p2r-*`: niveles de lluvia;
+  - `mtp100-*`, `mtp200-*`: fase 1 con MoveToPrey;
+  - `m2-*` y `phase2/start-mtp-rain30.sim`: fase 2 con MoveToPrey.
 - Para ver los resultados en la app, carga `setup.sim` o `final.sim` con *Load .sim file*. La app **no** bloquea la fotosíntesis de los herbívoros, así que no reproduce exactamente el piloto.
