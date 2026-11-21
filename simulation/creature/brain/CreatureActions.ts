@@ -16,7 +16,8 @@ export type ActionName =
   | "Reproduction"
   | "AttackPlant"
   | "AttackAnimal"
-  | "Stamina";
+  | "Stamina"
+  | "MoveToPrey";
 
 export type Action = {
   name: ActionName;
@@ -98,6 +99,13 @@ export default class CreatureActions {
       name: "Stamina", // 10
       enabled: false,
       compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      mainGenus: null,
+    },
+    // moves towards the closest prey, the one the prey sensors see
+    MoveToPrey: {
+      name: "MoveToPrey", // 11
+      enabled: false,
+      compatibleGenus: ["attack_plant", "attack_animal"],
       mainGenus: null,
     },
 
@@ -328,6 +336,16 @@ export default class CreatureActions {
 
   // Stamina: read at birth, nothing to execute
   if (this.data.Stamina.enabled) {
+    currentIndex++;
+    input = values[currentIndex];
+  }
+
+  // MoveToPrey
+  if (this.data.MoveToPrey.enabled) {
+    if (input > 0) {
+      creature.moveToPrey(input);
+    }
+
     currentIndex++;
     input = values[currentIndex];
   }

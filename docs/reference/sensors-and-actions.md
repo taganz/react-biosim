@@ -47,6 +47,7 @@ Sensor outputs are mostly between 0 and 1. Genus columns: P = plant, H = herbivo
 | 21 | PreyWest | 1 if the closest prey is to the left. | | ✓ | ✓ |
 | 22 | PredatorDistance | Not implemented yet (see [known issues](#known-issues)). | | ✓ | |
 | 23 | PredatorDirection | Not implemented yet (see [known issues](#known-issues)). | | ✓ | |
+| 24 | PreyProximity | How close the closest prey is: `(DETECT_RADIUS + 1 − distance) / DETECT_RADIUS`, so 1 for a neighbour (diagonals included) and `1 / DETECT_RADIUS` at the edge of the radius. 0 if there is none. Unlike PreyDistance it is between 0 and 1 and grows as the prey gets closer. Disabled by default. | | ✓ | ✓ |
 
 The # column is the position in the full list. Genes do not use this number: they use the position among the **enabled** sensors (see [Gene encoding](#gene-encoding)).
 
@@ -67,12 +68,20 @@ Each action reads the output of its neuron once per step in which the brain runs
 | 8 | AttackPlant | Only when the output is above `ACTION_ATTACK_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. | | ✓ | ✓ |
 | 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
 | 10 | Stamina | Not executed: the weight of the first gene that drives it sets the creature's stamina, how often its brain runs. Disabled by default. See [Stamina](#stamina). | ✓ | ✓ | ✓ |
+| 11 | MoveToPrey | Adds an urge to move towards the closest prey, the one the prey sensors see, as strong as the output on each axis that leads to it. Disabled by default. See [MoveToPrey](#movetoprey). | | ✓ | ✓ |
 
 **Movement.** The urges from all movement actions are added up separately for x and for y. On each axis the creature moves one cell, in the direction of the urge, with probability `|tanh(urge)|`. So it moves at most one cell per axis per step, and only if the target cell is free.
 
 **Prey.** Herbivores hunt plants and carnivores hunt herbivores. Plants have no prey, so the prey sensors read "no prey" for them.
 
-**Sensors a brain does not read.** A brain computes only the sensors that one of its connections reads; the others stay at 0, a value nothing reads. Which sensors a brain reads is decided once, when the brain is built. This matters for two sensors: the five prey sensors share one search, the most expensive sensor, which a brain with no connection from them skips; and the Random sensor draws a number only for a brain that reads it, so brains that do not read it leave the random sequence alone.
+**MoveToPrey.** With one gene the creature heads for its closest prey, which with the direction sensors takes four (PreyNorth → MoveNorth and so on). The prey is the one found at the start of the thought, within `DETECT_RADIUS`, by the same search as the prey sensors.
+- Further than one cell, it urges towards the prey on both axes, or on one if the prey is in line.
+- Next to the prey (N, E, S or W), where AttackPlant and AttackAnimal reach it, it adds no urge.
+- With the prey in a diagonal neighbour cell, which an attack cannot reach, it urges on one axis only, to a free cell beside the prey: horizontally if that cell is free, otherwise vertically, otherwise not at all.
+- It looks only for the prey genus, like the sensors. It also heads for prey too heavy to eat (see [Attack](#actions)).
+- In the steps a creature does not think (Stamina), the urge stays, like the other movement actions.
+
+**Sensors a brain does not read.** A brain computes only the sensors that one of its connections reads; the others stay at 0, a value nothing reads. Which sensors a brain reads is decided once, when the brain is built. This matters for two sensors: the six prey sensors share one search, the most expensive sensor, which a brain with no connection from them and none to MoveToPrey skips (MoveToPrey uses the same search); and the Random sensor draws a number only for a brain that reads it, so brains that do not read it leave the random sequence alone.
 
 **Attack.** The target is a neighbour the attacker can eat: one of a different genus (with `ATTACK_SAME_GENUS`, also another species of its genus), at most half as heavy as the attacker (`ATTACK_MIN_PREY_MASS_FACTOR`, 2). Neighbours that cannot be eaten are skipped, and with none the action does nothing. A successful attack kills the prey. See [Creatures → Attack](../model/creatures.md#attack).
 
@@ -114,6 +123,6 @@ So the same gene can mean different connections in simulations with different se
 
 - **PredatorDistance and PredatorDirection produce no value.** The engine never computes them, so they are disabled by default. They can still be enabled in the Scenario tab: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.
 - **Reproduction never succeeds without metabolism.** It needs more than 3 × birth mass, and without metabolism mass never changes (see [Creatures → Reproduction](../model/creatures.md#reproduction)).
-- **The prey sensors never see the last row and column of the world.** `detectClosest` clamps the search area to `size − 1` and uses it as an exclusive end. It is kept so that existing simulations behave the same.
-- **Plants with prey sensors detect any creature.** Plants have no prey genus (`preyGenus` is `undefined`), and `detectClosest` without a genus returns the closest creature of any genus.
+- **The prey sensors and MoveToPrey never see the last row and column of the world.** `detectClosest` clamps the search area to `size − 1` and uses it as an exclusive end. It is kept so that existing simulations behave the same.
+- **Plants with prey sensors or MoveToPrey detect any creature.** Plants have no prey genus (`preyGenus` is `undefined`), and `detectClosest` without a genus returns the closest creature of any genus.
 - **The genus of a creature is read from its actions only.** Sensors never set the genus, so the "compatible genus" lists of sensors only matter when genomes are built for a given genus.

@@ -252,6 +252,25 @@ export default class Creature {
     }
   }
 
+  // MoveToPrey: an urge to move towards the closest prey found at the start of the thought, as
+  // strong as the output on each axis. Next to it (N, E, S or W) it can attack, so no urge; in a
+  // diagonal neighbour cell it moves on one axis only, to a free cell, horizontally if it can
+  moveToPrey(actionInputValue: number) {
+    const prey = this.brain.sensedPrey;
+    if (!prey) return;
+    const [x, y] = this.position;
+    const dx = Math.sign(prey.position[0] - x);
+    const dy = Math.sign(prey.position[1] - y);
+    if (prey.distance === 1) {
+      if (dx === 0 || dy === 0) return;
+      const grid = this.generations.grid;
+      if (grid.isTileEmpty(x + dx, y)) this.addUrgeToMove(dx * actionInputValue, 0);
+      else if (grid.isTileEmpty(x, y + dy)) this.addUrgeToMove(0, dy * actionInputValue);
+      return;
+    }
+    this.addUrgeToMove(dx * actionInputValue, dy * actionInputValue);
+  }
+
   findPreyDirection(): Direction4 {
     return this._attack.findPreyDirection();
   }

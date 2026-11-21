@@ -95,7 +95,7 @@ The **Reproduction** action creates a child during the generation, in one of the
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.
 
-With `ATTACK_SAME_GENUS` on, the target can also be of the attacker's genus, as long as it is of another [species](#species), that is, its genome is not identical. The same rule applies when a parent eats a neighbour to make room for its child. The prey sensors do not change: they still look only for the prey genus, so a creature cannot sense the relatives it can eat.
+With `ATTACK_SAME_GENUS` on, the target can also be of the attacker's genus, as long as it is of another [species](#species), that is, its genome is not identical. The same rule applies when a parent eats a neighbour to make room for its child. The prey sensors and the MoveToPrey action do not change: they still look only for the prey genus, so a creature cannot sense or chase the relatives it can eat.
 
 ## Genus
 
