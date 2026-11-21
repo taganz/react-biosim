@@ -23,6 +23,9 @@ export const neighbours8Y = [0, 1, -1, 1, -1, 0, -1, 1];
 // indices of the free neighbours found by getNearByAvailablePosition. Shared, but filled and read
 // within one call that calls nothing that could use it again
 const freeNeighbours = new Int8Array(8);
+// cells (y * size + x) of the free cells of one ring, for getFarthestAvailablePosition. Shared in the
+// same way; it grows when a ring needs more room
+let freeRing = new Int32Array(32);
 
 // export type Grid = Array<Array<GridPoint>>;
 
@@ -277,6 +280,40 @@ export class Grid {
     if (count === 0) return null;
     const i = freeNeighbours[count === 1 ? 0 : randomInt(count)];
     return [x + neighbours8X[i], y + neighbours8Y[i]];
+  }
+
+  // a random free cell at the greatest distance from (x, y), up to maxDistance, that has one, or
+  // null if there is none. The distance is in steps of the 8 neighbours (the cells at distance d form
+  // the square ring of side 2d + 1). Distance 1 is getNearByAvailablePosition, so a maxDistance of 1
+  // repeats the old choices. Obstacles between the parent and the cell do not matter
+  public getFarthestAvailablePosition(x: number, y: number, maxDistance: number): [number, number] | null {
+    for (let d = Math.floor(maxDistance); d >= 2; d--) {
+      const position = this.getAvailablePositionAtDistance(x, y, d);
+      if (position) return position;
+    }
+    return this.getNearByAvailablePosition(x, y);
+  }
+
+  // a random free cell of the ring at distance d (>= 2) from (x, y), or null
+  private getAvailablePositionAtDistance(x: number, y: number, d: number): [number, number] | null {
+    if (freeRing.length < 8 * d) freeRing = new Int32Array(8 * d);
+    let count = 0;
+    const add = (cx: number, cy: number) => {
+      if (cx >= 0 && cx < this._size && cy >= 0 && cy < this._size && this.isTileEmpty(cx, cy)) {
+        freeRing[count++] = cy * this._size + cx;
+      }
+    };
+    for (let dx = -d; dx <= d; dx++) {
+      add(x + dx, y - d);
+      add(x + dx, y + d);
+    }
+    for (let dy = -d + 1; dy <= d - 1; dy++) {
+      add(x - d, y + dy);
+      add(x + d, y + dy);
+    }
+    if (count === 0) return null;
+    const index = freeRing[count === 1 ? 0 : randomInt(count)];
+    return [index % this._size, Math.floor(index / this._size)];
   }
 
  

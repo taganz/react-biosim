@@ -10,6 +10,7 @@ import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import WorldControllerData, { AssimilationEfficiency } from "@/simulation/world/WorldControllerData";
 import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrain";
+import { OFFSPRING_MAX_DISTANCE_PERCENT_MISSING, offspringMaxDistance } from "@/simulation/creature/CreaturerReproduction";
 import { ObjectColors } from "@/simulation/world/objects/objectColor";
 import { AllowedLogEvents, LogEvent } from "@/simulation/logger/LogEvent";
 import { Genus } from "@/simulation/creature/CreatureGenus";
@@ -269,6 +270,20 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
                 </div>
               </ConstantRow>
             ))}
+            {group.title === "Reproduction" && (
+              <ConstantRow
+                name="REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT"
+                description={`The child is born in a free cell as far as possible from the parent, up to this percentage of the world size, rounded and at least 1 cell (only the 8 cells around). In this world: ${offspringMaxDistance(worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT, worldControllerData.size)} cells.`}
+              >
+                <NumberInput
+                  value={worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT ?? OFFSPRING_MAX_DISTANCE_PERCENT_MISSING}
+                  onChange={(value) => setWorldValue("REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT", value)}
+                  step={0.5}
+                  min={0}
+                  max={100}
+                />
+              </ConstantRow>
+            )}
             {group.title === "Attack" && (
               <ConstantRow name="ATTACK_SAME_GENUS" description="Attackers can eat other species of their genus, never their own species.">
                 <CheckboxInput

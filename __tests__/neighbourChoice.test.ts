@@ -6,6 +6,7 @@ import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { Grid, GridPosition } from "@/simulation/world/grid/Grid";
 import { setSeed } from "@/simulation/helpers/random";
+import { offspringMaxDistance } from "@/simulation/creature/CreaturerReproduction";
 
 // The neighbour choices (free cell for a child, prey to eat) pick one valid candidate at random.
 // They must return null without candidates, only valid candidates, and each with the same probability.
@@ -60,6 +61,66 @@ describe('Grid.getNearByAvailablePosition', () => {
         const grid = new Grid(3, [], 1);
         for (let x = 0; x < 3; x++) for (let y = 0; y < 3; y++) grid._grid[x][y].isSolid = !(x == 1 && y == 1) && !(x == 2 && y == 0);
         expect(grid.getNearByAvailablePosition(1, 1)).toEqual([2, 0]);
+    });
+});
+
+describe('Grid.getFarthestAvailablePosition', () => {
+    beforeEach(() => setSeed(12345));
+
+    const chebyshev = (p: GridPosition, x: number, y: number) => Math.max(Math.abs(p[0] - x), Math.abs(p[1] - y));
+
+    test('with free cells at the maximum distance, chooses only those, each with the same probability', () => {
+        const grid = new Grid(9, [], 1);
+        const counts = countChoices(() => grid.getFarthestAvailablePosition(4, 4, 4)!, (p) => String(p));
+        expect(counts.size).toBe(32);                  // the ring of side 9 around the centre
+        for (const key of counts.keys()) expect(chebyshev(key.split(",").map(Number) as GridPosition, 4, 4)).toBe(4);
+        // the chi-square of 32 cells has 31 degrees of freedom: 0.1 % critical value 61.1
+        expect(chiSquare(counts, 32)).toBeLessThan(61.1);
+    });
+
+    test('falls back to the farthest ring that has a free cell', () => {
+        const grid = new Grid(9, [], 1);
+        // fill the rings at distance 4 and 3, and leave one free cell at distance 2
+        for (let x = 0; x < 9; x++) for (let y = 0; y < 9; y++) {
+            if (chebyshev([x, y], 4, 4) >= 3) grid._grid[x][y].isSolid = true;
+        }
+        for (let i = 0; i < 50; i++) expect(chebyshev(grid.getFarthestAvailablePosition(4, 4, 4)!, 4, 4)).toBe(2);
+    });
+
+    test('cells outside the world do not count: near a corner it uses the part of the ring inside', () => {
+        const grid = new Grid(9, [], 1);
+        const counts = countChoices(() => grid.getFarthestAvailablePosition(0, 0, 4)!, (p) => String(p));
+        expect(counts.size).toBe(9);                   // x = 4 or y = 4, both from 0 to 4
+        for (const key of counts.keys()) expect(chebyshev(key.split(",").map(Number) as GridPosition, 0, 0)).toBe(4);
+    });
+
+    test('a maximum distance of 1 makes the same choices as getNearByAvailablePosition', () => {
+        const grid = new Grid(5, [], 1);
+        setSeed(7);
+        const near = Array.from({ length: 20 }, () => grid.getNearByAvailablePosition(2, 2));
+        setSeed(7);
+        const farthest = Array.from({ length: 20 }, () => grid.getFarthestAvailablePosition(2, 2, 1));
+        expect(farthest).toEqual(near);
+    });
+
+    test('returns null when no cell within the distance is free', () => {
+        const grid = new Grid(9, [], 1);
+        for (let x = 0; x < 9; x++) for (let y = 0; y < 9; y++) grid._grid[x][y].isSolid = !(x == 4 && y == 4);
+        expect(grid.getFarthestAvailablePosition(4, 4, 4)).toBeNull();
+    });
+});
+
+describe('offspringMaxDistance', () => {
+    test('is the percentage of the world size, rounded, at least 1', () => {
+        expect(offspringMaxDistance(4, 100)).toBe(4);
+        expect(offspringMaxDistance(4, 200)).toBe(8);
+        expect(offspringMaxDistance(4, 30)).toBe(1);       // 1.2
+        expect(offspringMaxDistance(5, 50)).toBe(3);       // 2.5
+        expect(offspringMaxDistance(0, 100)).toBe(1);
+    });
+
+    test('files saved without it take 4 %', () => {
+        expect(offspringMaxDistance(undefined, 100)).toBe(4);
     });
 });
 

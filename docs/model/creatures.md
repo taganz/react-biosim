@@ -93,10 +93,11 @@ The rest goes to the cloud, like the mass spent on metabolism: it is the energy 
 
 ### Reproduction
 
-The **Reproduction** action creates a child during the generation, in one of the 8 cells around the parent:
+The **Reproduction** action creates a child during the generation, at most `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` (4 %) of the world size from the parent. The percentage is rounded to whole cells and is at least 1 cell: 4 cells in the default world of 100, 1 cell in a world of 30.
 
 - The parent needs more than `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH × birth mass`. With metabolism on, it also needs `REPRODUCTION_COST_PER_MASS_DO × birth mass` on top. Without that mass the action does nothing: it is not an attempt and costs nothing.
-- The child goes to a free cell, chosen at random. If none is free, a herbivore or carnivore parent eats a neighbour it can eat (the same rules as an [attack](#attack), in any of the 8 cells) and the child takes its cell.
+- The child goes to a free cell **as far from the parent as possible**. The distance counts steps to any of the 8 neighbours, so the cells at distance *d* form the square ring of side 2*d* + 1 around the parent. The child is born in a free cell of the farthest ring that has one, chosen at random within that ring; if that ring is full, the next one inward is tried, down to the 8 cells around. Obstacles between the parent and the cell do not matter, and cells outside the world do not count. When the distance comes to 1 cell (for example with the setting at 0), the child is born in one of the 8 cells around, as before.
+- If no cell within that distance is free, a herbivore or carnivore parent eats a neighbour it can eat (the same rules as an [attack](#attack), in any of the 8 cells around) and the child takes its cell.
 - A successful reproduction costs `REPRODUCTION_COST_PER_MASS_DO × birth mass`, plus the birth mass handed to the child.
 - An attempt with no free cell and nothing to eat costs `REPRODUCTION_COST_PER_MASS_TRY × birth mass`.
 

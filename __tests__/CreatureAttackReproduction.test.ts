@@ -17,7 +17,8 @@ describe('attack and reproduction', () => {
         const simulationData : SimulationData = {
             ...TEST_SIMULATION_DATA,
             worldObjects: [],
-            worldControllerData: { ...TEST_SIMULATION_DATA.worldControllerData, size: 5 },
+            // the child only in the 8 cells around (20 % of 5 cells), so that surround() leaves no free cell
+            worldControllerData: { ...TEST_SIMULATION_DATA.worldControllerData, size: 5, REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT: 20 },
             worldGenerationsData: { ...TEST_SIMULATION_DATA.worldGenerationsData, initialPopulation: 0, metabolismEnabled: true },
         };
         worldController = new WorldController(simulationData);
@@ -248,6 +249,21 @@ describe('attack and reproduction', () => {
         worldController.generations.grid.cell(3, 3).creature = null;
 
         expect(() => worldController.generations.grid.removeCreature(prey)).not.toThrow();
+    });
+
+    test('with a larger distance the child is born in the farthest free ring and nothing is eaten', () => {
+        worldController.simData.worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT = 40;   // 2 cells
+        const parent = spawn("attack_plant", [2, 2]);
+        surround(() => "plant");             // the ring at distance 1 is full of prey
+        parent._mass._mass = parent._mass._maxMass;
+
+        parent.reproduce(1);
+
+        expect(parent.childrenCount).toBe(1);
+        expect(parent.killCount).toBe(0);
+        const child = worldController.generations.currentCreatures.find((c) => c.parentId === parent.id)!;
+        // in a world of 5 cells, the ring at distance 2 from (2, 2) is the border
+        expect(Math.max(Math.abs(child.position[0] - 2), Math.abs(child.position[1] - 2))).toBe(2);
     });
 
     test('with no free cell and nothing to eat the try costs mass and logs it', () => {

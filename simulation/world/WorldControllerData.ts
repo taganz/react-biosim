@@ -40,7 +40,10 @@ export default interface WorldControllerData {
 
     REPRODUCTION_COST_PER_MASS_TRY : number, 
     REPRODUCTION_COST_PER_MASS_DO : number, 
-    REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : number,     
+    REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : number,
+    /** the child of the Reproduction action is born in a free cell as far as possible from the parent,
+     *  up to this percentage of the world size (rounded, at least 1 cell: only the 8 cells around). Missing: 4 */
+    REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT? : number,
 
     ACTION_REPRODUCTION_OFFSET : number,
     ACTION_ATTACK_OFFSET : number,

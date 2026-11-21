@@ -1,6 +1,14 @@
 import Creature from "./Creature";
 import {LogEvent} from '@/simulation/logger/LogEvent';
 
+/** REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT of files saved without it */
+export const OFFSPRING_MAX_DISTANCE_PERCENT_MISSING = 4;
+
+/** cells from the parent at which a child can be born: the percentage of the world size, rounded, at least 1 */
+export function offspringMaxDistance(percent: number | undefined, worldSize: number): number {
+  return Math.max(1, Math.round(worldSize * (percent ?? OFFSPRING_MAX_DISTANCE_PERCENT_MISSING) / 100));
+}
+
 export default class CreatureReproduction {
 
     _creature : Creature;
@@ -22,7 +30,9 @@ export default class CreatureReproduction {
     // called only with enough mass (see Creature.reproduce)
     //TODO implement input factor ... 
     reproduce(input: number) : boolean {
-      const offspringPosition = this._creature.generations.grid.getNearByAvailablePosition(this._creature.position[0], this._creature.position[1])
+      const grid = this._creature.generations.grid;
+      const maxDistance = offspringMaxDistance(this._creature.worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT, grid.size);
+      const offspringPosition = grid.getFarthestAvailablePosition(this._creature.position[0], this._creature.position[1], maxDistance)
         ?? this._creature.eatNeighbourForOffspring();
       if (offspringPosition) {
         const child = this._creature.generations.newCreature(offspringPosition, false, this._creature.brain.genome, this._creature);

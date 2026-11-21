@@ -64,7 +64,7 @@ Each action reads the output of its neuron once per step in which the brain runs
 | 4 | RandomMove | Adds an urge to move in a random direction. | | ✓ | ✓ |
 | 5 | MoveForward | Repeats the last move. | | ✓ | ✓ |
 | 6 | Photosynthesis | Turns water from the creature's cell into mass. | ✓ | | |
-| 7 | Reproduction | Creates a child in a free nearby cell, if the creature has enough mass. With no free cell, herbivores and carnivores eat a neighbour to make room. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
+| 7 | Reproduction | Creates a child in a free cell as far as possible, up to `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` (4 %) of the world size away, if the creature has enough mass. With no free cell, herbivores and carnivores eat a neighbour to make room. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
 | 8 | AttackPlant | Only when the output is above `ACTION_ATTACK_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. | | ✓ | ✓ |
 | 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
 | 10 | Stamina | Not executed: the weight of the first gene that drives it sets the creature's stamina, how often its brain runs. Disabled by default. See [Stamina](#stamina). | ✓ | ✓ | ✓ |
