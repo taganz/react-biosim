@@ -19,6 +19,7 @@
  *   photoGenes   share of herbivores with a gene driving Photosynthesis (a way to gain mass without eating)
  *   massPhoto, massNoPhoto, killsPhoto, killsNoPhoto   mean final mass and plants eaten, herbivores with / without that gene
  *   moveToPreyGenes share of herbivores with a gene driving the MoveToPrey action (not counted in chaseGenes)
+ *   plantOrigin  share of herbivores whose lineage started with a plant parent (a plant that mutated into a herbivore)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -27,6 +28,7 @@ import { serializeSimulationData } from "@/simulation/serialization/formatters/s
 import { WorldEvents } from "@/simulation/events/WorldEvents";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureClass from "@/simulation/creature/Creature";
+import WorldGenerations from "@/simulation/generations/WorldGenerations";
 type Creature = CreatureClass;
 import type WorldController from "@/simulation/world/WorldController";
 
@@ -79,7 +81,20 @@ let tracked = new Map<number, Tracked>();
 let herbivoreSteps = 0;
 let moveSteps = 0;
 let currentGen = -1;
-const rows: string[] = ["generation;herbivores;moveRate;movers;kills;eaters;meanMass;maxMass;chaseGenes;anyMoveGenes;photoGenes;massPhoto;massNoPhoto;killsPhoto;killsNoPhoto;moveToPreyGenes"];
+const rows: string[] = ["generation;herbivores;moveRate;movers;kills;eaters;meanMass;maxMass;chaseGenes;anyMoveGenes;photoGenes;massPhoto;massNoPhoto;killsPhoto;killsNoPhoto;moveToPreyGenes;plantOrigin"];
+
+// where each herbivore's lineage started: "plant" if a plant parent had a herbivore child (a mutation),
+// "seed" if it has no parent (generation 1 or a start file); children inherit it from their parent
+const herbivoreOrigin = new WeakMap<Creature, "plant" | "seed">();
+const originalNewCreature = WorldGenerations.prototype.newCreature;
+WorldGenerations.prototype.newCreature = function (this: WorldGenerations, ...args: Parameters<WorldGenerations["newCreature"]>) {
+  const child = originalNewCreature.apply(this, args);
+  const parent = args[3];
+  if (child.genus === "attack_plant") {
+    herbivoreOrigin.set(child, !parent ? "seed" : parent.genus === "plant" ? "plant" : herbivoreOrigin.get(parent) ?? "seed");
+  }
+  return child;
+};
 
 function groupStats(wc: WorldController, all: Tracked[]) {
   const stat = (photo: boolean) => {
@@ -114,6 +129,7 @@ function finishGeneration(wc: WorldController) {
     share(traits.filter((t) => t.photo).length),
     ...groupStats(wc, all),
     share(traits.filter((t) => t.moveToPrey).length),
+    share(all.filter((t) => herbivoreOrigin.get(t.creature) === "plant").length),
   ].join(";"));
 }
 

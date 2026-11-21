@@ -117,6 +117,26 @@ Cada opción nueva necesita: un campo en `WorldControllerData`, el valor por def
 - La propuesta más urgente pasa a ser `ATTACK_MASS_EFFICIENCY`, para frenar los auges. `MASS_BASAL_CONSUMPTION_PER_MASS` queda en segundo plano.
 - Falta confirmar el resultado de "base" con más semillas, porque es una sola ejecución inestable.
 
+### Con eficiencia de asimilación (`results/ae-*`)
+
+Fase 2 empezando con los 400 cazadores MoveToPrey, en 100×100 y 100 generaciones. Herbívoros con `ASSIMILATION_EFFICIENCY.attack_plant` = `{ photosynthesis: 0, prey: 0.3 | 0.5 }`, sin más restricciones: el género puede mutar y se come al vecino para hacer sitio.
+
+| Variante | Resultado |
+|---|---|
+| **presa 0.3, gen 0.03, semilla 1** | **100 generaciones sin extinguirse**. Los cazadores caen a 19 en la generación 3 y se recuperan. Después hay entre 500 y 800 herbívoros y entre 430 y 3.800 plantas; se mueve el 50–88 % y MoveToPrey va del 15 % al 88 % (casi siempre por encima del 50 %). |
+| presa 0.3, gen 0.005, semilla 1 | Se extingue 1 vez. Después de reiniciar (genomas aleatorios) dura 100 generaciones, pero al final ganan los sedentarios (MoveToPrey al 11 %). |
+| presa 0.3, gen 0.005, semilla 2 | Se extingue 4 veces |
+| presa 0.5 (3 ejecuciones) | Se extinguen 4 veces |
+
+**Conclusiones**:
+- **La eficiencia no evita el desplome inicial.** La eficiencia rebaja lo que gana el herbívoro, pero no cuántas plantas mata: cada ataque sigue matando una planta entera. Con eficiencia baja tienen que matar **más** plantas para crecer lo mismo (20–36 por ventana frente a 4–8). 400 cazadores contra 2000 plantas de masa 1 las arrasan en la generación 1–3.
+- **0.3 funciona mejor que 0.5**, y **un coste por gen de 0.03 mejor que 0.005**: los dos frenan los auges.
+- **Presa 0.3 con gen 0.03 da la primera herbivoría móvil sostenida en continuo** partiendo de los cazadores, aunque es una sola semilla.
+- **Siguen apareciendo herbívoros nacidos de plantas.** En la ejecución que sobrevive, al final el 89 % lleva el gen de planta `Random → Reproduction 3.00`, pero **también ha desarrollado MoveToPrey** (`HorizontalBorderDistance → MoveToPrey`). Ya no hacen fotosíntesis y han acabado siendo móviles. La columna `photoGenes` no detecta este origen, porque perdieron el gen de fotosíntesis.
+- El aviso `unknown keys worldControllerData.ASSIMILATION_EFFICIENCY` de esas ejecuciones solo indica que el archivo de inicio no tenía la clave; el valor sí se aplica, como se ve en `final.sim`.
+
+**Siguiente paso propuesto**: confirmar presa 0.3 con gen 0.03 con más semillas, durante 300 generaciones y con **menos cazadores al principio** (por ejemplo, 50 en lugar de 400), para evitar el desplome inicial.
+
 ## 8. Herramientas y archivos
 
 Todo esto está sin confirmar en git.
@@ -139,5 +159,6 @@ Todo esto está sin confirmar en git.
   - `p2n-*`: sin comer para hacer sitio;
   - `p2r-*`: niveles de lluvia;
   - `mtp100-*`, `mtp200-*`: fase 1 con MoveToPrey;
-  - `m2-*` y `phase2/start-mtp-rain30.sim`: fase 2 con MoveToPrey.
+  - `m2-*` y `phase2/start-mtp-rain30.sim`: fase 2 con MoveToPrey;
+  - `ae-*`: fase 2 con MoveToPrey y eficiencia de asimilación. `ae-e30-g03-s1/final.sim` es la ejecución que se mantiene.
 - Para ver los resultados en la app, carga `setup.sim` o `final.sim` con *Load .sim file*. La app **no** bloquea la fotosíntesis de los herbívoros, así que no reproduce exactamente el piloto.
