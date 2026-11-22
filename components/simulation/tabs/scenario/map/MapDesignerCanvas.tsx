@@ -233,6 +233,15 @@ export default function MapDesignerCanvas() {
     draw();
   }, [draw, worldController, width, isFullscreen]);
 
+  // a closed Map section gives the canvas no size: draw again when it gets one
+  useEffect(() => {
+    const element = canvas.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => draw());
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [draw]);
+
   return (
     <canvas
       className="aspect-square w-full bg-white lg:col-span-2"

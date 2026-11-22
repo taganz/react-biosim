@@ -5,7 +5,15 @@ import { useAtomValue } from "jotai";
 import { FaCheck, FaClipboard } from "react-icons/fa";
 import Button from "@/components/global/Button";
 import { loadedSpeciesAtom } from "@/components/simulation/store";
-import Section from "../Section";
+import ScenarioSection from "./ScenarioSection";
+
+// a number for each loaded file, so its section is mounted again, and open, after every load
+const loadIds = new WeakMap<object, number>();
+const getLoadId = (loaded: object) => {
+  if (!loadIds.has(loaded)) loadIds.set(loaded, nextLoadId++);
+  return loadIds.get(loaded)!;
+};
+let nextLoadId = 0;
 
 // The species with most creatures in the last loaded file, with their genome to copy
 export default function LoadedSpecies() {
@@ -24,7 +32,10 @@ export default function LoadedSpecies() {
   };
 
   return (
-    <Section
+    <ScenarioSection
+      key={getLoadId(loaded)}
+      id="species"
+      defaultOpen
       title="Top species in the loaded file"
       description={
         summary.totalCreatures > 0
@@ -70,6 +81,6 @@ export default function LoadedSpecies() {
           {summary.rest.species} species {summary.rest.percentage.toFixed(2)}% {summary.rest.creatures} creatures
         </p>
       )}
-    </Section>
+    </ScenarioSection>
   );
 }

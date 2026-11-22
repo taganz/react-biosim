@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import classNames from "classnames";
 import { selectionMethodOptions, selectSelectionMethod } from "@/simulation/generations/selection/selectionMethodOptions";
@@ -20,7 +21,9 @@ import { WaterData } from "@/simulation/water/WaterData";
 import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
-import Section, { FIELDS_GRID } from "../Section";
+import { FIELDS_GRID } from "../Section";
+import ScenarioSection from "./ScenarioSection";
+import { getChangedSections, ScenarioSection as ScenarioSectionId } from "./scenarioSectionChanges";
 import MapDesigner from "./map/MapDesigner";
 import ScenarioConstants from "./ScenarioConstants";
 import BrainChangeNotice from "./BrainChangeNotice";
@@ -186,6 +189,10 @@ export default function ScenarioSettings() {
   const appliedSimulationData = useWorldValue((world) => world.simData, null);
   const hasPendingChanges =
     appliedSimulationData !== null && appliedSimulationData !== simulationData;
+  const changedSections = useMemo(
+    () => (appliedSimulationData ? getChangedSections(simulationData, appliedSimulationData) : new Set<ScenarioSectionId>()),
+    [simulationData, appliedSimulationData]
+  );
 
 
   const { worldControllerData, worldGenerationsData, waterData } = simulationData;
@@ -322,7 +329,7 @@ export default function ScenarioSettings() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       {/* === APPLY CHANGES === */}
       <div
         className={classNames(
@@ -352,7 +359,7 @@ export default function ScenarioSettings() {
       </div>
 
       {/* === WORLD === */}
-      <Section title="World">
+      <ScenarioSection id="world" changed={changedSections} title="World">
         <div className={FIELDS_GRID}>
           <div className="flex flex-col gap-1">
             <CheckboxInput
@@ -394,18 +401,19 @@ export default function ScenarioSettings() {
             min={1}
           />
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === MAP === */}
-      <Section
+      <ScenarioSection
+        id="map" changed={changedSections}
         title="Map"
         description="Obstacles and areas. Like the other settings, changes are applied with Update simulation or Restart."
       >
         <MapDesigner />
-      </Section>
+      </ScenarioSection>
 
       {/* === GENERATIONS === */}
-      <Section title="Generations">
+      <ScenarioSection id="generations" changed={changedSections} title="Generations">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1">
             <SelectInput
@@ -484,10 +492,10 @@ export default function ScenarioSettings() {
             </ul>
           </div>
         )}
-      </Section>
+      </ScenarioSection>
 
       {/* === NEURONAL NETWORKS === */}
-      <Section title="Neuronal networks">
+      <ScenarioSection id="networks" changed={changedSections} title="Neuronal networks">
         <div className={FIELDS_GRID}>
           <NumberInput
             label="Initial genome size"
@@ -512,10 +520,10 @@ export default function ScenarioSettings() {
             min={1}
           />
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === MUTATIONS === */}
-      <Section title="Mutations">
+      <ScenarioSection id="mutations" changed={changedSections} title="Mutations">
         <div className={FIELDS_GRID}>
           <SelectInput
             label="Mutation mode"
@@ -543,10 +551,11 @@ export default function ScenarioSettings() {
             max={1}
           />
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === SENSORS === */}
-      <Section
+      <ScenarioSection
+        id="sensors" changed={changedSections}
         title="Sensors"
         description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development. With metabolism, each enabled sensor has a cost: the mass a brain that reads it spends in every step it runs (MASS_COST_PER_SENSOR unless changed here)."
       >
@@ -569,10 +578,11 @@ export default function ScenarioSettings() {
             </div>
           ))}
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === ACTIONS === */}
-      <Section
+      <ScenarioSection
+        id="actions" changed={changedSections}
         title="Actions"
         description="At least one action must stay enabled. Photosynthesis, reproduction and attack actions are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (MASS_COST_PER_ACTION unless changed here)."
       >
@@ -596,10 +606,10 @@ export default function ScenarioSettings() {
             </div>
           ))}
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === WATER === */}
-      <Section title="Water">
+      <ScenarioSection id="water" changed={changedSections} title="Water">
         <div className={FIELDS_GRID}>
           <NumberInput
             label="Cell water capacity"
@@ -648,10 +658,10 @@ export default function ScenarioSettings() {
             ))}
           </SelectInput>
         </div>
-      </Section>
+      </ScenarioSection>
 
       {/* === CONSTANTS === */}
-      <ScenarioConstants onGenusProbabilityChange={handleGenusProbabilityChange} />
+      <ScenarioConstants changed={changedSections} onGenusProbabilityChange={handleGenusProbabilityChange} />
     </div>
   );
 }

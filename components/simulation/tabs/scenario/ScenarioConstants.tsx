@@ -16,7 +16,8 @@ import { AllowedLogEvents, LogEvent } from "@/simulation/logger/LogEvent";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
 import useSetLogOptions from "../tools/useSetLogOptions";
-import Section from "../Section";
+import ScenarioSection from "./ScenarioSection";
+import { ScenarioSection as ScenarioSectionId } from "./scenarioSectionChanges";
 
 type Constants = typeof CONSTANTS_DEFAULT;
 type MassConstant = {
@@ -187,7 +188,8 @@ const LOCALES = ["es-ES", "en-US"];
 // Every value of the constants file (simulation/constantsDefault.ts) and the model constants
 // of worldControllerData, one per line. They edit the draft like the rest of the Scenario tab,
 // except the LOG_* ones, which apply at once like in Tools → Logger.
-export default function ScenarioConstants({ onGenusProbabilityChange }: {
+export default function ScenarioConstants({ changed, onGenusProbabilityChange }: {
+  changed: Set<ScenarioSectionId>;
   onGenusProbabilityChange: (genus: Genus, probability: number) => void;
 }) {
   const [simulationData, setSimulationData] = useAtom(simulationDataAtom);
@@ -235,7 +237,9 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
     }));
 
   return (
-    <Section
+    <ScenarioSection
+      id="constants"
+      changed={changed}
       title="Constants"
       description="Advanced values of the model. Like the other settings, they are applied with Update simulation or Restart, except the logger ones, which apply at once."
     >
@@ -457,6 +461,6 @@ export default function ScenarioConstants({ onGenusProbabilityChange }: {
           </ConstantRow>
         </ConstantGroup>
       </div>
-    </Section>
+    </ScenarioSection>
   );
 }
