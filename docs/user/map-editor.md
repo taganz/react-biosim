@@ -12,7 +12,7 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 |---|---|
 | Rectangle, Ellipse | **Obstacle.** Creatures cannot enter it. The touch sensors detect it. |
 | Rectangle Reproduction, Ellipse Reproduction | **Reproduction area** (blue). With the *Inside Reproduction Area* selection method, creatures standing here when the generation ends survive. With any other selection method, or in a continuous run, it has no effect, and the simulation canvas does not draw it (the map editor still does). |
-| Rectangle Spawn | **Spawn area** (yellow). With the *Asexual Zone* population strategy, new creatures are placed here. Use only one: if there are several, only the one furthest back is used. |
+| Rectangle Spawn | **Spawn area** (yellow). With the *Asexual Zone* population strategy, new creatures are placed here. You can use several: generation 1 is split among them in proportion to their size, and after that each child is placed in the spawn area of its parent. |
 | Rectangle Health, Ellipse Health | **Health area.** Drawn green for a positive **Health** value and red for a negative one. **It currently has no effect:** the code that applies it is disabled (see [World](../model/world.md#objects-and-areas)). |
 
 ## Editing
@@ -22,7 +22,7 @@ Choose a type in **Add object** to create a 20% × 20% object in the top-left co
 - **Resize** the selected object by dragging the handles at its corners and edges.
 - **Fine-tune** it with **X**, **Y**, **Width** and **Height** on the right. Values are fractions of the world size: 0 is the top or left edge and 1 is the bottom or right edge. Positions snap to whole cells.
 - **Clone** duplicates the selected object. **Delete**, or the Delete key, removes it.
-- **To front** and **To back** change the drawing order: the object is drawn on top of, or below, all the others. New objects are drawn on top. The order also decides which spawn area is used: only the one furthest back counts.
+- **To front** and **To back** change the drawing order: the object is drawn on top of, or below, all the others. New objects are drawn on top. Spawn areas are numbered in this order, and each lineage remembers the number of its area. Reordering or deleting spawn areas and pressing **Update simulation** moves lineages to the area that now has their number.
 - The **fullscreen** button (top right) gives you a bigger canvas.
 
 ## Applying the map

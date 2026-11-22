@@ -63,6 +63,8 @@ export default class Creature {
   parentId : number | null = null;   // null for creatures of the first generation
   parentBirthGen : number | null = null;  // ids can restart every generation, so the id alone is ambiguous
   birthGen : number;
+  // index of the spawn area of its lineage (see spawnZones.ts), inherited from the parent; null without one
+  spawnZone : number | null = null;
   childrenCount : number = 0;
   attackCount : number = 0;          // every attack action, including the ones without enough mass
   killCount : number = 0;

@@ -57,7 +57,7 @@ The classic method, **Inside Reproduction Area**, only looks at where creatures 
 
 - every survivor has at least one child;
 - extra children are shared out until the population is back to **Initial population**;
-- children are placed in random empty cells, or in the spawn area with *Asexual Zone*;
+- children are placed in random empty cells, or with *Asexual Zone* in the spawn area their parent was placed in;
 - each child is a mutated copy of its parent's genome (see [Mutation](brain.md#mutation)).
 
 Reproduction is **asexual**: genomes never mix.

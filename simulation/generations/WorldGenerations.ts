@@ -22,6 +22,7 @@ import { ActionName } from "../creature/brain/CreatureActions";
 import { SimulationType } from "./SimulationType";
 import { GeneDecoding } from "../creature/brain/geneTranslation";
 import { addHerbivoreOldAgeDeath, computeHerbivoreGenomeStats, HerbivoreGenomeStats, HerbivoreOldAgeDeaths } from "./creatureQueries";
+import { countsByArea, positionInArea, spawnAreas } from "./population/spawnZones";
 
 
 // doesn't know currentStep nor currentGeneration, uses worldController
@@ -154,20 +155,29 @@ export default class WorldGenerations {
 
   /**
    * Starts the generation with the given genomes, one creature each, without mutation.
-   * They are placed like generation 1: around the spawn area if there is one, otherwise at random.
+   * They are placed like generation 1: in the spawn areas, in proportion to their size, if there
+   * are any, otherwise at random.
    */
   public populateWithGenomes(genomes: Genome[]) {
-    const spawnArea = this.grid.objects.find((obj) => obj.areaType === 2);
+    const areas = spawnAreas(this.grid);
+    const counts = countsByArea(areas, genomes.length);
+    let zone = 0;
+    let placedInZone = 0;
     for (const genome of genomes) {
       let position : GridPosition | null;
-      if (spawnArea) {
-        const [x, y] = this.grid.clamp((spawnArea.x + spawnArea.width/2) * this.grid.size, (spawnArea.y + spawnArea.height/2) * this.grid.size);
-        position = this.grid.getCenteredAvailablePosition(x, y, spawnArea.width/2 * this.grid.size, spawnArea.height/2 * this.grid.size, genomes.length);
+      if (areas.length > 0) {
+        while (placedInZone >= counts[zone]) {
+          zone++;
+          placedInZone = 0;
+        }
+        placedInZone++;
+        position = positionInArea(this.grid, areas[zone], counts[zone]);
       } else {
         position = this.grid.getRandomAvailablePosition();
       }
       if (position != null) {
-        this.newCreature(position, true, new Genome(genome.genes.slice()));
+        const creature = this.newCreature(position, true, new Genome(genome.genes.slice()));
+        if (areas.length > 0) creature.spawnZone = zone;
       }
       else {
         console.warn("no position for creature");
@@ -246,6 +256,7 @@ export default class WorldGenerations {
     if (parent) {
       creature.parentId = parent.id;
       creature.parentBirthGen = parent.birthGen;
+      creature.spawnZone = parent.spawnZone;
       parent.childrenCount++;
     }
     // 0 when the creature has no parent

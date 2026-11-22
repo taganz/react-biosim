@@ -15,7 +15,6 @@ Checked against the code in October 2026. Each item links to the page that expla
 | **PredatorDistance and PredatorDirection produce no value** | They are disabled by default. If you enable them, genes that read them make the brain compute `NaN`. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Health areas have no effect** | The call that applies them is commented out in `WorldGenerations.step()`, so the Pain sensor is always 0. | [World](model/world.md#objects-and-areas) |
 | **Greatest Distance can select dead creatures** | It does not check `isAlive`. | [Population and selection](reference/population-and-selection.md#known-issues) |
-| **Asexual Zone ignores the spawn area** | Only when there are more survivors than Initial population. | [Population and selection](reference/population-and-selection.md#known-issues) |
 | **The prey sensors and MoveToPrey never see the last row and column** | The search area is clamped to `size − 1` and then used as an exclusive end, so a prey at `x = size − 1` or `y = size − 1` is not detected. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Plants with prey sensors or MoveToPrey detect any creature** | Plants have no prey genus, so for them the prey sensors and MoveToPrey find the closest creature of any genus. | [Sensors and actions](reference/sensors-and-actions.md#known-issues) |
 | **Files saved before October 2026 resume with young creatures and full cells** | They have no creature `age` and no `cellWater`. Every creature starts again at age 0 and every cell gets the first rain, so the first resumed generations of a continuous run have few deaths. Save the run again to get a file with both. | [Save format](development/serialization.md) |
@@ -52,6 +51,7 @@ None known.
 
 These items were on the old list, or found while writing these docs, and are now fixed:
 
+- *Asexual Zone* used only the first spawn area, and placed children in random cells when there were more survivors than Initial population. It now splits generation 1 among all spawn areas by size, and places each child in its parent's spawn area.
 - **Update simulation** with other enabled sensors, actions or Max neurons rewired every living brain, because genes are decoded by position and modulo. The genes are now rewritten so the brains stay the same.
 
 - Loading a setup or a scenario from Start gave the run a new random simulation code instead of the one in the file.

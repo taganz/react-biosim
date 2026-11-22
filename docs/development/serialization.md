@@ -83,7 +83,7 @@ When a run resumes, every saved creature is rebuilt for the new world (see [Arch
 
 `startGenomes` are the genomes of the creatures that started the current generation. `WorldGenerations.startGenomes` records them each time a generation is populated (`populate`, `selectionAndRepopulate`, `populateWithGenomes`), and `resumeRun` keeps or rebuilds them. Creatures that share a genome are saved once with a `count`.
 
-`WorldController.startGeneration(sim)` builds the world like `startRun`, keeps `simCode` and `currentGen` from the file, copies `stats` if present, and calls `WorldGenerations.populateWithGenomes()`. That places one creature per genome, without mutation, around the spawn area if there is one and at random otherwise, the same way the first generation of *Asexual Zone* does. The population strategy is not called, so a strategy with its own placement rules (plants and herbivores, for example) is not followed for that one generation.
+`WorldController.startGeneration(sim)` builds the world like `startRun`, keeps `simCode` and `currentGen` from the file, copies `stats` if present, and calls `WorldGenerations.populateWithGenomes()`. That places one creature per genome, without mutation, split among the spawn areas by size if there are any and at random otherwise, the same way the first generation of *Asexual Zone* does. The population strategy is not called, so a strategy with its own placement rules (plants and herbivores, for example) is not followed for that one generation.
 
 The JSON is stored in the browser's IndexedDB by [helpers/userScenarios.ts](../../helpers/userScenarios.ts): database `biosim`, store `userScenarios` for the list (name, kind, generation, date, size) and `userScenarioData` for the JSON, both keyed by the scenario id.
 

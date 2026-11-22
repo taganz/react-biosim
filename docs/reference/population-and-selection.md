@@ -23,7 +23,12 @@ The classic model from David R. Miller's video.
 
 ### Asexual Zone (`AsexualZonePopulation`)
 
-Works like Asexual Random, but places creatures inside the first **spawn area** on the map. If the map has no spawn area, it behaves exactly like Asexual Random.
+Works like Asexual Random, but places creatures inside the **spawn areas** of the map. If the map has no spawn area, it behaves exactly like Asexual Random.
+
+- **Generation 1:** the **Initial population** is split among the spawn areas in proportion to the cells each one covers. With 300 creatures, an area of 200 cells and one of 100 get 200 and 100 creatures. The rounding goes to the areas with the largest remainders.
+- **Next generations:** the number of children per survivor is shared out as in Asexual Random, including when there are more survivors than **Initial population**. Each child is placed in the spawn area its lineage started in: the one its parent was placed in, not the one it ended the generation near. So each area keeps its own lineages, and an area grows only if its creatures survive more often.
+- A creature's spawn area is the position of the area in the map's drawing order (see **To front** / **To back** in the [map editor](../user/map-editor.md)). If a parent has none, because the file was loaded or the spawn areas changed with **Update simulation**, its children go to the spawn area that covers its cell, or else to the one whose centre is nearest.
+- A spawn area that is too small for its creatures grows around its centre, as with a single area.
 
 ### Random Fixed Genera (`RandomFixedGenePopulation`)
 
@@ -77,6 +82,5 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 
 - **Plant/Herbivore ignores survivors that are not herbivores** and logs a warning in the console. Only Greatest Mass selects herbivores alone; with other methods the surviving plants are dropped, and if no herbivore survives the next generation has only plants.
 - **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
-- **Asexual Zone ignores the spawn area when there are more survivors than Initial population.** In that case it places children in random cells.
 - **Random Fixed Genera** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in the Scenario tab, so a file saved with this strategy and an empty list still starts with no genus to pick from, until you give one a probability under **Genera of generation 1**.
 - **Random Fixed Genera writes broken genes when a genus cannot be built.** If no enabled sensor is compatible with a genus, or its main action is off, the random pick finds nothing and the gene gets id 127. The brain wraps that id around the number of sensors or actions, so the gene ends up wired to an arbitrary one and the creature may not have the genus it was built for. The Scenario tab warns about it under **Genera of generation 1**, but does not stop the run.
