@@ -1,0 +1,8 @@
+{
+  "name": "turning-baseline",
+  "generations": 200,
+  "overrides": {
+    "worldGenerationsData": { "selectionMethod": "GreatestDistanceSelection" }
+  },
+  "progressEvery": 0
+}

@@ -1,0 +1,8 @@
+{
+  "name": "turning-touch",
+  "generations": 200,
+  "overrides": {
+    "worldGenerationsData": { "selectionMethod": "GreatestDistanceSelection", "initialGenomeSize": 8, "maxGenomeSize": 12, "maxNumberNeurons": 2, "enabledSensors": ["HorizontalPosition","VerticalPosition","Age","Oscillator","Random","HorizontalSpeed","VerticalSpeed","HorizontalBorderDistance","VerticalBorderDistance","BorderDistance","TouchNorth","TouchEast","TouchSouth","TouchWest"] }
+  },
+  "progressEvery": 0
+}

@@ -1,0 +1,8 @@
+{
+  "name": "turning-genome",
+  "generations": 200,
+  "overrides": {
+    "worldGenerationsData": { "selectionMethod": "GreatestDistanceSelection", "initialGenomeSize": 8, "maxGenomeSize": 12, "maxNumberNeurons": 2 }
+  },
+  "progressEvery": 0
+}
