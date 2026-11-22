@@ -135,7 +135,25 @@ Fase 2 empezando con los 400 cazadores MoveToPrey, en 100×100 y 100 generacione
 - **Siguen apareciendo herbívoros nacidos de plantas.** En la ejecución que sobrevive, al final el 89 % lleva el gen de planta `Random → Reproduction 3.00`, pero **también ha desarrollado MoveToPrey** (`HorizontalBorderDistance → MoveToPrey`). Ya no hacen fotosíntesis y han acabado siendo móviles. La columna `photoGenes` no detecta este origen, porque perdieron el gen de fotosíntesis.
 - El aviso `unknown keys worldControllerData.ASSIMILATION_EFFICIENCY` de esas ejecuciones solo indica que el archivo de inicio no tenía la clave; el valor sí se aplica, como se ve en `final.sim`.
 
-**Siguiente paso propuesto**: confirmar presa 0.3 con gen 0.03 con más semillas, durante 300 generaciones y con **menos cazadores al principio** (por ejemplo, 50 en lugar de 400), para evitar el desplome inicial.
+### Confirmación (`results/conf-*`): funciona en las 8 ejecuciones
+
+Presa 0.3, gen 0.03 y fotosíntesis 0 para los herbívoros; 300 generaciones. `forage.csv` tiene una columna nueva, `plantOrigin`: la parte de los herbívoros cuyo linaje empezó con una planta que mutó a herbívoro.
+
+| Ejecución | Reinicios | Después de la generación 50 (medias) | Herbívoros (mín.–máx.) |
+|---|---|---|---|
+| 50 cazadores, 100×100, semillas 1–4 | 2, 0, 1, 0 | se mueve el 51–65 %, MoveToPrey 48–63 % | 22–515 |
+| 400 cazadores, 100×100, semillas 2–3 | 1, 0 | se mueve el 58–71 %, MoveToPrey 55–78 % | 4–497 |
+| 50 cazadores, **200×200**, semillas 1–2 | 1, 1 | se mueve el 49–50 %, MoveToPrey 52–54 % | **542–1726** |
+
+**Conclusiones**:
+- **Las 8 ejecuciones acaban con herbívoros móviles a las 300 generaciones**, y en 5 de ellas hubo que reiniciar una o dos veces. Es la primera configuración que funciona en continuo con varias semillas.
+- **Todos los herbívoros acaban siendo de origen vegetal** (`plantOrigin` = 1,00 a partir de la generación 50 en todas), aunque se empiece con cazadores. Los cazadores iniciales se extinguen siempre, y la herbivoría móvil **surge de plantas que mutan y desarrollan MoveToPrey**. Los cazadores no hacen falta: el régimen los produce solo.
+- **Conviven móviles y sedentarios** del mismo linaje, más o menos a partes iguales, por ejemplo `VerticalBorderDistance → AttackPlant` + `N1 → Reproduction` con y sin `N1 → MoveToPrey`.
+- **Menos cazadores al principio no evita el desplome**: 50 cazadores también llegan a ~2.900 herbívoros en la generación 1. Es el rebasamiento clásico depredador-presa. Los reinicios ocurren en las generaciones 3–66.
+- **El espacio amortigua los ciclos.** En 200×200 los herbívoros oscilan en un factor 3 (542–1726), frente a un factor 20 o más en 100×100, porque las distintas zonas no se desploman a la vez.
+- **Se reproduce en la app**: `setup.sim` lleva todos los ajustes, y estas ejecuciones no usan ningún parche del script. Por ejemplo, `results/conf-w200-h50-s1/setup.sim`.
+
+**Configuración que funciona** (sobre `results/phase2/start-mtp-rain30-h50.sim`): mundo de 200×200; `ASSIMILATION_EFFICIENCY.attack_plant` = `{ photosynthesis: 0, prey: 0.3 }`; `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` 0.03; movimiento 0.01/0.03; MoveToPrey activado; el resto, como en la fase 1.
 
 ## 8. Herramientas y archivos
 
