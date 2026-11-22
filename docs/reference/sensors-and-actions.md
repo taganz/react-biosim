@@ -119,6 +119,23 @@ Ids are reduced with a modulo when the gene is decoded:
 
 So the same gene can mean different connections in simulations with different sensors or actions enabled.
 
+### Changing the decoding during a run
+
+**Update simulation** with other enabled sensors, other enabled actions or another Max neurons would rewire every brain, so the genes of the living creatures and the genomes the generation started with are rewritten first (`simulation/creature/brain/geneTranslation.ts`, called from `WorldController.resumeRun()`):
+
+- A **sensor or action** id is replaced by the position of the same sensor or action in the new list.
+- A **neuron** id is replaced by the same neuron number. When Max neurons grows, the new neurons are not used at first; mutations of the id bits reach them later.
+- An id that already decodes to the same item is left as it is, so unaffected genes do not change.
+
+Two cases cannot keep the brain:
+
+- A gene that uses a sensor or action that is **no longer enabled** is deleted. If every gene of a genome would be deleted, it keeps its first gene unchanged.
+- A neuron that is **not below a lower Max neurons** is left as it is, so it is taken modulo the new value and connects to another neuron.
+
+When the draft would do either to some living creature, the bar at the top of the Scenario tab says how many creatures get a different brain. Loading a file and **Restart** do not translate anything: a file is decoded with its own settings.
+
+The rewritten genes have other codes, so the species keep their members but may get another colour code.
+
 ## Known issues
 
 - **PredatorDistance and PredatorDirection produce no value.** The engine never computes them, so they are disabled by default. They can still be enabled in the Scenario tab: genes that read them then get no value, and the brain computes `NaN`. Keep them disabled.

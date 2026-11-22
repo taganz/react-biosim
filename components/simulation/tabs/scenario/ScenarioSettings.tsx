@@ -23,6 +23,7 @@ import useWorldValue from "@/hooks/useWorldValue";
 import Section, { FIELDS_GRID } from "../Section";
 import MapDesigner from "./map/MapDesigner";
 import ScenarioConstants from "./ScenarioConstants";
+import BrainChangeNotice from "./BrainChangeNotice";
 import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
@@ -343,6 +344,7 @@ export default function ScenarioSettings() {
             </Button>
           </div>
         )}
+        {hasPendingChanges && <BrainChangeNotice draft={worldGenerationsData} />}
         <p className="text-xs">
           &quot;Update simulation&quot; applies the changes and keeps the current creatures.
           &quot;Restart&quot; starts again from generation 1.

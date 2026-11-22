@@ -52,6 +52,8 @@ None known.
 
 These items were on the old list, or found while writing these docs, and are now fixed:
 
+- **Update simulation** with other enabled sensors, actions or Max neurons rewired every living brain, because genes are decoded by position and modulo. The genes are now rewritten so the brains stay the same.
+
 - Loading a setup or a scenario from Start gave the run a new random simulation code instead of the one in the file.
 - A simulation code applied with **Update simulation** was replaced by a random one at the next **Restart** or restart after an extinction.
 - Saving a simulation without its creatures: **My scenarios** in the Export tab saves the setup, or the genomes at the start of a generation.

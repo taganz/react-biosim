@@ -71,7 +71,7 @@ Below each enabled sensor and action, **Cost** is the mass a brain that reads th
 
 The startup scenario enables the first 10 sensors (positions, age, oscillator, random, speeds and border distances) and the six movement actions.
 
-> **Changing sensors or actions changes the meaning of existing genes.** Genes point to sensors and actions by their position in the list of enabled items. If you enable or disable one and click **Update simulation**, the creatures keep their genes, but those genes now connect different inputs and outputs.
+> **Changing sensors, actions or Max neurons during a run.** Genes point to sensors and actions by their position in the list of enabled items, and to neurons modulo Max neurons. **Update simulation** rewrites the genes of the living creatures (and the genomes the generation started with) for the new lists, so their brains stay the same; see [Changing the decoding during a run](sensors-and-actions.md#changing-the-decoding-during-a-run). Only two changes alter a brain: a gene whose sensor or action is disabled is deleted, and a neuron not below a lower Max neurons connects to another neuron. **Restart** starts from random genomes, so none of this applies.
 
 ### Water
 

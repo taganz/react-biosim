@@ -101,6 +101,8 @@ The map editor in the Scenario tab edits `worldObjects` of the draft, so map cha
 
 `resumeRun(sim, creatures?)` takes its creatures from the `creatures` argument when one is given, and from `sim.species` otherwise. The hot change passes `worldController.generations.currentCreatures`, the creatures alive right now. Loading a file passes nothing, so the saved species are used.
 
+A hot change also translates the genomes (its creatures and `startGenomes`) from the old decoding to the new one with `translateGenome()` in `simulation/creature/brain/geneTranslation.ts`, so that new sensors, actions or neurons keep the brains. See [Changing the decoding during a run](../reference/sensors-and-actions.md#changing-the-decoding-during-a-run). The Scenario tab uses `countChangedBrains()` from the same file to warn when some brains would change.
+
 The stats history follows the same rule. A hot change keeps the history of the running simulation, because `sim.stats` in the draft is the history from load time. Loading a file replaces it with the file's `stats`, or with an empty history.
 
 So does the water in the cells. A hot change copies it from the old grid, and loading a file takes the file's `cellWater`; `WorldWater.restoreCells()` puts it back, taken from the cloud. Only without it (an older file, or a hot change that changes the world size or leaves too little total water) do the cells get the first rain. Refilling them would give the creatures of a continuous run a window of plenty after every load.

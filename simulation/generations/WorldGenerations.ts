@@ -20,6 +20,7 @@ import WorldGenerationsData from "./WorldGenerationsData";
 import { SensorName } from "../creature/brain/CreatureSensors";
 import { ActionName } from "../creature/brain/CreatureActions";
 import { SimulationType } from "./SimulationType";
+import { GeneDecoding } from "../creature/brain/geneTranslation";
 import { addHerbivoreOldAgeDeath, computeHerbivoreGenomeStats, HerbivoreGenomeStats, HerbivoreOldAgeDeaths } from "./creatureQueries";
 
 
@@ -262,12 +263,18 @@ export default class WorldGenerations {
 
   // Recreates a creature of a previous run bound to this generations and grid, keeping its
   // genome, position, mass and counters. Returns null if its cell is outside the world or not empty.
-  public restoreCreature(source: Creature) : Creature | null {
+  /** how genes are decoded with these settings (see geneTranslation.ts) */
+  get geneDecoding(): GeneDecoding {
+    return { sensors: this.sensors.enabledSensors, actions: this.actions.enabledActions, maxNeurons: this.maxNumberNeurons };
+  }
+
+  // genes: the genome to give it instead of the source's one (a hot change translates them)
+  public restoreCreature(source: Creature, genes?: Gene[]) : Creature | null {
     const [x, y] = source.position;
     if (!this.grid.isTileInsideWorld(x, y) || !this.grid.isTileEmpty(x, y)) {
       return null;
     }
-    const creature = new Creature(this, [x, y], false, new Genome(source.brain.genome.genes.slice()));
+    const creature = new Creature(this, [x, y], false, new Genome(genes ?? source.brain.genome.genes.slice()));
     creature.id = source.id;
     creature.stepBirth = source.stepBirth;
     creature.birthGen = source.birthGen;

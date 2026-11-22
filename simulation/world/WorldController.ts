@@ -13,6 +13,8 @@ import { SimulationData } from "../SimulationData";
 import { PhenoTypeColorMode } from "../creature/PhenoTypeColorMode";
 import { randomSeed, setSeed, setRandomState } from "../helpers/random";
 import { findLivingCreatureById } from "../generations/creatureQueries";
+import Genome, { Gene } from "../creature/brain/Genome";
+import { decodingFromData, translateGenome } from "../creature/brain/geneTranslation";
 
 // max time (ms) spent computing steps before yielding to the browser
 const MAX_TICK_MS = 30;
@@ -221,8 +223,15 @@ export default class WorldController {
   public resumeRun(sim: SimulationData, creatures?: Creature[]): void {
 
     const sourceCreatures : Creature[] = creatures ?? sim.species?.flatMap((species) => species.creatures) ?? [];
+    // a hot change keeps the brains: the genes are rewritten for the new sensors, actions and neurons
+    const oldDecoding = creatures ? this.generations.geneDecoding : undefined;
+    const newDecoding = creatures ? decodingFromData(sim.worldGenerationsData) : undefined;
+    const translate = (genes: Gene[]) =>
+      oldDecoding && newDecoding ? translateGenome(genes, oldDecoding, newDecoding).genes : genes.slice();
     // a hot change stays in the same generation, so it keeps its start genomes
-    const startGenomes = creatures ? this.generations.startGenomes : sourceCreatures.map((creature) => creature.brain.genome);
+    const startGenomes = creatures
+      ? this.generations.startGenomes.map((genome) => new Genome(translate(genome.genes)))
+      : sourceCreatures.map((creature) => creature.brain.genome);
     // the cells keep their water, like the creatures keep their mass: the first rain would refill them
     const cellWater = creatures ? WorldWater.cellWater(this.grid) : sim.cellWater;
     // a hot change goes on with the same random numbers
@@ -243,7 +252,7 @@ export default class WorldController {
     // creatures are rebuilt so they use the new grid and settings;
     // the ones now outside the world or on an occupied cell are dropped
     for (const creature of sourceCreatures) {
-      this.generations.restoreCreature(creature);
+      this.generations.restoreCreature(creature, translate(creature.brain.genome.genes));
     }
     this.generations.startGenomes = startGenomes;
     // a hot change keeps the history of the running simulation; sim.stats is the one from load time.
