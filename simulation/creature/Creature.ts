@@ -215,6 +215,10 @@ export default class Creature {
     if (probX !== 0 || probY !== 0) {
       if (this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY)) {
         this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
+      } else {
+        // blocked, or not enough mass: MoveForward must not keep pushing into a wall
+        this.lastMovement[0] = 0;
+        this.lastMovement[1] = 0;
       }
     }
 
