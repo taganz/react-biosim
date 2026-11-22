@@ -56,7 +56,7 @@ Source: [simulation/generations/selection/](../../simulation/generations/selecti
 | UI label | Class | Who survives | Fitness value (fitness chart) |
 |---|---|---|---|
 | Inside Reproduction Area | `InsideReproductionAreaSelection` | Living creatures standing inside a **reproduction area** when the generation ends. | Survival rate: survivors ÷ initial population × 100 |
-| Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of creatures that travelled furthest during the generation (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`). | Largest distance covered |
+| Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of living creatures with the highest [distance index](../model/creatures.md#distance-index) (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`), and at least one. Ties, such as the many creatures at 0 in the first generations, are broken at random. | Largest distance covered |
 | Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no herbivores left there are no survivors. | Largest mass |
 | Reproduction *(in dev)* | `ReproductionSelection` | Living creatures that were born during the generation. | Number of survivors |
 
@@ -81,6 +81,5 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 ## Known issues
 
 - **Plant/Herbivore ignores survivors that are not herbivores** and logs a warning in the console. Only Greatest Mass selects herbivores alone; with other methods the surviving plants are dropped, and if no herbivore survives the next generation has only plants.
-- **Greatest Distance can select dead creatures,** because it does not check `isAlive`.
 - **Random Fixed Genera** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in the Scenario tab, so a file saved with this strategy and an empty list still starts with no genus to pick from, until you give one a probability under **Genera of generation 1**.
 - **Random Fixed Genera writes broken genes when a genus cannot be built.** If no enabled sensor is compatible with a genus, or its main action is off, the random pick finds nothing and the gene gets id 127. The brain wraps that id around the number of sensors or actions, so the gene ends up wired to an arbitrary one and the creature may not have the genus it was built for. The Scenario tab warns about it under **Genera of generation 1**, but does not stop the run.

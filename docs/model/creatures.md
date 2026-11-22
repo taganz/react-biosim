@@ -54,7 +54,7 @@ A strong urge (an action output close to 1) makes movement almost certain. A wea
 
 `distanceCovered` is the fitness used by **Greatest Distance** selection. It does not count every cell travelled. It rewards **long straight runs**:
 
-- When the creature keeps moving in the same direction, a run counter grows (up to 120). Once the run is longer than 35 steps, each further step adds 1 to `distanceCovered`.
+- When the creature keeps moving in the same direction, a run counter grows, and stops growing at 120. Once the run is longer than 35 steps, each further step adds 1 to `distanceCovered`, also after the counter has reached 120.
 - Changing direction resets the run counter.
 - After 100 steps without moving, each further still step takes 1 from `distanceCovered` (down to 0).
 

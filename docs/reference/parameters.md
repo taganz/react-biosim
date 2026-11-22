@@ -172,7 +172,7 @@ The simulation writes these values itself so that a saved file can resume where 
 | Key | Startup | Meaning |
 |---|---|---|
 | `DETECT_RADIUS` | 10 | Radius, in cells, of the prey sensors and the MoveToPrey action. |
-| `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Distance. |
+| `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of living creatures selected by Greatest Distance (at least one). |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
 | `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1* or under *Constants*. |
 | `POPULATION_DEFAULT_SPECIES` | `[]` | List of `{name, genome}`, edited as JSON. Not used by any strategy. |

@@ -306,8 +306,9 @@ export default class Creature {
         // has moved
         this.stepsStopped = 0;
         // If keeping same direction for some time, increase distance moved
-        if (this.stepDirection != null && this.lastDirection == this.stepDirection  && this.distancePartial < distanceStraightMax) {
-          this.distancePartial += 1;
+        // the run counter stops at distanceStraightMax: a longer run keeps scoring
+        if (this.stepDirection != null && this.lastDirection == this.stepDirection) {
+          if (this.distancePartial < distanceStraightMax) this.distancePartial += 1;
           if (this.distancePartial > distanceStraightMin ) {
             this.distanceCovered += 1;
           }
