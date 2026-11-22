@@ -81,7 +81,7 @@ When it is on, mass is the creature's energy:
 Not everything a creature takes becomes its own mass. `ASSIMILATION_EFFICIENCY` gives, for each genus (plant, herbivore, carnivore), the share that does, separately for the two ways of gaining mass:
 
 - **`photosynthesis`**: of the water taken from the cell;
-- **`prey`**: of the prey's mass, in an attack and when a parent eats a neighbour to make room for its child.
+- **`prey`**: of the prey's mass, in an attack.
 
 The rest goes to the cloud, like the mass spent on metabolism: it is the energy lost between trophic levels. It does not go to the cell, which would water the plants right next to the creature that ate.
 
@@ -98,9 +98,9 @@ The **Reproduction** action creates a child during the generation, at most `REPR
 
 - The parent needs more than `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH × birth mass`. With metabolism on, it also needs `REPRODUCTION_COST_PER_MASS_DO × birth mass` on top. Without that mass the action does nothing: it is not an attempt and costs nothing.
 - The child goes to a free cell **as far from the parent as possible**. The distance counts steps to any of the 8 neighbours, so the cells at distance *d* form the square ring of side 2*d* + 1 around the parent. The child is born in a free cell of the farthest ring that has one, chosen at random within that ring; if that ring is full, the next one inward is tried, down to the 8 cells around. Obstacles between the parent and the cell do not matter, and cells outside the world do not count. When the distance comes to 1 cell (for example with the setting at 0), the child is born in one of the 8 cells around, as before.
-- If no cell within that distance is free, a herbivore or carnivore parent eats a neighbour it can eat (the same rules as an [attack](#attack), in any of the 8 cells around) and the child takes its cell.
+- If no cell within that distance is free, the child is not born. A parent never kills a neighbour to make room: crowded areas limit reproduction.
 - A successful reproduction costs `REPRODUCTION_COST_PER_MASS_DO × birth mass`, plus the birth mass handed to the child.
-- An attempt with no free cell and nothing to eat costs `REPRODUCTION_COST_PER_MASS_TRY × birth mass`.
+- An attempt with no free cell costs `REPRODUCTION_COST_PER_MASS_TRY × birth mass`.
 
 > **Known issue.** With metabolism off, mass never changes, so it can never exceed `REPRODUCTION_MULTIPLE_MASS_AT_BIRTH` (3) × birth mass. The Reproduction action therefore never succeeds unless metabolism is on.
 
@@ -113,7 +113,7 @@ The **Reproduction** action creates a child during the generation, at most `REPR
 
 The genus of the target is otherwise not checked: a herbivore can kill a carnivore if it is heavy enough.
 
-With `ATTACK_SAME_GENUS` on, the target can also be of the attacker's genus, as long as it is of another [species](#species), that is, its genome is not identical. The same rule applies when a parent eats a neighbour to make room for its child. The prey sensors and the MoveToPrey action do not change: they still look only for the prey genus, so a creature cannot sense or chase the relatives it can eat.
+With `ATTACK_SAME_GENUS` on, the target can also be of the attacker's genus, as long as it is of another [species](#species), that is, its genome is not identical. The prey sensors and the MoveToPrey action do not change: they still look only for the prey genus, so a creature cannot sense or chase the relatives it can eat.
 
 ## Genus
 

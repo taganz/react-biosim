@@ -32,8 +32,8 @@ export default class CreatureReproduction {
     reproduce(input: number) : boolean {
       const grid = this._creature.generations.grid;
       const maxDistance = offspringMaxDistance(this._creature.worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT, grid.size);
-      const offspringPosition = grid.getFarthestAvailablePosition(this._creature.position[0], this._creature.position[1], maxDistance)
-        ?? this._creature.eatNeighbourForOffspring();
+      // with no free cell the child is not born: the parent never kills a neighbour to make room
+      const offspringPosition = grid.getFarthestAvailablePosition(this._creature.position[0], this._creature.position[1], maxDistance);
       if (offspringPosition) {
         const child = this._creature.generations.newCreature(offspringPosition, false, this._creature.brain.genome, this._creature);
         this._creature._mass.consumeForReproduction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_DO);    //TODO only if isMetabolismEnabled

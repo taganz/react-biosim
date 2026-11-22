@@ -106,12 +106,12 @@ To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only writt
 | `PHOTOSYNTHESIS` | `actionInputValue` | output of the Photosynthesis neuron | | | The neuron output is above 0 (multiples of 10). |
 | `PHOTOSYNTHESIS` | `waterGotFromCell` | water taken from the cell | | | Same. |
 | `REPRODUCE_TRY` | `mass` | mass of the creature | | | The Reproduction neuron output is above 0 and the creature has the mass to reproduce. Without that mass no row is written. |
-| `REPRODUCE_TRY` | `mass consumed` | mass spent on the failed try | | | No free cell and nothing to eat around. |
+| `REPRODUCE_TRY` | `mass consumed` | mass spent on the failed try | | | No free cell within the reproduction distance. |
 | `REPRODUCE` | `actionInputValue` | output of the Reproduction neuron | | | The child was born. |
 | `REPRODUCE` | `mass` | mass of the parent after giving birth | | | Same. |
 | `ATTACK_TRY` | `actionInputValue` | output of the attack neuron | | | An attack neuron fires and there is a neighbour the creature can eat. |
 | `ATTACK_TRY` | `targetDirection` | `0` | `0` | `N`, `E`, `S` or `W` | Same. |
-| `ATTACK` | `preyMass` | mass the prey had before it was eaten | | | The prey was killed, by an attack or by a parent making room for its child. |
+| `ATTACK` | `preyMass` | mass the prey had before it was eaten | | | The prey was killed by an attack. |
 | `MOVE_TRY` | `x,y` | x step: −1, 0 or 1 | y step: −1, 0 or 1 | | The creature tries to move. |
 | `MOVE` | `direction` | x step | y step | `N`, `NE`, `E`, `SE`, `S`, `SW`, `W` or `NW` | The move succeeded. `N` is +y. |
 | `MOVE` | `position x + 100y` | `x + 100 × y` of the new position | | | The move succeeded, after `MOVE direction`. |
@@ -163,8 +163,7 @@ The rows follow the order of `Creature.computeStep()`:
 3. **Brain.** The actions run in table order ([Sensors and actions](sensors-and-actions.md)). Movement actions write nothing here, they only add to the urge to move. The others:
    - **Photosynthesis** (output above 0, steps multiple of 10): `PHOTOSYNTHESIS actionInputValue`, `PHOTOSYNTHESIS waterGotFromCell`.
    - **Reproduction** (output above 0 and enough mass; otherwise nothing): `REPRODUCE_TRY mass`, then one of
-     - no free cell nearby and nothing to eat: `REPRODUCE_TRY mass consumed`;
-     - no free cell, but a neighbour it can eat: the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 7 `INFO dead …`) and `ATTACK preyMass`, then the rows of a success;
+     - no free cell nearby: `REPRODUCE_TRY mass consumed`;
      - success: the child's 7 `INFO birth …` rows and its `BIRTH parentId` (with this creature as parent) and `BIRTH genome` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
    - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour it can eat in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 7 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
 4. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.

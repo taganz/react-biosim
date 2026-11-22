@@ -165,7 +165,7 @@ Todo esto está sin confirmar en git.
   - `EXTRA='{"worldControllerData":{...}}'`: más ajustes encima;
   - `PLANTS_ONLY_PHOTOSYNTHESIS=0`: desactiva el bloqueo de la fotosíntesis (activo por defecto);
   - `FIXED_GENUS=1`: las mutaciones no cambian el género (necesita `BASE_SIM`);
-  - `NO_EAT_FOR_OFFSPRING=1`: sin comer al vecino para hacer sitio.
+  - `NO_EAT_FOR_OFFSPRING=1`: sin comer al vecino para hacer sitio. Eliminado: el motor ya nunca come al vecino para hacer sitio.
 - [forage-phase2-build.ts](forage-phase2-build.ts): `npx tsx experiments/forage-phase2-build.ts <final.sim de la fase 1> <salida.sim> <lluvia>`. Crea el archivo de inicio de la fase 2.
 - [forage-pilot.json](forage-pilot.json): ajustes de la fase 1.
 - Resultados en `results/`:

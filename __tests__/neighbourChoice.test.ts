@@ -150,11 +150,10 @@ describe('CreatureAttack prey choice', () => {
         return creature;
     }
 
-    test('without prey both searches return null', () => {
+    test('without prey there is no target', () => {
         const attacker = spawn("attack_plant", [2, 2]);
         spawn("attack_plant", [3, 2]);
         spawn("attack_animal", [1, 1]);      // too heavy to eat
-        expect(attacker._attack.findPreyAround()).toBeNull();
         expect(attacker.findPreyDirection()).toBeNull();
     });
 
@@ -162,18 +161,7 @@ describe('CreatureAttack prey choice', () => {
         const plant = spawn("plant", [2, 2]);
         spawn("plant", [3, 2]);
         spawn("attack_plant", [2, 3]);
-        expect(plant._attack.findPreyAround()).toBeNull();
         expect(plant.findPreyDirection()).toBeNull();
-    });
-
-    test('findPreyAround returns only prey, each with the same probability', () => {
-        const attacker = spawn("attack_plant", [2, 2]);
-        const preyPositions: GridPosition[] = [[1, 1], [3, 1], [2, 3]];
-        for (const position of preyPositions) spawn("plant", position);
-        spawn("attack_plant", [1, 2]);       // same genus, cannot be eaten
-        const counts = countChoices(() => attacker._attack.findPreyAround(), (prey) => String(prey?.position));
-        expect([...counts.keys()].sort()).toEqual(preyPositions.map(String).sort());
-        expect(chiSquare(counts, 3)).toBeLessThan(CHI2_CRITICAL[2]);
     });
 
     test('findPreyDirection returns only directions of prey, each with the same probability', () => {

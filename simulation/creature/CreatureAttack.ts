@@ -3,12 +3,11 @@ import {Grid} from "@/simulation/world/grid/Grid";
 import Creature from "@/simulation/creature/Creature";
 import WorldControllerData from '../world/WorldControllerData';
 import { randomInt } from '@/simulation/helpers/random';
-import { neighbours8X, neighbours8Y } from '@/simulation/world/grid/Grid';
 
 const neighbours4X = [0, 1, -1, 0];
 const neighbours4Y = [1, 0, 0, -1];
 const neighbours4Direction : Direction4[] = ["S", "E", "W", "N"];
-// indices of the neighbours that can be eaten, found by findPreyDirection and findPreyAround.
+// indices of the neighbours that can be eaten, found by findPreyDirection.
 // Shared, but filled and read within one call: canEat does not search for prey
 const preyNeighbours = new Int8Array(8);
 
@@ -57,20 +56,6 @@ export default class CreatureAttack {
         }
         if (count === 0) return null;
         return neighbours4Direction[preyNeighbours[count === 1 ? 0 : randomInt(count)]];
-    }
-
-    // a random neighbour in the 8 surrounding cells that can be eaten, every one with the same
-    // probability; null if there is none
-    findPreyAround() : Creature | null {
-        if (!this.isAttackGenus) return null;
-        const [x, y] = this.creature.position;
-        let count = 0;
-        for (let i = 0; i < 8; i++) {
-            if (this.canEat(this.creatureAt(x + neighbours8X[i], y + neighbours8Y[i]))) preyNeighbours[count++] = i;
-        }
-        if (count === 0) return null;
-        const i = preyNeighbours[count === 1 ? 0 : randomInt(count)];
-        return this.creatureAt(x + neighbours8X[i], y + neighbours8Y[i]);
     }
 
     // returns preyMass or 0 if prey not killed

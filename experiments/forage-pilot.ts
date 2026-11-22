@@ -157,11 +157,6 @@ if (process.env.FIXED_GENUS === "1" && process.env.BASE_SIM) {
   };
 }
 
-// NO_EAT_FOR_OFFSPRING=1: with no free cell around, a parent does not eat a neighbour to make room
-if (process.env.NO_EAT_FOR_OFFSPRING === "1") {
-  CreatureClass.prototype.eatNeighbourForOffspring = function () { return null; };
-}
-
 // runHeadless does not expose its WorldController before the end: catch its step events
 const originalDispatch = EventTarget.prototype.dispatchEvent;
 EventTarget.prototype.dispatchEvent = function (event: Event) {

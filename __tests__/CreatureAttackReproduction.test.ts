@@ -7,7 +7,7 @@ import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { GridPosition } from "@/simulation/world/grid/Grid";
 import { LogEvent } from "@/simulation/logger/LogEvent";
 
-// which neighbour an attack genus eats, and how it makes room for a child
+// which neighbour an attack genus eats, and where a child is born
 describe('attack and reproduction', () => {
 
     let worldController : WorldController;
@@ -114,17 +114,6 @@ describe('attack and reproduction', () => {
         expect(creature.mass).toBeCloseTo(before - creature.massAtBirth * (0.2 + 0.6));
     });
 
-    test('the parent eats a neighbour to make room for its child whatever its mass', () => {
-        const parent = spawn("attack_plant", [2, 2]);
-        surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");
-        const prey = worldController.generations.grid.cell(3, 3).creature!;
-        prey._mass._mass = 0.01;
-        parent._mass._mass = 0.1;
-
-        expect(parent.eatNeighbourForOffspring()).toEqual([3, 3]);
-        expect(prey.deathCause).toBe("attacked");
-    });
-
     test('the attack picks a neighbour that can be eaten, not the first one found', () => {
         const attacker = spawn("attack_plant", [2, 2]);
         spawn("attack_plant", [2, 1]);
@@ -183,21 +172,6 @@ describe('attack and reproduction', () => {
         expect(attacker.findPreyDirection()).toBeNull();
     });
 
-    test('with ATTACK_SAME_GENUS a parent can make room by eating another species of its genus', () => {
-        worldController.simData.worldControllerData.ATTACK_SAME_GENUS = true;
-        const parent = spawn("attack_plant", [2, 2]);
-        const other = spawnOtherSpecies("attack_plant", [3, 3]);
-        other._mass._mass = parent.mass / 4;
-        // the other neighbours are of the parent's species, so they are not eaten
-        const siblings : GridPosition[] = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]];
-        for (const position of siblings) {
-            const sibling = worldController.generations.newCreature(position, true, parent.brain.genome.clone());
-            sibling._mass._mass = parent.mass / 4;
-        }
-
-        expect(parent.eatNeighbourForOffspring()).toEqual([3, 3]);
-    });
-
     test('a plant never eats', () => {
         const plant = spawn("plant", [2, 2]);
         const attacker = spawn("attack_plant", [3, 2]);
@@ -217,41 +191,7 @@ describe('attack and reproduction', () => {
         expect(log).not.toHaveBeenCalledWith(LogEvent.REPRODUCE_TRY, expect.anything(), expect.anything());
     });
 
-    test('with no free cell the parent eats a neighbour and the child takes its cell', () => {
-        const parent = spawn("attack_plant", [2, 2]);
-        surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");
-        const prey = worldController.generations.grid.cell(3, 3).creature!;
-        parent._mass._mass = parent._mass._maxMass;
-        const creaturesBefore = worldController.generations.currentCreatures.length;
-
-        parent.reproduce(1);
-
-        expect(prey.isAlive).toBe(false);
-        expect(prey.deathCause).toBe("attacked");
-        expect(parent.killCount).toBe(1);
-        expect(parent.childrenCount).toBe(1);
-        const child = worldController.generations.grid.cell(3, 3).creature!;
-        expect(child.parentId).toBe(parent.id);
-        expect(worldController.generations.currentCreatures.length).toBe(creaturesBefore + 1);
-
-        // when the loop removes the dead prey, the child stays in the cell
-        worldController.generations.grid.removeCreature(prey);
-        expect(worldController.generations.grid.cell(3, 3).creature).toBe(child);
-    });
-
-    test('the eaten prey can leave the creature list after the child has moved out of its cell', () => {
-        const parent = spawn("attack_plant", [2, 2]);
-        surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");
-        const prey = worldController.generations.grid.cell(3, 3).creature!;
-        parent._mass._mass = parent._mass._maxMass;
-        parent.reproduce(1);
-
-        worldController.generations.grid.cell(3, 3).creature = null;
-
-        expect(() => worldController.generations.grid.removeCreature(prey)).not.toThrow();
-    });
-
-    test('with a larger distance the child is born in the farthest free ring and nothing is eaten', () => {
+    test('with a larger distance the child is born in the farthest free ring', () => {
         worldController.simData.worldControllerData.REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT = 40;   // 2 cells
         const parent = spawn("attack_plant", [2, 2]);
         surround(() => "plant");             // the ring at distance 1 is full of prey
@@ -266,9 +206,10 @@ describe('attack and reproduction', () => {
         expect(Math.max(Math.abs(child.position[0] - 2), Math.abs(child.position[1] - 2))).toBe(2);
     });
 
-    test('with no free cell and nothing to eat the try costs mass and logs it', () => {
+    test('with no free cell no child is born, no neighbour is eaten and the try costs mass', () => {
         const parent = spawn("attack_plant", [2, 2]);
-        surround(() => "attack_plant");
+        surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");
+        const prey = worldController.generations.grid.cell(3, 3).creature!;
         parent._mass._mass = parent._mass._maxMass;
         const log = jest.spyOn(parent, "log");
         const before = parent.mass;
@@ -278,6 +219,8 @@ describe('attack and reproduction', () => {
         const consumed = parent.massAtBirth * worldController.simData.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY;
         expect(parent.mass).toBeCloseTo(before - consumed);
         expect(parent.childrenCount).toBe(0);
+        expect(parent.killCount).toBe(0);
+        expect(prey.isAlive).toBe(true);
         expect(log).toHaveBeenCalledWith(LogEvent.REPRODUCE_TRY, "mass consumed", consumed);
     });
 });
