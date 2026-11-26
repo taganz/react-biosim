@@ -179,6 +179,11 @@ The simulation writes these values itself so that a saved file can resume where 
 | `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1* or under *Constants*. |
 | `POPULATION_DEFAULT_SPECIES` | `[]` | List of `{name, genome}`, edited as JSON. Not used by any strategy. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
-| `LOG_*` | — | Event logger settings: on/off switch (default off), creature filter (`LOG_CREATURE_ID`, default `-1`, no creatures: only the totals; read when a recording starts), step totals (`LOG_STEP_TOTALS`, default off), event limit, number locale and event types. They are changed in *Tools → Logger* or under *Constants*, and apply at once. `LOG_LEVEL` no longer exists: files that have it are converted when loaded (see [The log file](log-file.md#kinds-of-rows)). |
+| `LOG_SPECIES`, `LOG_CREATURES` | `true`, `false` | Files of the [log](log-file.md): species and creatures. They are changed in *Simulation → Log* or under *Constants*, and apply at once, like the other `LOG_*`. |
+| `LOG_INCLUDE_DEAD` | `true` | The file of creatures also has the dead. |
+| `LOG_EVERY_N_STEPS` | 0 | A recording also writes rows every this many steps; 0 only at the end of each generation. |
+| `LOG_CREATURE_GENOME`, `LOG_SPECIES_CREATURE_LIST` | `false` | Extra columns: the genome of each creature, the living creatures of each species. |
+| `LOG_LOCALE_STRING` | `es-ES` | Locale of the numbers of the log (decimal separator). |
+| `LOG_MAX_ROWS` | 1,000,000 | A recording stops at this many rows. The constants of the old event logger (`LOG_ENABLED`, `LOG_CREATURE_ID`, `LOG_STEP_TOTALS`, `LOG_EVENTLOGGER_MAX_EVENTS`, `LOG_ALLOWED_EVENTS`, `LOG_LEVEL`) are dropped when a file is loaded. |
 | `colors` | — | Colours of the map: reproduction, obstacle, healing, danger and spawn areas. Any CSS color. They apply to every obstacle and area, so the `color` saved with each obstacle is no longer drawn. |
 | `SIM_CODE_LENGTH` | 3 | Length of the generated simulation code. |

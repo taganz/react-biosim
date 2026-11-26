@@ -1,0 +1,730 @@
+<meta charset="utf-8">
+<title>Biosim Energy Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: a lab bench. File strip on top, scenario constants, then two simulators side by side (plant | herbivore), species register at the bottom. */
+:root {
+  --bg: #f3f6f4;
+  --surface: #ffffff;
+  --sunken: #eaefec;
+  --fg: #15201b;
+  --muted: #5b6a63;
+  --line: #d6dfda;
+  --plant: #2c8549;
+  --plant-soft: #2c854922;
+  --herb: #2a68a8;
+  --herb-soft: #2a68a822;
+  --bad: #b9442b;
+  --bad-soft: #b9442b1f;
+  --warn: #9a6a12;
+  --warn-soft: #e5b4472e;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631;
+    --plant: #5cc27c; --plant-soft: #5cc27c26; --herb: #6ea6e4; --herb-soft: #6ea6e426;
+    --bad: #e7765c; --bad-soft: #e7765c26; --warn: #e2b452; --warn-soft: #e2b45224; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631;
+  --plant: #5cc27c; --plant-soft: #5cc27c26; --herb: #6ea6e4; --herb-soft: #6ea6e426;
+  --bad: #e7765c; --bad-soft: #e7765c26; --warn: #e2b452; --warn-soft: #e2b45224; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 18px; font-weight: 600; }
+h3 { font-size: 14px; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--herb); outline-offset: 2px; }
+
+/* header */
+.top { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; justify-content: space-between; }
+.top .intro { max-width: 70ch; display: grid; gap: 6px; }
+.loader { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 14px; cursor: pointer; font-weight: 500; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.small { padding: 3px 10px; font-size: 12.5px; }
+.drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 12px 16px; display: flex; gap: 12px 20px; flex-wrap: wrap; align-items: center; background: var(--surface); }
+.drop.over { border-color: var(--herb); background: var(--herb-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--line); white-space: nowrap; }
+.chip.warn { background: var(--warn-soft); border-color: transparent; color: var(--warn); }
+.chip.bad { background: var(--bad-soft); border-color: transparent; color: var(--bad); }
+.notice { border-radius: 8px; padding: 9px 12px; background: var(--warn-soft); color: var(--fg); font-size: 13px; }
+.notice b { color: var(--warn); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+details.panel > summary { cursor: pointer; list-style: none; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary::before { content: "▸"; color: var(--muted); }
+details.panel[open] > summary::before { content: "▾"; }
+
+/* params */
+.ptable-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+td.key { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+td input[type=number] { width: 88px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-family: var(--font-mono); font-size: 12.5px; }
+td input.changed { border-color: var(--warn); background: var(--warn-soft); }
+.src { font-size: 11.5px; white-space: nowrap; }
+
+/* simulators */
+.sims { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 560px), 1fr)); gap: 20px; }
+.sim { border-top: 4px solid var(--accent); }
+.sim.plant { --accent: var(--plant); --accent-soft: var(--plant-soft); }
+.sim.herb { --accent: var(--herb); --accent-soft: var(--herb-soft); }
+.sim-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; flex-wrap: wrap; }
+.sim-head h2 { color: var(--accent); }
+.species-pick { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.species-pick select { max-width: 280px; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 8px 18px; }
+.ctrl { display: grid; grid-template-columns: 1fr auto; gap: 0 8px; align-items: center; min-width: 0; }
+.ctrl label { font-size: 12.5px; color: var(--muted); }
+.ctrl output, .ctrl .val { font-family: var(--font-mono); font-size: 12.5px; text-align: right; }
+.ctrl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 2px 0 0; }
+.ctrl.int input[type=number] { width: 64px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-family: var(--font-mono); font-size: 12.5px; text-align: right; }
+.ctrl.int { grid-template-columns: 1fr auto; }
+.ctrl.locked { opacity: 0.45; }
+.group-title { grid-column: 1 / -1; margin-top: 4px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
+.kpi { background: var(--sunken); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.kpi .v { font-family: var(--font-mono); font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.kpi .v.pos { color: var(--plant); }
+.kpi .v.neg { color: var(--bad); }
+.kpi .s { font-size: 11.5px; color: var(--muted); }
+
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-family: var(--font-mono); font-size: 10.5px; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .axis { stroke: var(--muted); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+
+.bars { display: grid; gap: 6px; }
+.bar-row { display: grid; grid-template-columns: 64px 1fr 70px; gap: 8px; align-items: center; font-size: 12px; }
+.bar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: var(--sunken); }
+.bar span { height: 100%; }
+.bar-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--muted); }
+.bar-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+
+.map-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+.map-head select { padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); }
+.map svg rect.cell { cursor: pointer; }
+.map svg rect.cell:hover { stroke: var(--fg); stroke-width: 1.5; }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+.sect { display: grid; gap: 8px; min-width: 0; align-content: start; }
+
+/* species */
+.sp-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+.sp-wrap table { min-width: 860px; }
+.sp-wrap thead th { position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.sp-wrap td { font-size: 12.5px; }
+.genus { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.genus.plant { background: var(--plant-soft); color: var(--plant); }
+.genus.attack_plant { background: var(--herb-soft); color: var(--herb); }
+.genus.attack_animal { background: var(--bad-soft); color: var(--bad); }
+.genus.unknown { background: var(--sunken); color: var(--muted); }
+.empty { padding: 22px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; }
+.foot { font-size: 12px; color: var(--muted); max-width: 90ch; display: grid; gap: 4px; }
+@media (prefers-reduced-motion: no-preference) { .kpi .v { transition: color .2s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="intro">
+      <h1>Biosim Energy Lab</h1>
+      <p class="muted">Carga un fichero <span class="mono">.sim</span> para usar sus constantes de metabolismo y sus especies. Los simuladores aplican paso a paso las reglas de masa del motor: basal, pensar, fotosíntesis, comer, moverse, atacar y reproducirse.</p>
+    </div>
+  </header>
+
+  <div class="drop" id="drop">
+    <div class="loader">
+      <label class="btn primary" for="file">Cargar .sim</label>
+      <input id="file" type="file" accept=".sim,.json,application/json" hidden>
+      <span class="muted small">o arrástralo aquí. Se lee en tu navegador; no se sube a ningún sitio.</span>
+    </div>
+    <div class="chips" id="fileChips"><span class="chip">Sin fichero: valores de arranque del motor (startupScenario.ts)</span></div>
+  </div>
+  <div id="notices" class="wrap" style="gap:8px"></div>
+
+  <details class="panel" id="paramsPanel">
+    <summary><h2>Constantes del escenario</h2><span class="muted small" id="paramsSummary">16 constantes, valores de arranque</span></summary>
+    <div class="ptable-wrap"><table id="ptable"></table></div>
+    <div class="loader"><button class="btn small" id="resetParams">Volver a los valores del fichero</button><span class="muted small" id="unusedKeys"></span></div>
+  </details>
+
+  <section class="sims" id="sims"></section>
+
+  <section class="panel">
+    <div class="map-head">
+      <div><h2>Especies del fichero</h2><p class="muted small" id="spSummary">Genomas descodificados con la tabla de sensores y acciones actual del motor.</p></div>
+      <div class="species-pick"><label class="small muted" for="spFilter">Mostrar</label>
+        <select id="spFilter"><option value="all">todas</option><option value="plant">plantas</option><option value="attack_plant">herbívoros</option><option value="attack_animal">carnívoros</option><option value="unknown">sin género</option></select></div>
+    </div>
+    <div id="spBody"><div class="empty">Carga un <span class="mono">.sim</span> para ver sus especies: género, genes que cuestan masa, sensores, acciones, stamina y masa real de sus criaturas.</div></div>
+  </section>
+
+  <footer class="foot">
+    <p><b>Modelo.</b> Línea continua: valor esperado (movimiento, ataque y celda libre como medias). Banda: el 80 % central de 200 vidas sorteadas; línea discontinua: la mediana. El agua de la celda no se agota: se limita con «agua máxima de la celda». Una muerte por edad ocurre cuando la edad supera la edad máxima.</p>
+    <p><b>Especies.</b> Los genes se leen igual que <span class="mono">Genome.geneToConnection</span>, con las listas de sensores y acciones del fichero ordenadas según la tabla actual. El género sale de todas las conexiones del genoma (el motor usa las que quedan tras podar el cerebro), y los sensores y acciones se cuentan sin podar: el coste de pensar es aproximado. La salida de las acciones depende del cerebro y no se calcula: ajústala con los controles.</p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+// ---------------------------------------------------------------- engine tables (simulation/creature/brain)
+const SENSOR_TABLE = ["HorizontalPosition","VerticalPosition","Age","Oscillator","Random","HorizontalSpeed","VerticalSpeed","HorizontalBorderDistance","VerticalBorderDistance","BorderDistance","TouchNorth","TouchEast","TouchSouth","TouchWest","Pain","PopulationDensity","Mass","PreyDistance","PreyNorth","PreyEast","PreySouth","PreyWest","PredatorDistance","PredatorDirection","PreyProximity"];
+const ACTION_TABLE = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","Photosynthesis","Reproduction","AttackPlant","AttackAnimal","Stamina","MoveToPrey"];
+const ACTION_MAIN_GENUS = { Photosynthesis: "plant", AttackPlant: "attack_plant", AttackAnimal: "attack_animal" };
+const MOVE_ACTIONS = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","MoveToPrey"];
+const GENUS_LABEL = { plant: "planta", attack_plant: "herbívoro", attack_animal: "carnívoro", unknown: "sin género" };
+
+// ---------------------------------------------------------------- constants (startupScenario.ts)
+const PARAMS = [
+  ["MASS_WATER_TO_MASS_PER_STEP", 0.1, "Agua que toma la fotosíntesis en un paso, × salida"],
+  ["MASS_AT_BIRTH_PLANT", 1, "Masa al nacer de una planta"],
+  ["MASS_AT_BIRTH_ATTACK_PLANT", 3, "Masa al nacer de un herbívoro"],
+  ["MASS_AT_BIRTH_ATTACK_ANIMAL", 6, "Masa al nacer de un carnívoro"],
+  ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 5, "Masa máxima, × masa al nacer"],
+  ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Por paso, por gen primario"],
+  ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.04, "Por paso, por cada otro gen"],
+  ["MASS_COST_PER_SENSOR", 0, "Por sensor leído, en pasos que piensa"],
+  ["MASS_COST_PER_ACTION", 0, "Por acción conectada, en pasos que piensa"],
+  ["STAMINA_MIN", 0.05, "Stamina mínima de un gen Stamina"],
+  ["REPRODUCTION_MULTIPLE_MASS_AT_BIRTH", 3, "Umbral para reproducirse, × masa al nacer (+ DO)"],
+  ["REPRODUCTION_COST_PER_MASS_TRY", 0.1, "Intento sin celda libre, × masa al nacer"],
+  ["REPRODUCTION_COST_PER_MASS_DO", 0.25, "Reproducirse, × masa al nacer (más la masa del hijo)"],
+  ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0, "Umbral para moverse, × masa al nacer (+ DO)"],
+  ["MOVE_COST_PER_MASS_TRY", 0.2, "Intentar moverse, × masa al nacer"],
+  ["MOVE_COST_PER_MASS_DO", 0.6, "Extra por moverse, × masa al nacer (aunque esté bloqueado)"],
+  ["ATTACK_COST_PER_MASS_TRY", 0.02, "Intentar atacar (absoluto)"],
+  ["ATTACK_MIN_PREY_MASS_FACTOR", 2, "El atacante pesa al menos este múltiplo de la presa"],
+];
+const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
+const DEFAULTS = Object.fromEntries(PARAMS.map(p => [p[0], p[1]]));
+
+const state = {
+  P: { ...DEFAULTS },
+  fileP: { ...DEFAULTS },
+  source: Object.fromEntries(PARAMS.map(p => [p[0], "arranque"])),
+  file: null,        // { name, gen, wcd, water, species: [...], enabledSensors, enabledActions }
+  stepsPerGen: 300,
+};
+
+// ---------------------------------------------------------------- simulators: inputs
+const SIM_DEFS = {
+  plant: { title: "Planta", genus: "plant", inputs: { prim: 2, other: 1, sens: 2, acts: 2, st: 1, photo: 1, cell: 1, repro: 1, pfree: 1, pmove: 0, patt: 0, pprey: 0, prey: 0, maxAge: 300 } },
+  herb:  { title: "Herbívoro", genus: "attack_plant", inputs: { prim: 1, other: 4, sens: 4, acts: 4, st: 1, photo: 0, cell: 1, repro: 1, pfree: 1, pmove: 0.1, patt: 0.5, pprey: 0.8, prey: 1.2, maxAge: 300 } },
+};
+const sims = {};
+for (const k of Object.keys(SIM_DEFS)) sims[k] = { kind: k, genus: SIM_DEFS[k].genus, x: { ...SIM_DEFS[k].inputs }, species: null, mapY: k === "plant" ? "photo" : "pmove" };
+
+const CONTROLS = [
+  { group: "Genoma" },
+  { id: "prim", label: "Genes primarios", type: "int", min: 0, max: 2 },
+  { id: "other", label: "Otros genes", type: "int", min: 0, max: 64 },
+  { id: "sens", label: "Sensores leídos", type: "int", min: 0, max: 25 },
+  { id: "acts", label: "Acciones conectadas", type: "int", min: 0, max: 12 },
+  { id: "st", label: "Stamina (parte de pasos que piensa)", type: "range", min: 0.05, max: 1, step: 0.05, fmt: 2 },
+  { id: "maxAge", label: "Edad máxima (pasos)", type: "int", min: 10, max: 2000 },
+  { group: "Alimentación" },
+  { id: "photo", label: "Salida de Photosynthesis", type: "range", min: 0, max: 1, step: 0.05, fmt: 2 },
+  { id: "cell", label: "Agua máxima de la celda por paso", type: "range", min: 0, max: 0.5, step: 0.01, fmt: 2 },
+  { id: "patt", label: "Prob. de intentar atacar (paso que piensa)", type: "range", min: 0, max: 1, step: 0.05, fmt: 2, herbOnly: true },
+  { id: "pprey", label: "Prob. de que haya presa comestible", type: "range", min: 0, max: 1, step: 0.05, fmt: 2, herbOnly: true },
+  { id: "prey", label: "Masa de la presa", type: "range", min: 0.1, max: 5, step: 0.1, fmt: 1, herbOnly: true },
+  { group: "Conducta" },
+  { id: "pmove", label: "Prob. de intentar moverse por paso", type: "range", min: 0, max: 1, step: 0.05, fmt: 2 },
+  { id: "repro", label: "Se reproduce al superar el umbral", type: "check" },
+  { id: "pfree", label: "Prob. de celda libre al reproducirse", type: "range", min: 0, max: 1, step: 0.05, fmt: 2 },
+];
+
+// ---------------------------------------------------------------- model
+function birthMass(sim, P) {
+  if (sim.genus === "attack_animal") return P.MASS_AT_BIRTH_ATTACK_ANIMAL;
+  if (sim.genus === "attack_plant") return P.MASS_AT_BIRTH_ATTACK_PLANT;
+  return P.MASS_AT_BIRTH_PLANT;
+}
+function derive(sim, P, x = sim.x) {
+  const birth = birthMass(sim, P);
+  const thinkSpecies = sim.species && sim.species.thinkCost != null && sameGenome(sim, x) ? sim.species.thinkCost(P) : null;
+  return {
+    birth,
+    maxMass: birth * P.MASS_MAX_MULTIPLE_MASS_AT_BIRT,
+    basal: P.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * x.prim + P.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * x.other,
+    think: thinkSpecies != null ? thinkSpecies : P.MASS_COST_PER_SENSOR * x.sens + P.MASS_COST_PER_ACTION * x.acts,
+    water: Math.min(P.MASS_WATER_TO_MASS_PER_STEP * x.photo, x.cell),
+    rthr: birth * (P.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH + P.REPRODUCTION_COST_PER_MASS_DO),
+    rcost: birth * (P.REPRODUCTION_COST_PER_MASS_DO + 1),
+    rtry: birth * P.REPRODUCTION_COST_PER_MASS_TRY,
+    mthr: birth * (P.MOVE_MULTIPLE_MASS_AT_BIRTH + P.MOVE_COST_PER_MASS_DO),
+    mcost: birth * (P.MOVE_COST_PER_MASS_TRY + P.MOVE_COST_PER_MASS_DO),
+    atry: P.ATTACK_COST_PER_MASS_TRY,
+    minEat: x.prey * P.ATTACK_MIN_PREY_MASS_FACTOR,
+  };
+}
+function sameGenome(sim, x) {
+  const s = sim.species; if (!s) return false;
+  return x.sens === s.sensors.length && x.acts === s.actions.length;
+}
+// one life. rng = null: expected values; otherwise one sampled life
+function live(sim, P, x, rng) {
+  const d = derive(sim, P, x);
+  const steps = x.maxAge + 2;
+  const mass = new Float64Array(steps + 1);
+  let m = d.birth; mass[0] = m;
+  let charge = x.st < 1 ? (rng ? rng() : 0) : 0;
+  const T = { basal: 0, think: 0, photo: 0, eaten: 0, attack: 0, move: 0, repro: 0, children: 0 };
+  let kids = 0, firstRepro = null, death = null, cause = null, maxM = m;
+  const eatCap = (cur) => Math.max(0, Math.min(x.prey, d.maxMass - cur));
+  for (let s = 1; s <= steps; s++) {
+    if (s - 1 > x.maxAge) { death = s; cause = "edad"; m = 0; mass[s] = 0; break; }
+    let thinks = true;
+    if (x.st < 1) { charge += x.st; if (charge >= 1) charge -= 1; else thinks = false; }
+    const want = d.basal + (thinks ? d.think : 0);
+    const c = Math.min(m, want); m -= c;
+    const cb = Math.min(c, d.basal); T.basal += cb; T.think += c - cb;
+    if (m <= 0) { death = s; cause = "sin masa"; mass[s] = 0; break; }
+    if (thinks) {
+      // actions in the order of the table: Photosynthesis, Reproduction, AttackPlant
+      const g = Math.max(0, Math.min(d.water, d.maxMass - m)); m += g; T.photo += g;
+      if (x.repro && m > d.rthr) {
+        if (rng) {
+          if (rng() < x.pfree) { const c2 = Math.min(m, d.rcost); m -= c2; T.repro += c2 - Math.min(c2, d.birth); T.children += Math.min(c2, d.birth); kids += 1; if (firstRepro == null) firstRepro = s; }
+          else { const c2 = Math.min(m, d.rtry); m -= c2; T.repro += c2; }
+        } else {
+          const doCost = x.pfree * d.birth * P.REPRODUCTION_COST_PER_MASS_DO + (1 - x.pfree) * d.rtry;
+          const child = x.pfree * d.birth;
+          m -= doCost + child; T.repro += doCost; T.children += child; kids += x.pfree;
+          if (firstRepro == null && x.pfree > 0) firstRepro = s;
+        }
+        if (m <= 0) { m = 0; death = s; cause = "sin masa"; mass[s] = 0; break; }
+      }
+      if (x.patt > 0) {
+        const canEatMass = m >= d.minEat;
+        if (rng) {
+          if (rng() < x.patt) {
+            const found = rng() < x.pprey;
+            const c3 = Math.min(m, d.atry); m -= c3; T.attack += c3;
+            if (m <= 0) { death = s; cause = "sin masa"; mass[s] = 0; break; }
+            if (found && canEatMass) { const e = eatCap(m); m += e; T.eaten += e; }
+          }
+        } else {
+          const c3 = Math.min(m, x.patt * d.atry); m -= c3; T.attack += c3;
+          if (m <= 0) { death = s; cause = "sin masa"; mass[s] = 0; break; }
+          if (canEatMass) { const e = x.patt * x.pprey * eatCap(m); m += e; T.eaten += e; }
+        }
+      }
+    }
+    if (x.pmove > 0 && m > d.mthr) {
+      if (rng) { if (rng() < x.pmove) { const c4 = Math.min(m, d.mcost); m -= c4; T.move += c4; } }
+      else { const c4 = Math.min(m, x.pmove * d.mcost); m -= c4; T.move += c4; }
+    }
+    if (m <= 0) { m = 0; death = s; cause = "sin masa"; mass[s] = 0; break; }
+    mass[s] = m; if (m > maxM) maxM = m;
+  }
+  return { mass, steps, kids, firstRepro, death, cause, T, d, maxM };
+}
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function monteCarlo(sim, P, x, n = 200) {
+  const rng = mulberry32(12345);
+  const runs = []; for (let i = 0; i < n; i++) runs.push(live(sim, P, x, rng));
+  const steps = runs[0].steps;
+  const p10 = new Float64Array(steps + 1), p50 = new Float64Array(steps + 1), p90 = new Float64Array(steps + 1);
+  const col = new Float64Array(n);
+  for (let s = 0; s <= steps; s++) {
+    for (let i = 0; i < n; i++) col[i] = runs[i].mass[s];
+    col.sort();
+    p10[s] = col[Math.floor(0.1 * (n - 1))]; p50[s] = col[Math.floor(0.5 * (n - 1))]; p90[s] = col[Math.floor(0.9 * (n - 1))];
+  }
+  const kids = runs.map(r => r.kids).sort((a, b) => a - b);
+  const starved = runs.filter(r => r.cause === "sin masa").length / n;
+  const anyKid = runs.filter(r => r.kids > 0).length / n;
+  return { p10, p50, p90, kidsMed: kids[Math.floor(n / 2)], kidsP10: kids[Math.floor(0.1 * (n - 1))], kidsP90: kids[Math.floor(0.9 * (n - 1))], starved, anyKid };
+}
+function netAtBirth(d, x) {
+  const eat = (d.birth >= d.minEat ? x.patt * x.pprey * x.prey : 0);
+  return x.st * (d.water + eat - x.patt * d.atry - d.think) - d.basal - (d.birth > d.mthr ? x.pmove * d.mcost : 0);
+}
+
+// ---------------------------------------------------------------- genome decoding (Genome.geneToConnection)
+function decodeSpecies(genes, enabledSensors, enabledActions, P, staminaEnabled) {
+  const nS = enabledSensors.length, nA = enabledActions.length;
+  const sensors = new Set(), actions = new Set();
+  let genus = { plant: false, attack_plant: false, attack_animal: false };
+  let staminaW = null, staminaGenes = 0, broken = false;
+  const actionsInGenome = new Set();
+  for (const gene of genes) {
+    const sourceType = (gene >> 31) & 1, sourceId = (gene >> 24) & 127, sinkType = (gene >> 23) & 1, sinkId = (gene >> 16) & 127;
+    const weight = (gene & 65535) / 8192 - 4;
+    if (sinkType === 1 && nA === 0) { broken = true; continue; }
+    if (sourceType === 1 && nS === 0) { broken = true; continue; }
+    const action = sinkType === 1 ? enabledActions[sinkId % nA] : null;
+    if (action === "Stamina" && staminaEnabled) { staminaGenes++; if (staminaW === null) staminaW = weight; continue; }
+    if (sourceType === 1) sensors.add(enabledSensors[sourceId % nS]);
+    if (action) { actions.add(action); actionsInGenome.add(action); const mg = ACTION_MAIN_GENUS[action]; if (mg) genus[mg] = true; }
+  }
+  const g = genus.attack_animal ? "attack_animal" : genus.attack_plant ? "attack_plant" : genus.plant ? "plant" : "unknown";
+  const primaryActs = g === "plant" ? ["Photosynthesis", "Reproduction"] : ["Reproduction"];
+  const prim = primaryActs.filter(a => actionsInGenome.has(a)).length;
+  const st = staminaEnabled ? (staminaW === null ? 1 : Math.max(P.STAMINA_MIN, Math.min(1, (staminaW + 4) / 8))) : 1;
+  return { genus: g, prim, other: genes.length - prim - staminaGenes, staminaGenes, total: genes.length, sensors: [...sensors], actions: [...actions], st, broken,
+    moves: [...actions].some(a => MOVE_ACTIONS.includes(a)), attacks: actions.has("AttackPlant") || actions.has("AttackAnimal"), photos: actions.has("Photosynthesis") };
+}
+
+// ---------------------------------------------------------------- file loading
+function loadSim(name, text) {
+  let data;
+  try { data = JSON.parse(text); } catch (e) { showNotices([["bad", `No se pudo leer <b>${esc(name)}</b>: no es un JSON válido (${esc(e.message)}).`]]); return; }
+  const wcd = data.worldControllerData || {}, gen = data.worldGenerationsData || {};
+  if (!data.worldControllerData) { showNotices([["bad", `<b>${esc(name)}</b> no tiene <span class="mono">worldControllerData</span>: no parece un fichero de simulación.`]]); return; }
+  const P = {}, source = {};
+  for (const [k, def] of PARAMS) {
+    if (typeof wcd[k] === "number") { P[k] = wcd[k]; source[k] = "fichero"; }
+    else if (k === "MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY" && typeof wcd.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE === "number") { P[k] = wcd.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE; source[k] = "falta: = PER_BRAIN_SIZE"; }
+    else { P[k] = def; source[k] = (k === "MASS_COST_PER_SENSOR" || k === "MASS_COST_PER_ACTION") ? "falta: 0" : "falta: arranque"; }
+  }
+  const unused = Object.keys(wcd).filter(k => !KNOWN_KEYS.has(k));
+  const fileSensors = gen.enabledSensors || [], fileActions = gen.enabledActions || [];
+  const enabledSensors = SENSOR_TABLE.filter(s => fileSensors.includes(s));
+  const enabledActions = ACTION_TABLE.filter(a => fileActions.includes(a));
+  const unknownS = fileSensors.filter(s => !SENSOR_TABLE.includes(s)), unknownA = fileActions.filter(a => !ACTION_TABLE.includes(a));
+  const staminaEnabled = enabledActions.includes("Stamina");
+  const sensorCosts = wcd.SENSOR_COSTS || {}, actionCosts = wcd.ACTION_COSTS || {};
+  const species = (data.species || []).map((sp, i) => {
+    const dec = decodeSpecies(sp.genes || [], enabledSensors, enabledActions, P, staminaEnabled);
+    const cr = sp.creatures || [];
+    const masses = cr.map(c => c.mass).filter(v => typeof v === "number");
+    const ages = cr.filter(c => typeof c.age === "number" && typeof c.mass === "number").map(c => [c.age, c.mass]);
+    const mb = cr.length ? cr[0].massAtBirth : null;
+    const s = { idx: i, ...dec, n: cr.length, meanMass: masses.length ? masses.reduce((a, b) => a + b, 0) / masses.length : null, massAtBirth: mb, points: ages,
+      hex: ((sp.genes || [0])[0] >>> 0).toString(16).padStart(8, "0").slice(0, 6) };
+    s.thinkCost = (PP) => s.sensors.reduce((a, n) => a + (typeof sensorCosts[n] === "number" ? sensorCosts[n] : PP.MASS_COST_PER_SENSOR), 0)
+      + s.actions.reduce((a, n) => a + (typeof actionCosts[n] === "number" ? actionCosts[n] : PP.MASS_COST_PER_ACTION), 0);
+    return s;
+  }).sort((a, b) => b.n - a.n);
+  state.P = { ...P }; state.fileP = { ...P }; state.source = source;
+  state.stepsPerGen = typeof wcd.stepsPerGen === "number" ? wcd.stepsPerGen : 300;
+  state.file = { name, gen, wcd, water: data.waterData || null, species, enabledSensors, enabledActions, unknownS, unknownA, unused, metabolism: gen.metabolismEnabled, staminaEnabled, version: data.version };
+  for (const k of Object.keys(sims)) { sims[k].species = null; sims[k].genus = SIM_DEFS[k].genus; sims[k].x = { ...SIM_DEFS[k].inputs, maxAge: state.stepsPerGen }; }
+  // load the most numerous plant and herbivore species
+  const firstPlant = species.find(s => s.genus === "plant" && !s.broken), firstHerb = species.find(s => (s.genus === "attack_plant" || s.genus === "attack_animal") && !s.broken);
+  if (firstPlant) applySpecies("plant", firstPlant);
+  if (firstHerb) applySpecies("herb", firstHerb);
+  renderAll();
+}
+function applySpecies(kind, s) {
+  const sim = sims[kind]; const x = sim.x;
+  sim.species = s;
+  if (kind === "herb") sim.genus = s.genus === "attack_animal" ? "attack_animal" : "attack_plant";
+  else sim.genus = "plant";
+  x.prim = s.prim; x.other = s.other; x.sens = s.sensors.length; x.acts = s.actions.length; x.st = s.st;
+  if (!s.photos) x.photo = 0; else if (x.photo === 0) x.photo = 1;
+  if (!s.moves) x.pmove = 0; else if (x.pmove === 0) x.pmove = 0.3;
+  if (kind === "herb") { if (!s.attacks) x.patt = 0; else if (x.patt === 0) x.patt = 0.5; }
+  if (!s.actions.includes("Reproduction")) x.repro = 0; else x.repro = 1;
+}
+
+// ---------------------------------------------------------------- rendering helpers
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = (v, d = 3) => v == null || Number.isNaN(v) ? "—" : Number(v).toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtN = (v) => v == null ? "—" : (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : fmt(v, 2));
+
+function showNotices(list) {
+  const el = $("#notices");
+  el.innerHTML = list.map(([kind, html]) => `<div class="notice" style="${kind === "bad" ? "background:var(--bad-soft)" : ""}">${html}</div>`).join("");
+}
+function renderFileInfo() {
+  const f = state.file; const chips = $("#fileChips");
+  if (!f) return;
+  const nSp = f.species.length, nCr = f.species.reduce((a, s) => a + s.n, 0);
+  chips.innerHTML = [
+    `<span class="chip"><b>${esc(f.name)}</b></span>`,
+    `<span class="chip">${f.wcd.simCode ? "código " + esc(f.wcd.simCode) + " · " : ""}${state.stepsPerGen} pasos/generación${f.wcd.size ? " · mundo " + f.wcd.size + "×" + f.wcd.size : ""}</span>`,
+    `<span class="chip ${f.metabolism ? "" : "warn"}">metabolismo ${f.metabolism ? "activado" : "desactivado"}</span>`,
+    `<span class="chip">${nSp} especies · ${nCr} criaturas</span>`,
+    `<span class="chip">${f.enabledActions.length} acciones · ${f.enabledSensors.length} sensores</span>`,
+  ].join("");
+  const notes = [];
+  if (!f.metabolism) notes.push(["warn", "<b>Metabolismo desactivado.</b> En esta simulación la masa no cambia. Los simuladores muestran lo que pasaría si lo activaras con estas constantes."]);
+  if (f.unknownA.length || f.unknownS.length) notes.push(["warn", `<b>Nombres que el motor ya no conoce:</b> ${[...f.unknownA, ...f.unknownS].map(n => `<span class="mono">${esc(n)}</span>`).join(", ")}. Al cargar, el motor los ignora, así que los genes apuntan a otras acciones o sensores que cuando evolucionaron (ver <span class="mono">docs/known-issues.md</span>). Las especies se leen igual que las leería el motor hoy.`]);
+  showNotices(notes);
+  const w = f.water;
+  $("#unusedKeys").innerHTML = (f.unused.length ? `Claves del fichero que el motor ya no usa: ${f.unused.map(k => `<span class="mono">${esc(k)}</span>`).join(", ")}. ` : "")
+    + (w ? `Agua del fichero: capacidad de celda ${fmtN(w.waterCellCapacity)}, lluvia máx. por celda ${fmtN(w.waterRainMaxPerCell)}, primera lluvia ${fmtN(w.waterFirstRainPerCell)}.` : "");
+}
+
+function renderParams() {
+  const rows = PARAMS.map(([k, def, desc]) => {
+    const v = state.P[k], changed = Math.abs(v - state.fileP[k]) > 1e-12;
+    const src = state.source[k];
+    const srcCls = src.startsWith("falta") ? "chip warn" : "chip";
+    return `<tr><td class="key">${k}</td><td><input type="number" step="any" id="p_${k}" data-k="${k}" value="${v}" class="${changed ? "changed" : ""}"></td><td><span class="${srcCls} src">${esc(src)}</span></td><td class="muted small">${esc(desc)}</td></tr>`;
+  }).join("");
+  $("#ptable").innerHTML = `<thead><tr><th>Clave</th><th>Valor</th><th>Origen</th><th>Significado</th></tr></thead><tbody>${rows}</tbody>`;
+  const nChanged = PARAMS.filter(([k]) => Math.abs(state.P[k] - state.fileP[k]) > 1e-12).length;
+  const nMissing = PARAMS.filter(([k]) => state.source[k].startsWith("falta")).length;
+  $("#paramsSummary").textContent = `${PARAMS.length} constantes · ${state.file ? "de " + state.file.name : "valores de arranque"}${nMissing ? " · " + nMissing + " no estaban en el fichero" : ""}${nChanged ? " · " + nChanged + " modificadas" : ""}`;
+  $("#ptable").querySelectorAll("input").forEach(inp => inp.addEventListener("change", () => {
+    const v = parseFloat(inp.value); if (!Number.isFinite(v)) { inp.value = state.P[inp.dataset.k]; return; }
+    state.P[inp.dataset.k] = v; renderParams(); renderSims(); renderSpecies();
+  }));
+}
+
+function buildSim(kind) {
+  const sim = sims[kind], def = SIM_DEFS[kind];
+  const el = document.createElement("article");
+  el.className = `panel sim ${kind}`; el.id = `sim-${kind}`;
+  el.innerHTML = `
+    <div class="sim-head">
+      <div><h2>${def.title}</h2><p class="muted small" data-role="genusLine"></p></div>
+      <div class="species-pick"><label class="small muted" for="sp-${kind}">Especie</label><select id="sp-${kind}"></select></div>
+    </div>
+    <div class="controls" data-role="controls"></div>
+    <div class="kpis" data-role="kpis"></div>
+    <div class="sect"><div class="map-head"><h3>Masa a lo largo de la vida</h3><div class="legend" data-role="legend"></div></div><div data-role="chart"></div></div>
+    <div class="two">
+      <div class="sect"><h3>En qué gana y gasta masa (vida esperada)</h3><div data-role="bars"></div></div>
+      <div class="sect map"><div class="map-head"><h3>Hijos esperados según</h3><select data-role="mapY" id="mapY-${kind}"></select></div><div data-role="map"></div></div>
+    </div>`;
+  const box = el.querySelector('[data-role="controls"]');
+  for (const c of CONTROLS) {
+    if (c.group) { const g = document.createElement("div"); g.className = "label group-title"; g.textContent = c.group; box.appendChild(g); continue; }
+    const locked = kind === "plant" && c.herbOnly;
+    const w = document.createElement("div");
+    const id = `${kind}-${c.id}`;
+    if (c.type === "range") {
+      w.className = "ctrl" + (locked ? " locked" : "");
+      w.innerHTML = `<label for="${id}">${c.label}</label><output id="${id}-o"></output><input type="range" id="${id}" min="${c.min}" max="${c.max}" step="${c.step}" ${locked ? "disabled" : ""}>`;
+    } else if (c.type === "int") {
+      w.className = "ctrl int";
+      w.innerHTML = `<label for="${id}">${c.label}</label><input type="number" id="${id}" min="${c.min}" max="${c.max}" step="1">`;
+    } else {
+      w.className = "ctrl int";
+      w.innerHTML = `<label for="${id}">${c.label}</label><input type="checkbox" id="${id}" style="accent-color:var(--accent)">`;
+    }
+    if (locked) w.title = "Las plantas no atacan";
+    box.appendChild(w);
+    const inp = w.querySelector("input");
+    inp.addEventListener("input", () => {
+      let v = c.type === "check" ? (inp.checked ? 1 : 0) : parseFloat(inp.value);
+      if (!Number.isFinite(v)) return;
+      if (c.type === "int") v = Math.max(c.min, Math.min(c.max, Math.round(v)));
+      sim.x[c.id] = v; scheduleRender(kind);
+    });
+  }
+  const yOpts = kind === "plant"
+    ? [["photo", "salida de fotosíntesis"], ["cell", "agua de la celda"], ["st", "stamina"]]
+    : [["pmove", "movimiento"], ["pprey", "prob. de presa"], ["prey", "masa de la presa"], ["patt", "prob. de atacar"]];
+  const ySel = el.querySelector('[data-role="mapY"]');
+  ySel.innerHTML = yOpts.map(([v, l]) => `<option value="${v}">${l} × otros genes</option>`).join("");
+  ySel.value = sim.mapY;
+  ySel.addEventListener("change", () => { sim.mapY = ySel.value; renderSim(kind); });
+  el.querySelector(`#sp-${kind}`).addEventListener("change", (e) => {
+    const v = e.target.value; const f = state.file;
+    if (v === "") { sim.species = null; sim.genus = SIM_DEFS[kind].genus; }
+    else applySpecies(kind, f.species.find(s => String(s.idx) === v));
+    renderSim(kind); renderSpecies();
+  });
+  return el;
+}
+let pending = {};
+function scheduleRender(kind) { if (pending[kind]) return; pending[kind] = requestAnimationFrame(() => { pending[kind] = 0; renderSim(kind); }); }
+
+function syncControls(kind) {
+  const sim = sims[kind];
+  for (const c of CONTROLS) {
+    if (c.group) continue;
+    const inp = document.getElementById(`${kind}-${c.id}`); if (!inp) continue;
+    const v = sim.x[c.id];
+    if (c.type === "check") inp.checked = !!v; else if (document.activeElement !== inp) inp.value = v;
+    const o = document.getElementById(`${kind}-${c.id}-o`); if (o) o.textContent = fmt(v, c.fmt);
+  }
+  const sel = document.getElementById(`sp-${kind}`);
+  const f = state.file;
+  const opts = [`<option value="">Genérica (sin especie)</option>`];
+  if (f) {
+    const okGenus = kind === "plant" ? ["plant", "unknown"] : ["attack_plant", "attack_animal"];
+    f.species.filter(s => okGenus.includes(s.genus)).slice(0, 300).forEach(s => {
+      opts.push(`<option value="${s.idx}">#${s.idx + 1} ${GENUS_LABEL[s.genus]} · ${s.total} genes · ${s.n} criaturas</option>`);
+    });
+  }
+  sel.innerHTML = opts.join("");
+  sel.value = sim.species ? String(sim.species.idx) : "";
+  sel.disabled = !f;
+}
+
+function renderSim(kind) {
+  const sim = sims[kind], P = state.P, x = sim.x;
+  const el = document.getElementById(`sim-${kind}`);
+  syncControls(kind);
+  const exp = live(sim, P, x, null);
+  const mc = monteCarlo(sim, P, x);
+  const d = exp.d;
+  const net = netAtBirth(d, x);
+  const s = sim.species;
+  el.querySelector('[data-role="genusLine"]').innerHTML = s
+    ? `Especie #${s.idx + 1} <span class="genus ${s.genus}">${GENUS_LABEL[s.genus]}</span> · masa al nacer ${fmtN(d.birth)} · acciones: ${s.actions.map(a => `<span class="mono">${a}</span>`).join(", ") || "ninguna"}`
+    : `Genérica · masa al nacer ${fmtN(d.birth)} · máxima ${fmtN(d.maxMass)}`;
+  // break-even
+  const fixed = d.basal + (d.birth > d.mthr ? x.pmove * d.mcost : 0) + x.st * (d.think + x.patt * d.atry);
+  const minPhoto = Math.max(0, (fixed - x.st * (d.birth >= d.minEat ? x.patt * x.pprey * x.prey : 0)) / (x.st * P.MASS_WATER_TO_MASS_PER_STEP));
+  const preyPerStep = x.prey > 0 ? Math.max(0, (fixed - x.st * d.water) / x.prey) : null;
+  const kp = [
+    ["Balance por paso al nacer", (net >= 0 ? "+" : "") + fmt(net, 3), net >= 0 ? "pos" : "neg", "ganancia media − gasto medio"],
+    ["Primera reproducción", exp.firstRepro ? "paso " + exp.firstRepro : "nunca", exp.firstRepro ? "" : "neg", `umbral: más de ${fmtN(d.rthr)} de masa`],
+    ["Hijos en la vida", fmt(exp.kids, 1), exp.kids > 0 ? "pos" : "neg", `sorteo: ${fmtN(mc.kidsP10)}–${fmtN(mc.kidsP90)} (80 %)`],
+    ["Muere", exp.death ? "paso " + exp.death : "—", exp.cause === "sin masa" ? "neg" : "", exp.cause ? (exp.cause === "edad" ? "por edad" : "sin masa") + ` · ${Math.round(mc.starved * 100)} % de sorteos sin masa` : ""],
+    kind === "plant"
+      ? ["Fotosíntesis mínima", minPhoto > 1 ? "imposible" : fmt(minPhoto, 2), minPhoto > 1 ? "neg" : "", "salida para no perder masa"]
+      : ["Presas por paso", preyPerStep == null ? "—" : fmt(preyPerStep, 3), "", preyPerStep > 0 ? `una cada ${fmt(1 / preyPerStep, 1)} pasos para no perder masa` : "no necesita comer"],
+  ];
+  if (s && s.meanMass != null) kp.push(["Masa real media", fmt(s.meanMass, 2), "", `${s.n} criaturas en el fichero`]);
+  el.querySelector('[data-role="kpis"]').innerHTML = kp.map(([l, v, cls, sub]) => `<div class="kpi"><span class="label">${l}</span><span class="v ${cls}">${v}</span><span class="s">${sub}</span></div>`).join("");
+  el.querySelector('[data-role="chart"]').innerHTML = massChart(exp, mc, d, s, x);
+  el.querySelector('[data-role="legend"]').innerHTML =
+    `<span><i style="background:var(--accent)"></i>esperada</span><span><i style="background:var(--accent);opacity:.35;height:9px"></i>80 % de sorteos</span><span><i style="background:repeating-linear-gradient(90deg,var(--fg) 0 4px,transparent 4px 7px)"></i>mediana</span><span><i style="background:var(--warn)"></i>umbral de reproducción</span>${s && s.points.length ? `<span><i style="background:var(--fg);width:6px;height:6px;border-radius:50%"></i>criaturas reales</span>` : ""}`;
+  el.querySelector('[data-role="bars"]').innerHTML = barsHtml(exp, d);
+  el.querySelector('[data-role="map"]').innerHTML = mapSvg(kind);
+  el.querySelectorAll("rect.cell").forEach(r => r.addEventListener("click", () => {
+    sim.x.other = +r.dataset.o; sim.x[sim.mapY] = +r.dataset.y; renderSim(kind);
+  }));
+}
+
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+function massChart(exp, mc, d, s, x) {
+  const W = 640, H = 250, L = 42, R = 12, T = 10, B = 28;
+  const n = exp.steps;
+  let ymax = Math.max(d.maxMass, d.rthr) * 1.02;
+  if (s && s.points.length) ymax = Math.max(ymax, ...s.points.map(p => p[1]));
+  ymax = niceMax(ymax);
+  const X = (i) => L + (i / n) * (W - L - R), Y = (v) => T + (1 - v / ymax) * (H - T - B);
+  let g = "";
+  const yt = 5; for (let i = 0; i <= yt; i++) { const v = ymax * i / yt, y = Y(v); g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/><text x="${L - 6}" y="${y + 3.5}" text-anchor="end">${fmtN(+v.toFixed(2))}</text>`; }
+  const xs = niceMax(n / 6); for (let v = 0; v <= n; v += xs) g += `<text x="${X(v)}" y="${H - 9}" text-anchor="middle">${v}</text>`;
+  g += `<text x="${W - R}" y="${H - 9}" text-anchor="end" style="display:none">paso</text>`;
+  // band
+  let up = "", lo = "";
+  for (let i = 0; i <= n; i++) up += `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(mc.p90[i]).toFixed(1)}`;
+  for (let i = n; i >= 0; i--) lo += `L${X(i).toFixed(1)},${Y(mc.p10[i]).toFixed(1)}`;
+  g += `<path d="${up}${lo}Z" fill="var(--accent)" fill-opacity="0.16" stroke="none"/>`;
+  const line = (arr) => { let p = ""; for (let i = 0; i <= n; i++) p += `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(arr[i]).toFixed(1)}`; return p; };
+  g += `<line x1="${L}" x2="${W - R}" y1="${Y(d.rthr)}" y2="${Y(d.rthr)}" stroke="var(--warn)" stroke-width="1.2"/>`;
+  g += `<line x1="${L}" x2="${W - R}" y1="${Y(d.maxMass)}" y2="${Y(d.maxMass)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/><text x="${W - R - 2}" y="${Y(d.maxMass) - 4}" text-anchor="end">máx. ${fmtN(d.maxMass)}</text>`;
+  g += `<path d="${line(mc.p50)}" fill="none" stroke="var(--fg)" stroke-width="1" stroke-dasharray="4 3" opacity="0.7"/>`;
+  g += `<path d="${line(exp.mass)}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>`;
+  if (s && s.points.length) {
+    const pts = s.points.length > 600 ? s.points.filter((_, i) => i % Math.ceil(s.points.length / 600) === 0) : s.points;
+    for (const [a, m] of pts) if (a <= n) g += `<circle cx="${X(a).toFixed(1)}" cy="${Y(Math.min(m, ymax)).toFixed(1)}" r="2.2" fill="var(--fg)" fill-opacity="0.55"/>`;
+  }
+  g += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Masa por paso">${g}</svg><p class="muted small" style="text-align:right">paso →</p>`;
+}
+function barsHtml(exp, d) {
+  const T = exp.T;
+  const gains = [["masa al nacer", d.birth, "var(--muted)"], ["fotosíntesis", T.photo, "var(--plant)"], ["presas", T.eaten, "var(--herb)"]];
+  const costs = [["basal (genes)", T.basal, "#8a8f8c"], ["pensar", T.think, "#a98ec9"], ["moverse", T.move, "var(--bad)"], ["atacar", T.attack, "#d08a3c"], ["reproducirse", T.repro, "var(--warn)"], ["hijos", T.children, "var(--accent)"]];
+  const tot = (a) => a.reduce((s, r) => s + r[1], 0);
+  const maxT = Math.max(tot(gains), tot(costs) + (exp.cause === "edad" ? 0 : 0), 1e-9);
+  const lost = tot(gains) - tot(costs);
+  const row = (name, arr, extra) => `<div class="bar-row"><span>${name}</span><div class="bar">${arr.filter(r => r[1] > 1e-9).map(r => `<span title="${r[0]}: ${fmt(r[1], 2)}" style="width:${(r[1] / maxT * 100).toFixed(2)}%;background:${r[2]}"></span>`).join("")}${extra || ""}</div><span class="num" style="text-align:right">${fmt(tot(arr), 1)}</span></div>`;
+  const leftover = lost > 1e-6 ? `<span title="masa al morir: ${fmt(lost, 2)}" style="width:${(lost / maxT * 100).toFixed(2)}%;background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px)"></span>` : "";
+  const legend = [...gains, ...costs].filter(r => r[1] > 1e-9).map(r => `<span><i style="background:${r[2]}"></i>${r[0]} ${fmt(r[1], 1)}</span>`).join("")
+    + (lost > 1e-6 ? `<span><i style="background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px)"></i>vuelve a la celda al morir ${fmt(lost, 1)}</span>` : "");
+  return `<div class="bars">${row("entra", gains)}${row("sale", costs, leftover)}<div class="bar-legend">${legend}</div></div>`;
+}
+function mapSvg(kind) {
+  const sim = sims[kind], P = state.P;
+  const ranges = { photo: [0, 1, 0.05], cell: [0, 0.2, 0.01], st: [0.05, 1, 0.05], pmove: [0, 1, 0.05], pprey: [0, 1, 0.05], prey: [0.2, 4, 0.2], patt: [0, 1, 0.05] };
+  const [y0, y1, ys] = ranges[sim.mapY];
+  const ny = Math.round((y1 - y0) / ys) + 1;
+  const nx = kind === "plant" ? 13 : 21; // other genes 0..12 or 0..20
+  const vals = []; let maxK = 0;
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const x = { ...sim.x, other: i, [sim.mapY]: +(y0 + j * ys).toFixed(4) };
+    const r = live(sim, P, x, null); vals.push([i, j, r.kids, x[sim.mapY], r.cause]); if (r.kids > maxK) maxK = r.kids;
+  }
+  const W = 300, H = 210, L = 34, B = 26, T = 4, R = 4;
+  const cw = (W - L - R) / nx, ch = (H - T - B) / ny;
+  let g = "";
+  for (const [i, j, k, yv, cause] of vals) {
+    const fill = k <= 1e-9 ? "var(--bad)" : "var(--accent)";
+    const op = k <= 1e-9 ? (cause === "sin masa" ? 0.32 : 0.14) : 0.18 + 0.82 * Math.sqrt(k / Math.max(maxK, 1e-9));
+    g += `<rect class="cell" data-o="${i}" data-y="${yv}" x="${(L + i * cw).toFixed(2)}" y="${(T + (ny - 1 - j) * ch).toFixed(2)}" width="${(cw - 0.6).toFixed(2)}" height="${(ch - 0.6).toFixed(2)}" fill="${fill}" fill-opacity="${op.toFixed(2)}"><title>${i} otros genes, ${fmtN(yv)}: ${fmt(k, 1)} hijos${cause ? ", muere " + (cause === "edad" ? "de vieja" : "sin masa") : ""}</title></rect>`;
+  }
+  // current position
+  const ci = Math.min(nx - 1, sim.x.other), cj = Math.max(0, Math.min(ny - 1, Math.round((sim.x[sim.mapY] - y0) / ys)));
+  g += `<rect x="${(L + ci * cw - 1).toFixed(2)}" y="${(T + (ny - 1 - cj) * ch - 1).toFixed(2)}" width="${(cw + 1.4).toFixed(2)}" height="${(ch + 1.4).toFixed(2)}" fill="none" stroke="var(--fg)" stroke-width="2" pointer-events="none"/>`;
+  for (let i = 0; i < nx; i += (kind === "plant" ? 2 : 4)) g += `<text x="${(L + i * cw + cw / 2).toFixed(1)}" y="${H - 12}" text-anchor="middle">${i}</text>`;
+  for (const fr of [0, 0.5, 1]) { const j = Math.round(fr * (ny - 1)); g += `<text x="${L - 4}" y="${(T + (ny - 1 - j) * ch + ch / 2 + 3.5).toFixed(1)}" text-anchor="end">${fmtN(+(y0 + j * ys).toFixed(2))}</text>`; }
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Mapa de hijos esperados">${g}</svg><p class="muted small">Eje horizontal: otros genes. Rojo: ningún hijo (más oscuro si muere sin masa). Pulsa una casilla para usar esos valores. Máximo: ${fmt(maxK, 1)} hijos.</p>`;
+}
+
+function renderSpecies() {
+  const f = state.file; const body = $("#spBody");
+  if (!f) return;
+  if (!f.species.length) { body.innerHTML = `<div class="empty">Este fichero no guarda especies (es un escenario sin población).</div>`; $("#spSummary").textContent = ""; return; }
+  const filter = $("#spFilter").value;
+  const list = f.species.filter(s => filter === "all" || s.genus === filter);
+  const counts = {}; f.species.forEach(s => counts[s.genus] = (counts[s.genus] || 0) + 1);
+  $("#spSummary").innerHTML = `${f.species.length} especies: ${Object.entries(counts).map(([g, c]) => `${c} ${GENUS_LABEL[g]}`).join(", ")}. Genomas leídos con la tabla actual de sensores y acciones. Ordenadas por número de criaturas.`;
+  const rows = list.slice(0, 250).map(s => {
+    const kind = s.genus === "attack_plant" || s.genus === "attack_animal" ? "herb" : "plant";
+    const tmp = { kind, genus: kind === "herb" ? (s.genus === "attack_animal" ? "attack_animal" : "attack_plant") : "plant", species: s, x: { ...sims[kind].x } };
+    tmp.x.prim = s.prim; tmp.x.other = s.other; tmp.x.sens = s.sensors.length; tmp.x.acts = s.actions.length; tmp.x.st = s.st;
+    const d = derive(tmp, state.P, tmp.x);
+    const fixedCost = d.basal + x0(s.st) * d.think;
+    const loaded = sims[kind].species === s;
+    return `<tr><td class="mono">#${s.idx + 1}</td><td><span class="genus ${s.genus}">${GENUS_LABEL[s.genus]}</span></td>
+      <td class="num">${s.total}</td><td class="num">${s.prim}</td><td class="num">${s.other}</td><td class="num">${s.staminaGenes ? fmt(s.st, 2) : "—"}</td>
+      <td class="small">${s.actions.map(a => `<span class="mono">${a}</span>`).join(" ") || "—"}</td>
+      <td class="num">${s.sensors.length}</td><td class="num">${s.n}</td><td class="num">${s.meanMass == null ? "—" : fmt(s.meanMass, 2)}</td>
+      <td class="num">${fmt(fixedCost, 3)}</td>
+      <td><button class="btn small" data-sp="${s.idx}" data-kind="${kind}" ${loaded ? "disabled" : ""}>${loaded ? "En uso" : "Simular"}</button></td></tr>`;
+  }).join("");
+  body.innerHTML = `<div class="sp-wrap"><table><thead><tr><th>Especie</th><th>Género</th><th>Genes</th><th>Primarios</th><th>Otros</th><th>Stamina</th><th>Acciones</th><th>Sensores</th><th>Criaturas</th><th>Masa media</th><th>Gasto fijo/paso</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${list.length > 250 ? `<p class="muted small">Se muestran 250 de ${list.length}.</p>` : ""}`;
+  body.querySelectorAll("button[data-sp]").forEach(b => b.addEventListener("click", () => {
+    const s = f.species.find(z => String(z.idx) === b.dataset.sp); applySpecies(b.dataset.kind, s); renderSim(b.dataset.kind); renderSpecies();
+    document.getElementById(`sim-${b.dataset.kind}`).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }));
+}
+function x0(st) { return st; }
+
+function renderSims() { renderSim("plant"); renderSim("herb"); }
+function renderAll() { renderFileInfo(); renderParams(); renderSims(); renderSpecies(); }
+
+// ---------------------------------------------------------------- wiring
+const simsEl = $("#sims"); simsEl.appendChild(buildSim("plant")); simsEl.appendChild(buildSim("herb"));
+$("#spFilter").addEventListener("change", renderSpecies);
+$("#resetParams").addEventListener("click", () => { state.P = { ...state.fileP }; renderParams(); renderSims(); renderSpecies(); });
+function readFile(file) { if (!file) return; const r = new FileReader(); r.onload = () => loadSim(file.name, r.result); r.onerror = () => showNotices([["bad", "No se pudo leer el fichero."]]); r.readAsText(file); }
+$("#file").addEventListener("change", (e) => readFile(e.target.files[0]));
+const drop = $("#drop");
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => readFile(e.dataTransfer.files[0]));
+renderParams(); renderSims();
+</script>

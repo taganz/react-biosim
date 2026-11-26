@@ -1,6 +1,6 @@
 # Scenario, simulation and tools
 
-Use **Scenario** to change the rules of a simulation, **Simulation** for the options of the run itself and to see whether the change worked, and **Tools** for the logger.
+Use **Scenario** to change the rules of a simulation, and **Simulation** for the options of the run itself, to see whether the change worked and to log species and creatures.
 
 ## Scenario
 
@@ -10,7 +10,7 @@ Use **Scenario** to change the rules of a simulation, **Simulation** for the opt
 
 Every section starts closed: click its title to open or close it. The tab remembers which sections are open while the browser tab stays open, also when you switch to another tab or reload the page. A section whose fields differ from the running simulation shows **● not applied** next to its title, so you can see where the pending changes are without opening every section. The bar with **Update simulation**, **Restart** and **Discard changes** stays outside the sections, always visible.
 
-**Constants**, at the end, lists every value of the constants file and the model constants (mass, stamina, reproduction, movement and attack), one per line: name, field and a short description, grouped by topic. They are applied with **Update simulation** or **Restart** like the other settings, except the **Logger** group, which applies at once as in *Tools → Logger*. Map colors accept any CSS color; the map editor shows them at once, and they apply to every obstacle and area of the map.
+**Constants**, at the end, lists every value of the constants file and the model constants (mass, stamina, reproduction, movement and attack), one per line: name, field and a short description, grouped by topic. They are applied with **Update simulation** or **Restart** like the other settings, except the **Log** group, which applies at once as in *Simulation → Log*. Map colors accept any CSS color; the map editor shows them at once, and they apply to every obstacle and area of the map.
 
 After a scenario or file is loaded, **Top species in the loaded file** at the end of the tab opens and lists up to 10 species with most creatures in it, most numerous first, leaving out those with less than 1% of the creatures. Each one shows its share of all the creatures in the file (%), its number of creatures and its hexadecimal genome, with a button that copies the genome. A line below the list sums up the species left out: how many there are, their share and their creatures. The list describes the file as it was loaded and does not change while the run goes on. A setup file has no creatures, so the section says so instead.
 
@@ -85,31 +85,31 @@ Typical shapes:
 
 Shows how the world's water is split between the cloud, the cells and the creatures. It only changes when metabolism is enabled. **Show water in cells** paints every empty cell of the world from grey (no water) to blue (full), by its water as a percentage of the cell's capacity. It is a viewer option: it is off when the app opens, it is not saved with the simulation, and it redraws the world at once, also while paused. Because it is drawn on the world canvas, GIFs recorded while it is on show the water too.
 
-## Tools
+### Log
 
-### Logger
+The **Log** section saves tables of species and creatures as CSV files, one row per species or creature, to analyse a run outside the app (a spreadsheet, Power BI, Python). Every save also downloads a file with the settings of the simulation. What each file contains, column by column, is in [The log files](../reference/log-file.md).
 
-The **logger** records the events of the simulation (births, moves, deaths, attacks…) and saves them as a `.csv` file. A Power BI report to analyse the log is in `public/analyze simlog.pbix`. Every recording starts with `SETUP` rows that list all the settings (sensors and actions as 1 or 0) and the constants of the simulation. What the file contains, row by row, is in [The log file](../reference/log-file.md).
+A species here is a lineage: creatures with the same genome **and** the same origin. The same genome reached from two different species is two species. See [Species](population-and-brains.md#species).
 
-**Enable logger**, at the top, turns the logger on or off (it is off by default). While it is off, the rest of the section is hidden. Turning it off stops it and deletes the log; when the log has events that have not been saved, it asks first. It is saved with the simulation.
+- **Files**: **Species** and/or **Creatures**.
+- **Which ones**: **All**, or **Marked in Population**: the species and creatures marked with **Mark for log** in the Population tab. The marked ones are listed below, with **×** to unmark one and **Clear marks**. With marked species, the file of creatures has their creatures too. The marks are not saved with the simulation.
+- **Save snapshot** downloads the files of this moment: the species of the current generation and the living creatures (and, with **Creatures: also the dead**, the ones that died in this generation).
 
-**Recording** shows what the logger is doing:
+A **recording** adds rows at the end of every generation until it is stopped. Choose **From** (*Now*, or *Generation 1*, which restarts the simulation like **Restart** and records from its first step) and press **Start recording**. While it records, the button is **Stop recording**.
 
-- **Status**: *Stopped*, *Waiting for generation N to start* (a recording starts at step 1 of a generation; generation 1 needs **Restart**, and the status says so), *Recording generation N* (with *stops at its end* when it records one generation), *Stopped: the generation is recorded*, or *Stopped: the log reached Maximum events*.
-- **Events logged**, out of **Maximum events**, with *(not saved)* when there are events that have not been saved.
-- **Generations** and **Creatures** in the log.
+- **Recording** says what it is doing: *Recording*, *Stopped*, *Stopped: the recording reached Maximum rows*, or *Stopped: the simulation was restarted or loaded*. After a restart, **Continue recording** goes on with the same recording; its generations start again at 1.
+- **Rows**, out of **Maximum rows**, with *(not saved)* when there are rows that have not been saved, and the **Generations** in it.
+- **Save recording** downloads its files; **Delete recording** deletes it. **Start recording** and **Delete recording** ask first when there are rows that have not been saved.
 
-To record, choose **From** (*Next generation*, or *Generation 1*, which waits for a **Restart**) and **For** (*One generation*, or *Until stopped*), and press **Start recording**. While the logger is recording or waiting, the button is **Stop log**. **From** and **For** are not saved with the simulation.
+To draw the tree of species over time, record the species from *Generation 1* with **All**: every species seen in a generation gets a row at its end, also the ones that died out, with the species it came from ([details](../reference/log-file.md#drawing-the-tree-of-species)).
 
-**Start recording** and **Delete log** delete the log; **Save log** downloads it. When the log has events that have not been saved, the first two ask first. **Save log** and **Delete log** are disabled while the log is empty.
+**Options** (the `LOG_*` constants) apply at once, also while paused, and are saved with the simulation; the Scenario tab does not show them as pending changes. A recording keeps the options it started with.
 
-**Creature to log** chooses the creatures whose events are written, one row per event: *No creatures (only totals)*, the default, *All creatures*, *Creatures 1 to 9*, *Creatures 1 to 29*, or *One creature*, which shows a **Creature id** field. The step and generation totals count these creatures, or every creature with *No creatures*. It is saved with the simulation (`LOG_CREATURE_ID`), and the logger reads it when a recording starts: a change during a recording is used from the next one, and a note says so. **Set as creature to log** in the Population tab sets it to the selected creature. When the selection method gives the ids again every generation, a note says that the id is a different creature in each generation.
+- **Also every (steps)**: a recording also writes rows every this many steps. 0 (the default) writes only at the end of each generation.
+- **Creatures: also the dead** (default on): a recording writes each creature that dies once, after its death; a snapshot writes the ones that died in this generation.
+- **Creatures: genome** adds the genome of each creature. It is always in the file of species.
+- **Species: list of living creatures** adds the keys of the living creatures of each species.
+- **Number format** sets the decimal separator: `es-ES` (1,5) or `en-US` (1.5).
+- **Maximum rows**: a recording stops at this many rows.
 
-A warning in red appears under **Creature to log** when the logger follows a single creature and it dies, with the generation and step of its death. No more events of it are logged. The warning goes away when a creature with that id is alive again, for example in the next generation of a method that restarts the ids.
-
-**Logger options**, below, change the logger settings (the `LOG_*` constants). They apply at once, also while paused, and are saved with the simulation. The Scenario tab does not show them as pending changes, and **Update simulation** and **Restart** keep them.
-
-- **Step totals** writes, for each step, how many times each creature event happened (default off, as the rows add up fast in long recordings). The generation totals and the world events are always written.
-- **Maximum events** is the number of rows at which the logger stops.
-- **Number format (locale)** sets the decimal separator of the values: `es-ES` (1,5) or `en-US` (1.5). A file saved with another locale keeps it, and it shows in the list.
-- **Events to record** turns each event type on or off. A creature event that is off is not counted in the totals either.
+Each file is a separate download, so the browser may ask once whether the page can download several files.
