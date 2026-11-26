@@ -8,6 +8,7 @@ import Creature from "../creature/Creature"
 import EventLogger, {LogOptions, SimulationCallEvent} from '@/simulation/logger/EventLogger';
 import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
 import generateRandomString from "@/helpers/generateRandomString";
+import { checkWaterSettings } from "../water/checkWaterSettings";
 import WorldWater from "../water/WorldWater";
 import { SimulationData } from "../SimulationData";
 import { PhenoTypeColorMode } from "../creature/PhenoTypeColorMode";
@@ -122,6 +123,9 @@ export default class WorldController {
    * with reseed false (restart after an extinction) it goes on with the same numbers.
    */
   public startRun(sim: SimulationData, simCode?: string, reseed: boolean = true): string {
+    // before changing anything, so the running world stays as it was
+    const waterError = checkWaterSettings(sim).errors[0];
+    if (waterError) throw new Error(waterError);
 
     if (reseed) {
       this.seed = sim.worldControllerData.seed ?? randomSeed();
@@ -137,7 +141,6 @@ export default class WorldController {
     sim.worldControllerData.simCode = this.simCode;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
-    this.worldWater.firstRain(this.grid);
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     this.eventLogger.reset();
@@ -156,6 +159,9 @@ export default class WorldController {
     );
 
     this.generations.populate();
+    // after populating: the creatures take their mass from the cloud first, and the first rain
+    // gets what is left, as between generations. Before, the rain could leave too little for them
+    this.worldWater.firstRain(this.grid);
     this.startLoop();
 
     return this.simCode;
@@ -189,7 +195,6 @@ export default class WorldController {
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);
-    this.worldWater.firstRain(this.grid);
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
     if (sim.stats !== undefined) {
@@ -212,6 +217,8 @@ export default class WorldController {
     );
 
     this.generations.populateWithGenomes(sim.startGenomes ?? []);
+    // the creatures take their mass from the cloud before the first rain, as in startRun()
+    this.worldWater.firstRain(this.grid);
     this.startLoop();
   }
 
@@ -244,15 +251,16 @@ export default class WorldController {
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);
-    // older files have no cell water, and a hot change can change the world size
-    if (!cellWater || !this.worldWater.restoreCells(this.grid, cellWater)) {
-      this.worldWater.firstRain(this.grid);
-    }
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, []);
     // creatures are rebuilt so they use the new grid and settings;
     // the ones now outside the world or on an occupied cell are dropped
     for (const creature of sourceCreatures) {
       this.generations.restoreCreature(creature, translate(creature.brain.genome.genes));
+    }
+    // the creatures take their mass from the cloud first, then the cells get theirs, as in startRun().
+    // Older files have no cell water, and a hot change can change the world size
+    if (!cellWater || !this.worldWater.restoreCells(this.grid, cellWater)) {
+      this.worldWater.firstRain(this.grid);
     }
     this.generations.startGenomes = startGenomes;
     // a hot change keeps the history of the running simulation; sim.stats is the one from load time.

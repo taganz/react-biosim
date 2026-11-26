@@ -18,6 +18,7 @@ import { RainType, rainTypeOptions } from "@/simulation/water/RainType";
 import WorldControllerData from "@/simulation/world/WorldControllerData";
 import WorldGenerationsData from "@/simulation/generations/WorldGenerationsData";
 import { WaterData } from "@/simulation/water/WaterData";
+import { checkWaterSettings } from "@/simulation/water/checkWaterSettings";
 import UpdateParametersButton from "../../UpdateParametersButton";
 import RestartButton from "../../RestartButton";
 import useWorldValue from "@/hooks/useWorldValue";
@@ -204,6 +205,7 @@ export default function ScenarioSettings() {
       "Metabolism is off, so mass never changes and the Reproduction action never succeeds.",
     !enabledActions.includes("Reproduction") && "The Reproduction action is not enabled.",
   ].filter((warning): warning is string => Boolean(warning));
+  const waterCheck = checkWaterSettings(simulationData);
   const sensors = Object.values(worldController?.generations.sensors.data ?? {});
   const actions = Object.values(worldController?.generations.actions.data ?? {});
 
@@ -352,6 +354,9 @@ export default function ScenarioSettings() {
           </div>
         )}
         {hasPendingChanges && <BrainChangeNotice draft={worldGenerationsData} />}
+        {waterCheck.errors.length > 0 && (
+          <p className="bg-red p-2 text-sm">Update simulation and Restart are disabled: the water settings are not valid (see Water).</p>
+        )}
         <p className="text-xs">
           &quot;Update simulation&quot; applies the changes and keeps the current creatures.
           &quot;Restart&quot; starts again from generation 1.
@@ -610,6 +615,21 @@ export default function ScenarioSettings() {
 
       {/* === WATER === */}
       <ScenarioSection id="water" changed={changedSections} title="Water">
+        {waterCheck.errors.length > 0 && (
+          <div className="bg-red p-2 text-sm">
+            <p>The simulation cannot start with these settings:</p>
+            <ul className="list-disc pl-5">
+              {waterCheck.errors.map((error) => <li key={error}>{error}</li>)}
+            </ul>
+          </div>
+        )}
+        {waterCheck.warnings.length > 0 && (
+          <div className="border border-red p-2 text-sm">
+            <ul className="list-disc pl-5">
+              {waterCheck.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+            </ul>
+          </div>
+        )}
         <div className={FIELDS_GRID}>
           <NumberInput
             label="Cell water capacity"

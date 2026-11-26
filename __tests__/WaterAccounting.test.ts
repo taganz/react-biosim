@@ -78,4 +78,32 @@ describe("water accounting with metabolism", () => {
     expect(creature.mass).toBe(0);
     expect(before - worldController.worldWater.waterInCreatures).toBeCloseTo(0.05);
   });
+
+  test("the first rain gets what the first generation leaves in the cloud", () => {
+    // the first rain alone would take all the water: before, the creatures found the cloud empty
+    const sim = {
+      ...TEST_SIMULATION_DATA,
+      worldObjects: [],
+      worldControllerData: {
+        ...TEST_SIMULATION_DATA.worldControllerData,
+        size: 30, pauseBetweenSteps: 0, immediateSteps: 1, pauseBetweenGenerations: 0,
+      },
+      worldGenerationsData: { ...TEST_SIMULATION_DATA.worldGenerationsData, initialPopulation: 150 },
+      waterData: {
+        ...TEST_SIMULATION_DATA.waterData,
+        waterFirstRainPerCell: TEST_SIMULATION_DATA.waterData.waterTotalPerCell,
+        waterCellCapacity: 1000,
+      },
+    };
+    worldController = new WorldController(sim);
+    worldController.startRun(sim);
+    worldController.pause();
+
+    const water = worldController.worldWater;
+    expect(water.waterInCreatures).toBeCloseTo(creaturesMass(), 6);
+    expect(water.waterInCreatures).toBeGreaterThan(0);
+    expect(water.waterInCloud).toBeGreaterThanOrEqual(0);
+    expect(water.waterInCells + water.waterInCloud + water.waterInCreatures)
+      .toBeCloseTo(30 * 30 * sim.waterData.waterTotalPerCell, 6);
+  });
 });
