@@ -40,7 +40,6 @@ None known.
   - Genus evolution graph
   - Fitness values for continuous simulation
 - Log
-  - A script or page that draws the tree of species from `species.csv`
   - `public/analyze simlog.pbix` reads the old event log and no longer works with the new files
 - Documentation
   - Retake the screenshots that predate the tab redesign, and name them after the current tabs: `tab_files.png` and `tab_files_scenarios.png` (Export tab; the first still shows the old Load section), `tab_start.png` (Scenario → Load scenario), `tab_settings.png` (Scenario settings) and `tab_stats.png` (fitness chart in the Simulation tab). They are in `docs/user/images/`.

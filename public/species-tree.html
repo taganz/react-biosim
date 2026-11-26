@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biosim Species Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+/* A timeline of species: one band per species, as thick as its living creatures, branching from its parent species. */
+:root {
+  --bg: #f3f6f4;
+  --surface: #ffffff;
+  --sunken: #eaefec;
+  --fg: #15201b;
+  --muted: #5b6a63;
+  --line: #d6dfda;
+  --accent: #2a68a8;
+  --plant: #2c8549;
+  --herb: #2a68a8;
+  --carn: #b9442b;
+  --unknown: #8a948f;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631;
+    --accent: #6ea6e4; --plant: #5cc27c; --herb: #6ea6e4; --carn: #e7765c; --unknown: #8d9892; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631;
+  --accent: #6ea6e4; --plant: #5cc27c; --herb: #6ea6e4; --carn: #e7765c; --unknown: #8d9892; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font-body); }
+main { max-width: 1400px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 14px; }
+h1 { font: 600 22px/1.2 var(--font-display); margin: 0; }
+.sub { color: var(--muted); margin: 2px 0 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.drop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.drop.over { outline: 2px dashed var(--accent); outline-offset: -4px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: end; }
+label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+label.check { flex-direction: row; align-items: center; gap: 6px; color: var(--fg); font-size: 13px; }
+input, select, button { font: inherit; color: var(--fg); }
+select, input[type="number"] { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+input[type="number"] { width: 6em; }
+button { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.status { color: var(--muted); font-size: 13px; }
+.mono { font-family: var(--font-mono); font-size: 12px; }
+#chartWrap { overflow: auto; max-height: 75vh; position: relative; padding: 0; }
+#chart { display: block; }
+#chart .band { cursor: pointer; }
+#chart .dim { opacity: 0.15; }
+.axis text { fill: var(--muted); font: 11px var(--font-body); }
+.axis line, .axis path { stroke: var(--line); }
+#tip { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 8px; font-size: 12px; box-shadow: 0 4px 14px #0003; display: none; z-index: 10; max-width: 320px; }
+#details dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 6px 0 0; }
+#details dt { color: var(--muted); }
+#details dd { margin: 0; overflow-wrap: anywhere; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; background: var(--c); vertical-align: -1px; }
+.empty { color: var(--muted); padding: 30px 10px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Species tree</h1>
+    <p class="sub">Each species is a band as thick as its living creatures, branching from the species it came from. Load the <span class="mono">species.csv</span> of a log recorded from generation 1 with <b>All</b> (Simulation → Log).</p>
+  </header>
+
+  <section class="panel drop" id="drop">
+    <input type="file" id="file" accept=".csv,text/csv">
+    <span class="status" id="fileStatus">Or drop the file here.</span>
+  </section>
+
+  <section class="panel controls" id="controls" hidden>
+    <label>Run <select id="run"></select></label>
+    <label>Thickness <select id="metric">
+      <option value="alive">alive (at each row)</option>
+      <option value="peakAlive">peakAlive (most at once)</option>
+    </select></label>
+    <label>Hide species with fewer than <input type="number" id="minPeak" min="1" value="5"></label>
+    <label class="check"><input type="checkbox" id="merge" checked> add hidden species to their visible ancestor</label>
+    <label>Scale (px per creature) <input type="range" id="scale" min="0.05" max="4" step="0.05" value="0.6"></label>
+    <label>Colour <select id="colour">
+      <option value="genus">genus</option>
+      <option value="genome">genome colour</option>
+    </select></label>
+    <label class="check"><input type="checkbox" id="parentLinks" checked> lines to the parent</label>
+  </section>
+
+  <section class="panel" id="summary" hidden>
+    <div class="status" id="counts"></div>
+    <div class="legend" id="legend">
+      <span style="--c: var(--plant)">plant</span><span style="--c: var(--herb)">herbivore</span>
+      <span style="--c: var(--carn)">carnivore</span><span style="--c: var(--unknown)">unknown</span>
+    </div>
+  </section>
+
+  <section class="panel" id="chartWrap"><div class="empty" id="empty">No file loaded.</div><svg id="chart" hidden></svg></section>
+
+  <section class="panel" id="details" hidden></section>
+</main>
+<div id="tip"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const SVG_NS = "http://www.w3.org/2000/svg";
+const GENUS_VAR = { plant: "--plant", attack_plant: "--herb", attack_animal: "--carn", unknown: "--unknown" };
+const GENUS_LABEL = { plant: "plant", attack_plant: "herbivore", attack_animal: "carnivore", unknown: "unknown" };
+const LANE_GAP = 3;
+const MIN_LANE = 2;
+const MARGIN = { left: 12, right: 16, top: 8, bottom: 28 };
+
+let rows = [];          // all parsed rows
+let selected = null;    // speciesId whose lineage is highlighted
+
+// numbers of the log use the locale of the recording: "1,5" (es-ES) or "1.5" (en-US), never thousands separators
+const num = (text) => text === "" || text === undefined ? NaN : Number(text.replace(",", "."));
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
+  if (lines.length < 2) throw new Error("the file has no rows");
+  const header = lines[0].split(";");
+  for (const column of ["generation", "step", "speciesId", "speciesParentId", "alive"]) {
+    if (!header.includes(column)) throw new Error(`no column "${column}": is it the species file of the log?`);
+  }
+  const index = Object.fromEntries(header.map((name, i) => [name, i]));
+  return lines.slice(1).map((line) => {
+    const c = line.split(";");
+    return {
+      run: c[index.simCode] ?? "",
+      generation: num(c[index.generation]),
+      step: num(c[index.step]),
+      id: c[index.speciesId],
+      parent: c[index.speciesParentId] || null,
+      firstGen: num(c[index.firstGen]),
+      genus: c[index.genus] || "unknown",
+      color: c[index.genomeColor] || "",
+      genomeSize: num(c[index.genomeSize]),
+      alive: num(c[index.alive]) || 0,
+      peakAlive: num(c[index.peakAlive]) || 0,
+      usedActions: c[index.usedActions] ?? "",
+      usedSensors: c[index.usedSensors] ?? "",
+    };
+  });
+}
+
+function load(text, name) {
+  try {
+    rows = parseCsv(text);
+  } catch (error) {
+    $("fileStatus").textContent = `Cannot read ${name}: ${error.message}.`;
+    return;
+  }
+  selected = null;
+  const runs = [...new Set(rows.map((row) => row.run))];
+  $("run").innerHTML = runs.map((run) => `<option value="${run}">${run || "(no code)"}</option>`).join("");
+  $("fileStatus").textContent = `${name}: ${rows.length} rows, ${runs.length} run${runs.length === 1 ? "" : "s"}.`;
+  $("controls").hidden = false;
+  $("summary").hidden = false;
+  render();
+}
+
+// the species of one run, with their points in time
+function buildSpecies(runRows, metric) {
+  const maxStep = Math.max(...runRows.map((row) => row.step));
+  const species = new Map();
+  for (const row of runRows) {
+    let s = species.get(row.id);
+    if (!s) {
+      s = { id: row.id, parent: row.parent, genus: row.genus, color: row.color, genomeSize: row.genomeSize,
+        firstGen: row.firstGen, peak: 0, points: new Map(), usedActions: row.usedActions, usedSensors: row.usedSensors };
+      species.set(row.id, s);
+    }
+    // generation 3 step 300 of 300 is x = 3; rows every N steps fall between generations
+    const x = row.generation - 1 + row.step / maxStep;
+    s.points.set(x, (s.points.get(x) ?? 0) + row[metric]);
+    s.peak = Math.max(s.peak, row.peakAlive, row.alive);
+  }
+  return species;
+}
+
+function render() {
+  const run = $("run").value;
+  const metric = $("metric").value;
+  const minPeak = Math.max(1, Number($("minPeak").value) || 1);
+  const merge = $("merge").checked;
+  const scale = Number($("scale").value);
+  const species = buildSpecies(rows.filter((row) => row.run === run), metric);
+
+  const visible = (s) => s.peak >= minPeak;
+  const visibleAncestor = (s) => {
+    let id = s.parent;
+    for (let guard = 0; id && guard < 100000; guard++) {
+      const parent = species.get(id);
+      if (!parent) return null;            // came from a species before the recording started
+      if (visible(parent)) return parent;
+      id = parent.parent;
+    }
+    return null;
+  };
+
+  // series of the visible species, with the hidden ones added to their ancestor
+  const shown = [...species.values()].filter(visible);
+  const series = new Map(shown.map((s) => [s.id, new Map(s.points)]));
+  let hiddenCount = 0;
+  for (const s of species.values()) {
+    if (visible(s)) continue;
+    hiddenCount++;
+    if (!merge) continue;
+    const ancestor = visibleAncestor(s);
+    if (!ancestor) continue;
+    const target = series.get(ancestor.id);
+    for (const [x, v] of s.points) if (target.has(x)) target.set(x, target.get(x) + v);
+  }
+
+  // the tree of visible species: children below their parent, the oldest first
+  const children = new Map();
+  const roots = [];
+  for (const s of shown) {
+    const parent = visibleAncestor(s);
+    s.visibleParent = parent;
+    if (parent) {
+      if (!children.has(parent.id)) children.set(parent.id, []);
+      children.get(parent.id).push(s);
+    } else roots.push(s);
+  }
+  const firstX = (s) => Math.min(...series.get(s.id).keys());
+  const byStart = (a, b) => firstX(a) - firstX(b) || b.peak - a.peak;
+  const order = [];
+  const visit = (s) => { order.push(s); for (const child of (children.get(s.id) ?? []).sort(byStart)) visit(child); };
+  for (const root of roots.sort(byStart)) visit(root);
+
+  $("counts").textContent = `${species.size} species in this run; ${shown.length} shown, ${hiddenCount} with fewer than ${minPeak} creatures hidden`
+    + (merge ? " (their creatures are added to their nearest shown ancestor)." : ".");
+
+  const svg = $("chart");
+  svg.innerHTML = "";
+  if (order.length === 0) {
+    svg.hidden = true;
+    $("empty").hidden = false;
+    $("empty").textContent = "No species with that many creatures: lower the filter.";
+    return;
+  }
+  svg.hidden = false;
+  $("empty").hidden = true;
+
+  // lanes: each species gets the height of its thickest moment
+  let y = MARGIN.top;
+  for (const s of order) {
+    const max = Math.max(...series.get(s.id).values());
+    const height = Math.max(MIN_LANE, max * scale);
+    s.yc = y + height / 2;
+    y += height + LANE_GAP;
+  }
+  const height = y + MARGIN.bottom;
+  const allX = [...species.values()].flatMap((s) => [...s.points.keys()]);
+  const minX = Math.min(0, ...allX), maxX = Math.max(...allX);
+  const width = Math.max(320, $("chartWrap").clientWidth - 2);
+  const sx = (x) => MARGIN.left + ((x - minX) / Math.max(1e-9, maxX - minX)) * (width - MARGIN.left - MARGIN.right);
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+  const styles = getComputedStyle(document.documentElement);
+  $("legend").hidden = $("colour").value === "genome";
+  const colourOf = (s) => $("colour").value === "genome" && s.color ? s.color : styles.getPropertyValue(GENUS_VAR[s.genus] ?? "--unknown").trim();
+  const lineage = selected ? lineageOf(selected, species) : null;
+
+  // grid lines and generation axis
+  const axis = el("g", { class: "axis" });
+  const ticks = niceTicks(minX, maxX, Math.floor(width / 70));
+  for (const t of ticks) {
+    axis.append(el("line", { x1: sx(t), x2: sx(t), y1: MARGIN.top, y2: height - MARGIN.bottom + 4 }));
+    const label = el("text", { x: sx(t), y: height - 10, "text-anchor": "middle" });
+    label.textContent = t;
+    axis.append(label);
+  }
+  svg.append(axis);
+
+  for (const s of order) {
+    const points = [...series.get(s.id).entries()].sort((a, b) => a[0] - b[0]);
+    const colour = colourOf(s);
+    const dim = lineage && !lineage.has(s.id) ? "dim" : "";
+    const group = el("g", { class: dim });
+    if ($("parentLinks").checked && s.visibleParent) {
+      const x = sx(points[0][0]);
+      group.append(el("line", { x1: x, x2: x, y1: s.visibleParent.yc, y2: s.yc, stroke: colour, "stroke-width": 1, "stroke-opacity": 0.7 }));
+    }
+    // a band centred on the lane: the top edge forwards, the bottom edge back; a lone point gets a short width
+    const half = (v) => Math.max(0.5, (v * scale) / 2);
+    let d;
+    if (points.length === 1) {
+      const [x, v] = points[0];
+      d = `M${sx(x) - 2},${s.yc - half(v)}h4v${2 * half(v)}h-4z`;
+    } else {
+      d = "M" + points.map(([x, v]) => `${sx(x).toFixed(1)},${(s.yc - half(v)).toFixed(1)}`).join("L")
+        + "L" + points.slice().reverse().map(([x, v]) => `${sx(x).toFixed(1)},${(s.yc + half(v)).toFixed(1)}`).join("L") + "Z";
+    }
+    const band = el("path", { d, fill: colour, class: "band" });
+    band.addEventListener("mousemove", (event) => showTip(event, s, points));
+    band.addEventListener("mouseleave", () => { $("tip").style.display = "none"; });
+    band.addEventListener("click", () => { selected = selected === s.id ? null : s.id; render(); showDetails(s, points, species); });
+    group.append(band);
+    svg.append(group);
+  }
+  if (!selected) $("details").hidden = true;
+}
+
+// the species, its ancestors and its descendants
+function lineageOf(id, species) {
+  const set = new Set([id]);
+  for (let s = species.get(id); s && s.parent; s = species.get(s.parent)) set.add(s.parent);
+  const children = new Map();
+  for (const s of species.values()) {
+    if (!s.parent) continue;
+    if (!children.has(s.parent)) children.set(s.parent, []);
+    children.get(s.parent).push(s.id);
+  }
+  const queue = [id];
+  while (queue.length > 0) {
+    for (const child of children.get(queue.pop()) ?? []) {
+      if (!set.has(child)) { set.add(child); queue.push(child); }
+    }
+  }
+  return set;
+}
+
+function showTip(event, s, points) {
+  const tip = $("tip");
+  const first = points[0][0], last = points[points.length - 1][0];
+  tip.innerHTML = `<div class="mono">${s.id}</div>`
+    + `${GENUS_LABEL[s.genus] ?? s.genus}, ${s.genomeSize} genes · most at once ${s.peak}<br>`
+    + `generations ${fmt(first)} to ${fmt(last)}`
+    + (s.parent ? `<br>from <span class="mono">${s.parent}</span>` : "<br>root species");
+  tip.style.display = "block";
+  const x = Math.min(event.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+  tip.style.left = `${x}px`;
+  tip.style.top = `${event.clientY + 14}px`;
+}
+
+function showDetails(s, points, species) {
+  const panel = $("details");
+  if (!selected) { panel.hidden = true; return; }
+  const children = [...species.values()].filter((other) => other.parent === s.id).length;
+  panel.hidden = false;
+  panel.innerHTML = `<strong>Species <span class="mono">${s.id}</span></strong> — its lineage is highlighted; click it again to clear.
+    <dl>
+      <dt>Came from</dt><dd class="mono">${s.parent ?? "root species"}${s.parent && !species.has(s.parent) ? " (not in the file)" : ""}</dd>
+      <dt>Appeared</dt><dd>generation ${Number.isNaN(s.firstGen) ? "?" : s.firstGen}</dd>
+      <dt>Last row</dt><dd>generation ${fmt(points[points.length - 1][0])}</dd>
+      <dt>Most at once</dt><dd>${s.peak}</dd>
+      <dt>Genus, genome</dt><dd>${GENUS_LABEL[s.genus] ?? s.genus}, ${s.genomeSize} genes, colour ${s.color}</dd>
+      <dt>Species it gave</dt><dd>${children}</dd>
+      <dt>Actions used</dt><dd>${s.usedActions || "none"}</dd>
+      <dt>Sensors used</dt><dd>${s.usedSensors || "none"}</dd>
+    </dl>`;
+}
+
+const fmt = (x) => Number.isInteger(x) ? String(x) : x.toFixed(2);
+
+function el(name, attributes) {
+  const node = document.createElementNS(SVG_NS, name);
+  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+  return node;
+}
+
+function niceTicks(min, max, count) {
+  const span = Math.max(1, max - min);
+  const raw = span / Math.max(1, count);
+  const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000].find((s) => s >= raw) ?? Math.ceil(raw);
+  const ticks = [];
+  for (let t = Math.ceil(min / step) * step; t <= max; t += step) ticks.push(t);
+  return ticks;
+}
+
+// -- input
+$("file").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (file) load(await file.text(), file.name);
+});
+const drop = $("drop");
+drop.addEventListener("dragover", (event) => { event.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", async (event) => {
+  event.preventDefault();
+  drop.classList.remove("over");
+  const file = event.dataTransfer.files[0];
+  if (file) load(await file.text(), file.name);
+});
+document.addEventListener("dragover", (event) => event.preventDefault());
+document.addEventListener("drop", (event) => event.preventDefault());
+for (const id of ["run", "metric", "minPeak", "merge", "scale", "colour", "parentLinks"]) {
+  $(id).addEventListener("input", () => { if (rows.length) render(); });
+}
+let resizeTimer;
+window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => rows.length && render(), 150); });
+
+// ?csv=/path loads a file served by the same site (for example one copied to public/)
+const source = new URLSearchParams(location.search).get("csv");
+if (source && source.startsWith("/") && !source.startsWith("//")) {
+  fetch(source).then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  }).then((text) => load(text, source)).catch((error) => { $("fileStatus").textContent = `Cannot load ${source}: ${error.message}.`; });
+}
+</script>
+</body>
+</html>

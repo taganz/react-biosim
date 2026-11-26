@@ -121,4 +121,12 @@ A timeline where each species is a line, as thick as its creatures, branching fr
 - Every mutation makes a species, so most species have one or two creatures and live a generation. Filter them when drawing (for example `peakAlive` of at least 5), and hang the branches of the hidden ones on their nearest visible ancestor, going up `speciesParentId`.
 - In continuous runs, use the time windows as generations, or **Also every** steps with `step` for a finer x axis.
 
-Power BI has no chart of this kind; it is easy to draw with Python (matplotlib or plotly) or a web page.
+The app draws it in the **species tree** page (`/species-tree.html`, linked from *Simulation → Log*; the code is [public/species-tree.html](../../public/species-tree.html)). Open a species file in it, or drop the file on it:
+
+- **Run** chooses the simulation code when the file has several runs (after extinctions).
+- **Thickness**: `alive` at each row, or `peakAlive`.
+- **Hide species with fewer than** *n* creatures at their peak (default 5). With **add hidden species to their visible ancestor** their creatures are added to the band of their nearest shown ancestor, so the bands keep the whole population.
+- **Scale**, **Colour** (genus or genome colour) and **lines to the parent**.
+- Hover a band to see the species; click it to highlight its ancestors and descendants and see its details.
+
+The page loads a file served by the app with `?csv=/<path>`, for example a file copied to `public/`.

@@ -236,6 +236,8 @@ export default function LogSection() {
         <p className="text-xs">
           To draw the tree of species, record the species from generation 1 with <b>All</b>: every species
           seen in a generation gets a row at its end, also the ones that died out, with the species it came from.
+          Then open its species file in the{" "}
+          <a className="underline" href="/species-tree.html" target="_blank" rel="noopener">species tree</a> page.
           A recording keeps the options it started with.
         </p>
         {message && <p role="status" className="text-sm">{message}</p>}
