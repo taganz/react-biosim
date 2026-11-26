@@ -5,7 +5,6 @@ import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus, { Genus } from "@/simulation/creature/CreatureGenus";
 import { GridPosition } from "@/simulation/world/grid/Grid";
-import { LogEvent } from "@/simulation/logger/LogEvent";
 
 // which neighbour an attack genus eats, and where a child is born
 describe('attack and reproduction', () => {
@@ -83,21 +82,19 @@ describe('attack and reproduction', () => {
         expect(attacker.mass).toBeCloseTo(2 - 0.4 + 0.9);
     });
 
-    test('without enough mass moving is not a try: no mass is lost and nothing is logged', () => {
+    test('without enough mass moving is not a try: no mass is lost', () => {
         const data = worldController.simData.worldControllerData;
         data.MOVE_COST_PER_MASS_TRY = 0.2;
         data.MOVE_COST_PER_MASS_DO = 0.6;
         data.MOVE_MULTIPLE_MASS_AT_BIRTH = 2;
         const creature = spawn("attack_plant", [2, 2]);
         expect(creature.hasEnoughMassToMove()).toBe(false);
-        const log = jest.spyOn(creature, "log");
         const before = creature.mass;
 
         expect((creature as any).move(1, 0)).toBe(false);
 
         expect(creature.mass).toBe(before);
         expect(creature.position).toEqual([2, 2]);
-        expect(log).not.toHaveBeenCalledWith(LogEvent.MOVE_TRY, expect.anything(), expect.anything(), expect.anything());
     });
 
     test('with enough mass moving pays the try and the move', () => {
@@ -180,15 +177,13 @@ describe('attack and reproduction', () => {
         expect(plant.findPreyDirection()).toBeNull();
     });
 
-    test('without enough mass reproduction is not a try: no mass is lost and nothing is logged', () => {
+    test('without enough mass reproduction is not a try: no mass is lost', () => {
         const parent = spawn("attack_plant", [2, 2]);
-        const log = jest.spyOn(parent, "log");
         const before = parent.mass;
 
         parent.reproduce(1);
 
         expect(parent.mass).toBe(before);
-        expect(log).not.toHaveBeenCalledWith(LogEvent.REPRODUCE_TRY, expect.anything(), expect.anything());
     });
 
     test('with a larger distance the child is born in the farthest free ring', () => {
@@ -211,7 +206,6 @@ describe('attack and reproduction', () => {
         surround(([x, y]) => (x == 3 && y == 3) ? "plant" : "attack_plant");
         const prey = worldController.generations.grid.cell(3, 3).creature!;
         parent._mass._mass = parent._mass._maxMass;
-        const log = jest.spyOn(parent, "log");
         const before = parent.mass;
 
         parent.reproduce(1);
@@ -221,6 +215,5 @@ describe('attack and reproduction', () => {
         expect(parent.childrenCount).toBe(0);
         expect(parent.killCount).toBe(0);
         expect(prey.isAlive).toBe(true);
-        expect(log).toHaveBeenCalledWith(LogEvent.REPRODUCE_TRY, "mass consumed", consumed);
     });
 });

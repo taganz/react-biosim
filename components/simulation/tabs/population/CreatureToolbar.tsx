@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import Creature from "@/simulation/creature/Creature";
 import { Species } from "@/simulation/creature/Species";
@@ -12,19 +11,17 @@ import {
   userSelectCreatureAtom,
   worldControllerAtom,
 } from "../../store";
-import useSetLogOptions from "../tools/useSetLogOptions";
+import LogMarkButton from "../simulation/LogMarkButton";
 
 interface Props {
   creature: Creature;
 }
 
-// Moves the selection to other creatures (same species, parent) and puts the selected one in Creature to log
+// Moves the selection to other creatures (same species, parent) and marks the selected one for the log
 export default function CreatureToolbar({ creature }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const setSelectedCreature = useSetAtom(userSelectCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
-  const setLogOptions = useSetLogOptions();
-  const [logMessage, setLogMessage] = useState("");
 
   // "index,count": a string, so the snapshot is a primitive
   const position = useWorldValue((world) => {
@@ -33,7 +30,6 @@ export default function CreatureToolbar({ creature }: Props) {
   }, "-1,0");
   const [index, count] = position.split(",").map(Number);
   const hasParent = useWorldValue((world) => findLivingParent(world.generations, creature) !== undefined, false);
-  const logEnabled = useWorldValue((world) => Boolean(world.simData.constants.LOG_ENABLED), false);
 
   // the creature itself is skipped when it is still in the list
   const others = index >= 0 ? count - 1 : count;
@@ -47,7 +43,7 @@ export default function CreatureToolbar({ creature }: Props) {
       current < 0
         ? direction === 1 ? 0 : members.length - 1
         : (current + direction + members.length) % members.length;
-    // same genome, so the selected species does not change
+    // same species, so the selected species does not change
     setSelectedCreature(members[next]);
   };
 
@@ -57,12 +53,7 @@ export default function CreatureToolbar({ creature }: Props) {
     if (!parent) return;
     // a mutation may have made the child a new species
     setSelectedCreature(parent);
-    setSelectedSpecies(new Species(parent.brain.genome.clone(), [parent]));
-  };
-
-  const logCreature = () => {
-    setLogOptions({ LOG_CREATURE_ID: creature.id });
-    setLogMessage(`Creature to log is #${creature.id}. It is used when a recording starts, in Tools → Logger.`);
+    setSelectedSpecies(Species.of(parent));
   };
 
   return (
@@ -94,9 +85,8 @@ export default function CreatureToolbar({ creature }: Props) {
         >
           Select parent
         </Button>
-        {logEnabled && <Button onClick={logCreature}>Set as creature to log</Button>}
+        <LogMarkButton kind="creature" creature={creature} />
       </div>
-      {logMessage && <p role="status" className="text-xs">{logMessage}</p>}
     </div>
   );
 }

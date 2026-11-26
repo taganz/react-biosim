@@ -18,7 +18,7 @@
 │    ├─ Grid ── cells, objects, creatures                                         │
 │    ├─ WorldGenerations ── creatures, sensors/actions config,                    │
 │    │     populationStrategy, selectionMethod                                    │
-│    ├─ WorldWater, GenerationRegistry (stats), EventLogger                       │
+│    ├─ WorldWater, GenerationRegistry (stats), SimulationLog                     │
 │    └─ simData: SimulationData (the settings it is running with)                 │
 │  WorldCanvas ── draws grid and creatures on the <canvas>                        │
 └─────────────────────────────────────────────────────────────────────────────────┘
@@ -48,7 +48,6 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `worldCanvasAtom` | The `WorldCanvas`. |
 | `simulationDataAtom` | The **draft** `SimulationData` edited in the Scenario tab. The Simulation tab writes its options to the controller with `WorldController.setRunOptions()` and copies them into the draft. It is not the running configuration: that lives in `worldController.simData`. |
 | `selectedCreatureAtom`, `selectedSpeciesAtom` | The selection made on the canvas or in the Population tab. |
-| `eventLoggerAtom` | The controller's `EventLogger`. |
 | `pauseBetweenStepsAtom`, `pauseBetweenGenerationsAtom`, `immediateStepsAtom` | Speed controls in the control bar. `useSpeedSync()`, called by `ControlBar`, passes them to `worldController.setSpeed()` when they change and again on every `initializeWorld`, because starting or loading a run reads the speed from the simulation data. |
 | `mapDesigner*Atom` | Map editor state. `mapDesignerObjectsAtom` and `mapDesignerWorldSizeAtom` read (and the first writes) `worldObjects` and `size` of the Scenario draft; selection and fullscreen are its own. |
 | `gif.ts` atoms | GIF recorder state. |
@@ -64,7 +63,7 @@ Loading a scenario or a file does **not** create a new controller. It calls `sta
 | `startStep`, `endStep` | Around every step. `endStep` can fire thousands of times per second. |
 | `endGeneration` | After a generation ends: its stats are in `generationRegistry` and the next generation is populated. Used by the [headless runner](../user/headless-runner.md). |
 | `redraw` | Every *Immediate steps* steps |
-| `stateChange` | Pause, resume, logger changes: anything outside the loop |
+| `stateChange` | Pause, resume, log changes: anything outside the loop |
 | `watchedCreatureBorn` | The creature whose id the Population tab is waiting for (`watchedCreatureId`) was born; the run is already paused. `SimulationCanvas` selects it |
 
 **Reading engine values in a component:** use [useWorldValue](../../hooks/useWorldValue.ts):
@@ -125,4 +124,4 @@ Loading a file ([useSimulationLoader](../../hooks/useSimulationLoader.ts)) parse
 
 ## Logging
 
-[EventLogger](../../simulation/logger/EventLogger.ts) collects creature and generation events (see [LogEvent.ts](../../simulation/logger/LogEvent.ts)) and saves them as CSV (the format is in [The log file](../reference/log-file.md)). It is configured through the `LOG_*` constants, which *Tools → Logger options* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Scenario draft may share its `constants` object. Its UI is in *Tools → Logger*.
+[SimulationLog](../../simulation/log/SimulationLog.ts) (`worldController.simulationLog`) writes tables of species and creatures as CSV (the format is in [The log files](../reference/log-file.md)). It only reads the world: `WorldController` calls `onStepEnd()`, `onGenerationEnd()`, `onExtinction()` and `onRunReplaced()`, and the log builds the rows with the columns of [logRows.ts](../../simulation/log/logRows.ts). Species are lineages ([speciesId.ts](../../simulation/creature/speciesId.ts)): `WorldGenerations.newCreature()` gives each child its `speciesId`, and [SpeciesRegistry](../../simulation/generations/SpeciesRegistry.ts) keeps the species seen in the current generation and the creatures that died in it, so extinct species still get a row. The log is configured through the `LOG_*` constants, which *Simulation → Log* changes with `WorldController.setLogOptions()`. That method replaces `simData` with a copy instead of mutating it, because the Scenario draft may share its `constants` object. The marks of *Marked in Population* live in the log, not in the store.

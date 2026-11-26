@@ -38,11 +38,11 @@ export function creatureMassBalance(creature: Creature): MassBalance {
 
 export type SpeciesStats = {
   alive: number;
-  /** creatures of the species when the generation was grouped */
+  /** creatures of the species when the generation (or time window) started */
   started: number;
-  /** living creatures that were not there when the generation was grouped */
+  /** creatures born since then */
   bornSince: number;
-  /** the started and born since that have died */
+  /** creatures that died since then */
   died: number;
   /** averages of the living, null when none is alive */
   living: {
@@ -140,36 +140,30 @@ export function computeHerbivoreGenomeStats(generation: number, creatures: reado
   };
 }
 
-// true when both creatures have the same genes, so they belong to the same species
-export function haveSameGenome(a: Creature, b: Creature): boolean {
-  const genesA = a.brain.genome.genes;
-  const genesB = b.brain.genome.genes;
-  return genesA.length === genesB.length && genesA.every((gene, index) => gene === genesB[index]);
-}
-
-// how many creatures are alive, and how many of them have exactly these genes (one species)
-export function countLivingWithGenes(generations: WorldGenerations, genes: readonly number[]): { members: number; alive: number } {
+// how many creatures are alive, and how many of them belong to this species
+export function countLivingOfSpecies(generations: WorldGenerations, speciesId: string): { members: number; alive: number } {
   let members = 0;
   let alive = 0;
   for (const creature of generations.currentCreatures) {
     if (!creature.isAlive) continue;
     alive++;
-    const other = creature.brain.genome.genes;
-    if (other.length === genes.length && other.every((gene, index) => gene === genes[index])) members++;
+    if (creature.speciesId === speciesId) members++;
   }
   return { members, alive };
 }
 
-// Averages of one species, so species of different sizes can be compared. startCreatures are its
-// creatures when the generation was grouped: the living are read from the world, but a member born
-// later that has already died is not known to anything, so it is not counted
-export function computeSpeciesStats(generations: WorldGenerations, genes: readonly number[], startCreatures: readonly Creature[]): SpeciesStats {
-  const living = generations.currentCreatures.filter((creature) => {
-    const other = creature.brain.genome.genes;
-    return creature.isAlive && other.length === genes.length && other.every((gene, index) => gene === genes[index]);
-  });
-  const known = new Set<Creature>([...startCreatures, ...living]);
-  const dead = Array.from(known).filter((creature) => !creature.isAlive);
+// Averages of one species, so species of different sizes can be compared: its living creatures,
+// and the ones that died in the current generation (or time window)
+export function computeSpeciesStats(generations: WorldGenerations, speciesId: string): SpeciesStats {
+  const living = generations.currentCreatures.filter((creature) => creature.isAlive && creature.speciesId === speciesId);
+  const dead = generations.speciesRegistry.deadThisGeneration.filter((creature) => creature.speciesId === speciesId);
+  const record = generations.speciesRegistry.get(speciesId);
+  return speciesStatsOf(living, dead, record?.started ?? 0, record?.born ?? 0);
+}
+
+/** the stats of a species from its living creatures and the ones that died in the generation */
+export function speciesStatsOf(living: readonly Creature[], dead: readonly Creature[], started: number, born: number): SpeciesStats {
+  const known = [...living, ...dead];
 
   const average = (creatures: Iterable<Creature>, count: number, value: (creature: Creature) => number) => {
     let sum = 0;
@@ -185,8 +179,8 @@ export function computeSpeciesStats(generations: WorldGenerations, genes: readon
 
   return {
     alive: living.length,
-    started: startCreatures.length,
-    bornSince: known.size - startCreatures.length,
+    started,
+    bornSince: born,
     died: dead.length,
     living: living.length > 0 ? {
       age: average(living, living.length, (creature) => creature._age),
@@ -197,13 +191,13 @@ export function computeSpeciesStats(generations: WorldGenerations, genes: readon
       canMove: average(living, living.length, (creature) => creature.hasEnoughMassToMove() ? 100 : 0),
       canReproduce: average(living, living.length, (creature) => creature.reproduction.hasEnoughtMassToReproduce ? 100 : 0),
     } : null,
-    perCreature: known.size > 0 ? {
-      children: average(known, known.size, (creature) => creature.childrenCount),
-      kills: average(known, known.size, (creature) => creature.killCount),
-      attacks: average(known, known.size, (creature) => creature.attackCount),
-      photosynthesis: average(known, known.size, (creature) => creature.waterFromPhotosynthesis),
-      fromPrey: average(known, known.size, (creature) => creature.waterFromPrey),
-      balance: averageBalance(Array.from(known, creatureMassBalance)),
+    perCreature: known.length > 0 ? {
+      children: average(known, known.length, (creature) => creature.childrenCount),
+      kills: average(known, known.length, (creature) => creature.killCount),
+      attacks: average(known, known.length, (creature) => creature.attackCount),
+      photosynthesis: average(known, known.length, (creature) => creature.waterFromPhotosynthesis),
+      fromPrey: average(known, known.length, (creature) => creature.waterFromPrey),
+      balance: averageBalance(known.map(creatureMassBalance)),
     } : null,
     // the age stops changing when a creature dies
     averageAgeAtDeath: dead.length > 0 ? average(dead, dead.length, (creature) => creature._age) : null,
@@ -227,7 +221,7 @@ function averageBalance(balances: MassBalance[]): MassBalance {
 // the living creatures of the same species as `creature` (itself included if alive), ordered by id
 export function speciesMembers(generations: WorldGenerations, creature: Creature): Creature[] {
   return generations.currentCreatures
-    .filter((other) => other.isAlive && haveSameGenome(other, creature))
+    .filter((other) => other.isAlive && other.speciesId === creature.speciesId)
     .sort((a, b) => a.id - b.id);
 }
 

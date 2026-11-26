@@ -1,5 +1,5 @@
 import { SavedSimulationData } from "./data/SavedSimulationData";
-import migrateLogConstants from "@/simulation/logger/migrateLogConstants";
+import migrateLogConstants from "@/simulation/log/migrateLogConstants";
 import { startUpScenarioSimulationData as startup } from "@/simulation/startupScenario";
 
 /** Version written by the serializers. Files without a version are version 1 */
@@ -24,7 +24,10 @@ export default function migrateSavedSimulationData(parsed: any): SavedSimulation
   if (version > SAVE_FORMAT_VERSION) {
     throw new Error(`it was saved by a newer version of the app (format ${version}, this one reads up to ${SAVE_FORMAT_VERSION}).`);
   }
-  return version < 2 ? fromVersion1(parsed) : parsed;
+  const current = version < 2 ? fromVersion1(parsed) : parsed;
+  // the constants of the event logger can be in files of any version
+  const constants = migrateLogConstants(current.constants);
+  return constants === current.constants ? current : { ...current, constants };
 }
 
 // version 1: files saved before October 2026, and hand-written scenarios.

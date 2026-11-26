@@ -128,7 +128,7 @@ Only actions decide the genus. A creature whose genome connects to Photosynthesi
 
 ## Species
 
-Two creatures belong to the same **species** when their genomes are identical, gene for gene ([Species.ts](../../simulation/creature/Species.ts)). Species are not stored by the engine. The Population tab groups the creatures by genome at the start of every generation. A species' colour is computed from the values of its genes, so close relatives often have similar colours.
+A **species** is a lineage: a genome and the species it came from ([speciesId.ts](../../simulation/creature/speciesId.ts)). A child born with exactly its parent's genome keeps its parent's species; a child with another genome starts a new species whose id is computed from its genes and its parent's species; a creature without a parent starts a root species. Every creature carries `speciesId` and `speciesParentId`, and the engine keeps the species seen in the current generation in a [SpeciesRegistry](../../simulation/generations/SpeciesRegistry.ts) for the log. The Population tab groups the creatures by `speciesId` at the start of every generation. See [The log files](../reference/log-file.md#species). A species' colour is computed from the values of its genes, so close relatives often have similar colours.
 
 ## Death
 

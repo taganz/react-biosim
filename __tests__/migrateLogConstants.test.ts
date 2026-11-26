@@ -1,27 +1,15 @@
-import migrateLogConstants from "@/simulation/logger/migrateLogConstants";
-import { LOG_NO_CREATURES } from "@/simulation/logger/EventLogger";
-import { LogLevel } from "@/simulation/logger/LogEvent";
+import migrateLogConstants from "@/simulation/log/migrateLogConstants";
 
 describe('migrateLogConstants', () => {
-    test('leaves constants without LOG_LEVEL as they are', () => {
-        const constants = { LOG_CREATURE_ID: 0, LOG_STEP_TOTALS: false };
+    test('leaves constants without the old ones as they are', () => {
+        const constants = { LOG_SPECIES: true, LOG_LOCALE_STRING: "es-ES" };
         expect(migrateLogConstants(constants)).toBe(constants);
     });
 
-    test('Creature events keeps the creature filter and the step totals', () => {
-        expect(migrateLogConstants({ LOG_LEVEL: LogLevel.CREATURE, LOG_CREATURE_ID: 12 }))
-            .toEqual({ LOG_CREATURE_ID: 12, LOG_STEP_TOTALS: true });
-    });
-
-    test('Step totals logs no creatures, with the step totals', () => {
-        expect(migrateLogConstants({ LOG_LEVEL: LogLevel.STEP, LOG_CREATURE_ID: 0 }))
-            .toEqual({ LOG_CREATURE_ID: LOG_NO_CREATURES, LOG_STEP_TOTALS: true });
-    });
-
-    test('Generation totals and World events log no creatures and no step totals', () => {
-        for (const level of [LogLevel.GENERATION, LogLevel.WORLD]) {
-            expect(migrateLogConstants({ LOG_LEVEL: level, LOG_CREATURE_ID: 0 }))
-                .toEqual({ LOG_CREATURE_ID: LOG_NO_CREATURES, LOG_STEP_TOTALS: false });
-        }
+    test('drops the constants of the event logger and keeps the locale', () => {
+        expect(migrateLogConstants({
+            LOG_ENABLED: true, LOG_LEVEL: 1, LOG_CREATURE_ID: 12, LOG_STEP_TOTALS: true,
+            LOG_EVENTLOGGER_MAX_EVENTS: 10, LOG_ALLOWED_EVENTS: { MOVE: true }, LOG_LOCALE_STRING: "en-US", SIM_CODE_LENGTH: 3,
+        })).toEqual({ LOG_LOCALE_STRING: "en-US", SIM_CODE_LENGTH: 3 });
     });
 });

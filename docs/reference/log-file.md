@@ -1,193 +1,124 @@
-# The log file
+# The log files
 
-The event logger records what happens during a run and saves it as a CSV file. This page describes the file: its columns, the five kinds of rows, every event the engine writes, and the exact rows of one creature when every option is on. How to use the logger from the UI is in [Scenario, simulation and stats](../user/settings-and-stats.md#logger). The code is in [EventLogger.ts](../../simulation/logger/EventLogger.ts) and [LogEvent.ts](../../simulation/logger/LogEvent.ts).
+The log (*Simulation → Log*) saves tables of species and creatures, one row per species or creature each time it is written, as CSV files. This page describes the files and every column. How to use it from the UI is in [Scenario, simulation and tools](../user/settings-and-stats.md#log). The code is in [SimulationLog.ts](../../simulation/log/SimulationLog.ts) and [logRows.ts](../../simulation/log/logRows.ts).
 
-## The file
+## Species
 
-**Save log** (*Tools → Logger*) downloads `sim <code> generation <n>_creature <id>.csv`, the same pattern as the `.sim`, GIF and PNG files plus the creature filter: `<code>` is the simulation code, `<n>` the current generation and `<id>` the **Creature to log** of the last recording (`0`, `-10`, `-30` or a creature id). It is plain UTF-8 text:
+A **species** is a lineage: a genome together with the species it came from ([speciesId.ts](../../simulation/creature/speciesId.ts)).
 
-- The separator is `;`.
-- The first line is the header.
-- Numbers are formatted with the locale in **Number format (locale)** (`LOG_LOCALE_STRING`, default `es-ES`), with at most 2 decimals. With `es-ES` the decimal separator is a comma and numbers of 5 digits or more get a dot as thousands separator (`12.345,67`).
-- The log is kept in memory until **Delete log**. **Start recording** deletes it first, and so does turning the logger off. They ask first when the log has events that have not been saved.
+- A creature born with exactly the genome of its parent keeps the species of its parent.
+- A creature born with another genome (a mutation, or the Stamina gene added to an older genome) starts a new species. Its `speciesId` is a 64-bit hash of its genes and the `speciesId` of its parent's species, written as 16 hexadecimal digits, and its `speciesParentId` is the species of its parent.
+- A creature without a parent (a random or fixed genome, generation 1, **Save generation** files) starts a root species: the hash of its genes alone, with an empty `speciesParentId`.
 
-A Power BI report to analyse it is in `public/analyze simlog.pbix`.
+So the same genome reached by mutation from two different species is two species, and every species has exactly one parent species. If the same species produces the same mutated genome twice, both share the id, as they cannot be told apart.
 
-## Columns
+The id draws no random numbers, so a seeded run gives the same ids every time. Creatures keep their species when saved and loaded (`.sim` files save each species' `id`, `parentId` and `firstGen`); species of files saved before this are loaded as roots. The Population tab groups the creatures by this id too.
+
+## The files
+
+Each snapshot or recording is downloaded as two or three files with the same name and a different ending:
+
+| File | Content |
+|---|---|
+| `sim <code> log <gens> settings.csv` | The options of the log and the settings and constants of the simulation when it started |
+| `sim <code> log <gens> species.csv` | One row per species, with **Species** on (`LOG_SPECIES`, default on) |
+| `sim <code> log <gens> creatures.csv` | One row per creature, with **Creatures** on (`LOG_CREATURES`, default off) |
+
+`<code>` is the simulation code. `<gens>` is the generation and step of a snapshot (`57 step 120`) or the first and last generation of a recording (`1-200`).
+
+All files are plain UTF-8 text:
+
+- The separator is `;` and the first line is the header.
+- Numbers use the locale in **Number format** (`LOG_LOCALE_STRING`, default `es-ES`): with `es-ES` the decimal separator is a comma, with `en-US` a point. There is no thousands separator. Rows have at most 4 decimals; the settings file has up to 10.
+- `true`/`false` values are written as `1`/`0`. An empty cell means "none" or "not known".
+
+## When rows are written
+
+- **Save snapshot** writes the state at that moment: the species seen in the current generation and the living creatures, plus, with **Creatures: also the dead**, the creatures that died in the current generation.
+- A **recording** writes rows at the end of every generation, while its creatures are still in the world (before the selection of survivors), and also every **Also every** steps (`LOG_EVERY_N_STEPS`, default 0: only at the end of each generation). When every creature dies, it writes the rows of that step before the run restarts. In continuous runs the end of a generation is the end of each time window.
+- A recording keeps the options it started with: **Files**, **Which ones**, the columns and the locale. A change applies to the next recording.
+- A recording stops when it has **Maximum rows** (`LOG_MAX_ROWS`, default 1,000,000) rows of species and creatures, or when the simulation is restarted or another one is loaded. **Continue recording** goes on with it after a restart, adding rows that start again at generation 1. **Update simulation** does not stop it.
+
+With **Which ones** set to **Marked in Population**, the file of species has only the marked species, and the file of creatures has the marked creatures and the creatures of the marked species.
+
+The log only reads the world. It does not change the simulation nor use random numbers, so a run gives the same results with or without it.
+
+## Species file
+
+A species gets a row in every recording of every generation in which it lived, **also after it died out within that generation**: the engine remembers the species seen in the current generation ([SpeciesRegistry.ts](../../simulation/generations/SpeciesRegistry.ts)) and forgets the extinct ones when the next generation starts. So a recording from generation 1 has every species and its parent, and the tree of species can be drawn from it (see [below](#drawing-the-tree-of-species)).
 
 | Column | Content |
 |---|---|
-| `LogLevel` | The kind of row: `SETUP`, `CREATURE`, `STEP TOTALS`, `GENERATION TOTALS` or `WORLD EVENTS` (see below). |
-| `StepIndex` | Counter of the steps recorded since recording started. It starts at 1 and goes up by one every time the step or the generation changes, so it keeps growing across generations. |
-| `CurrentGen` | Generation. |
-| `CurrentStep` | Step within the generation (1 to *Steps per generation*). Empty in generation totals. |
-| `SpeciesId` | Species of the creature: the colour of its genome as a hex string. Creature rows only. |
-| `GenusId` | `plant`, `attack_plant`, `attack_animal` or `unknown`. Creature rows only. |
-| `CreatureId` | Id of the creature. Creature rows only. |
-| `EventType` | The event, see [Events](#events). |
-| `ParamName` | What the value is. Totals add ` sum` to it. |
-| `ParamValue` | First value. `0` when the event has no value. |
-| `ParamValue2` | Second value. `0` when the event has no second value; empty in totals. |
-| `ParamString` | A text value (direction, death cause, killer species, a text setting). Empty when not used. |
+| `simCode`, `generation`, `step` | Simulation code, generation and step of the row |
+| `speciesId` | Id of the species (16 hexadecimal digits) |
+| `speciesParentId` | Species it came from; empty for a root |
+| `firstGen` | Generation in which it appeared. Only approximate for species loaded from files saved before species ids existed. |
+| `genus` | `plant`, `attack_plant`, `attack_animal` or `unknown` |
+| `genomeColor` | Colour code of the genome, as shown in the Population tab. Not unique. |
+| `genomeSize` | Number of genes |
+| `usedSensors`, `usedActions` | Sensors and actions its network uses, separated by `\|` |
+| `alive` | Creatures alive at that moment |
+| `percentOfPopulation` | `alive` as a percentage of all the living creatures |
+| `peakAlive` | Most creatures alive at once during the generation |
+| `started` | Creatures it had when the generation (or time window) started |
+| `born` | Creatures born since then |
+| `died` | Creatures that died since then |
+| `avgAge`, `avgMass`, `avgHealth`, `avgDistance`, `avgStepsStopped` | Averages of the living; empty when none is alive |
+| `pctCanMove`, `pctCanReproduce` | Share of the living with enough mass to move or reproduce (0 to 100) |
+| `avgChildren`, `avgKills`, `avgAttacks`, `avgPhotosynthesis`, `avgFromPrey` | Averages per creature, of the living and the ones that died in the generation |
+| `avgMassStart` … `avgMassEnd` | Average of each line of the mass balance, as in *Species stats*: start, photosynthesis, from prey, basal, thinking, moving, attacking, reproduction cost, given to children, end |
+| `avgAgeAtDeath` | Average age of the ones that died in the generation |
+| `pctDeathOld`, `pctDeathBasalConsumption`, `pctDeathAttacked`, `pctDeathHealth` | Share of the deaths of each cause; empty without deaths |
+| `aliveCreatures` | Keys of its living creatures, separated by `\|`; only with **Species: list of living creatures** (`LOG_SPECIES_CREATURE_LIST`) |
+| `genome` | The genome in hexadecimal, one 8-digit gene per group, as copied in the Population tab |
 
-## Kinds of rows
+Rows are ordered by `alive`, the largest first.
 
-| `LogLevel` | Written by | One row per… |
-|---|---|---|
-| `SETUP` | the logger | setting and constant, when a recording starts (see [Setup rows](#setup-rows)) |
-| `CREATURE` | `Creature.log()` | creature event |
-| `STEP TOTALS` | the logger | event type and `ParamName` that happened in a step |
-| `GENERATION TOTALS` | the logger | event type and `ParamName` that happened in a generation |
-| `WORLD EVENTS` | `WorldController.log()` | population and water value at the start of a generation, at the end of a step and at the end of a generation, and the survivors of each generation |
-
-Which kinds are written depends on two settings. `SETUP`, `GENERATION TOTALS` and `WORLD EVENTS` rows are always written.
-
-- `CREATURE` rows are written unless **Creature to log** (`LOG_CREATURE_ID`) is *No creatures* (`-1`, the default).
-- `STEP TOTALS` rows are written while **Step totals** (`LOG_STEP_TOTALS`, default off) is on.
-
-Files saved with the old `LOG_LEVEL` setting are converted when they are loaded: *Creature events* keeps the creature filter, *Step totals* becomes *No creatures*, and *Generation totals* or *World events only* become *No creatures* with **Step totals** off.
-
-### Setup rows
-
-A block of `SETUP` rows records the configuration the log was made with. It is written:
-
-- when a recording starts, before its first row: **Start recording**, at the step 1 where recording begins;
-- every time the run is set up (**Restart**, a loaded file or setup, **Update simulation**, the restart after an extinction) while the logger is recording. These currently pause the logger, unless a recording from *Generation 1* is waiting for it, so in practice the block comes with the start of the recording.
-
-They are always written, are not in **Events to record**, and do not count for **Maximum events** (nor for the number of events shown in Tools → Logger). They only need the logger to be enabled and recording.
+## Creatures file
 
 | Column | Content |
 |---|---|
-| `StepIndex`, `CurrentGen`, `CurrentStep` | Where the recording starts. |
-| `EventType` | `SETTING` for a value of the Scenario or Simulation tab, `CONSTANT` for a constant. |
-| `ParamName` | The key of the setting (`size`, `mutationProbability`…), `sensor.<name>` / `action.<name>`, or the name of the constant. Nested constants get a path: `LOG_ALLOWED_EVENTS.MOVE`, `POPULATION_DEFAULT_GENUS.0.probability`, `colors.obstacle`. |
-| `ParamValue` | The value of a number, up to 10 decimals; `1` or `0` for a checkbox or other true/false value; `0` for a text value. |
-| `ParamValue2` | `0`. |
-| `ParamString` | The value of a text setting or constant (`simCode`, `mutationMode`, `populationStrategy`, `LOG_LOCALE_STRING`…); empty for numbers. |
+| `simCode`, `generation`, `step` | Simulation code, generation and step of the row |
+| `creatureKey` | `<birthGen>-<id>`: unique in a run, since most selection methods give the ids again every generation |
+| `id`, `birthGen`, `stepBirth` | Id, generation and step of birth |
+| `speciesId`, `speciesParentId` | Its species and the species that species came from |
+| `genus`, `genomeColor` | As in the species file |
+| `parentKey` | `creatureKey` of its parent; empty without a parent |
+| `spawnZone` | Spawn area of its lineage; empty without one |
+| `alive` | `1` alive, `0` dead |
+| `age`, `mass`, `massAtBirth`, `health` | Mass is 0 once dead |
+| `x`, `y` | Position |
+| `lastMoveX`, `lastMoveY`, `lastDirection` | Last move (−1, 0 or 1 on each axis) and its direction (`N`, `NE`…) |
+| `distanceCovered`, `stepsStopped` | Distance index of *Greatest Distance* and steps without moving |
+| `canMove`, `canReproduce` | Enough mass to move or reproduce |
+| `stamina` | Share of the steps in which its brain runs |
+| `children`, `kills`, `attacks`, `thinkCount` | Counters since birth |
+| `waterFromPhotosynthesis`, `waterFromPrey` | Mass gained by each way since birth |
+| `massStart` … `massEnd` | Its mass balance (see [Creatures](../model/creatures.md)) |
+| `deathCause`, `deathGen`, `deathStep`, `killedBySpecies` | Empty while alive. `killedBySpecies` is the `speciesId` of the killer. |
+| `genomeSize`, `usedSensors`, `usedActions` | As in the species file |
+| `genome` | Only with **Creatures: genome** (`LOG_CREATURE_GENOME`) |
 
-The rows come in this order:
+With **Creatures: also the dead** (`LOG_INCLUDE_DEAD`, default on), a recording writes each creature that died once, in the first row block after its death, with `alive` 0. A snapshot writes every creature that died in the current generation.
 
-1. **Settings** (`SETTING`), in this order ([Parameters](parameters.md)): `simCode`, `phenotypeColorMode`, `metabolismEnabled`, `size`, `initialPopulation`, `stepsPerGen`, `seed` (`random` in `ParamString` when it is not fixed), `runSeed` (the seed this run uses), `simulationType`, `maxAge`, `populationStrategy`, `selectionMethod`, `initialGenomeSize`, `maxGenomeSize`, `maxNumberNeurons`, `mutationMode`, `mutationProbability`, `geneInsertionDeletionProbability`, `deletionRatio`; then one `sensor.<name>` row for every sensor and one `action.<name>` row for every action, in [table order](sensors-and-actions.md), with `1` if it is enabled and `0` if not; then the six water settings.
-2. **Constants** (`CONSTANT`): the upper case values of `worldControllerData` (`MASS_*`, `REPRODUCTION_*`, `MOVE_*`, `ATTACK_*`…), then everything in `constants` (`LOG_*`, selection percentages, `POPULATION_DEFAULT_*`, `SIM_CODE_LENGTH`, colours…).
+## Settings file
 
-The values are those of the running simulation, not of the Scenario draft.
+Columns `kind;name;value;text`. Numbers and true/false values go to `value`; text goes to `text`, with `value` 0.
 
-### Totals
+1. `LOG` rows: `formatVersion` (1), `startGen` and `startStep` of the log, `scope` (`all` or `marked`) and the `LOG_*` options.
+2. `SETTING` rows, the values of the Scenario and Simulation tabs: `simCode`, `phenotypeColorMode`, `metabolismEnabled`, `size`, `initialPopulation`, `stepsPerGen`, `seed` (`random` when it is not fixed), `runSeed` (the seed this run uses), `simulationType`, `maxAge`, `populationStrategy`, `selectionMethod`, `initialGenomeSize`, `maxGenomeSize`, `maxNumberNeurons`, `mutationMode`, `mutationProbability`, `geneInsertionDeletionProbability`, `deletionRatio`, one `sensor.<name>` and `action.<name>` row per sensor and action ([table order](sensors-and-actions.md), 1 enabled, 0 not), and the six water settings.
+3. `CONSTANT` rows: the upper case values of `worldControllerData` (`MASS_*`, `REPRODUCTION_*`, `MOVE_*`, `ATTACK_*`…) and everything in `constants`. Nested values get a path, such as `colors.obstacle`.
 
-A totals row **counts** events, it does not add their values: `METABOLISM;mass sum;37` means that 37 `METABOLISM` rows with `ParamName` `mass` happened in that step, whatever the masses were. Only creature events are counted, and only those that pass the creature filter and are switched on in **Events to record**, also with *No creatures*, which writes no creature rows: then every creature is counted. `BIRTH genome` is not counted: `BIRTH parentId` already counts the births.
+The values are those of the running simulation when the recording started (for a snapshot, when it was taken).
 
-The totals of a step are written when the first event of the next step arrives, with the generation and step they belong to. The totals of a generation are written in the same way, after the step totals of its last step.
+## Drawing the tree of species
 
-### Filters
+A timeline where each species is a line, as thick as its creatures, branching from its parent species. It needs a recording of the species from generation 1 (**From**: *Generation 1*) with **Which ones**: **All**:
 
-An event is written only if all of these hold:
+- x axis: `generation`; one line per `speciesId`; thickness: `alive` (or `peakAlive`).
+- The branch starts at the line of `speciesParentId`, at `firstGen`, and ends at the last row of the species.
+- With **Marked in Population** intermediate species are missing and the tree breaks. Species that existed before the recording started are roots whose parent has no row.
+- Every mutation makes a species, so most species have one or two creatures and live a generation. Filter them when drawing (for example `peakAlive` of at least 5), and hang the branches of the hidden ones on their nearest visible ancestor, going up `speciesParentId`.
+- In continuous runs, use the time windows as generations, or **Also every** steps with `step` for a finer x axis.
 
-1. The logger is enabled (`LOG_ENABLED`) and recording, and has fewer rows than **Maximum events** (`LOG_EVENTLOGGER_MAX_EVENTS`). When it reaches the maximum it stops.
-2. Its event type is on in **Events to record** (`LOG_ALLOWED_EVENTS`).
-3. For creature events, the creature passes **Creature to log** (`LOG_CREATURE_ID`): `-1` (*No creatures*) writes no creature rows, `0` is every creature, `-10` ids 1 to 9, `-30` ids 1 to 29, any other number that id only. The logger reads it when a recording starts; a change during a recording is used from the next one.
-4. Its kind is written: creature rows unless **Creature to log** is *No creatures*, step totals while **Step totals** is on (totals still count the creature events that pass 1–3).
-
-Recording starts at step 1 of a generation: **Start recording** waits for step 1 of generation 1 or of the next generation, as chosen in **From**. Events before that are dropped.
-
-To save work, `METABOLISM` events and the `PHOTOSYNTHESIS` events are only written on steps that are multiples of 10 (10, 20, 30…). All other events are written on every step.
-
-## Events
-
-### Creature events
-
-| `EventType` | `ParamName` | `ParamValue` | `ParamValue2` | `ParamString` | When |
-|---|---|---|---|---|---|
-| `BIRTH` | `parentId` | id of the parent, `0` if it has none | birth generation of the parent, `0` if it has none | | A new creature is created, after its `INFO birth` rows. The parent is the survivor or the reproducing creature whose genome it got; creatures with a random or fixed genome (generation 1, random fill) have none. Creatures restored by **Update simulation** or a resumed file are not births and write no `BIRTH`. |
-| `BIRTH` | `genome` | `0` | `0` | the genome in hexadecimal: one 8-digit gene per group, separated by spaces | Right after `BIRTH parentId`. Same format as the genome you can copy in the species panel. |
-| `INFO` | `birth mass`, `birth gen`, … | see [INFO rows](#info-rows) | | | The creature is created. |
-| `INFO` | `dead mass`, `dead gen`, … | see [INFO rows](#info-rows) | | | The creature dies, after `DEAD`. |
-| `METABOLISM` | `mass` | mass after the basal consumption | | | Every step (multiples of 10). |
-| `METABOLISM` | `basalConsumption` | mass spent on basal metabolism | | | Every step (multiples of 10). |
-| `PHOTOSYNTHESIS` | `actionInputValue` | output of the Photosynthesis neuron | | | The neuron output is above 0 (multiples of 10). |
-| `PHOTOSYNTHESIS` | `waterGotFromCell` | water taken from the cell | | | Same. |
-| `REPRODUCE_TRY` | `mass` | mass of the creature | | | The Reproduction neuron output is above 0 and the creature has the mass to reproduce. Without that mass no row is written. |
-| `REPRODUCE_TRY` | `mass consumed` | mass spent on the failed try | | | No free cell within the reproduction distance. |
-| `REPRODUCE` | `actionInputValue` | output of the Reproduction neuron | | | The child was born. |
-| `REPRODUCE` | `mass` | mass of the parent after giving birth | | | Same. |
-| `ATTACK_TRY` | `actionInputValue` | output of the attack neuron | | | An attack neuron fires and there is a neighbour the creature can eat. |
-| `ATTACK_TRY` | `targetDirection` | `0` | `0` | `N`, `E`, `S` or `W` | Same. |
-| `ATTACK` | `preyMass` | mass the prey had before it was eaten | | | The prey was killed by an attack. |
-| `MOVE_TRY` | `x,y` | x step: −1, 0 or 1 | y step: −1, 0 or 1 | | The creature tries to move. |
-| `MOVE` | `direction` | x step | y step | `N`, `NE`, `E`, `SE`, `S`, `SW`, `W` or `NW` | The move succeeded. `N` is +y. |
-| `MOVE` | `position x + 100y` | `x + 100 × y` of the new position | | | The move succeeded, after `MOVE direction`. |
-| `DEAD_ATTACKED` | `killerSpecie` | x of the position | y of the position | species of the killer | The creature is killed by an attack. |
-| `DEAD` | `cause` | `0` | `0` | `old`, `basalConsumption`, `attacked`, `health` or `unknown` | The creature dies. |
-
-### INFO rows
-
-`INFO` always comes as a block of 7 rows. `<when>` is `birth` or `dead`:
-
-| `ParamName` | `ParamValue` | `ParamValue2` |
-|---|---|---|
-| `<when> mass` | current mass | |
-| `<when> gen` | current generation | |
-| `<when> neuronsCount` | number of enabled actions (the same for every creature) | |
-| `<when> stepBirth` | step in which it was born | |
-| `<when> massAtBirth` | mass at birth | |
-| `<when> position` | x | y |
-| `<when> lastMovement` | x of the last move | y of the last move |
-
-### World events
-
-All with `LogLevel` `WORLD EVENTS` and empty creature columns:
-
-| `EventType` | `ParamName` | `ParamValue` | When |
-|---|---|---|---|
-| `GENERATION_START` | `population` | live creatures | Step 1 of a generation, before the creatures move. Once per generation. |
-| `STEP_END` | `population` | live creatures | End of every step. |
-| `STEP_END` | `population_plant`, `population_attack_plant`, `population_attack_animal` | live creatures of that genus | Same. |
-| `STEP_END` | `waterInCells`, `waterInCloud`, `waterInCreatures` | water in that part of the world | Same. |
-| `STEP_END` | `waterTotal` | sum of the three | Same. |
-| `GENERATION_END` | same 8 names as `STEP_END` | same values; the water after evaporation | Last step of a generation, after its `STEP_END` rows. |
-| `GENERATION_END` | `survivors` | creatures chosen by the selection method, the parents of the next generation; `ParamValue2` is the same number as a percentage of **Initial population** (0 to 100, more if there are more survivors than Initial population) | Right after the other `GENERATION_END` rows, still in the generation that ends. Not written in continuous simulations, which have no selection. |
-
-## One creature with every option on
-
-This is what the log holds for a creature with **Step totals** on, every box in **Events to record** on, and **Creature to log** set to its id (or `0`).
-
-### At birth
-
-7 `INFO` rows `birth …`, then `BIRTH parentId` and `BIRTH genome`. Creatures of a new generation are born at step 1, before `GENERATION_START`; children are born in the middle of their parent's step (see Reproduction below), with their own id.
-
-### Each step
-
-The rows follow the order of `Creature.computeStep()`:
-
-1. **Age.** If it is older than its maximum age: `DEAD` with `old`, then 7 `INFO` rows `dead …`, and nothing else this step.
-2. **Basal metabolism.** `METABOLISM mass` and `METABOLISM basalConsumption` (steps multiple of 10). If it ran out of mass: `DEAD basalConsumption` + 7 `INFO dead …`, and the step ends.
-3. **Brain.** The actions run in table order ([Sensors and actions](sensors-and-actions.md)). Movement actions write nothing here, they only add to the urge to move. The others:
-   - **Photosynthesis** (output above 0, steps multiple of 10): `PHOTOSYNTHESIS actionInputValue`, `PHOTOSYNTHESIS waterGotFromCell`.
-   - **Reproduction** (output above 0 and enough mass; otherwise nothing): `REPRODUCE_TRY mass`, then one of
-     - no free cell nearby: `REPRODUCE_TRY mass consumed`;
-     - success: the child's 7 `INFO birth …` rows and its `BIRTH parentId` (with this creature as parent) and `BIRTH genome` rows (child's id, only if the child passes the creature filter), then `REPRODUCE actionInputValue` and `REPRODUCE mass`.
-   - **AttackPlant / AttackAnimal** (output above the threshold and a neighbour it can eat in N, E, S or W): `ATTACK_TRY actionInputValue`, `ATTACK_TRY targetDirection`; if it killed the prey, the prey's rows (`DEAD_ATTACKED`, `DEAD attacked`, 7 `INFO dead …`, with the prey's id and only if the prey passes the filter), then `ATTACK preyMass`. With both attack actions enabled, this can happen twice in a step.
-4. **Movement.** If the urge to move turns into a move: `MOVE_TRY x,y`, and, if the cell was free and it had the mass to move, `MOVE direction` and `MOVE position x + 100y`.
-
-When the creature is killed by another one, its death rows appear inside the attacker's step (3, above).
-
-### Example
-
-Step 10 of generation 3 for creature 42, a plant that photosynthesises, tries to reproduce with no free cell around and moves east (`es-ES` locale, species and values made up):
-
-```
-CREATURE;10;3;10;#3fa2c8;plant;42;METABOLISM;mass;3,42;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;METABOLISM;basalConsumption;0,01;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;PHOTOSYNTHESIS;actionInputValue;0,74;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;PHOTOSYNTHESIS;waterGotFromCell;0,07;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;REPRODUCE_TRY;mass;3,48;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;REPRODUCE_TRY;mass consumed;0,1;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;MOVE_TRY;x,y;1;0;
-CREATURE;10;3;10;#3fa2c8;plant;42;MOVE;direction;1;0;E
-CREATURE;10;3;10;#3fa2c8;plant;42;MOVE;position x + 100y;2.315;0;
-```
-
-The step totals of step 10 then follow, at the first event of step 11, mixed with the `WORLD EVENTS` rows of the end of step 10. On steps that are not multiples of 10 the `METABOLISM` and `PHOTOSYNTHESIS` rows are missing.
-
-## Limitations
-
-- `MOVE position x + 100y` packs the position in one number, which is ambiguous when `x` is 100 or more. The x and y of the position are in the `INFO … position` rows. The format is kept because the Power BI report reads it.
+Power BI has no chart of this kind; it is easy to draw with Python (matplotlib or plotly) or a web page.

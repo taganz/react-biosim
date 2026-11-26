@@ -34,7 +34,7 @@ export default function PopulationPanel() {
   const selectSpecies = (clicked: Species) => {
     const keepCurrent =
       selectedCreature?.isAlive &&
-      selectedCreature.brain.genome.toDecimalString(false) === clicked.genomeKey;
+      selectedCreature.speciesId === clicked.id;
     setSelectedSpecies(clicked);
     setSelectedCell(null);
     if (!keepCurrent) {
@@ -60,12 +60,11 @@ export default function PopulationPanel() {
       creatureIdx++
     ) {
       const creature = worldController.generations.currentCreatures[creatureIdx];
-      const genomeString = creature.brain.genome.toDecimalString(false);
-
-      let species: Species | undefined = creatureMap.get(genomeString);
+      // a species is a lineage: two species can have the same genome
+      let species: Species | undefined = creatureMap.get(creature.speciesId);
       if (!species) {
-        species = new Species(creature.brain.genome.clone());
-        creatureMap.set(genomeString, species);
+        species = new Species(creature.brain.genome.clone(), [], creature.speciesId, creature.speciesParentId);
+        creatureMap.set(creature.speciesId, species);
       }
 
       species.creatures.push(creature);
@@ -81,16 +80,9 @@ export default function PopulationPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worldController, generationKey]);
 
-  // the selected species may come from a click on the world or an earlier generation,
-  // so its own creature list is not the one of the current generation
-  const selectedStartCreatures = useMemo(
-    () => species.find((s) => s.genomeKey === selectedSpecies?.genomeKey)?.creatures ?? [],
-    [species, selectedSpecies]
-  );
-
   // sensors and actions each species' network uses, for the filter
   const usedBySpecies = useMemo(
-    () => new Map(species.map((s) => [s.genomeKey, getUsedSensorsAndActions(s.creatures[0])])),
+    () => new Map(species.map((s) => [s.id, getUsedSensorsAndActions(s.creatures[0])])),
     [species]
   );
   const enabledNames = useMemo(
@@ -113,7 +105,7 @@ export default function PopulationPanel() {
     [species, order]
   );
   const filteredSpecies = orderedSpecies.filter((s) => {
-    const used = usedBySpecies.get(s.genomeKey)!;
+    const used = usedBySpecies.get(s.id)!;
     return (
       (sensorFilter === "" || used.sensors.has(sensorFilter)) &&
       (actionFilter === "" || used.actions.has(actionFilter))
@@ -167,7 +159,7 @@ export default function PopulationPanel() {
 
       <div className="flex gap-4">
         <div className="min-w-0 grow">
-          <SelectedSpecies selectedSpecies={selectedSpecies} startCreatures={selectedStartCreatures} />
+          <SelectedSpecies selectedSpecies={selectedSpecies} />
         </div>
 
         <div
@@ -177,12 +169,11 @@ export default function PopulationPanel() {
           )}
         >
           {renderedSpecies.map((species) => {
-            const { genomeKey } = species;
-            const isSelected = selectedSpecies?.genomeKey === genomeKey;
+            const isSelected = selectedSpecies?.id === species.id;
 
             return (
               <SpeciesButton
-                key={species.genomeKey}
+                key={species.id}
                 species={species}
                 isSelected={isSelected}
                 onClick={() =>

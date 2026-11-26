@@ -16,15 +16,18 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       creatureIdx++
     ) {
       const creature = worldController.generations.currentCreatures[creatureIdx];
-      const genomeString = creature.brain.genome.toDecimalString(false);
-  
-      let species: SavedSpecies | undefined = creatureMap.get(genomeString);
+      // a species is a lineage: two species can have the same genes
+      let species: SavedSpecies | undefined = creatureMap.get(creature.speciesId);
       if (!species) {
+        const firstGen = worldController.generations.speciesRegistry.firstGenOf(creature.speciesId);
         species = {
           genes: creature.brain.genome.genes,
           creatures: [],
+          id: creature.speciesId,
+          parentId: creature.speciesParentId,
+          ...(firstGen !== undefined ? { firstGen } : {}),
         };
-        creatureMap.set(genomeString, species);
+        creatureMap.set(creature.speciesId, species);
       }
   
       species.creatures.push({
@@ -74,10 +77,14 @@ export default function serializeSpecies(worldController: WorldController) : Sav
       const genome = new Genome(savedSpecies.genes);
   
       // Deserialize each SavedCreature into a Creature
-      const creatures = savedSpecies.creatures.map(creature => deserializeCreature(worldController, genome, creature));
-  
-      // Create a new Species instance with the deserialized data
-      return new Species(genome, creatures);
+      const species = new Species(genome, [], savedSpecies.id, savedSpecies.parentId ?? null, savedSpecies.firstGen);
+      species.creatures = savedSpecies.creatures.map(creature => {
+        const deserialized = deserializeCreature(worldController, genome, creature);
+        deserialized.speciesId = species.id;
+        deserialized.speciesParentId = species.parentId;
+        return deserialized;
+      });
+      return species;
     });
   }
 

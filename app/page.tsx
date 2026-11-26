@@ -8,7 +8,6 @@ import ExportPanel from "@/components/simulation/tabs/export/ExportPanel";
 import ScenarioPanel from "@/components/simulation/tabs/scenario/ScenarioPanel";
 import SimulationPanel from "@/components/simulation/tabs/simulation/SimulationPanel";
 import PopulationPanel from "@/components/simulation/tabs/population/PopulationPanel";
-import ToolsPanel from "@/components/simulation/tabs/tools/ToolsPanel";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -35,8 +34,7 @@ export default function Home() {
                   <Tab index={1}>Simulation</Tab>
                   <Tab index={2}>Population</Tab>
                   <Tab index={3}>Export</Tab>
-                  <Tab index={4}>Tools</Tab>
-                  <Tab index={5}>About</Tab>
+                  <Tab index={4}>About</Tab>
                 </TabList>
 
                 <TabPanel index={0}>
@@ -56,10 +54,6 @@ export default function Home() {
                 </TabPanel>
 
                 <TabPanel index={4}>
-                  <ToolsPanel />
-                </TabPanel>
-
-                <TabPanel index={5}>
                   <p>
                       This is an environment to create <b>evolutionary simulations</b> inspired in the great video&nbsp;
                       <a

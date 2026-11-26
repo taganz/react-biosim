@@ -5,8 +5,7 @@ import WorldObject from "./objects/WorldObject";
 import WorldControllerData from "./WorldControllerData";
 import WorldGenerations from "../generations/WorldGenerations";
 import Creature from "../creature/Creature"
-import EventLogger, {LogOptions, SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
+import SimulationLog, { LogOptions } from "../log/SimulationLog";
 import generateRandomString from "@/helpers/generateRandomString";
 import { checkWaterSettings } from "../water/checkWaterSettings";
 import WorldWater from "../water/WorldWater";
@@ -40,7 +39,8 @@ export default class WorldController {
   generations : WorldGenerations;
   grid: Grid;
   generationRegistry = new GenerationRegistry(this);
-  eventLogger : EventLogger;
+  /** the log of species and creatures (Simulation → Log) */
+  simulationLog : SimulationLog;
   worldWater : WorldWater;
   simData : SimulationData;
   /** the configuration the run started (or was loaded) with; Update simulation changes simData but not this */
@@ -104,7 +104,7 @@ export default class WorldController {
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
-    this.eventLogger = new EventLogger(this);
+    this.simulationLog = new SimulationLog(this);
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.worldWater.firstRain(this.grid);
     // request worldCanvas initialization 
@@ -143,7 +143,7 @@ export default class WorldController {
     this.worldWater = new WorldWater(this.size, sim.waterData);   // TO DO should deal with this in startRun and resumeRun
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid);
     this.generationRegistry = new GenerationRegistry(this);
-    this.eventLogger.reset();
+    this.simulationLog.onRunReplaced();
     this.initialPopulation = sim.worldGenerationsData.initialPopulation;
      
     // state data
@@ -153,7 +153,6 @@ export default class WorldController {
     this.totalTime = 0;
   
   
-    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -200,7 +199,7 @@ export default class WorldController {
     if (sim.stats !== undefined) {
       this.generationRegistry.copyExceptWorldController(sim.stats);
     }
-    this.eventLogger.reset();
+    this.simulationLog.onRunReplaced();
     this.initialPopulation = sim.worldGenerationsData.initialPopulation;
 
     // state data
@@ -211,7 +210,6 @@ export default class WorldController {
     this.lastGenerationDuration = sim.worldControllerData.lastGenerationDuration;
     this.totalTime = sim.worldControllerData.totalTime;
 
-    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -251,12 +249,23 @@ export default class WorldController {
     this.objects = sim.worldObjects;
     this.grid = new Grid(this.size, this.objects, sim.waterData.waterCellCapacity);
     this.worldWater = new WorldWater(this.size, sim.waterData);
+    // a hot change keeps the species seen in the generation; a file gives when each species appeared
+    const speciesRegistry = creatures ? this.generations.speciesRegistry : undefined;
+    const firstGens = new Map((sim.species ?? []).map((species) => [species.id, species.firstGen]));
     this.generations = new WorldGenerations(this, sim.worldGenerationsData, this.grid, []);
+    if (speciesRegistry) {
+      this.generations.speciesRegistry = speciesRegistry;
+      speciesRegistry.beginRestoring();
+    } else {
+      this.generations.speciesRegistry.beginPlacing();
+    }
     // creatures are rebuilt so they use the new grid and settings;
     // the ones now outside the world or on an occupied cell are dropped
     for (const creature of sourceCreatures) {
-      this.generations.restoreCreature(creature, translate(creature.brain.genome.genes));
+      this.generations.restoreCreature(creature, translate(creature.brain.genome.genes), firstGens.get(creature.speciesId));
     }
+    if (speciesRegistry) speciesRegistry.endRestoring();
+    else this.generations.speciesRegistry.endPlacing();
     // the creatures take their mass from the cloud first, then the cells get theirs, as in startRun().
     // Older files have no cell water, and a hot change can change the world size
     if (!cellWater || !this.worldWater.restoreCells(this.grid, cellWater)) {
@@ -271,7 +280,8 @@ export default class WorldController {
         this.generationRegistry.copyExceptWorldController(sim.stats);
       }
     }
-    this.eventLogger.reset();
+    // a hot change goes on with the recording
+    if (!creatures) this.simulationLog.onRunReplaced();
     this.initialPopulation = sim.worldGenerationsData.initialPopulation;
 
 
@@ -290,7 +300,6 @@ export default class WorldController {
     this.totalTime = sim.worldControllerData.totalTime;
 
   
-    this.eventLogger.logSetup();
     this.events.dispatchEvent(
       new CustomEvent(WorldEvents.initializeWorld, { detail: { worldController: this } })
     );
@@ -433,7 +442,6 @@ export default class WorldController {
   private async runStep(runId: number): Promise<"continue" | "generationEnded" | "restarted"> {
 
     if (this.currentStep === 1) {
-      this.logStartGeneration();
       this.events.dispatchEvent(
         new CustomEvent(WorldEvents.startGeneration, { detail: { worldController: this } })
       );
@@ -455,13 +463,14 @@ export default class WorldController {
       new CustomEvent(WorldEvents.endStep, { detail: { worldController: this } })
     );
 
-    this.logEndStep();
     
     this.sendRedrawEventEveryImmediateSteps();
     
     // RD if everybody is dead, wait and restart
     if (numberOfSurvivorsThisStep == 0) {
       console.log("All creatures dead. Restarting at step ",this.currentStep )
+      // the last rows of the run, with the species that died out
+      this.simulationLog.onExtinction();
       // Small pause
       const wait = this.beginWait();
       await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
@@ -474,6 +483,8 @@ export default class WorldController {
       return "restarted";
     }
 
+
+    if (this.currentStep != this.stepsPerGen) this.simulationLog.onStepEnd();
 
     if (this.currentStep == this.stepsPerGen) {
       // the survivors are selected before the pause and the next generation is made after it
@@ -490,13 +501,12 @@ export default class WorldController {
   
   private async endGeneration(runId: number): Promise<void> {
 
-    this.logEndGeneration();
+    this.worldWater.evaporation(this.grid);
+    this.simulationLog.onGenerationEnd();
     this.generations.closeHerbivoreGenomeStats();
     if (!this.generations.isContinuous) {
-      // selected now so that the survivors row belongs to the generation that ends
-      const survivors = this.generations.selectSurvivors();
-      this.log(LogEvent.GENERATION_END, "survivors", survivors,
-               100 * survivors / this.generations.initialPopulation);
+      // selected before the pause, while the generation that ends is still in the world
+      this.generations.selectSurvivors();
     }
 
     // Small pause
@@ -611,36 +621,16 @@ export default class WorldController {
     this.notifyStateChange();
   }
 
-  get eventLoggerIsPaused() : boolean {
-    return this.eventLogger.isPaused;
-  }
-  pauseLog() : void {
-    this.eventLogger.pause();
-    this.notifyStateChange();
-  }
-  // false if the log is full
-  resumeLog() : boolean {
-    const resumed = this.eventLogger.resume();
-    this.notifyStateChange();
-    return resumed;
-  }
-
   /**
-   * Changes logger constants of the running simulation, so they are saved with it.
-   * simData is replaced, not mutated: the Settings draft may share its constants.
-   * Returns the new simData.
+   * Changes LOG_* constants of the running simulation, so they are saved with it. A recording
+   * keeps the options it started with. simData is replaced, not mutated: the Settings draft may
+   * share its constants. Returns the new simData.
    */
   setLogOptions(options: Partial<LogOptions>) : SimulationData {
-    // logger options do not change the simulation, so a restart still repeats the run
+    // log options do not change the simulation, so a restart still repeats the run
     const isRunStart = this.simData === this.runStartSimData;
     this.simData = {...this.simData, constants: {...this.simData.constants, ...options}};
     if (isRunStart) this.runStartSimData = this.simData;
-    if (options.LOG_EVENTLOGGER_MAX_EVENTS !== undefined) this.eventLogger.setMaxEvents(options.LOG_EVENTLOGGER_MAX_EVENTS);
-    // turning the logger off stops it and deletes the log
-    if (options.LOG_ENABLED === false) {
-      this.eventLogger.pause();
-      this.eventLogger.deleteLog();
-    }
     this.notifyStateChange();
     return this.simData;
   }
@@ -689,62 +679,4 @@ export default class WorldController {
   get isPaused(): boolean {
     return this._paused;
   }
-
-
-  private logStartGeneration() {
-    this.log(LogEvent.GENERATION_START, "population", this.generations.currentCreatures.length);
-  }
-
-  private logEndStep() {
-    // avoid filtering the whole population every step when nothing is recorded
-    if (this.eventLogger.isPaused) return;
-    this.log(LogEvent.STEP_END, "population", this.generations.currentCreatures.length);
-    this.log(LogEvent.STEP_END, "population_plant", this.generations.currentCreatures.filter(crea => crea.genus === "plant").length);
-    this.log(LogEvent.STEP_END, "population_attack_plant", this.generations.currentCreatures.filter(crea => crea.genus === "attack_plant").length);
-    this.log(LogEvent.STEP_END, "population_attack_animal", this.generations.currentCreatures.filter(crea => crea.genus === "attack_animal").length);
-    this.log(LogEvent.STEP_END, "waterInCells", this.worldWater.waterInCells);
-    this.log(LogEvent.STEP_END, "waterInCloud", this.worldWater.waterInCloud);
-    this.log(LogEvent.STEP_END, "waterInCreatures", this.worldWater.waterInCreatures);
-    this.log(LogEvent.STEP_END, "waterTotal", 
-            this.worldWater.waterInCells 
-            + this.worldWater.waterInCloud 
-            + this.worldWater.waterInCreatures);
-
-  }
-
-  private logEndGeneration() {
-    this.log(LogEvent.GENERATION_END, "population", this.generations.currentCreatures.length);
-    this.log(LogEvent.GENERATION_END, "population_plant", this.generations.currentCreatures.filter(crea => crea.genus === "plant").length);
-    this.log(LogEvent.GENERATION_END, "population_attack_plant", this.generations.currentCreatures.filter(crea => crea.genus === "attack_plant").length);
-    this.log(LogEvent.GENERATION_END, "population_attack_animal", this.generations.currentCreatures.filter(crea => crea.genus === "attack_animal").length);
-    this.worldWater.evaporation(this.grid);
-    this.log(LogEvent.GENERATION_END, "waterInCells", this.worldWater.waterInCells);
-    this.log(LogEvent.GENERATION_END, "waterInCloud", this.worldWater.waterInCloud);
-    this.log(LogEvent.GENERATION_END, "waterInCreatures", this.worldWater.waterInCreatures);
-    this.log(LogEvent.GENERATION_END, "waterTotal", 
-            this.worldWater.waterInCells 
-            + this.worldWater.waterInCloud 
-            + this.worldWater.waterInCreatures);
-
-  }
-
-  private log(eventType: LogEvent, paramName? : string, paramValue? : number, paramValue2? : number, paramString?: string) { 
-    if (!this.eventLogger) {
-      console.error("this.eventLogger not found");
-      return;
-    }
-    const event : SimulationCallEvent = {
-      logLevel: LogLevel.WORLD,      
-      creatureId: "",
-      speciesId: "",
-      genusId : "",
-      eventType: eventType,
-      paramName: paramName ?? "",
-      paramValue: paramValue ?? 0,
-      paramValue2: paramValue2 ?? 0,
-      paramString : paramString ?? ""
-    }
-    this.eventLogger.logEvent(event);
-  }
 }
-

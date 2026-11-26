@@ -149,19 +149,19 @@ describe("WorldController hot change", () => {
     expect(worldController.restartSimCode(rainy)).toBeUndefined();
   });
 
-  test("logger options do not stop a restart from repeating the run", () => {
+  test("log options do not stop a restart from repeating the run", () => {
     const fixed = { ...simulationData, worldControllerData: { ...simulationData.worldControllerData, seed: 42 } };
     worldController.startRun(fixed);
     worldController.pause();
     const code = worldController.simCode;
 
-    const logged = worldController.setLogOptions({ LOG_ENABLED: true });
+    const logged = worldController.setLogOptions({ LOG_CREATURES: true });
     expect(worldController.restartSimCode(logged)).toBe(code);
 
     // after a real change applied with Update simulation they do not hide it
     const rainy = { ...logged, waterData: { ...logged.waterData, waterRainMaxPerCell: 7 } };
     worldControllerSimDataHotChange(worldController, rainy);
-    const relogged = worldController.setLogOptions({ LOG_ENABLED: false });
+    const relogged = worldController.setLogOptions({ LOG_CREATURES: false });
     expect(worldController.restartSimCode(relogged)).toBeUndefined();
   });
   test("run options apply at once and do not touch the creatures", () => {

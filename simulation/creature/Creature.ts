@@ -7,8 +7,7 @@ import CreatureMass from "./CreatureMass";
 import CreatureAttack from "./CreatureAttack";
 import CreatureReproduction from "./CreaturerReproduction";
 import CreatureBrain from "./brain/CreatureBrain";
-import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
+import { speciesOfChild } from "./speciesId";
 import {Direction, Direction4} from '@/simulation/world/direction';
 import CreaturePhenothype from "./CreaturePhenothype";
 import CreatureGenus, {Genus} from "./CreatureGenus";
@@ -28,7 +27,6 @@ const stepsStoppedPenalization = 100;
 
 export default class Creature {
   generations: WorldGenerations;
-  eventLogger: EventLogger;
   worldControllerData : WorldControllerData;
 
   id : number;
@@ -74,7 +72,11 @@ export default class Creature {
   deathCause : DeathCause | null = null;
   deathStep : number | null = null;
   deathGen : number | null = null;
+  /** speciesId of the creature that killed it */
   killedBySpecies : string | null = null;
+  // the lineage (see speciesId.ts): its species and the species that species came from
+  speciesId : string;
+  speciesParentId : string | null;
   //_worldWater : WorldWater;
   
   private _health: number = maxHealth;
@@ -122,8 +124,10 @@ export default class Creature {
     this._mass = new CreatureMass(this, firstGeneration);
     this._attack = new CreatureAttack(this);
     this.reproduction = new CreatureReproduction(this);
-    this.eventLogger = generations.worldController.eventLogger;
-    this.logBasicData("birth");
+    // a species of its own; newCreature() and restoreCreature() set the lineage of a child
+    const lineage = speciesOfChild(this.brain.genome.genes, undefined);
+    this.speciesId = lineage.speciesId;
+    this.speciesParentId = lineage.speciesParentId;
   }
 
   get genus(): Genus {
@@ -181,11 +185,7 @@ export default class Creature {
       else thinks = false;
     }
 
-    const basalMetabolismConsumed = this._mass.basalMetabolism(thinks);
-    if (!this.eventLogger?.isPaused) {
-      this.log(LogEvent.METABOLISM, "mass", this.mass);
-      this.log(LogEvent.METABOLISM, "basalConsumption", basalMetabolismConsumed);
-    }
+    this._mass.basalMetabolism(thinks);
     if (!this.isAlive) {
       this.die("basalConsumption");
       return;
@@ -213,9 +213,7 @@ export default class Creature {
 
     // Move
     if (probX !== 0 || probY !== 0) {
-      if (this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY)) {
-        this.log(LogEvent.MOVE, "position x + 100y",  this.position[0]+this.position[1]*100);
-      } else {
+      if (!this.move((moveX < 0 ? -1 : 1) * probX, (moveY < 0 ? -1 : 1) * probY)) {
         // blocked, or not enough mass: MoveForward must not keep pushing into a wall
         this.lastMovement[0] = 0;
         this.lastMovement[1] = 0;
@@ -234,27 +232,18 @@ export default class Creature {
 
 //TODO actionInputValue ha de ser per modificar la massa que passem al fill
   reproduce(actionInputValue: number) {
-    // without enough mass it is not a try: nothing is logged or consumed
+    // without enough mass it is not a try: nothing is consumed
     if (!this.reproduction.hasEnoughtMassToReproduce) return;
-    this.log(LogEvent.REPRODUCE_TRY, "mass", this.mass);
-    if (this.reproduction.reproduce(actionInputValue)) {
-      this.log(LogEvent.REPRODUCE, "actionInputValue", actionInputValue);
-      this.log(LogEvent.REPRODUCE, "mass", this.mass);
-    } else {
-        //TODO ??
-    }
+    this.reproduction.reproduce(actionInputValue);
   }
 
   //TODO actionInputValue es sempre 1?
   attack(actionInputValue: number, targetDirection: Direction4) {
-    this.log(LogEvent.ATTACK_TRY, "actionInputValue", Math.round(actionInputValue*100)/100);
-    this.log(LogEvent.ATTACK_TRY, "targetDirection", 0, 0, <string>targetDirection);
     this.attackCount++;
     const preyMass = this._attack.attack(actionInputValue, targetDirection);
     // the attack has already moved the prey's mass to this creature
     if (preyMass > 0) {
       this.killCount++;
-      this.log(LogEvent.ATTACK, "preyMass", preyMass);
     }
   }
 
@@ -313,11 +302,10 @@ export default class Creature {
   // returns true if the creature moved
   private move(x: number, y: number): boolean {
 
-    // without enough mass it is not a try: nothing is logged or consumed
+    // without enough mass it is not a try: nothing is consumed
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
-    this.log(LogEvent.MOVE_TRY, "x,y", Math.round(x), Math.round(y));
     this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);
     this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
     
@@ -354,7 +342,6 @@ export default class Creature {
       else if (x==-1 && y==0) this.stepDirection = "W";
       else if (x==-1 && y==1) this.stepDirection = "NW";
       else console.log("attack_plant error", x, y);
-      this.log(LogEvent.MOVE, "direction", Math.round(x), Math.round(y), <string>this.stepDirection);
       return true;
     }
     return false;
@@ -387,7 +374,8 @@ export default class Creature {
     this._mass._massAtBirth = mass;
   }
   
-  get specie(): string {
+  /** colour code of the genome (not unique: see speciesId) */
+  get genomeColorCode(): string {
     return this.brain.genome.getHexColor();
   }
   
@@ -397,14 +385,11 @@ export default class Creature {
     const waterWanted = this.worldControllerData.MASS_WATER_TO_MASS_PER_STEP * actionInputValue; 
     const waterGotFromCell = this._mass.addFromGrid(cell, waterWanted);
     this.waterFromPhotosynthesis += waterGotFromCell;
-    this.log(LogEvent.PHOTOSYNTHESIS, "actionInputValue", actionInputValue);
-    this.log(LogEvent.PHOTOSYNTHESIS, "waterGotFromCell", waterGotFromCell);
 
  }
 
- killedByAttack(killerSpecie: string) {
-  this.killedBySpecies = killerSpecie;
-  this.log(LogEvent.DEAD_ATTACKED, "killerSpecie", Math.round(this.position[0]), Math.round(this.position[1]), killerSpecie);
+ killedByAttack(killerSpeciesId: string) {
+  this.killedBySpecies = killerSpeciesId;
   this.die("attacked");
  }
 
@@ -427,48 +412,6 @@ export default class Creature {
   }
 
 
-  logBasicData(when: string = "") {
-    // runs at every birth and death: skip building the names when nothing is recorded
-    if (this.eventLogger?.isPaused) return;
-    this.log(LogEvent.INFO, when + " " +"mass", this.mass);
-    this.log(LogEvent.INFO, when + " " +"gen", this.generations.worldController.currentGen);
-    this.log(LogEvent.INFO, when + " " +"neuronsCount", this.brain.actions.neuronsCount);
-    this.log(LogEvent.INFO, when + " " +"stepBirth", this.stepBirth);
-    this.log(LogEvent.INFO, when + " " +"massAtBirth", this.massAtBirth);
-    this.log(LogEvent.INFO, when + " " +"position", this.position[0], this.position[1]);
-    this.log(LogEvent.INFO, when + " " +"lastMovement" , this.lastMovement[0], this.lastMovement[1]);
-  }
-
-  
-  log(eventType: LogEvent, paramName? : string, paramValue? : number, paramValue2? : number, paramString?: string) { 
-      if (!this.eventLogger) {
-        console.error("this.eventLogger not found");
-        return;
-      }
-      // skip building the event (and computing specie) when nothing is recorded
-      if (this.eventLogger.isPaused) return;
-
-      // reduce trivial logs
-
-      const discardStep = this.generations.worldController.currentStep % 10 != 0;
-      if (eventType == LogEvent.PHOTOSYNTHESIS && paramName == "actionInputValue" && discardStep) return;
-      if (eventType == LogEvent.PHOTOSYNTHESIS && paramName == "waterGotFromCell" && discardStep) return;
-      if (eventType == LogEvent.METABOLISM && discardStep) return;
-      
-      const event : SimulationCallEvent = {
-        logLevel: LogLevel.CREATURE,
-        creatureId: this.id,
-        speciesId: this.specie,
-        genusId: this._genus,
-        eventType: eventType,
-        paramName: paramName ?? "",
-        paramValue: paramValue ?? 0,
-        paramValue2: paramValue2 ?? 0,
-        paramString: paramString ?? ""
-      }
-      this.eventLogger.logEvent(event);
-    }
-
   //TODO review
   private die (cause: DeathCause = "unknown") {
     // keep the first cause if die() is reached twice
@@ -478,9 +421,6 @@ export default class Creature {
       this.deathGen = this.generations.worldController.currentGen;
     }
     this._mass.die();
-    this.eventLogger?.noteCreatureDeath(this.id);
-    this.log(LogEvent.DEAD, "cause", undefined, undefined, cause);
-    this.logBasicData("dead");
     //console.log(this.id, cause, this._age, this.generations.worldController.currentStep);
     this._health = -1;
     // --> aixo hauria de fer-ho generations...?

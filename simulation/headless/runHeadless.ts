@@ -24,7 +24,8 @@ export type HeadlessOptions = {
   overrides?: SimulationOverrides;
   /** seed of the random generator; on resume it replaces the saved random state. Missing: the base's seed, or a random one */
   seed?: number;
-  /** record the event log from the first generation */
+  /** record the log of species and creatures (Simulation → Log) from the first generation, at the
+   *  end of every generation. The LOG_* constants of the base say which files */
   log?: boolean;
   /** stop when the population dies out more than this many times (default 5) */
   maxRestarts?: number;
@@ -102,10 +103,6 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
     const { rngState, ...worldControllerData } = merged.worldControllerData;
     merged.worldControllerData = { ...worldControllerData, seed: options.seed };
   }
-  // --log turns the logger on, which is off by default
-  if (options.log) {
-    merged.constants = { ...merged.constants, LOG_ENABLED: true };
-  }
   const sim = deserializeSimulationData(worldController, merged);
 
   const maxRestarts = options.maxRestarts ?? 5;
@@ -137,10 +134,12 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
         // with the seed this run used, so loading the setup repeats the run
         setup = serializeSetup(worldController);
         setup.worldControllerData.seed = worldController.seed;
-        // the logger was reset by the start: record from this generation on (a resumed run is not at generation 1)
-        if (options.log) worldController.eventLogger.resume();
+        // record from this generation on (a resumed run is not at generation 1)
+        if (options.log) worldController.simulationLog.startRecording();
         return;
       }
+      // the same recording goes on after a restart; its rows start again at generation 1
+      if (options.log) worldController.simulationLog.resumeRecording();
       run++;
       generationsDone = 0;
       if (run > maxRestarts) stopReason = "extinct";

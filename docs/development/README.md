@@ -55,7 +55,7 @@ simulation/              The engine: plain TypeScript, no React
     brain/                 Genome, CreatureBrain, Network, sensors, actions
   water/                   WorldWater, rain types
   serialization/           Saved* types and the formatters that read and write them
-  logger/                  EventLogger (CSV log)
+  log/                     SimulationLog: CSV tables of species and creatures
   headless/                runHeadless: runs a simulation in Node without drawing
   helpers/                 random.ts (the seeded random generator), helpers.ts
   constantsDefault.ts      Default constants and genus list
@@ -81,5 +81,5 @@ The reference pages are lists taken from the code. Update them in the same chang
 | A tab or a button | the matching page in [docs/user/](../user/), and its screenshot if the layout changed |
 | The scenarios in `public/` | [scenarios.md](../user/scenarios.md) |
 | The save format | [serialization.md](serialization.md) |
-| A logged event, or the logger's columns and levels | [log-file.md](../reference/log-file.md) |
+| A column of the log, or how species ids are made | [log-file.md](../reference/log-file.md) |
 | The headless runner's options or output files | [headless-runner.md](../user/headless-runner.md) |

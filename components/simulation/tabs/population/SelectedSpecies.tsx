@@ -3,11 +3,11 @@ import CreatureBrain from "@/simulation/creature/brain/CreatureBrain";
 import { worldControllerAtom, selectedCreatureAtom, selectedCellAtom } from "../../store";
 import { useMemo, useRef, useState } from "react";
 import { Species } from "../../../../simulation/creature/Species";
-import Creature from "@/simulation/creature/Creature";
 import CopyToClipboardTextarea from "@/components/global/inputs/CopyToClipboardTextarea";
 import SelectedCreatureInfo from "./SelectedCreatureInfo";
 import SelectedCellInfo from "./SelectedCellInfo";
 import SpeciesStats from "./SpeciesStats";
+import SpeciesLineage from "./SpeciesLineage";
 import NetworkDiagram, { NetworkLegend } from "./NetworkDiagram";
 import NetworkInfluenceTable from "./NetworkInfluenceTable";
 import LiveNetworkDiagram from "./LiveNetworkDiagram";
@@ -20,15 +20,14 @@ import { computeInfluences } from "@/simulation/creature/brain/Helpers/networkIn
 import { initialNeuronOutput } from "@/simulation/creature/brain/CreatureBrain";
 import { GENUS_LABELS } from "./genusLabels";
 import useWorldValue from "@/hooks/useWorldValue";
-import { countLivingWithGenes } from "@/simulation/generations/creatureQueries";
+import { countLivingOfSpecies } from "@/simulation/generations/creatureQueries";
+import LogMarkButton from "../simulation/LogMarkButton";
 
 interface Props {
   selectedSpecies?: Species;
-  /** the creatures of the selected species when the generation was grouped */
-  startCreatures: Creature[];
 }
 
-export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }: Props) {
+export default function SelectedSpeciesPanel({ selectedSpecies }: Props) {
   const worldController = useAtomValue(worldControllerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const [selectedCell, setSelectedCell] = useAtom(selectedCellAtom);
@@ -36,7 +35,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
 
   // counted live: the species list is only grouped at the start of the generation, so it misses
   // species born later (continuous runs) and members that died since. "members,alive" is a primitive.
-  // Counting compares the genes of every creature, so with Immediate steps above 1 it is only redone
+  // Counting goes through every creature, so with Immediate steps above 1 it is only redone
   // when the canvas is redrawn, as the rest of the world is not shown more often either
   const countsCache = useRef<{ species?: Species; redrawCount: number; value: string }>(undefined);
   const counts = useWorldValue((world) => {
@@ -46,7 +45,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
     if (throttled && cache?.species === selectedSpecies && cache.redrawCount === world.redrawCount) {
       return cache.value;
     }
-    const { members, alive } = countLivingWithGenes(world.generations, selectedSpecies.genome.genes);
+    const { members, alive } = countLivingOfSpecies(world.generations, selectedSpecies.id);
     const value = `${members},${alive}`;
     countsCache.current = { species: selectedSpecies, redrawCount: world.redrawCount, value };
     return value;
@@ -72,7 +71,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
   const liveCreature =
     selectedCreature &&
     selectedSpecies &&
-    selectedCreature.brain.genome.toDecimalString(false) === selectedSpecies.genomeKey
+    selectedCreature.speciesId === selectedSpecies.id
       ? selectedCreature
       : undefined;
   const showLive = liveCreature !== undefined && networkView === "live";
@@ -116,6 +115,10 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
             ) : (
               <span className="bg-red px-1">Extinct</span>
             )}
+            <span className="font-mono text-xs" title="Species id: its genome and the species it came from">
+              {selectedSpecies.id}
+            </span>
+            <LogMarkButton kind="species" id={selectedSpecies.id} />
           </div>
         )}
         {selectedCreature && (
@@ -148,7 +151,8 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
 
       {selectedSpecies && (
         <CollapsibleSection title="Species stats" defaultOpen>
-          <SpeciesStats species={selectedSpecies} startCreatures={startCreatures} />
+          <SpeciesLineage species={selectedSpecies} />
+          <SpeciesStats species={selectedSpecies} />
         </CollapsibleSection>
       )}
 
@@ -160,7 +164,7 @@ export default function SelectedSpeciesPanel({ selectedSpecies, startCreatures }
 
       {selectedCreature && (
         <CollapsibleSection title={`Creature #${selectedCreature.id}`} defaultOpen>
-          {/* remounted for each creature, so a log message does not carry over */}
+          {/* remounted for each creature */}
           <CreatureToolbar key={`${selectedCreature.birthGen}-${selectedCreature.id}`} creature={selectedCreature} />
           <SelectedCreatureInfo creature={selectedCreature} />
         </CollapsibleSection>

@@ -38,7 +38,8 @@ Options (they override the config file):
                                       (value is read as JSON, otherwise as text; can be repeated)
   --seed <n>                          seed of the random generator: the same seed repeats the run
                                       (default: the base's seed, or a random one; printed in summary.json)
-  --log                               write the event log (log.csv)
+  --log                               record the log of species (and creatures, with LOG_CREATURES)
+                                      at the end of every generation: log-settings.csv, log-species.csv...
   --max-restarts <n>                  stop when the population dies out more than n times (default: 5)
   --max-seconds <s>                   stop after s seconds
   --progress <n>                      print a line every n generations (default: 10, 0: never)
@@ -117,7 +118,7 @@ const CSV_COLUMNS: (keyof GenerationRow)[] = [
 ];
 
 function toCsv(rows: GenerationRow[]): string {
-  // ";" like the event log
+  // ";" like the log
   return [CSV_COLUMNS.join(";"), ...rows.map((row) => CSV_COLUMNS.map((column) => row[column]).join(";"))].join("\n") + "\n";
 }
 
@@ -167,6 +168,7 @@ async function main() {
   console.log = engineLog;
 
   const wc = result.worldController;
+  const logFiles = config.log ? wc.simulationLog.recordedFiles() : [];
   const lastRows = result.rows.filter((row) => row.run === result.restarts).slice(-10);
   const summary = {
     name,
@@ -191,7 +193,7 @@ async function main() {
       maxFitnessValue: average(lastRows, "maxFitnessValue"),
       durationMs: average(lastRows, "durationMs"),
     },
-    files: ["summary.json", "generations.csv", "setup.sim", "final.sim", ...(config.log ? ["log.csv"] : [])],
+    files: ["summary.json", "generations.csv", "setup.sim", "final.sim", ...logFiles.map((file) => `log-${file.kind}.csv`)],
   };
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -200,7 +202,7 @@ async function main() {
   write("generations.csv", toCsv(result.rows));
   write("setup.sim", JSON.stringify(result.setup, null, 2));
   write("final.sim", JSON.stringify(serializeSimulationData(wc, true)));
-  if (config.log) write("log.csv", wc.eventLogger.getLog());
+  for (const file of logFiles) write(`log-${file.kind}.csv`, file.lines.join(""));
 
   for (const key of result.unknownKeys) print(`warning: "${key}" is not a setting of the base; it was added but probably does nothing`);
   print(JSON.stringify({ ...summary, overrides: undefined }, null, 2));

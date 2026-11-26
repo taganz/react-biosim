@@ -6,7 +6,7 @@ How to use the app.
 
 1. [Getting started](user/getting-started.md): the screen, loading a scenario, speed controls
 2. [Population and brains](user/population-and-brains.md): species, selecting creatures, reading neural networks
-3. [Scenario, simulation and tools](user/settings-and-stats.md): changing the rules, applying changes, run options, reading the fitness chart, the logger
+3. [Scenario, simulation and tools](user/settings-and-stats.md): changing the rules, applying changes, run options, reading the fitness chart, the log
 4. [Map editor](user/map-editor.md): obstacles and areas
 5. [Export](user/export.md): your own scenarios, save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
@@ -28,7 +28,7 @@ Exact lists of everything you can configure, taken from the code.
 - [Parameters](reference/parameters.md): every setting, its allowed values and its startup value
 - [Sensors, actions and genes](reference/sensors-and-actions.md): the brain's inputs and outputs, genera and gene encoding
 - [Population strategies and selection methods](reference/population-and-selection.md): how each generation is created and how survivors are chosen
-- [The log file](reference/log-file.md): the columns, events and rows of the logger's CSV
+- [The log files](reference/log-file.md): species ids and the columns of the CSV files of the log
 
 ## Developer guide
 

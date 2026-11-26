@@ -5,7 +5,7 @@ import WorldController from "@/simulation/world/WorldController";
 import {WorldEvents} from "@/simulation/events/WorldEvents";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
-import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, eventLoggerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom, userSelectCreatureAtom, waitForCreatureTextAtom} from "./store";
+import {worldCanvasAtom, simulationDataAtom, worldControllerAtom, selectedCreatureAtom, selectedSpeciesAtom, selectedCellAtom, userSelectCreatureAtom, waitForCreatureTextAtom} from "./store";
 import { showWaterAtom } from "./store/guiControlsAtoms";
 import { Species } from "@/simulation/creature/Species";
 import Creature from "@/simulation/creature/Creature";
@@ -28,7 +28,6 @@ export default function SimulationCanvas({ className }: Props) {
   const [worldCanvas, setWorldCanvas] = useAtom(worldCanvasAtom);
   //const [immediateStepsCount, setImmediateStepsCount] = useAtom(immediateStepsCountAtom);
   const [worldController, setWorldController] = useAtom(worldControllerAtom);
-  const setEventLogger = useSetAtom(eventLoggerAtom);
   const [selectedCreature, setSelectedCreature] = useAtom(selectedCreatureAtom);
   const setSelectedSpecies = useSetAtom(selectedSpeciesAtom);
   const userSelectCreature = useSetAtom(userSelectCreatureAtom);
@@ -47,7 +46,6 @@ export default function SimulationCanvas({ className }: Props) {
       simData.worldControllerData.simCode = simCode;
       
       setWorldController(worldController);
-      setEventLogger(worldController.eventLogger);
       setSimulationData(simData);
 
       if (canvasRef.current) {
@@ -65,7 +63,6 @@ export default function SimulationCanvas({ className }: Props) {
         setWorldController(null);
         console.log("*** worldCanvas destroyed ***");
         setWorldCanvas(null);
-        setEventLogger(null);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
@@ -76,9 +73,6 @@ export default function SimulationCanvas({ className }: Props) {
 
       if (worldController && worldCanvas) {        
 
-   //     const initializeWorldCallback = () => {
-   //       setEventLogger(worldController.eventLogger);
-   //     };
   
         const startGenerationCallback = () => {
           worldCanvas.redraw();
@@ -101,7 +95,7 @@ export default function SimulationCanvas({ className }: Props) {
       };
     }
 
-  }, [worldController, worldCanvas, setEventLogger]);
+  }, [worldController, worldCanvas]);
 
   // the water layer is a viewer option from Simulation → Water; redraws at once, also while paused
   useEffect(
@@ -121,7 +115,7 @@ export default function SimulationCanvas({ className }: Props) {
         const creature = worldController.grid.cell(worldX, worldY).creature;
         userSelectCreature(creature ?? null);
         setSelectedSpecies(
-          creature ? new Species(creature.brain.genome.clone(), [creature]) : undefined
+          creature ? Species.of(creature) : undefined
         );
         // an empty cell (or an obstacle) is selected instead, to show its water and objects
         setSelectedCell(creature ? null : [worldX, worldY]);
@@ -164,10 +158,7 @@ export default function SimulationCanvas({ className }: Props) {
         // already in the new generation, e.g. it was selected by id when it was born
         if (candidates.includes(previous)) return;
 
-        const genomeKey = previous.brain.genome.toDecimalString(false);
-        const sameSpecies = candidates.find(
-          (creature) => creature.brain.genome.toDecimalString(false) === genomeKey
-        );
+        const sameSpecies = candidates.find((creature) => creature.speciesId === previous.speciesId);
         if (sameSpecies) {
           setSelectedCreature(sameSpecies);
           return;
@@ -183,7 +174,7 @@ export default function SimulationCanvas({ className }: Props) {
           }
         }
         setSelectedCreature(closest);
-        setSelectedSpecies(closest ? new Species(closest.brain.genome.clone(), [closest]) : undefined);
+        setSelectedSpecies(closest ? Species.of(closest) : undefined);
       };
 
       worldController.events.addEventListener(WorldEvents.startGeneration, onStartGeneration);
@@ -202,7 +193,7 @@ export default function SimulationCanvas({ className }: Props) {
       const onBorn = (e: Event) => {
         const { creature } = (e as CustomEvent<{ creature: Creature }>).detail;
         setSelectedCreature(creature);
-        setSelectedSpecies(new Species(creature.brain.genome.clone(), [creature]));
+        setSelectedSpecies(Species.of(creature));
         setSelectedCell(null);
         setWaitForCreatureText("");
       };

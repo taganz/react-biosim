@@ -13,8 +13,8 @@ import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrai
 import { random } from "@/simulation/helpers/random";
 import worldGenerationsData from "./WorldGenerationsData";
 import WorldController from "../world/WorldController";
-import EventLogger, {SimulationCallEvent} from '@/simulation/logger/EventLogger';
-import {LogEvent, LogLevel} from '@/simulation/logger/LogEvent';
+import SpeciesRegistry from "./SpeciesRegistry";
+import { speciesOfChild } from "../creature/speciesId";
 import {PhenoTypeColorMode} from "@/simulation/creature/PhenoTypeColorMode";
 import WorldGenerationsData from "./WorldGenerationsData";
 import { SensorName } from "../creature/brain/CreatureSensors";
@@ -32,7 +32,8 @@ export default class WorldGenerations {
   worldController: WorldController;
   grid: Grid;
   currentCreatures: Creature[] = [];
-  eventLogger : EventLogger;
+  /** the species seen in the current generation (see SpeciesRegistry) */
+  speciesRegistry = new SpeciesRegistry();
   worldGenerationsData : WorldGenerationsData;
   
   //TODO following data is repeated in worldGenerationsData
@@ -110,7 +111,6 @@ export default class WorldGenerations {
   
     this.metabolismEnabled = worldGenerationsData.metabolismEnabled;
     this.phenotypeColorMode = worldGenerationsData.phenotypeColorMode;
-    this.eventLogger = worldController.eventLogger;
 
     //TODO should take into account objects size
     if (this.initialPopulation >= this.grid.size * this.grid.size) {
@@ -146,7 +146,9 @@ export default class WorldGenerations {
   }
 
   public populate() {
+      this.speciesRegistry.beginPlacing();
       this.populationStrategy.populate(this);
+      this.speciesRegistry.endPlacing();
       this.lastCreatureCount = this.currentCreatures.length;
       // the initial population are not births
       this.birthsThisGeneration = 0;
@@ -159,6 +161,7 @@ export default class WorldGenerations {
    * are any, otherwise at random.
    */
   public populateWithGenomes(genomes: Genome[]) {
+    this.speciesRegistry.beginPlacing();
     const areas = spawnAreas(this.grid);
     const counts = countsByArea(areas, genomes.length);
     let zone = 0;
@@ -183,6 +186,7 @@ export default class WorldGenerations {
         console.warn("no position for creature");
       }
     }
+    this.speciesRegistry.endPlacing();
     this.lastCreatureCount = this.currentCreatures.length;
     // the initial population are not births
     this.birthsThisGeneration = 0;
@@ -258,15 +262,13 @@ export default class WorldGenerations {
       creature.parentBirthGen = parent.birthGen;
       creature.spawnZone = parent.spawnZone;
       parent.childrenCount++;
-    }
-    // 0 when the creature has no parent
-    // the genome string is only built when the logger records
-    if (!creature.eventLogger?.isPaused) {
-      creature.log(LogEvent.BIRTH, "parentId", parent?.id ?? 0, parent?.birthGen ?? 0);
-      creature.log(LogEvent.BIRTH, "genome", 0, 0, creature.brain.genome.toHexadecimalString());
+      const lineage = speciesOfChild(creature.brain.genome.genes, parent);
+      creature.speciesId = lineage.speciesId;
+      creature.speciesParentId = lineage.speciesParentId;
     }
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
+    this.speciesRegistry.addCreature(creature);
     this.lastCreatureIdCreated += 1;  
     this.birthsThisGeneration++;
     return creature;
@@ -279,8 +281,10 @@ export default class WorldGenerations {
     return { sensors: this.sensors.enabledSensors, actions: this.actions.enabledActions, maxNeurons: this.maxNumberNeurons };
   }
 
-  // genes: the genome to give it instead of the source's one (a hot change translates them)
-  public restoreCreature(source: Creature, genes?: Gene[]) : Creature | null {
+  // genes: the genome to give it instead of the source's one (a hot change translates them).
+  // It keeps the species of the source, also with translated genes. firstGen: the generation
+  // its species appeared in, when known
+  public restoreCreature(source: Creature, genes?: Gene[], firstGen?: number) : Creature | null {
     const [x, y] = source.position;
     if (!this.grid.isTileInsideWorld(x, y) || !this.grid.isTileEmpty(x, y)) {
       return null;
@@ -291,6 +295,9 @@ export default class WorldGenerations {
     creature.birthGen = source.birthGen;
     creature.parentId = source.parentId;
     creature.parentBirthGen = source.parentBirthGen;
+    creature.speciesId = source.speciesId;
+    creature.speciesParentId = source.speciesParentId;
+    creature.thinkCount = source.thinkCount;
     creature.childrenCount = source.childrenCount;
     creature.attackCount = source.attackCount;
     creature.killCount = source.killCount;
@@ -310,6 +317,7 @@ export default class WorldGenerations {
     this.worldController.worldWater.getWaterFromCloud(source.mass);
     this.grid.addCreature(creature);
     this.currentCreatures.push(creature);
+    this.speciesRegistry.addCreature(creature, firstGen ?? Math.min(source.birthGen, this.currentGen));
     return creature;
   }
 
@@ -347,6 +355,7 @@ public step(): number {
         creatures[i] = null;
         firstRemoved = i;
         this.deathsThisGeneration++;
+        this.speciesRegistry.removeDeadCreature(creature);
         if (creature.deathCause === "old" && creature.genus === "attack_plant") {
           addHerbivoreOldAgeDeath(this.herbivoreOldAgeDeaths, creature);
         }
@@ -372,6 +381,7 @@ public endTimeWindow(): void {
   this.lastSurvivalRate = this.lastCreatureCount > 0 ? this.lastSurvivorsCount / this.lastCreatureCount : 0;
   this.lastFitnessMaxValue = this.currentCreatures.length;
   this.closeBirthAndDeathCounts();
+  this.speciesRegistry.startTimeWindow();
   // the population at the start of the next window
   this.lastCreatureCount = this.currentCreatures.length;
 }
@@ -410,7 +420,9 @@ public selectionAndRepopulate(): void {
   this.closeBirthAndDeathCounts();
 
   // Repopulate with survivors
+  this.speciesRegistry.beginPlacing();
   this.populationStrategy.populate(this, survivors);
+  this.speciesRegistry.endPlacing();
   // the new generation are not births
   this.birthsThisGeneration = 0;
   this.recordStartGenomes();
@@ -442,23 +454,4 @@ public creatureById(id: number) : Creature {
   }
   throw new Error ("Creature id not found");
 }
-private log(eventType: LogEvent, paramName? : string, paramValue? : number , paramValue2? : number, paramString?: string) { 
-  if (!this.eventLogger) {
-    console.error("this.eventLogger not found");
-    return;
-  }
-  const event : SimulationCallEvent = {
-    logLevel: LogLevel.GENERATION,
-    creatureId: 0,
-    speciesId: "", 
-    genusId: "",
-    eventType: eventType,
-    paramName: paramName ?? "",
-    paramValue: paramValue ?? 0,
-    paramValue2: paramValue2 ?? 0,
-    paramString : paramString ?? ""
-  }
-  this.eventLogger.logEvent(event);
-}
-
 }

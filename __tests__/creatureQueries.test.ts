@@ -4,7 +4,7 @@ import { SimulationData } from "@/simulation/SimulationData";
 import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
-import { computeSpeciesStats, countLivingWithGenes, creatureMassBalance, findLivingCreatureById, findLivingParent, haveSameGenome, speciesMembers } from "@/simulation/generations/creatureQueries";
+import { computeSpeciesStats, countLivingOfSpecies, creatureMassBalance, findLivingCreatureById, findLivingParent, speciesMembers } from "@/simulation/generations/creatureQueries";
 
 describe('creature queries', () => {
 
@@ -24,14 +24,31 @@ describe('creature queries', () => {
         const generations = worldController.generations;
         genomeA = new Genome([CreatureGenus.mainGeneForGenus(generations, "plant")]);
         genomeB = new Genome([...genomeA.genes, CreatureGenus.mainGeneForGenus(generations, "plant")]);
+        // the start of a generation
+        generations.speciesRegistry.beginPlacing();
         a1 = generations.newCreature([0, 0], true, genomeA);
         b1 = generations.newCreature([1, 0], true, genomeB);
         a2 = generations.newCreature([2, 0], true, new Genome(genomeA.genes.slice()));
+        generations.speciesRegistry.endPlacing();
     });
 
-    test('haveSameGenome compares the genes', () => {
-        expect(haveSameGenome(a1, a2)).toBe(true);
-        expect(haveSameGenome(a1, b1)).toBe(false);
+    // as WorldGenerations.step() does with the dead
+    const kill = (creature: Creature) => {
+        creature.health = 0;
+        const generations = worldController.generations;
+        generations.currentCreatures = generations.currentCreatures.filter((other) => other !== creature);
+        generations.grid.removeCreature(creature);
+        generations.speciesRegistry.removeDeadCreature(creature);
+    };
+
+    test('creatures with the same genes and no parent are one species', () => {
+        expect(a1.speciesId).toBe(a2.speciesId);
+        expect(a1.speciesId).not.toBe(b1.speciesId);
+    });
+
+    test('speciesMembers leaves out the same genome of another lineage', () => {
+        a2.speciesId = "another";
+        expect(speciesMembers(worldController.generations, a1)).toEqual([a1]);
     });
 
     test('speciesMembers lists the living members ordered by id', () => {
@@ -67,34 +84,36 @@ describe('creature queries', () => {
         expect(findLivingCreatureById(worldController.generations, a2.id)).toBe(a2);
     });
 
-    test('countLivingWithGenes counts the living members and all the living', () => {
-        expect(countLivingWithGenes(worldController.generations, genomeA.genes)).toEqual({ members: 2, alive: 3 });
+    test('countLivingOfSpecies counts the living members and all the living', () => {
+        expect(countLivingOfSpecies(worldController.generations, a1.speciesId)).toEqual({ members: 2, alive: 3 });
         a1.health = 0;
-        expect(countLivingWithGenes(worldController.generations, genomeA.genes)).toEqual({ members: 1, alive: 2 });
-        expect(countLivingWithGenes(worldController.generations, [12345])).toEqual({ members: 0, alive: 2 });
+        expect(countLivingOfSpecies(worldController.generations, a1.speciesId)).toEqual({ members: 1, alive: 2 });
+        expect(countLivingOfSpecies(worldController.generations, "none")).toEqual({ members: 0, alive: 2 });
     });
 
     describe('computeSpeciesStats', () => {
         test('counts the started, the born since and the dead', () => {
-            a1.health = 0;
-            const stats = computeSpeciesStats(worldController.generations, genomeA.genes, [a1]);
-            expect(stats).toMatchObject({ alive: 1, started: 1, bornSince: 1, died: 1 });
+            // no mutation: the child keeps the species of its parent
+            worldController.generations.newCreature([3, 0], true, a1.brain.genome, a1);
+            kill(a1);
+            const stats = computeSpeciesStats(worldController.generations, a2.speciesId);
+            expect(stats).toMatchObject({ alive: 2, started: 2, bornSince: 1, died: 1 });
         });
 
         test('the living averages ignore the dead and other species', () => {
             a1._age = 10;
             a2._age = 20;
             b1._age = 1000;
-            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).living?.age).toBe(15);
-            a1.health = 0;
-            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).living?.age).toBe(20);
+            expect(computeSpeciesStats(worldController.generations, a2.speciesId).living?.age).toBe(15);
+            kill(a1);
+            expect(computeSpeciesStats(worldController.generations, a2.speciesId).living?.age).toBe(20);
         });
 
         test('the per creature averages divide by every known creature, dead or alive', () => {
             a1.childrenCount = 3;
             a1.waterFromPrey = 4;
-            a1.health = 0;
-            const { perCreature } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
+            kill(a1);
+            const { perCreature } = computeSpeciesStats(worldController.generations, a2.speciesId);
             expect(perCreature?.children).toBe(1.5);
             expect(perCreature?.fromPrey).toBe(2);
         });
@@ -108,7 +127,7 @@ describe('creature queries', () => {
             expect(creatureMassBalance(a1).end).toBeCloseTo(1.25);
             a2._mass.setStartMass(1);
             a2._mass.totalBasal = 0.5;
-            const { perCreature } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
+            const { perCreature } = computeSpeciesStats(worldController.generations, a2.speciesId);
             expect(perCreature?.balance.start).toBe(1.5);
             expect(perCreature?.balance.basal).toBe(0.5);
             expect(perCreature?.balance.end).toBeCloseTo((1.25 + 0.5) / 2);
@@ -119,20 +138,20 @@ describe('creature queries', () => {
             jest.spyOn(a2, 'hasEnoughMassToMove').mockReturnValue(false);
             a1.stepsStopped = 4;
             a2.stepsStopped = 2;
-            const { living } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]);
+            const { living } = computeSpeciesStats(worldController.generations, a2.speciesId);
             expect(living?.canMove).toBe(50);
             expect(living?.stepsStopped).toBe(3);
         });
 
         test('the causes of death are shares of the deaths, the most frequent first', () => {
             const a3 = worldController.generations.newCreature([3, 0], true, new Genome(genomeA.genes.slice()));
-            a1.health = 0;
+            kill(a1);
             a1.deathCause = "old";
-            a2.health = 0;
+            kill(a2);
             a2.deathCause = "attacked";
-            a3.health = 0;
+            kill(a3);
             a3.deathCause = "attacked";
-            const { deathCauses } = computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2, a3]);
+            const { deathCauses } = computeSpeciesStats(worldController.generations, a2.speciesId);
             expect(deathCauses.map(({ cause }) => cause)).toEqual(["attacked", "old"]);
             expect(deathCauses[0].percentage).toBeCloseTo(66.67);
         });
@@ -140,13 +159,13 @@ describe('creature queries', () => {
         test('the average age at death only counts the dead', () => {
             a1._age = 10;
             a2._age = 500;
-            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).averageAgeAtDeath).toBeNull();
-            a1.health = 0;
-            expect(computeSpeciesStats(worldController.generations, genomeA.genes, [a1, a2]).averageAgeAtDeath).toBe(10);
+            expect(computeSpeciesStats(worldController.generations, a2.speciesId).averageAgeAtDeath).toBeNull();
+            kill(a1);
+            expect(computeSpeciesStats(worldController.generations, a2.speciesId).averageAgeAtDeath).toBe(10);
         });
 
         test('has no averages without creatures', () => {
-            expect(computeSpeciesStats(worldController.generations, [12345], [])).toEqual({
+            expect(computeSpeciesStats(worldController.generations, "none")).toEqual({
                 alive: 0, started: 0, bornSince: 0, died: 0, living: null, perCreature: null, averageAgeAtDeath: null, deathCauses: [],
             });
         });

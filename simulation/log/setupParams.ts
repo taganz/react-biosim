@@ -1,6 +1,6 @@
 import WorldController from "../world/WorldController";
 
-/** A row of the SETUP block of the log: a Settings value or a constant */
+/** A row of the settings file of the log: a Settings value or a constant */
 export interface SetupParam {
   eventType: "SETTING" | "CONSTANT";
   name: string;
@@ -13,7 +13,7 @@ type Leaf = number | string | boolean | null | undefined;
 const toValue = (value: Leaf): number | string =>
   typeof value === "boolean" ? (value ? 1 : 0) : typeof value === "number" ? value : String(value ?? "");
 
-// nested objects and arrays become one row per value, named with a path ("LOG_ALLOWED_EVENTS.MOVE")
+// nested objects and arrays become one row per value, named with a path ("colors.obstacle")
 function flatten(name: string, value: unknown, out: SetupParam[]): void {
   if (value !== null && typeof value === "object") {
     for (const [key, item] of Object.entries(value)) flatten(`${name}.${key}`, item, out);
@@ -23,7 +23,7 @@ function flatten(name: string, value: unknown, out: SetupParam[]): void {
 }
 
 /**
- * The configuration of the running simulation, as the log writes it: every value of the
+ * The configuration of the running simulation, as the settings file of the log writes it: every value of the
  * Settings tab (sensors and actions as 1 or 0, in table order), then every constant
  * (the upper case values of worldControllerData and the constants object).
  */

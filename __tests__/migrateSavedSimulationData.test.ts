@@ -5,7 +5,6 @@ import migrateSavedSimulationData, { SAVE_FORMAT_VERSION } from "@/simulation/se
 import deserializeSimulationData, { serializeSetup, serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 import { loadSavedWorldAndResumeRun } from "@/simulation/world/loadWorld";
 import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
-import { LogLevel } from "@/simulation/logger/LogEvent";
 import { TEST_SIMULATION_DATA } from "./support/testSimulationData";
 
 /* files of every version load through migrateSavedSimulationData() */
@@ -97,10 +96,14 @@ describe("save format migration", () => {
     expect(data.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY).toBe(0.07);
   });
 
-  test("converts LOG_LEVEL in version 1 files", () => {
-    const constants = migrateSavedSimulationData(version1({ constants: { LOG_LEVEL: LogLevel.STEP } })).constants;
-    expect("LOG_LEVEL" in constants).toBe(false);
-    expect(constants.LOG_STEP_TOTALS).toBe(true);
+  test("drops the constants of the event logger, in files of any version", () => {
+    const old = { LOG_LEVEL: 2, LOG_ENABLED: true, LOG_CREATURE_ID: 3, LOG_LOCALE_STRING: "en-US" };
+    const fromVersion1 = migrateSavedSimulationData(version1({ constants: old })).constants;
+    expect(["LOG_LEVEL", "LOG_ENABLED", "LOG_CREATURE_ID"].some((key) => key in fromVersion1)).toBe(false);
+    expect(fromVersion1.LOG_LOCALE_STRING).toBe("en-US");
+    const fromVersion2 = migrateSavedSimulationData({ ...version1({ constants: old }), version: 2 }).constants;
+    expect("LOG_ENABLED" in fromVersion2).toBe(false);
+    expect(fromVersion2.LOG_LOCALE_STRING).toBe("en-US");
   });
 
   // the scenarios users see first

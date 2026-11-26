@@ -22,7 +22,8 @@ Everything is in [__tests__/](../../__tests__/) and tests the engine. There are 
 | World | `grid`, `GridDetect`, `WorldWater`, `WorldControllerLoop` |
 | Save format | `serialization` |
 | Headless runner and seed | `runHeadless`, `Seed` |
-| Other | `EventLogger`, `helpers`, `generateRandomString` |
+| Log | `SimulationLog` (species ids, rows, recordings, tree completeness), `migrateLogConstants` |
+| Other | `helpers`, `generateRandomString` |
 
 ## Current status
 

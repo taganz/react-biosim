@@ -70,8 +70,9 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           <Field label="Id">#{creature.id}</Field>
           <Field label="Species">
             <span className="text-shadow-sm px-1" style={{ backgroundColor: creature.getColor() }}>
-              {creature.specie}
-            </span>
+              {creature.genomeColorCode}
+            </span>{" "}
+            <span className="font-mono text-xs">{creature.speciesId}</span>
           </Field>
           <Field label="Genus">{GENUS_LABELS[genus]}</Field>
           <Field label="Parent">

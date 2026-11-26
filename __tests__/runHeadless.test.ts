@@ -56,15 +56,18 @@ describe("runHeadless", () => {
     expect(result.worldController.isPaused).toBe(true);
   });
 
-  test("the log has the survivors of each generation in its generation", async () => {
+  test("the log has the species of each generation at its end, with the living creatures", async () => {
     const result = await runHeadless({ base: "startup", generations: 3, overrides: small, log: true, seed: 1 });
-    // LogLevel;StepIndex;CurrentGen;CurrentStep;...;EventType;ParamName;ParamValue;...
-    const survivors = result.worldController.eventLogger.getLog().split("\n")
-      .map((line) => line.split(";"))
-      .filter((cols) => cols[7] === "GENERATION_END" && cols[8] === "survivors")
-      .map((cols) => [Number(cols[2]), Number(cols[3]), Number(cols[9]), cols[10]]);
-    // ParamValue2: % of Initial population (10), written with the es-ES locale
-    expect(survivors).toEqual(result.rows.map((row) =>
-      [row.generation, 5, row.survivorCount, (row.survivorCount * 10).toLocaleString("es-ES")]));
+    const files = result.worldController.simulationLog.recordedFiles();
+    expect(files.map((file) => file.kind)).toEqual(["settings", "species"]);
+    const [header, ...rows] = files[1].lines.map((line) => line.trimEnd().split(";"));
+    const column = (name: string) => header.indexOf(name);
+    for (const row of result.rows) {
+      const ofGeneration = rows.filter((cols) => Number(cols[column("generation")]) === row.generation);
+      expect(ofGeneration.every((cols) => Number(cols[column("step")]) === 5)).toBe(true);
+      // the creatures alive at the end of the generation, before the selection
+      const alive = ofGeneration.reduce((total, cols) => total + Number(cols[column("alive")]), 0);
+      expect(alive).toBe(row.startingPopulation + row.births - row.deaths);
+    }
   });
 });

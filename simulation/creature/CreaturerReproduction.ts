@@ -1,5 +1,4 @@
 import Creature from "./Creature";
-import {LogEvent} from '@/simulation/logger/LogEvent';
 
 /** REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT of files saved without it */
 export const OFFSPRING_MAX_DISTANCE_PERCENT_MISSING = 4;
@@ -41,8 +40,7 @@ export default class CreatureReproduction {
         child._mass.setStartMass(this._creature._mass.giveToChild(child.massAtBirth));
         return true;
       }
-      const consumed = this._creature._mass.consumeForReproduction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY);    
-      this._creature.log(LogEvent.REPRODUCE_TRY, "mass consumed", consumed);
+      this._creature._mass.consumeForReproduction(this._creature.worldControllerData.REPRODUCTION_COST_PER_MASS_TRY);    
       return false;
     }
 

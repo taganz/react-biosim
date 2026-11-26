@@ -66,7 +66,7 @@ Survivors themselves do **not** carry on into the next generation: only their ch
 
 ## Continuous runs
 
-With **Simulation type** set to **Continuous** (*Scenario → Generations*), the population never ends. A generation is only a time window of *Steps per generation* steps, used for the stats, the logger, the counter and the file names. This mode is experimental.
+With **Simulation type** set to **Continuous** (*Scenario → Generations*), the population never ends. A generation is only a time window of *Steps per generation* steps, used for the stats, the log, the counter and the file names. This mode is experimental.
 
 - **Generation 1** is created by the population strategy, as usual. After that the strategy is not used, and there is no selection method.
 - **At the end of a generation** nothing happens to the creatures: they keep their position, mass and age. Creature ids are not reset.

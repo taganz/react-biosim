@@ -81,7 +81,7 @@ export default class CreatureAttack {
    eat(prey: Creature) : number {
         const preyMass = prey.mass;
         this.creature.waterFromPrey += this.creature._mass.eat(prey._mass);
-        prey.killedByAttack(this.creature.specie);
+        prey.killedByAttack(this.creature.speciesId);
         this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_DO);
         return preyMass;
    }

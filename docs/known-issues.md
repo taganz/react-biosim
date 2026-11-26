@@ -40,7 +40,8 @@ None known.
   - Genus evolution graph
   - Fitness values for continuous simulation
 - Log
-  - Complete the Power BI report that analyses the log (`public/analyze simlog.pbix`)
+  - A script or page that draws the tree of species from `species.csv`
+  - `public/analyze simlog.pbix` reads the old event log and no longer works with the new files
 - Documentation
   - Retake the screenshots that predate the tab redesign, and name them after the current tabs: `tab_files.png` and `tab_files_scenarios.png` (Export tab; the first still shows the old Load section), `tab_start.png` (Scenario → Load scenario), `tab_settings.png` (Scenario settings) and `tab_stats.png` (fitness chart in the Simulation tab). They are in `docs/user/images/`.
 - Other
@@ -50,6 +51,7 @@ None known.
 
 These items were on the old list, or found while writing these docs, and are now fixed:
 
+- The log was redone and moved to *Simulation → Log*: tables of species and creatures with every relevant value, for all of them or the ones marked in Population, as a snapshot or recorded every generation, with a settings file. The event log of *Tools → Logger* is gone. Species are now lineages with a unique id (genome and parent species), also in the Population tab.
 - *Asexual Zone* used only the first spawn area, and placed children in random cells when there were more survivors than Initial population. It now splits generation 1 among all spawn areas by size, and places each child in its parent's spawn area.
 - **Update simulation** with other enabled sensors, actions or Max neurons rewired every living brain, because genes are decoded by position and modulo. The genes are now rewritten so the brains stay the same.
 

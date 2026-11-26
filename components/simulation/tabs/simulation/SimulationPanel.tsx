@@ -11,6 +11,7 @@ import CollapsibleSection from "../CollapsibleSection";
 import useSetRunOptions from "./useSetRunOptions";
 import FitnessGraph from "./FitnessGraph";
 import WorldWaterStatus from "./WorldWaterStatus";
+import LogSection from "./LogSection";
 
 // the generator keeps 32 bits of the seed
 const MAX_SEED = 0xffffffff;
@@ -118,6 +119,7 @@ export default function SimulationPanel() {
       </CollapsibleSection>
       <FitnessGraph />
       <WorldWaterStatus />
+      <LogSection />
     </div>
   );
 }

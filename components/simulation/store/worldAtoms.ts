@@ -4,7 +4,6 @@ import Creature from "@/simulation/creature/Creature";
 import { Species } from "@/simulation/creature/Species";
 import { atom } from "jotai";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario"
-import EventLogger from "@/simulation/logger/EventLogger";
 import { GridPosition } from "@/simulation/world/grid/Grid";
 import { LoadedSpeciesSummary } from "@/simulation/creature/speciesSummary";
 
@@ -17,7 +16,6 @@ export const worldCanvasAtom = atom<WorldCanvas | null>(null);
 //export const restartAtom = atom(false);
 //export const restartCountAtom = atom(0);  // to refresh tabs on restart
 export const worldCreaturesAtom = atom(<Creature[]>[]);
-export const eventLoggerAtom = atom<EventLogger | null>(null);
 
 export const selectedCreatureAtom = atom (<Creature | null>(null));
 export const selectedSpeciesAtom = atom<Species | undefined>(undefined);
@@ -38,10 +36,6 @@ export const userSelectCreatureAtom = atom(null, (get, set, creature: Creature |
     set(waitForCreatureTextAtom, "");
   }
 });
-
-// when and for how long Start recording records, in Tools → Logger; not saved
-export const logFromFirstGenerationAtom = atom(false);
-export const logOneGenerationAtom = atom(true);
 
 export const simulationDataAtom = atom(startUpScenarioSimulationData);
 /*

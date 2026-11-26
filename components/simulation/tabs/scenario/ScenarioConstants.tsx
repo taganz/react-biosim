@@ -12,10 +12,9 @@ import { CONSTANTS_DEFAULT } from "@/simulation/constantsDefault";
 import { STAMINA_MISSING_VALUES } from "@/simulation/creature/brain/CreatureBrain";
 import { OFFSPRING_MAX_DISTANCE_PERCENT_MISSING, offspringMaxDistance } from "@/simulation/creature/CreaturerReproduction";
 import { ObjectColors } from "@/simulation/world/objects/objectColor";
-import { AllowedLogEvents, LogEvent } from "@/simulation/logger/LogEvent";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
-import useSetLogOptions from "../tools/useSetLogOptions";
+import useSetLogOptions from "../simulation/useSetLogOptions";
 import ScenarioSection from "./ScenarioSection";
 import { ScenarioSection as ScenarioSectionId } from "./scenarioSectionChanges";
 
@@ -181,13 +180,11 @@ const ASSIMILATION_ROWS: [keyof AssimilationEfficiency, string][] = [
   ["prey", "Share of the prey eaten that becomes mass, by genus. The rest goes to the cloud. Plants never eat."],
 ];
 
-const LOG_EVENTS = Object.values(LogEvent);
-
 const LOCALES = ["es-ES", "en-US"];
 
 // Every value of the constants file (simulation/constantsDefault.ts) and the model constants
 // of worldControllerData, one per line. They edit the draft like the rest of the Scenario tab,
-// except the LOG_* ones, which apply at once like in Tools → Logger.
+// except the LOG_* ones, which apply at once like in Simulation → Log.
 export default function ScenarioConstants({ changed, onGenusProbabilityChange }: {
   changed: Set<ScenarioSectionId>;
   onGenusProbabilityChange: (genus: Genus, probability: number) => void;
@@ -203,8 +200,6 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
   };
   const { worldControllerData } = simulationData;
   const genusList: GenusProbability[] = constants.POPULATION_DEFAULT_GENUS ?? [];
-  const allowedEvents: Partial<AllowedLogEvents> = constants.LOG_ALLOWED_EVENTS ?? {};
-  const allowedCount = LOG_EVENTS.filter((event) => allowedEvents[event]).length;
 
   const setConstant = <K extends keyof Constants>(key: K, value: Constants[K]) =>
     setSimulationData((prev) => ({ ...prev, constants: { ...prev.constants, [key]: value } }));
@@ -397,34 +392,48 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
           </ConstantRow>
         </ConstantGroup>
 
-        <ConstantGroup title="Logger" description="These apply at once to the running simulation, as in Tools → Logger.">
-          <ConstantRow name="LOG_ENABLED" description="Main switch of the logger. Turning it off deletes the log.">
+        <ConstantGroup title="Log" description="These apply at once to the running simulation, as in Simulation → Log. A recording keeps the values it started with.">
+          <ConstantRow name="LOG_SPECIES" description="Write the file of species.">
             <CheckboxInput
-              id="const-log-enabled"
-              checked={Boolean(constants.LOG_ENABLED)}
-              onChange={(checked) => setLogOptions({ LOG_ENABLED: checked })}
+              id="const-log-species"
+              checked={Boolean(constants.LOG_SPECIES)}
+              onChange={(checked) => setLogOptions({ LOG_SPECIES: checked })}
             />
           </ConstantRow>
-          <ConstantRow name="LOG_CREATURE_ID" description="-1 only totals, 0 all creatures, -10 / -30 ids below 10 / 30, else that id.">
-            <NumberInput
-              value={constants.LOG_CREATURE_ID}
-              onChange={(value) => setLogOptions({ LOG_CREATURE_ID: value })}
-              integer
-            />
-          </ConstantRow>
-          <ConstantRow name="LOG_STEP_TOTALS" description="Write the totals of each step, not only of each generation.">
+          <ConstantRow name="LOG_CREATURES" description="Write the file of creatures.">
             <CheckboxInput
-              id="const-log-step-totals"
-              checked={Boolean(constants.LOG_STEP_TOTALS)}
-              onChange={(checked) => setLogOptions({ LOG_STEP_TOTALS: checked })}
+              id="const-log-creatures"
+              checked={Boolean(constants.LOG_CREATURES)}
+              onChange={(checked) => setLogOptions({ LOG_CREATURES: checked })}
             />
           </ConstantRow>
-          <ConstantRow name="LOG_EVENTLOGGER_MAX_EVENTS" description="The logger stops when it has written this many events.">
+          <ConstantRow name="LOG_INCLUDE_DEAD" description="Creatures: also the ones that died, once.">
+            <CheckboxInput
+              id="const-log-include-dead"
+              checked={Boolean(constants.LOG_INCLUDE_DEAD)}
+              onChange={(checked) => setLogOptions({ LOG_INCLUDE_DEAD: checked })}
+            />
+          </ConstantRow>
+          <ConstantRow name="LOG_EVERY_N_STEPS" description="A recording also writes rows every this many steps; 0 only at the end of each generation.">
             <NumberInput
-              value={constants.LOG_EVENTLOGGER_MAX_EVENTS}
-              onChange={(value) => setLogOptions({ LOG_EVENTLOGGER_MAX_EVENTS: value })}
+              value={constants.LOG_EVERY_N_STEPS}
+              onChange={(value) => setLogOptions({ LOG_EVERY_N_STEPS: value })}
               integer
-              min={1}
+              min={0}
+            />
+          </ConstantRow>
+          <ConstantRow name="LOG_CREATURE_GENOME" description="Creatures: add the genome of each one.">
+            <CheckboxInput
+              id="const-log-creature-genome"
+              checked={Boolean(constants.LOG_CREATURE_GENOME)}
+              onChange={(checked) => setLogOptions({ LOG_CREATURE_GENOME: checked })}
+            />
+          </ConstantRow>
+          <ConstantRow name="LOG_SPECIES_CREATURE_LIST" description="Species: add the keys of their living creatures.">
+            <CheckboxInput
+              id="const-log-species-creature-list"
+              checked={Boolean(constants.LOG_SPECIES_CREATURE_LIST)}
+              onChange={(checked) => setLogOptions({ LOG_SPECIES_CREATURE_LIST: checked })}
             />
           </ConstantRow>
           <ConstantRow name="LOG_LOCALE_STRING" description="Locale of the numbers in the log (sets the decimal separator).">
@@ -437,27 +446,13 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
               ))}
             </SelectInput>
           </ConstantRow>
-          <ConstantRow name="LOG_ALLOWED_EVENTS" description="Event types the logger writes.">
-            <details>
-              <summary className="cursor-pointer text-sm">
-                {allowedCount} of {LOG_EVENTS.length} on
-              </summary>
-              <div className="mt-1 flex flex-col gap-1">
-                {LOG_EVENTS.map((event) => (
-                  <CheckboxInput
-                    key={event}
-                    id={`const-log-event-${event}`}
-                    label={<span className="text-xs">{event}</span>}
-                    checked={Boolean(allowedEvents[event])}
-                    onChange={(checked) =>
-                      setLogOptions({
-                        LOG_ALLOWED_EVENTS: { ...allowedEvents, [event]: checked } as AllowedLogEvents,
-                      })
-                    }
-                  />
-                ))}
-              </div>
-            </details>
+          <ConstantRow name="LOG_MAX_ROWS" description="A recording stops when it has this many rows.">
+            <NumberInput
+              value={constants.LOG_MAX_ROWS}
+              onChange={(value) => setLogOptions({ LOG_MAX_ROWS: value })}
+              integer
+              min={1}
+            />
           </ConstantRow>
         </ConstantGroup>
       </div>

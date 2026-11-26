@@ -18,7 +18,7 @@ Below the summary line, three indicators describe the herbivores of the last gen
 
 ## Species
 
-Creatures with exactly the same genome belong to the same **species**. Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus, and with `greenPlants` plants are shades of green and the other species have their own non-green colour.
+A **species** is a lineage: creatures with the same genome that come from the same species. A child born with exactly its parent's genome stays in its parent's species; a child with a mutation starts a new species, which remembers the species it came from. So two species can have the same genome, and then they also have the same colour. Each species has an id of 16 hexadecimal digits, shown next to it and used by the [log](settings-and-stats.md#log) ([details](../reference/log-file.md#species)). Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus, and with `greenPlants` plants are shades of green and the other species have their own non-green colour.
 
 - The coloured boxes on the right are the first 42 species in the chosen order, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus, number of creatures and genome size.
 - Click a box to select that species. One of its living creatures is selected too, with a ring around it in the world, so the live values of its network are shown. If the selected creature already belongs to that species, it stays selected. Click the box again to clear both the species and the creature.
@@ -60,7 +60,7 @@ A section you close stays closed when you select another species.
 
 The selected species, with the same groups as a [selected creature](#selected-creature) so the two can be compared. Every member has the same genes, so what comes from the genes is shown once; the rest are averages, so species of different sizes can be compared. Each group says in its title which creatures it averages. The section is updated while the simulation runs:
 
-- **Population**: the living creatures out of those known, how many there were when the species were grouped, how many living ones were born since, and how many of them have died. These are counts, to show how many creatures are behind the averages.
+- **Population**: the living creatures out of those of this generation, how many there were when the generation (or time window) started, how many were born since, and how many have died since. These are counts, to show how many creatures are behind the averages.
 - **Life** (average of the living): health and age.
 - **Body**: the average mass of the living; the mass at birth, basal consumption and thinking cost, which are the same for every member; and the share of the living with enough mass to move and to reproduce.
 - **Movement** (average of the living): distance index and steps without moving.
@@ -71,7 +71,7 @@ The selected species, with the same groups as a [selected creature](#selected-cr
 
 Young creatures have had less time for the per creature averages, so compare species of a similar average age.
 
-In continuous runs, a creature born after the species were grouped that has already died is not counted, so the last two groups can differ from the real values.
+Above the stats, a line says where the species comes from: a root species (from a random or loaded genome), or the id of the species it came from and the generation it appeared in. **Select parent species** selects that species, while it has living creatures. **Mark for log**, at the top, marks the species for the log (*Simulation → Log*, **Marked in Population**).
 
 ## Selected creature
 
@@ -79,11 +79,11 @@ At the top of the **Creature** section there are some buttons:
 
 - **◀ ▶** select the previous or next living creature of the same species (ordered by id). The text between them says which one you are looking at, for example "2 of 5 in its species".
 - **Select parent** selects the creature its genome was copied from, and that creature's species, since a mutation may have made the child a new species. It is only enabled while the parent is alive. In generational runs the parents are replaced when the generation ends, so this is mostly useful in continuous runs or for children born by the Reproduction action.
-- **Set as creature to log** (only when the logger is enabled) puts the id of this creature in **Creature to log**, in *Tools → Logger*. It does not start a recording: the logger reads the field when a recording starts. Most selection methods restart the ids every generation, so a recording that starts in a later generation logs whichever creature has that id then. To log a creature of generation 1, use a fixed seed and record from *Generation 1*: after **Restart** the same id is the same creature.
+- **Mark for log** marks this creature for the log (*Simulation → Log*, **Marked in Population**). A creature is marked by its key, birth generation and id, so the mark follows this creature and not others that get its id in later generations.
 
 The section is updated at every step:
 
-- **Identity**: id, species, genus and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
+- **Identity**: id, species (colour code and id), genus and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
 - **Body**: mass against the maximum mass, mass at birth, basal consumption per step and thinking cost (what the sensors and actions of its brain cost in each step it thinks). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.

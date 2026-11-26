@@ -44,7 +44,7 @@ export default function SelectedCellInfo({ position }: Props) {
   const selectCreature = () => {
     if (!creature) return;
     setSelectedCreature(creature);
-    setSelectedSpecies(new Species(creature.brain.genome.clone(), [creature]));
+    setSelectedSpecies(Species.of(creature));
     setSelectedCell(null);
   };
 

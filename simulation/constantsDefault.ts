@@ -1,4 +1,3 @@
-import { LogEvent } from "./logger/LogEvent";
 import type { GenusProbability } from "./generations/population/selectGenusBasedOnProbability";
 
 /*
@@ -10,31 +9,15 @@ export const CONSTANTS_DEFAULT = {
   PRETTIFY_OUTPUT_TO_COPY : true,
   PRETTIFY_OUTPUT_TO_FILE : true,
 
-  // -- log
-  LOG_ENABLED : false,  // main switch for logging
-  LOG_CREATURE_ID : -1,   // -1 no creatures (only the totals), 0 all creatures, -10 ids 1 to 9, -30 ids 1 to 29, else that id
-  LOG_STEP_TOTALS : false,   // write the step totals
-  LOG_EVENTLOGGER_MAX_EVENTS : 1000000, // will stop logging at this point
-  LOG_LOCALE_STRING : 'es-ES',
-  LOG_ALLOWED_EVENTS: {
-    // creature
-    [LogEvent.INFO]: true,
-    [LogEvent.REPRODUCE]: true,
-    [LogEvent.REPRODUCE_TRY]: true,
-    [LogEvent.PHOTOSYNTHESIS]: true,
-    [LogEvent.BIRTH]: true,
-    [LogEvent.DEAD]: true,
-    [LogEvent.DEAD_ATTACKED]: true,
-    [LogEvent.METABOLISM]: true,
-    [LogEvent.ATTACK]: true,
-    [LogEvent.ATTACK_TRY]: true,
-    [LogEvent.MOVE]: true,
-    [LogEvent.MOVE_TRY]: true,
-    // controller
-    [LogEvent.GENERATION_START]: true,
-    [LogEvent.GENERATION_END]: true,
-    [LogEvent.STEP_END]: true,
-  },
+  // -- log (Simulation → Log, see SimulationLog.ts); they apply at once
+  LOG_SPECIES : true,   // write the file of species
+  LOG_CREATURES : false,   // write the file of creatures
+  LOG_INCLUDE_DEAD : true,   // creatures: also the ones that died
+  LOG_EVERY_N_STEPS : 0,   // a recording also writes every this many steps; 0 only at the end of each generation
+  LOG_CREATURE_GENOME : false,   // creatures: add the genome of each one
+  LOG_SPECIES_CREATURE_LIST : false,   // species: add the keys of their living creatures
+  LOG_LOCALE_STRING : 'es-ES',   // locale of the numbers (decimal separator)
+  LOG_MAX_ROWS : 1000000,   // a recording stops at this many rows
   GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS : 0.05,
   GREATEST_MASS_SELECTION_TOP_SURVIVORS : 0.05,
 

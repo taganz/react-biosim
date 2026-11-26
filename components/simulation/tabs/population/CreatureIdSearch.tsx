@@ -44,7 +44,7 @@ export default function CreatureIdSearch() {
     }
     worldController.watchCreatureId(null);
     setSelectedCreature(creature);
-    setSelectedSpecies(new Species(creature.brain.genome.clone(), [creature]));
+    setSelectedSpecies(Species.of(creature));
     setSelectedCell(null);
     setText("");
     setMessage("");

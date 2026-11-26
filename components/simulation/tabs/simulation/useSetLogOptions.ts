@@ -2,9 +2,9 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { simulationDataAtom, worldControllerAtom } from "../../store";
-import { LogOptions } from "@/simulation/logger/EventLogger";
+import { LogOptions } from "@/simulation/log/SimulationLog";
 
-// Changes logger settings (LOG_* constants). They apply at once to the running simulation,
+// Changes the options of the log (LOG_* constants). They apply at once to the running simulation,
 // and to the Settings draft so that Update simulation and Restart keep them.
 export default function useSetLogOptions() {
   const worldController = useAtomValue(worldControllerAtom);
