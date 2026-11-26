@@ -30,7 +30,6 @@ The scenario list at the top loads a bundled scenario (see [Scenarios](../user/s
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Metabolism | `worldGenerationsData.metabolismEnabled` | checkbox | `false` | When on, creatures gain mass by photosynthesis or by eating prey, and spend it every step and when they move, attack or reproduce; they die at 0. When off, mass never changes, so the Reproduction action never succeeds. See [Creatures → Mass and metabolism](../model/creatures.md#mass-and-metabolism). |
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
 | Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell, and the world cannot be full. |
 | Steps per generation | `worldControllerData.stepsPerGen` | integer ≥ 1 | 300 | Steps that make up one generation. |
@@ -39,10 +38,11 @@ The scenario list at the top loads a bundled scenario (see [Scenarios](../user/s
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
+| Metabolism | `worldGenerationsData.metabolismEnabled` | checkbox | `false` | When on, creatures gain mass by photosynthesis or by eating prey, and spend it every step and when they move, attack or reproduce; they die at 0. When off, mass never changes, so the Reproduction action never succeeds. Turning it on while *Inside Reproduction Area* is selected switches the selection method to *Reproduction*. See [Creatures → Mass and metabolism](../model/creatures.md#mass-and-metabolism). |
 | Simulation type | `worldGenerationsData.simulationType` | `generational`, `continuous` | `generational` | Generational: selection and a new generation at the end of each one. Continuous: creatures carry on and a generation is only a time window (see [Continuous runs](../model/generations.md#continuous-runs)). |
 | Maximum age (steps) | `worldGenerationsData.maxAge` | integer ≥ 1 | 1000 | Continuous runs only, and only shown then. A creature older than this dies. |
 | Population strategy | `worldGenerationsData.populationStrategy` | see [Population strategies](population-and-selection.md#population-strategies) | Asexual Random | Continuous runs use it only for generation 1. |
-| Selection method | `worldGenerationsData.selectionMethod` | see [Selection methods](population-and-selection.md#selection-methods) | Inside Reproduction Area | Generational runs only; hidden in continuous runs. |
+| Selection method | `worldGenerationsData.selectionMethod` | see [Selection methods](population-and-selection.md#selection-methods) | Inside Reproduction Area | Generational runs only; hidden in continuous runs. A short description of the selected method is shown below it. *Inside Reproduction Area* cannot be chosen with metabolism on. |
 
 ### Neural networks
 

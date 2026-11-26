@@ -35,9 +35,9 @@ export function getChangedSections(draft: SimulationData, applied: SimulationDat
   const appliedGen = applied.worldGenerationsData;
   const genChanged = (...keys: (keyof typeof gen)[]) => keys.some((key) => !same(gen[key], appliedGen[key]));
 
-  if (genChanged("metabolismEnabled", "initialPopulation")) changed.add("world");
+  if (genChanged("initialPopulation")) changed.add("world");
   if (
-    genChanged("simulationType", "maxAge") ||
+    genChanged("metabolismEnabled", "simulationType", "maxAge") ||
     gen.populationStrategy.name !== appliedGen.populationStrategy.name ||
     gen.selectionMethod.name !== appliedGen.selectionMethod.name ||
     !same(draft.constants?.POPULATION_DEFAULT_GENUS, applied.constants?.POPULATION_DEFAULT_GENUS)

@@ -1,9 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import classNames from "classnames";
-import { selectionMethodOptions, selectSelectionMethod } from "@/simulation/generations/selection/selectionMethodOptions";
+import {
+  isSelectionAllowed,
+  METABOLISM_FALLBACK_SELECTION,
+  selectionMethodOptions,
+  selectSelectionMethod,
+} from "@/simulation/generations/selection/selectionMethodOptions";
 import { populationStrategyOptions, selectPopulationStrategy } from "@/simulation/generations/population/populationStrategyOptions";
 import { worldControllerAtom, simulationDataAtom } from "../../store";
 import NumberInput from "@/components/global/inputs/NumberInput";
@@ -261,6 +266,32 @@ export default function ScenarioSettings() {
     }
   };
 
+  // some selection methods are not allowed with metabolism: turning it on replaces them
+  const withMetabolism = (data: WorldGenerationsData, metabolismEnabled: boolean): WorldGenerationsData => ({
+    ...data,
+    metabolismEnabled,
+    selectionMethod: isSelectionAllowed(data.selectionMethod.name, metabolismEnabled)
+      ? data.selectionMethod
+      : selectSelectionMethod(METABOLISM_FALLBACK_SELECTION),
+  });
+  // the notice after turning metabolism on replaced the selection method; hidden once the user
+  // changes the method or turns metabolism off
+  const [replacedSelection, setReplacedSelection] = useState<string | null>(null);
+  const noteMetabolismOn = () => {
+    const current = worldGenerationsData.selectionMethod.name;
+    if (!isSelectionAllowed(current, true)) {
+      setReplacedSelection(selectionMethodOptions.find((option) => option.value === current)?.label ?? current);
+    }
+  };
+  const showReplacedSelection = replacedSelection !== null && worldGenerationsData.metabolismEnabled
+    && worldGenerationsData.selectionMethod.name === METABOLISM_FALLBACK_SELECTION;
+  const fallbackLabel = selectionMethodOptions.find((option) => option.value === METABOLISM_FALLBACK_SELECTION)?.label;
+  const selectionOption = selectionMethodOptions.find(
+    (option) => option.value === worldGenerationsData.selectionMethod.name);
+  // a loaded file can still have a combination the selector does not allow
+  const selectionNotAllowed = !isSelectionAllowed(
+    worldGenerationsData.selectionMethod.name, worldGenerationsData.metabolismEnabled);
+
   // Strategies that build creatures from a genus also need the main action of each genus
   // (the one that defines it), so those actions are enabled, and metabolism with them.
   const withGenusActions = (data: WorldGenerationsData, genera: Genus[]): WorldGenerationsData => {
@@ -274,7 +305,7 @@ export default function ScenarioSettings() {
         action.name === "Reproduction")
       .map((action) => action.name);
     // genus actions (Photosynthesis, attacks) only change mass with metabolism on
-    return { ...data, enabledActions, metabolismEnabled: true };
+    return withMetabolism({ ...data, enabledActions }, true);
   };
 
   const activeGenera = (list: GenusProbability[]) =>
@@ -282,7 +313,8 @@ export default function ScenarioSettings() {
 
   // Random Fixed Genera needs a genus list; older files and the startup scenario have none,
   // so the default list is copied into the draft (and saved with it).
-  const handlePopulationStrategyChange = (value: string) =>
+  const handlePopulationStrategyChange = (value: string) => {
+    if (value === "RandomFixedGenePopulation" || value === "PlantHerbivorePopulation") noteMetabolismOn();
     setSimulationData((prev) => {
       let constants = prev.constants;
       const genusList: GenusProbability[] | undefined = constants?.POPULATION_DEFAULT_GENUS;
@@ -309,11 +341,13 @@ export default function ScenarioSettings() {
         ),
       };
     });
+  };
 
   // the genus list of Random Fixed Genera; a genus raised above 0 needs its actions too
   const isRandomFixedGene = worldGenerationsData.populationStrategy.name === "RandomFixedGenePopulation";
   const genusList: GenusProbability[] = simulationData.constants?.POPULATION_DEFAULT_GENUS ?? [];
-  const handleGenusProbabilityChange = (genus: Genus, probability: number) =>
+  const handleGenusProbabilityChange = (genus: Genus, probability: number) => {
+    if (probability > 0) noteMetabolismOn();
     setSimulationData((prev) => {
       const current: GenusProbability[] = prev.constants?.POPULATION_DEFAULT_GENUS ?? [];
       const list = current.some((item) => item.genus === genus)
@@ -325,6 +359,7 @@ export default function ScenarioSettings() {
         worldGenerationsData: withGenusActions(prev.worldGenerationsData, probability > 0 ? [genus] : []),
       };
     });
+  };
 
   const handleDiscard = () => {
     if (appliedSimulationData) setSimulationData(appliedSimulationData);
@@ -366,21 +401,6 @@ export default function ScenarioSettings() {
       {/* === WORLD === */}
       <ScenarioSection id="world" changed={changedSections} title="World">
         <div className={FIELDS_GRID}>
-          <div className="flex flex-col gap-1">
-            <CheckboxInput
-              id="metabolismEnabled"
-              label="Metabolism"
-              checked={worldGenerationsData.metabolismEnabled}
-              onChange={(checked) => setGenerationsValue("metabolismEnabled", checked)}
-            />
-            <p className="text-xs">
-              On: creatures gain mass by photosynthesis or by eating prey, and spend it every step
-              and when they move, attack or reproduce. They die when it reaches 0. Off: mass never
-              changes, so the Reproduction action never succeeds.
-            </p>
-          </div>
-        </div>
-        <div className={FIELDS_GRID}>
           <NumberInput
             label="World size"
             value={worldControllerData.size}
@@ -419,6 +439,32 @@ export default function ScenarioSettings() {
 
       {/* === GENERATIONS === */}
       <ScenarioSection id="generations" changed={changedSections} title="Generations">
+        <div className="flex flex-col gap-1">
+          <CheckboxInput
+            id="metabolismEnabled"
+            label="Metabolism"
+            checked={worldGenerationsData.metabolismEnabled}
+            onChange={(checked) => {
+              if (checked) noteMetabolismOn();
+              else setReplacedSelection(null);
+              setSimulationData((prev) => ({
+                ...prev,
+                worldGenerationsData: withMetabolism(prev.worldGenerationsData, checked),
+              }));
+            }}
+          />
+          <p className="text-xs">
+            On: creatures gain mass by photosynthesis or by eating prey, and spend it every step
+            and when they move, attack or reproduce. They die when it reaches 0. Off: mass never
+            changes, so the Reproduction action never succeeds.
+          </p>
+          {showReplacedSelection && (
+            <p className="border border-red p-2 text-sm">
+              {replacedSelection} is not possible with metabolism, so the selection method was changed
+              to {fallbackLabel}.
+            </p>
+          )}
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1">
             <SelectInput
@@ -463,19 +509,32 @@ export default function ScenarioSettings() {
             )}
           </div>
           {!isContinuous && (
-            <SelectInput
-              label="Selection method"
-              value={worldGenerationsData.selectionMethod.name}
-              onChange={(value: string) =>
-                setGenerationsValue("selectionMethod", selectSelectionMethod(value))
-              }
-            >
-              {selectionMethodOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </SelectInput>
+            <div className="flex flex-col gap-1">
+              <SelectInput
+                label="Selection method"
+                value={worldGenerationsData.selectionMethod.name}
+                onChange={(value: string) => {
+                  setReplacedSelection(null);
+                  setGenerationsValue("selectionMethod", selectSelectionMethod(value));
+                }}
+              >
+                {selectionMethodOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={!isSelectionAllowed(option.value, worldGenerationsData.metabolismEnabled)}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </SelectInput>
+              {selectionOption && <p className="text-xs">{selectionOption.description}</p>}
+              {selectionNotAllowed && (
+                <p className="bg-red p-2 text-sm">
+                  This method does not work with metabolism. Choose another one, or turn metabolism off.
+                </p>
+              )}
+            </div>
           )}
         </div>
         {isRandomFixedGene && (

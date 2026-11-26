@@ -60,6 +60,8 @@ Source: [simulation/generations/selection/](../../simulation/generations/selecti
 | Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no herbivores left there are no survivors. | Largest mass |
 | Reproduction *(in dev)* | `ReproductionSelection` | Living creatures that were born during the generation. | Number of survivors |
 
+*Inside Reproduction Area* cannot be chosen with metabolism on. It ignores mass, and with the default metabolism constants most creatures starve before the last step, so the run keeps going extinct and restarting. Turning metabolism on while it is selected switches to *Reproduction*. A file loaded with both shows a warning under the selector.
+
 With Reproduction, creatures reproduce during the generation with the **Reproduction** action, instead of only at the end, and the water is not reset between generations.
 
 The old **Continuous** strategy and selection method were replaced by the *Continuous* simulation type. Files that use them load as continuous runs.
