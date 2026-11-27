@@ -6,7 +6,7 @@
 
 ```jsonc
 {
-  "version": 3,                      // SAVE_FORMAT_VERSION; missing in older files (version 1)
+  "version": 4,                      // SAVE_FORMAT_VERSION; missing in older files (version 1)
   "constants": { ... },              // SimulationData.constants, as is
   "worldGenerationsData": {          // SavedWorldGenerationData
     "simulationType": "generational", "maxAge": 1000,
@@ -105,10 +105,14 @@ Version 2 files are changed like this (version 1 files go through both steps):
 - Files with the older **Attack** action, which versions 1 and 2 ignored because the name no longer existed, get it back in the same position (after Reproduction) and keep their genes. Their brains are again the ones they were saved with.
 - `MASS_AT_BIRTH_ATTACK_ANIMAL` and the `attack_animal` entry of `ASSIMILATION_EFFICIENCY` are dropped. In `POPULATION_DEFAULT_GENUS` the probability of `attack_animal` is added to `attack_plant`. In `ACTION_COSTS` the cost of AttackPlant (or else of AttackAnimal) becomes the cost of Attack.
 
+Version 3 files are changed like this (older files go through every earlier step first):
+
+- The metabolism constants that did nothing are dropped: `MASS_AT_BIRTH_ATTACK` (the old "attack" genus), `ACTION_REPRODUCTION_OFFSET` and the `prey` efficiency of plants, which never eat.
+
 Fields are read by name, so:
 
 - **Adding** a field to `SimulationData`: older files leave it `undefined`. Give it a default in the migration, or make it optional.
-- **Changing the format** of a saved field: increase `SAVE_FORMAT_VERSION` and add a step to the migration (`fromVersion3`, and so on) that converts the files of the previous version. Add a test to [migrateSavedSimulationData.test.ts](../../__tests__/migrateSavedSimulationData.test.ts).
+- **Changing the format** of a saved field: increase `SAVE_FORMAT_VERSION` and add a step to the migration (`fromVersion4`, and so on) that converts the files of the previous version. Add a test to [migrateSavedSimulationData.test.ts](../../__tests__/migrateSavedSimulationData.test.ts).
 - **Renaming** a sensor, action, strategy, method or object class breaks every file that uses the old name.
 - **Reordering** sensors or actions does not change what saved genes mean, because a gene points to a position in the *enabled* list (see [gene encoding](../reference/sensors-and-actions.md#gene-encoding)). The enabled list follows the order of the `data` table in `CreatureSensors` and `CreatureActions`. So reordering that table *does* change what every saved genome means.
 

@@ -175,6 +175,22 @@ describe("save format migration", () => {
     });
   });
 
+  describe("version 3 metabolism constants", () => {
+    const version3 = (controller: object) => migrateSavedSimulationData({
+      ...current, version: 3, worldControllerData: { ...current.worldControllerData, ...controller },
+    }).worldControllerData as any;
+
+    test("the unused constants and the prey efficiency of plants go", () => {
+      const data = version3({
+        MASS_AT_BIRTH_ATTACK: 2, ACTION_REPRODUCTION_OFFSET: 0.6,
+        ASSIMILATION_EFFICIENCY: { plant: { photosynthesis: 0.4, prey: 1 }, attack_plant: { photosynthesis: 0, prey: 0.3 } },
+      });
+      expect("MASS_AT_BIRTH_ATTACK" in data).toBe(false);
+      expect("ACTION_REPRODUCTION_OFFSET" in data).toBe(false);
+      expect(data.ASSIMILATION_EFFICIENCY).toEqual({ plant: { photosynthesis: 0.4 }, attack_plant: { photosynthesis: 0, prey: 0.3 } });
+    });
+  });
+
   // the scenarios users see first
   const publicDir = path.join(__dirname, "..", "public");
   // see docs/known-issues.md: its creatures carry more mass than the world has water

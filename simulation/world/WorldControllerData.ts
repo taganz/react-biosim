@@ -17,7 +17,6 @@ export default interface WorldControllerData {
     MASS_WATER_TO_MASS_PER_STEP : number, 
     MASS_AT_BIRTH_PLANT : number, 
     MASS_AT_BIRTH_ATTACK_PLANT : number, 
-    MASS_AT_BIRTH_ATTACK : number, 
     MASS_MAX_MULTIPLE_MASS_AT_BIRT : number, 
     
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number, 
@@ -44,7 +43,6 @@ export default interface WorldControllerData {
      *  up to this percentage of the world size (rounded, at least 1 cell: only the 8 cells around). Missing: 4 */
     REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT? : number,
 
-    ACTION_REPRODUCTION_OFFSET : number,
     ACTION_ATTACK_OFFSET : number,
 
     MOVE_COST_PER_MASS_TRY : number, 

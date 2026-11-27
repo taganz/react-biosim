@@ -113,7 +113,6 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["MASS_WATER_TO_MASS_PER_STEP", 0.01, "Water a plant turns into mass in one photosynthesis step, times the action's output."],
       ["MASS_AT_BIRTH_PLANT", 0.1, "Birth mass of a plant."],
       ["MASS_AT_BIRTH_ATTACK_PLANT", 0.1, "Birth mass of an animal."],
-      ["MASS_AT_BIRTH_ATTACK", 0.1, "Birth mass of the old \"attack\" genus (no longer used)."],
       ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 0.1, "Maximum mass, as a multiple of birth mass."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent per step for each gene, except the primary genes and the Stamina gene."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Mass spent per step for each primary gene (Reproduction, and Photosynthesis in plants)."],
@@ -135,7 +134,6 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["REPRODUCTION_MULTIPLE_MASS_AT_BIRTH", 0.1, "Multiple of birth mass a creature needs to reproduce."],
       ["REPRODUCTION_COST_PER_MASS_TRY", 0.01, "Mass lost by a failed reproduction attempt, as a multiple of birth mass."],
       ["REPRODUCTION_COST_PER_MASS_DO", 0.01, "Mass lost by reproducing, as a multiple of birth mass."],
-      ["ACTION_REPRODUCTION_OFFSET", 0.05, "Not used."],
     ],
   },
   {
@@ -253,7 +251,10 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
             {group.title === "Mass and metabolism" && ASSIMILATION_ROWS.map(([source, description]) => (
               <ConstantRow key={source} name={`ASSIMILATION_EFFICIENCY ${source}`} description={description}>
                 <div className="grid grid-cols-2 gap-1">
-                  {GENERA.map(({ genus, label }) => (
+                  {GENERA.map(({ genus, label }) => source === "prey" && genus === "plant" ? (
+                    // plants never eat: an empty cell keeps the animal value in its column
+                    <div key={genus} />
+                  ) : (
                     <NumberInput
                       key={genus}
                       label={<span className="text-xs">{label}</span>}

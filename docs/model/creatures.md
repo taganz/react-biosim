@@ -81,7 +81,7 @@ When it is on, mass is the creature's energy:
 Not everything a creature takes becomes its own mass. `ASSIMILATION_EFFICIENCY` gives, for each genus (plant, animal), the share that does, separately for the two ways of gaining mass:
 
 - **`photosynthesis`**: of the water taken from the cell;
-- **`prey`**: of the prey's mass, in an attack.
+- **`prey`**: of the prey's mass, in an attack. Only animals have it, since plants never eat.
 
 The rest goes to the cloud, like the mass spent on metabolism: it is the energy lost between trophic levels. It does not go to the cell, which would water the plants right next to the creature that ate.
 

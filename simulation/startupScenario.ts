@@ -70,7 +70,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MASS_WATER_TO_MASS_PER_STEP : 0.1, //0.1 - 0.4
           MASS_AT_BIRTH_PLANT : 1,
           MASS_AT_BIRTH_ATTACK_PLANT : 3,
-          MASS_AT_BIRTH_ATTACK : 2,
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
@@ -89,7 +88,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           REPRODUCTION_MULTIPLE_MASS_AT_BIRTH : 3,
           REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT : 4,   // the child is born as far as possible, up to 4 % of the world size (4 cells in 100)
 
-          ACTION_REPRODUCTION_OFFSET : 0.6,  // not used
           ACTION_ATTACK_OFFSET : 0.6,  // Attack fires if its output is greater
 
           MOVE_COST_PER_MASS_TRY : 0.2,
@@ -102,7 +100,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           ATTACK_SAME_GENUS : false,
           // share of what is taken that becomes mass, by genus; the rest goes to the cloud
           ASSIMILATION_EFFICIENCY : {
-            plant: { photosynthesis: 1, prey: 1 },
+            plant: { photosynthesis: 1 },   // plants never eat
             attack_plant: { photosynthesis: 1, prey: 1 },
           },
 

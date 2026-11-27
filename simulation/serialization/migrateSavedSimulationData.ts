@@ -4,7 +4,7 @@ import { startUpScenarioSimulationData as startup } from "@/simulation/startupSc
 import { NeuronType } from "@/simulation/creature/brain/Neuron";
 
 /** Version written by the serializers. Files without a version are version 1 */
-export const SAVE_FORMAT_VERSION = 3;
+export const SAVE_FORMAT_VERSION = 4;
 
 // Older files had a Continuous population strategy and a Continuous selection method
 // instead of a simulation type. They load as a continuous run; Random Fixed Genera builds
@@ -26,7 +26,8 @@ export default function migrateSavedSimulationData(parsed: any): SavedSimulation
     throw new Error(`it was saved by a newer version of the app (format ${version}, this one reads up to ${SAVE_FORMAT_VERSION}).`);
   }
   const version2 = version < 2 ? fromVersion1(parsed) : parsed;
-  const current = version < 3 ? fromVersion2(version2) : version2;
+  const version3 = version < 3 ? fromVersion2(version2) : version2;
+  const current = version < 4 ? fromVersion3(version3) : version3;
   // the constants of the event logger can be in files of any version
   const constants = migrateLogConstants(current.constants);
   return constants === current.constants ? current : { ...current, constants };
@@ -114,7 +115,7 @@ function fromVersion2(parsed: any): SavedSimulationData {
 
   return {
     ...parsed,
-    version: SAVE_FORMAT_VERSION,
+    version: 3,
     constants: parsed.constants?.POPULATION_DEFAULT_GENUS === undefined ? parsed.constants : {
       ...parsed.constants,
       POPULATION_DEFAULT_GENUS: mergeCarnivoreProbability(parsed.constants.POPULATION_DEFAULT_GENUS),
@@ -143,4 +144,20 @@ function mergeCarnivoreProbability(genera: { genus: string, probability: number 
   if (carnivores === 0) return rest;
   if (!rest.some(({ genus }) => genus === "attack_plant")) return [...rest, { genus: "attack_plant", probability: carnivores }];
   return rest.map((item) => item.genus === "attack_plant" ? { ...item, probability: item.probability + carnivores } : item);
+}
+
+// version 3: metabolism constants that did nothing are gone: MASS_AT_BIRTH_ATTACK (the old
+// "attack" genus), ACTION_REPRODUCTION_OFFSET and the prey efficiency of plants, which never eat
+function fromVersion3(parsed: any): SavedSimulationData {
+  const { MASS_AT_BIRTH_ATTACK, ACTION_REPRODUCTION_OFFSET, ...controller } = parsed.worldControllerData;
+  const efficiency = controller.ASSIMILATION_EFFICIENCY;
+  if (efficiency?.plant !== undefined) {
+    const { prey, ...plant } = efficiency.plant;
+    controller.ASSIMILATION_EFFICIENCY = { ...efficiency, plant };
+  }
+  return {
+    ...parsed,
+    version: SAVE_FORMAT_VERSION,
+    worldControllerData: controller,
+  };
 }
