@@ -217,13 +217,12 @@ const PARAMS = [
   ["REPRODUCTION_MULTIPLE_MASS_AT_BIRTH", 3, "Umbral para reproducirse, × masa al nacer (+ DO)"],
   ["REPRODUCTION_COST_PER_MASS_TRY", 0.1, "Intento sin celda libre, × masa al nacer"],
   ["REPRODUCTION_COST_PER_MASS_DO", 0.25, "Reproducirse, × masa al nacer (más la masa del hijo)"],
-  ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0, "Umbral para moverse, × masa al nacer (+ DO)"],
-  ["MOVE_COST_PER_MASS_TRY", 0.2, "Intentar moverse, × masa al nacer"],
-  ["MOVE_COST_PER_MASS_DO", 0.6, "Extra por moverse, × masa al nacer (aunque esté bloqueado)"],
+  ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0, "Umbral para moverse, × masa al nacer (+ coste)"],
+  ["MOVE_COST_PER_MASS", 0.8, "Cada intento de moverse, × masa al nacer (aunque esté bloqueado)"],
   ["ATTACK_COST_PER_MASS_TRY", 0.02, "Intentar atacar (absoluto)"],
   ["ATTACK_MIN_PREY_MASS_FACTOR", 2, "El atacante pesa al menos este múltiplo de la presa"],
 ];
-const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
+const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","MOVE_COST_PER_MASS_TRY","MOVE_COST_PER_MASS_DO","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
 const DEFAULTS = Object.fromEntries(PARAMS.map(p => [p[0], p[1]]));
 
 const state = {
@@ -279,8 +278,8 @@ function derive(sim, P, x = sim.x) {
     rthr: birth * (P.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH + P.REPRODUCTION_COST_PER_MASS_DO),
     rcost: birth * (P.REPRODUCTION_COST_PER_MASS_DO + 1),
     rtry: birth * P.REPRODUCTION_COST_PER_MASS_TRY,
-    mthr: birth * (P.MOVE_MULTIPLE_MASS_AT_BIRTH + P.MOVE_COST_PER_MASS_DO),
-    mcost: birth * (P.MOVE_COST_PER_MASS_TRY + P.MOVE_COST_PER_MASS_DO),
+    mthr: birth * (P.MOVE_MULTIPLE_MASS_AT_BIRTH + P.MOVE_COST_PER_MASS),
+    mcost: birth * P.MOVE_COST_PER_MASS,
     atry: P.ATTACK_COST_PER_MASS_TRY,
     minEat: x.prey * P.ATTACK_MIN_PREY_MASS_FACTOR,
   };
@@ -395,10 +394,19 @@ function decodeSpecies(genes, enabledSensors, enabledActions, P, staminaEnabled)
 }
 
 // ---------------------------------------------------------------- file loading
+// files saved before format 4 name some constants differently (see migrateSavedSimulationData.ts)
+function currentKeys(wcd) {
+  const w = { ...wcd };
+  if (typeof w.MOVE_COST_PER_MASS_TRY === "number" || typeof w.MOVE_COST_PER_MASS_DO === "number") {
+    w.MOVE_COST_PER_MASS = (w.MOVE_COST_PER_MASS_TRY || 0) + (w.MOVE_COST_PER_MASS_DO || 0);
+  }
+  return w;
+}
+
 function loadSim(name, text) {
   let data;
   try { data = JSON.parse(text); } catch (e) { showNotices([["bad", `No se pudo leer <b>${esc(name)}</b>: no es un JSON válido (${esc(e.message)}).`]]); return; }
-  const wcd = data.worldControllerData || {}, gen = data.worldGenerationsData || {};
+  const wcd = currentKeys(data.worldControllerData || {}), gen = data.worldGenerationsData || {};
   if (!data.worldControllerData) { showNotices([["bad", `<b>${esc(name)}</b> no tiene <span class="mono">worldControllerData</span>: no parece un fichero de simulación.`]]); return; }
   const P = {}, source = {};
   for (const [k, def] of PARAMS) {

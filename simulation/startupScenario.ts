@@ -90,8 +90,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
 
           ACTION_ATTACK_OFFSET : 0.6,  // Attack fires if its output is greater
 
-          MOVE_COST_PER_MASS_TRY : 0.2,
-          MOVE_COST_PER_MASS_DO : 0.6,
+          MOVE_COST_PER_MASS : 0.8,   // every attempt, blocked or not
           MOVE_MULTIPLE_MASS_AT_BIRTH : 0, // 2,    // 2
 
           ATTACK_COST_PER_MASS_TRY : 0.02,

@@ -10,8 +10,7 @@
       "MASS_MAX_MULTIPLE_MASS_AT_BIRT": 10,
       "ATTACK_MIN_PREY_MASS_FACTOR": 0.1,
       "ATTACK_SAME_GENUS": false,
-      "MOVE_COST_PER_MASS_TRY": 0.01,
-      "MOVE_COST_PER_MASS_DO": 0.03
+      "MOVE_COST_PER_MASS": 0.04
     },
     "worldGenerationsData": {
       "metabolismEnabled": true,

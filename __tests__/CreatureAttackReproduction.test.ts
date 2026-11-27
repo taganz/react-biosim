@@ -89,8 +89,7 @@ describe('attack and reproduction', () => {
 
     test('without enough mass moving is not a try: no mass is lost', () => {
         const data = worldController.simData.worldControllerData;
-        data.MOVE_COST_PER_MASS_TRY = 0.2;
-        data.MOVE_COST_PER_MASS_DO = 0.6;
+        data.MOVE_COST_PER_MASS = 0.8;
         data.MOVE_MULTIPLE_MASS_AT_BIRTH = 2;
         const creature = spawn("attack_plant", [2, 2]);
         expect(creature.hasEnoughMassToMove()).toBe(false);
@@ -102,10 +101,9 @@ describe('attack and reproduction', () => {
         expect(creature.position).toEqual([2, 2]);
     });
 
-    test('with enough mass moving pays the try and the move', () => {
+    test('with enough mass moving pays the move cost', () => {
         const data = worldController.simData.worldControllerData;
-        data.MOVE_COST_PER_MASS_TRY = 0.2;
-        data.MOVE_COST_PER_MASS_DO = 0.6;
+        data.MOVE_COST_PER_MASS = 0.8;
         data.MOVE_MULTIPLE_MASS_AT_BIRTH = 0;
         const creature = spawn("attack_plant", [2, 2]);
         const before = creature.mass;
@@ -113,7 +111,34 @@ describe('attack and reproduction', () => {
         expect((creature as any).move(1, 0)).toBe(true);
 
         expect(creature.position).toEqual([3, 2]);
-        expect(creature.mass).toBeCloseTo(before - creature.massAtBirth * (0.2 + 0.6));
+        expect(creature.mass).toBeCloseTo(before - creature.massAtBirth * 0.8);
+    });
+
+    test('a blocked move pays the cost too', () => {
+        const data = worldController.simData.worldControllerData;
+        data.MOVE_COST_PER_MASS = 0.8;
+        data.MOVE_MULTIPLE_MASS_AT_BIRTH = 0;
+        const creature = spawn("attack_plant", [2, 2]);
+        spawn("plant", [3, 2]);
+        const before = creature.mass;
+
+        expect((creature as any).move(1, 0)).toBe(false);
+
+        expect(creature.position).toEqual([2, 2]);
+        expect(creature.mass).toBeCloseTo(before - creature.massAtBirth * 0.8);
+    });
+
+    test('moving never leaves a creature without mass', () => {
+        const data = worldController.simData.worldControllerData;
+        data.MOVE_COST_PER_MASS = 0.8;
+        data.MOVE_MULTIPLE_MASS_AT_BIRTH = 0;
+        const creature = spawn("attack_plant", [2, 2]);
+        // above the cost alone would let it move, but the move would take all its mass
+        creature._mass._mass = creature.massAtBirth * 0.7;
+
+        expect(creature.hasEnoughMassToMove()).toBe(false);
+        expect((creature as any).move(1, 0)).toBe(false);
+        expect(creature.mass).toBeCloseTo(creature.massAtBirth * 0.7);
     });
 
     test('the attack picks a neighbour that can be eaten, not the first one found', () => {

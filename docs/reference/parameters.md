@@ -146,9 +146,8 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `REPRODUCTION_COST_PER_MASS_TRY` | 0.1 | Mass lost by a reproduction attempt that finds no free cell, as a multiple of birth mass. A creature without enough mass to reproduce does not try and loses nothing. |
 | `REPRODUCTION_COST_PER_MASS_DO` | 0.25 | Mass lost by reproducing, as a multiple of birth mass. The parent also gives its birth mass to the child. |
 | `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` | 4 | The child of the Reproduction action is born in a free cell at most this percentage of the world size from the parent (counting steps to any of the 8 neighbours), in the farthest ring that has one. The distance is rounded to whole cells and is at least 1 (only the 8 cells around, as before): 4 cells in a world of 100. The Scenario tab shows the cells it gives in the current world. Files saved without it take 4. See [Creatures → Reproduction](../model/creatures.md#reproduction). |
-| `MOVE_MULTIPLE_MASS_AT_BIRTH` | 0 | A creature needs more than this multiple of its birth mass (plus `MOVE_COST_PER_MASS_DO`) to move. |
-| `MOVE_COST_PER_MASS_TRY` | 0.2 | Mass lost by trying to move, as a multiple of birth mass. A creature without enough mass to move does not try and loses nothing. |
-| `MOVE_COST_PER_MASS_DO` | 0.6 | Extra mass lost by moving, as a multiple of birth mass. |
+| `MOVE_MULTIPLE_MASS_AT_BIRTH` | 0 | A creature needs more than this multiple of its birth mass, plus `MOVE_COST_PER_MASS`, to move. |
+| `MOVE_COST_PER_MASS` | 0.8 | Mass lost by every move attempt, also when the target cell is blocked, as a multiple of birth mass. A creature without enough mass to move does not try and loses nothing. Files saved before format 4 had it split in `MOVE_COST_PER_MASS_TRY` and `MOVE_COST_PER_MASS_DO`, always paid together: they load as their sum. |
 | `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |

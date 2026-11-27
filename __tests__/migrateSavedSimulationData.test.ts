@@ -191,6 +191,16 @@ describe("save format migration", () => {
     });
   });
 
+  test("version 3 move costs add up to MOVE_COST_PER_MASS", () => {
+    const { MOVE_COST_PER_MASS, ...controller } = current.worldControllerData;
+    const data = migrateSavedSimulationData({
+      ...current, version: 3, worldControllerData: { ...controller, MOVE_COST_PER_MASS_TRY: 0.2, MOVE_COST_PER_MASS_DO: 0.6 },
+    }).worldControllerData as any;
+    expect(data.MOVE_COST_PER_MASS).toBeCloseTo(0.8);
+    expect("MOVE_COST_PER_MASS_TRY" in data).toBe(false);
+    expect("MOVE_COST_PER_MASS_DO" in data).toBe(false);
+  });
+
   // the scenarios users see first
   const publicDir = path.join(__dirname, "..", "public");
   // see docs/known-issues.md: its creatures carry more mass than the world has water

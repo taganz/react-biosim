@@ -46,7 +46,7 @@ moveY = tanh(urgeY)          probability of moving one cell in y = |moveY|
 
 - Each axis is decided separately, so a creature can move diagonally.
 - The move only happens if the target cell is inside the world and empty. A diagonal move is also blocked when both cells beside the diagonal are occupied, so creatures cannot slip between two blocked cells.
-- With metabolism on, every attempt costs `MOVE_COST_PER_MASS_TRY × birth mass`, plus another `MOVE_COST_PER_MASS_DO × birth mass` that is paid even if the target cell is blocked. A creature that is too light cannot move: it does not try and loses nothing.
+- With metabolism on, every attempt costs `MOVE_COST_PER_MASS × birth mass`, also when the target cell is blocked. A creature needs more than `MOVE_MULTIPLE_MASS_AT_BIRTH` plus that cost, times its birth mass, to move, so moving never leaves it without mass. A creature that is too light does not try and loses nothing.
 - A move that fails, because it is blocked or the creature is too light, sets the last movement to (0, 0). MoveForward repeats the last movement, so it stops pushing into a wall or a neighbour instead of trying the same move for ever.
 
 A strong urge (an action output close to 1) makes movement almost certain. A weak one makes it occasional, which is where much of the randomness in early generations comes from.

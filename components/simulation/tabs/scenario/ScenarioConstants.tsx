@@ -139,9 +139,8 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
   {
     title: "Movement",
     rows: [
-      ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0.1, "Multiple of birth mass a creature needs to move."],
-      ["MOVE_COST_PER_MASS_TRY", 0.01, "Mass lost by trying to move, as a multiple of birth mass."],
-      ["MOVE_COST_PER_MASS_DO", 0.01, "Extra mass lost by moving, as a multiple of birth mass."],
+      ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0.1, "Multiple of birth mass a creature needs, on top of the move cost, to move."],
+      ["MOVE_COST_PER_MASS", 0.01, "Mass lost by every move attempt, also when the cell is blocked, as a multiple of birth mass."],
     ],
   },
   {

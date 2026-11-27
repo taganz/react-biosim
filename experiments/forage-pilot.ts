@@ -39,8 +39,8 @@ if (!name || !seedArg || !moveTryArg || !moveDoArg) {
 }
 const generations = Number(gensArg ?? 300);
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, "forage-pilot.json"), "utf8"));
-config.overrides.worldControllerData.MOVE_COST_PER_MASS_TRY = Number(moveTryArg);
-config.overrides.worldControllerData.MOVE_COST_PER_MASS_DO = Number(moveDoArg);
+// the try and move costs of the first runs are now one MOVE_COST_PER_MASS: their sum
+config.overrides.worldControllerData.MOVE_COST_PER_MASS = Number(moveTryArg) + Number(moveDoArg);
 // WORLD_SIZE=200 spreads the same population over a larger world: sparser food
 if (process.env.WORLD_SIZE) config.overrides.worldControllerData.size = Number(process.env.WORLD_SIZE);
 
@@ -194,17 +194,17 @@ function mergeDeep(a: any, b: any): any {
   // BASE_SIM=<file.sim>: start from that file (e.g. phase 2, built by forage-phase2-build.ts) with its
   // start genomes, changing only the move costs and the world size
   const baseSim = process.env.BASE_SIM ? JSON.parse(fs.readFileSync(process.env.BASE_SIM, "utf8")) : undefined;
-  const { MOVE_COST_PER_MASS_TRY, MOVE_COST_PER_MASS_DO, size } = config.overrides.worldControllerData;
+  const { MOVE_COST_PER_MASS, size } = config.overrides.worldControllerData;
   const result = await runHeadless({
     base: baseSim ?? "startup",
     resume: baseSim !== undefined,
     generations,
     overrides: baseSim
-      ? { worldControllerData: { MOVE_COST_PER_MASS_TRY, MOVE_COST_PER_MASS_DO, ...(process.env.WORLD_SIZE ? { size } : {}) } }
+      ? { worldControllerData: { MOVE_COST_PER_MASS, ...(process.env.WORLD_SIZE ? { size } : {}) } }
       : config.overrides,
     // EXTRA='{"worldControllerData":{...}}': more overrides, merged on top
     ...(process.env.EXTRA ? { overrides: mergeDeep(baseSim
-      ? { worldControllerData: { MOVE_COST_PER_MASS_TRY, MOVE_COST_PER_MASS_DO, ...(process.env.WORLD_SIZE ? { size } : {}) } }
+      ? { worldControllerData: { MOVE_COST_PER_MASS, ...(process.env.WORLD_SIZE ? { size } : {}) } }
       : config.overrides, JSON.parse(process.env.EXTRA)) } : {}),
     seed: Number(seedArg),
     maxRestarts: 3,

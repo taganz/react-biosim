@@ -45,8 +45,8 @@ export default interface WorldControllerData {
 
     ACTION_ATTACK_OFFSET : number,
 
-    MOVE_COST_PER_MASS_TRY : number, 
-    MOVE_COST_PER_MASS_DO : number, 
+    /** mass lost by every move attempt, blocked or not, as a multiple of birth mass */
+    MOVE_COST_PER_MASS : number,
     MOVE_MULTIPLE_MASS_AT_BIRTH : number, 
 
     ATTACK_COST_PER_MASS_TRY : number, 

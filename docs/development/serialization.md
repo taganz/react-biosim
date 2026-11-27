@@ -108,6 +108,7 @@ Version 2 files are changed like this (version 1 files go through both steps):
 Version 3 files are changed like this (older files go through every earlier step first):
 
 - The metabolism constants that did nothing are dropped: `MASS_AT_BIRTH_ATTACK` (the old "attack" genus), `ACTION_REPRODUCTION_OFFSET` and the `prey` efficiency of plants, which never eat.
+- `MOVE_COST_PER_MASS_TRY` and `MOVE_COST_PER_MASS_DO`, which every move attempt paid together, become `MOVE_COST_PER_MASS`, their sum.
 
 Fields are read by name, so:
 

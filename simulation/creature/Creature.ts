@@ -310,8 +310,8 @@ export default class Creature {
     if (!this.hasEnoughMassToMove()) {
       return false;
     }
-    this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_TRY);
-    this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS_DO);    
+    // paid also when the target cell turns out to be blocked
+    this._mass.consumeForMove(this.massAtBirth * this.worldControllerData.MOVE_COST_PER_MASS);
     
     const finalX = this.position[0] + x;
     const finalY = this.position[1] + y;
@@ -357,13 +357,13 @@ export default class Creature {
     this.urgeToMove[1] = this.urgeToMove[1] + y;
   }
 
-  // consume 
+  // more than the threshold plus the cost, so that moving never leaves it without mass
   hasEnoughMassToMove() : boolean {
     if (!this._mass._metabolismEnabled) {
       return true;
     }
     return this._mass.mass > this.massAtBirth *
-      (this.worldControllerData.MOVE_MULTIPLE_MASS_AT_BIRTH + this.worldControllerData.MOVE_COST_PER_MASS_DO);
+      (this.worldControllerData.MOVE_MULTIPLE_MASS_AT_BIRTH + this.worldControllerData.MOVE_COST_PER_MASS);
   }
 
   get mass(): number {

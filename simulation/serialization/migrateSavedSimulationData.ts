@@ -147,9 +147,14 @@ function mergeCarnivoreProbability(genera: { genus: string, probability: number 
 }
 
 // version 3: metabolism constants that did nothing are gone: MASS_AT_BIRTH_ATTACK (the old
-// "attack" genus), ACTION_REPRODUCTION_OFFSET and the prey efficiency of plants, which never eat
+// "attack" genus), ACTION_REPRODUCTION_OFFSET and the prey efficiency of plants, which never eat.
+// MOVE_COST_PER_MASS_TRY and MOVE_COST_PER_MASS_DO were always paid together: their sum is MOVE_COST_PER_MASS
 function fromVersion3(parsed: any): SavedSimulationData {
-  const { MASS_AT_BIRTH_ATTACK, ACTION_REPRODUCTION_OFFSET, ...controller } = parsed.worldControllerData;
+  const { MASS_AT_BIRTH_ATTACK, ACTION_REPRODUCTION_OFFSET, MOVE_COST_PER_MASS_TRY, MOVE_COST_PER_MASS_DO,
+    ...controller } = parsed.worldControllerData;
+  if (MOVE_COST_PER_MASS_TRY !== undefined || MOVE_COST_PER_MASS_DO !== undefined) {
+    controller.MOVE_COST_PER_MASS = (MOVE_COST_PER_MASS_TRY ?? 0) + (MOVE_COST_PER_MASS_DO ?? 0);
+  }
   const efficiency = controller.ASSIMILATION_EFFICIENCY;
   if (efficiency?.plant !== undefined) {
     const { prey, ...plant } = efficiency.plant;
