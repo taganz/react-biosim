@@ -15,7 +15,7 @@ export default function RestartButton({ compact = false }: Props) {
   //const restart = useSetAtom(restartAtom);
   const worldController = useAtomValue(worldControllerAtom);
   const simulationData = useAtomValue(simulationDataAtom);
-  // the Water section of the Scenario tab says why
+  // Scenario → World → Water says why
   const waterError = checkWaterSettings(simulationData).errors[0];
 
   const handleClick = () => {

@@ -9,7 +9,7 @@ import { checkWaterSettings } from "@/simulation/water/checkWaterSettings";
 export default function UpdateParametersButton() {
   const worldController = useAtomValue(worldControllerAtom);
   const simulationData = useAtomValue(simulationDataAtom);
-  // the restored creatures also take their mass from the cloud; the Water section says why
+  // the restored creatures also take their mass from the cloud; Scenario → World → Water says why
   const waterError = checkWaterSettings(simulationData).errors[0];
 
   //TODO canvas size hot change could lead to unknown results

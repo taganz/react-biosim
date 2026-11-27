@@ -390,7 +390,7 @@ export default function ScenarioSettings() {
         )}
         {hasPendingChanges && <BrainChangeNotice draft={worldGenerationsData} />}
         {waterCheck.errors.length > 0 && (
-          <p className="bg-red p-2 text-sm">Update simulation and Restart are disabled: the water settings are not valid (see Water).</p>
+          <p className="bg-red p-2 text-sm">Update simulation and Restart are disabled: the water settings are not valid (see World → Water).</p>
         )}
         <p className="text-xs">
           &quot;Update simulation&quot; applies the changes and keeps the current creatures.
@@ -409,6 +409,81 @@ export default function ScenarioSettings() {
             min={10}
             max={1000}
           />
+        </div>
+
+        <h4 className="font-bold">Water</h4>
+        {waterCheck.errors.length > 0 && (
+          <div className="bg-red p-2 text-sm">
+            <p>The simulation cannot start with these settings:</p>
+            <ul className="list-disc pl-5">
+              {waterCheck.errors.map((error) => <li key={error}>{error}</li>)}
+            </ul>
+          </div>
+        )}
+        {waterCheck.warnings.length > 0 && (
+          <div className="border border-red p-2 text-sm">
+            <ul className="list-disc pl-5">
+              {waterCheck.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+            </ul>
+          </div>
+        )}
+        <div className={FIELDS_GRID}>
+          <NumberInput
+            label="Cell water capacity"
+            value={waterData.waterCellCapacity}
+            onChange={(value) => setWaterValue("waterCellCapacity", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Total water (per cell)"
+            value={waterData.waterTotalPerCell}
+            onChange={(value) => setWaterValue("waterTotalPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Rain max per cell"
+            value={waterData.waterRainMaxPerCell}
+            onChange={(value) => setWaterValue("waterRainMaxPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Initial water per cell"
+            value={waterData.waterFirstRainPerCell}
+            onChange={(value) => setWaterValue("waterFirstRainPerCell", value)}
+            step={0.1}
+            min={0}
+          />
+          <NumberInput
+            label="Evaporation"
+            value={waterData.waterEvaporationPerCellPerGeneration}
+            onChange={(value) => setWaterValue("waterEvaporationPerCellPerGeneration", value)}
+            step={0.1}
+            min={0}
+          />
+          <SelectInput
+            label="Rain type"
+            value={waterData.rainType}
+            onChange={(value: string) => setWaterValue("rainType", value as RainType)}
+          >
+            {rainTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </SelectInput>
+        </div>
+
+        <h4 className="font-bold">Map</h4>
+        <p className="text-xs">Obstacles and areas. Like the other settings, changes are applied with Update simulation or Restart.</p>
+        <MapDesigner />
+      </ScenarioSection>
+
+      {/* === GENERATIONS === */}
+      <ScenarioSection id="generations" changed={changedSections} title="Generations">
+        <div className={FIELDS_GRID}>
           <NumberInput
             label="Initial population"
             value={worldGenerationsData.initialPopulation}
@@ -426,19 +501,6 @@ export default function ScenarioSettings() {
             min={1}
           />
         </div>
-      </ScenarioSection>
-
-      {/* === MAP === */}
-      <ScenarioSection
-        id="map" changed={changedSections}
-        title="Map"
-        description="Obstacles and areas. Like the other settings, changes are applied with Update simulation or Restart."
-      >
-        <MapDesigner />
-      </ScenarioSection>
-
-      {/* === GENERATIONS === */}
-      <ScenarioSection id="generations" changed={changedSections} title="Generations">
         <div className="flex flex-col gap-1">
           <CheckboxInput
             id="metabolismEnabled"
@@ -669,73 +731,6 @@ export default function ScenarioSettings() {
               )}
             </div>
           ))}
-        </div>
-      </ScenarioSection>
-
-      {/* === WATER === */}
-      <ScenarioSection id="water" changed={changedSections} title="Water">
-        {waterCheck.errors.length > 0 && (
-          <div className="bg-red p-2 text-sm">
-            <p>The simulation cannot start with these settings:</p>
-            <ul className="list-disc pl-5">
-              {waterCheck.errors.map((error) => <li key={error}>{error}</li>)}
-            </ul>
-          </div>
-        )}
-        {waterCheck.warnings.length > 0 && (
-          <div className="border border-red p-2 text-sm">
-            <ul className="list-disc pl-5">
-              {waterCheck.warnings.map((warning) => <li key={warning}>{warning}</li>)}
-            </ul>
-          </div>
-        )}
-        <div className={FIELDS_GRID}>
-          <NumberInput
-            label="Cell water capacity"
-            value={waterData.waterCellCapacity}
-            onChange={(value) => setWaterValue("waterCellCapacity", value)}
-            step={0.1}
-            min={0}
-          />
-          <NumberInput
-            label="Total water (per cell)"
-            value={waterData.waterTotalPerCell}
-            onChange={(value) => setWaterValue("waterTotalPerCell", value)}
-            step={0.1}
-            min={0}
-          />
-          <NumberInput
-            label="Rain max per cell"
-            value={waterData.waterRainMaxPerCell}
-            onChange={(value) => setWaterValue("waterRainMaxPerCell", value)}
-            step={0.1}
-            min={0}
-          />
-          <NumberInput
-            label="Initial water per cell"
-            value={waterData.waterFirstRainPerCell}
-            onChange={(value) => setWaterValue("waterFirstRainPerCell", value)}
-            step={0.1}
-            min={0}
-          />
-          <NumberInput
-            label="Evaporation"
-            value={waterData.waterEvaporationPerCellPerGeneration}
-            onChange={(value) => setWaterValue("waterEvaporationPerCellPerGeneration", value)}
-            step={0.1}
-            min={0}
-          />
-          <SelectInput
-            label="Rain type"
-            value={waterData.rainType}
-            onChange={(value: string) => setWaterValue("rainType", value as RainType)}
-          >
-            {rainTypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </SelectInput>
         </div>
       </ScenarioSection>
 

@@ -1,6 +1,6 @@
 # Map editor
 
-The map editor is the **Map** section of the **Scenario** tab (click its title to open it). It is where you draw the world: obstacles and areas.
+The map editor is at the end of the **World** section of the **Scenario** tab (click its title to open it). It is where you draw the world: obstacles and areas.
 
 ![Map editor](images/tab_map.png)
 

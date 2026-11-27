@@ -233,7 +233,7 @@ export default function MapDesignerCanvas() {
     draw();
   }, [draw, worldController, width, isFullscreen]);
 
-  // a closed Map section gives the canvas no size: draw again when it gets one
+  // a closed World section gives the canvas no size: draw again when it gets one
   useEffect(() => {
     const element = canvas.current;
     if (!element || typeof ResizeObserver === "undefined") return;

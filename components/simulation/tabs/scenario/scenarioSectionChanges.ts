@@ -3,22 +3,20 @@ import { serializeObjects } from "@/simulation/serialization/formatters/objectsS
 
 export type ScenarioSection =
   | "world"
-  | "map"
   | "generations"
   | "networks"
   | "mutations"
   | "sensors"
   | "actions"
-  | "water"
   | "constants";
 
 // values are plain data, except the map objects, which are compared in their saved form
 const same = (a: unknown, b: unknown) => a === b || JSON.stringify(a) === JSON.stringify(b);
 
-// worldControllerData fields edited outside the Constants section
+// worldControllerData fields edited outside the Constants section; the map and water are in World
 const WORLD_CONTROLLER_KEYS: Record<string, ScenarioSection> = {
   size: "world",
-  stepsPerGen: "world",
+  stepsPerGen: "generations",
   SENSOR_COSTS: "sensors",
   ACTION_COSTS: "actions",
 };
@@ -35,9 +33,8 @@ export function getChangedSections(draft: SimulationData, applied: SimulationDat
   const appliedGen = applied.worldGenerationsData;
   const genChanged = (...keys: (keyof typeof gen)[]) => keys.some((key) => !same(gen[key], appliedGen[key]));
 
-  if (genChanged("initialPopulation")) changed.add("world");
   if (
-    genChanged("metabolismEnabled", "simulationType", "maxAge") ||
+    genChanged("initialPopulation", "metabolismEnabled", "simulationType", "maxAge") ||
     gen.populationStrategy.name !== appliedGen.populationStrategy.name ||
     gen.selectionMethod.name !== appliedGen.selectionMethod.name ||
     !same(draft.constants?.POPULATION_DEFAULT_GENUS, applied.constants?.POPULATION_DEFAULT_GENUS)
@@ -50,9 +47,9 @@ export function getChangedSections(draft: SimulationData, applied: SimulationDat
   if (
     draft.worldObjects !== applied.worldObjects &&
     !same(serializeObjects(draft.worldObjects), serializeObjects(applied.worldObjects))
-  ) changed.add("map");
+  ) changed.add("world");
 
-  if (!same(draft.waterData, applied.waterData)) changed.add("water");
+  if (!same(draft.waterData, applied.waterData)) changed.add("world");
 
   // every other worldControllerData field and constant is in the Constants section
   const controller = draft.worldControllerData as unknown as Record<string, unknown>;

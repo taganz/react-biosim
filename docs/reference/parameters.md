@@ -31,13 +31,34 @@ The scenario list at the top loads a bundled scenario (see [Scenarios](../user/s
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
 | World size | `worldControllerData.size` | integer, 10–1000 | 100 | The world is a square grid of `size × size` cells. |
-| Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell, and the world cannot be full. |
-| Steps per generation | `worldControllerData.stepsPerGen` | integer ≥ 1 | 300 | Steps that make up one generation. |
+
+The World section also holds the water settings and the map editor.
+
+#### Water
+
+| UI label | Key | Startup | Notes |
+|---|---|---|---|
+| Cell water capacity | `waterData.waterCellCapacity` | 400 | Maximum water one cell can hold. |
+| Total water (per cell) | `waterData.waterTotalPerCell` | 130 | Total water in the world, expressed per cell. |
+| Rain max per cell | `waterData.waterRainMaxPerCell` | 50 | Maximum rain one cell receives in one generation. Continuous runs spread it over the steps of the generation. |
+| Initial water per cell | `waterData.waterFirstRainPerCell` | 50 | Water in each cell when the simulation starts. The creatures take their mass from the total first, so if less is left the cells get an equal share of it. |
+| Evaporation | `waterData.waterEvaporationPerCellPerGeneration` | 10 | Water lost by each cell in each generation. |
+| Rain type | `waterData.rainType` | `rainTypeUniform` | How rain is spread over the map: `rainTypeUniform`, `rainTypeUniformNE` or `rainTypeSinSin`. |
+
+Water only matters when metabolism is on and creatures use the **Photosynthesis** action.
+
+The first generation takes its mass from the total water (`size² × waterTotalPerCell`) before the first rain. If the initial population times the smallest mass at birth does not fit, `startRun()` refuses the settings with an error, and the Scenario tab disables **Update simulation** and **Restart** (see `simulation/water/checkWaterSettings.ts`).
+
+#### Map
+
+The map editor, at the end of the World section: obstacles and areas. See [Map editor](../user/map-editor.md).
 
 ### Generations
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
+| Initial population | `worldGenerationsData.initialPopulation` | integer, 1 – size² − 1 | 1000 | Number of creatures created in each generation. Each creature needs its own cell, and the world cannot be full. |
+| Steps per generation | `worldControllerData.stepsPerGen` | integer ≥ 1 | 300 | Steps that make up one generation. |
 | Metabolism | `worldGenerationsData.metabolismEnabled` | checkbox | `false` | When on, creatures gain mass by photosynthesis or by eating prey, and spend it every step and when they move, attack or reproduce; they die at 0. When off, mass never changes, so the Reproduction action never succeeds. Turning it on while *Inside Reproduction Area* is selected switches the selection method to *Reproduction*. See [Creatures → Mass and metabolism](../model/creatures.md#mass-and-metabolism). |
 | Simulation type | `worldGenerationsData.simulationType` | `generational`, `continuous` | `generational` | Generational: selection and a new generation at the end of each one. Continuous: creatures carry on and a generation is only a time window (see [Continuous runs](../model/generations.md#continuous-runs)). |
 | Maximum age (steps) | `worldGenerationsData.maxAge` | integer ≥ 1 | 1000 | Continuous runs only, and only shown then. A creature older than this dies. |
@@ -72,21 +93,6 @@ Below each enabled sensor and action, **Cost** is the mass a brain that reads th
 The startup scenario enables the first 10 sensors (positions, age, oscillator, random, speeds and border distances) and the six movement actions.
 
 > **Changing sensors, actions or Max neurons during a run.** Genes point to sensors and actions by their position in the list of enabled items, and to neurons modulo Max neurons. **Update simulation** rewrites the genes of the living creatures (and the genomes the generation started with) for the new lists, so their brains stay the same; see [Changing the decoding during a run](sensors-and-actions.md#changing-the-decoding-during-a-run). Only two changes alter a brain: a gene whose sensor or action is disabled is deleted, and a neuron not below a lower Max neurons connects to another neuron. **Restart** starts from random genomes, so none of this applies.
-
-### Water
-
-| UI label | Key | Startup | Notes |
-|---|---|---|---|
-| Cell water capacity | `waterData.waterCellCapacity` | 400 | Maximum water one cell can hold. |
-| Total water (per cell) | `waterData.waterTotalPerCell` | 130 | Total water in the world, expressed per cell. |
-| Rain max per cell | `waterData.waterRainMaxPerCell` | 50 | Maximum rain one cell receives in one generation. Continuous runs spread it over the steps of the generation. |
-| Initial water per cell | `waterData.waterFirstRainPerCell` | 50 | Water in each cell when the simulation starts. The creatures take their mass from the total first, so if less is left the cells get an equal share of it. |
-| Evaporation | `waterData.waterEvaporationPerCellPerGeneration` | 10 | Water lost by each cell in each generation. |
-| Rain type | `waterData.rainType` | `rainTypeUniform` | How rain is spread over the map: `rainTypeUniform`, `rainTypeUniformNE` or `rainTypeSinSin`. |
-
-Water only matters when metabolism is on and creatures use the **Photosynthesis** action.
-
-The first generation takes its mass from the total water (`size² × waterTotalPerCell`) before the first rain. If the initial population times the smallest mass at birth does not fit, `startRun()` refuses the settings with an error, and the Scenario tab disables **Update simulation** and **Restart** (see `simulation/water/checkWaterSettings.ts`).
 
 ## Simulation tab
 
