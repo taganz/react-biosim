@@ -220,9 +220,12 @@ const PARAMS = [
   ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0, "Umbral para moverse, × masa al nacer (+ coste)"],
   ["MOVE_COST_PER_MASS", 0.8, "Cada intento de moverse, × masa al nacer (aunque esté bloqueado)"],
   ["ATTACK_COST_PER_MASS", 0.007, "Cada ataque, × masa al nacer"],
+  ["ASSIMILATION_EFFICIENCY.plant.photosynthesis", 1, "Parte del agua de la fotosíntesis que una planta convierte en masa (0–1; el resto va a la nube)"],
+  ["ASSIMILATION_EFFICIENCY.attack_plant.photosynthesis", 1, "Lo mismo para un animal"],
+  ["ASSIMILATION_EFFICIENCY.attack_plant.prey", 1, "Parte de la masa de la presa que un animal convierte en masa (0–1)"],
   ["ATTACK_MIN_PREY_MASS_FACTOR", 2, "El atacante pesa al menos este múltiplo de la presa"],
 ];
-const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","MOVE_COST_PER_MASS_TRY","MOVE_COST_PER_MASS_DO","ATTACK_COST_PER_MASS_TRY","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
+const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","ASSIMILATION_EFFICIENCY","REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","MOVE_COST_PER_MASS_TRY","MOVE_COST_PER_MASS_DO","ATTACK_COST_PER_MASS_TRY","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
 const DEFAULTS = Object.fromEntries(PARAMS.map(p => [p[0], p[1]]));
 
 const state = {
@@ -266,15 +269,24 @@ function birthMass(sim, P) {
   if (sim.genus === "attack_plant") return P.MASS_AT_BIRTH_ATTACK_PLANT;
   return P.MASS_AT_BIRTH_PLANT;
 }
+// CreatureMass.efficiency: missing or not a number counts as 1; kept between 0 and 1
+function efficiency(P, genus, kind) {
+  const v = P[`ASSIMILATION_EFFICIENCY.${genus}.${kind}`];
+  return typeof v === "number" && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 1;
+}
 function derive(sim, P, x = sim.x) {
   const birth = birthMass(sim, P);
+  const effPhoto = efficiency(P, sim.genus, "photosynthesis"), effPrey = efficiency(P, sim.genus, "prey");
   const thinkSpecies = sim.species && sim.species.thinkCost != null && sameGenome(sim, x) ? sim.species.thinkCost(P) : null;
   return {
     birth,
     maxMass: birth * P.MASS_MAX_MULTIPLE_MASS_AT_BIRT,
     basal: P.MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY * x.prim + P.MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE * x.other,
     think: thinkSpecies != null ? thinkSpecies : P.MASS_COST_PER_SENSOR * x.sens + P.MASS_COST_PER_ACTION * x.acts,
-    water: Math.min(P.MASS_WATER_TO_MASS_PER_STEP * x.photo, x.cell),
+    // mass gained per step: what is taken × the assimilation efficiency (the rest goes to the cloud)
+    effPhoto, effPrey,
+    water: effPhoto * Math.min(P.MASS_WATER_TO_MASS_PER_STEP * x.photo, x.cell),
+    preyGain: effPrey * x.prey,
     rthr: birth * (P.REPRODUCTION_MULTIPLE_MASS_AT_BIRTH + P.REPRODUCTION_COST_PER_MASS_DO),
     rcost: birth * (P.REPRODUCTION_COST_PER_MASS_DO + 1),
     rtry: birth * P.REPRODUCTION_COST_PER_MASS_TRY,
@@ -297,7 +309,7 @@ function live(sim, P, x, rng) {
   let charge = x.st < 1 ? (rng ? rng() : 0) : 0;
   const T = { basal: 0, think: 0, photo: 0, eaten: 0, attack: 0, move: 0, repro: 0, children: 0 };
   let kids = 0, firstRepro = null, death = null, cause = null, maxM = m;
-  const eatCap = (cur) => Math.max(0, Math.min(x.prey, d.maxMass - cur));
+  const eatCap = (cur) => Math.max(0, Math.min(d.preyGain, d.maxMass - cur));
   for (let s = 1; s <= steps; s++) {
     if (s - 1 > x.maxAge) { death = s; cause = "edad"; m = 0; mass[s] = 0; break; }
     let thinks = true;
@@ -364,7 +376,7 @@ function monteCarlo(sim, P, x, n = 200) {
   return { p10, p50, p90, kidsMed: kids[Math.floor(n / 2)], kidsP10: kids[Math.floor(0.1 * (n - 1))], kidsP90: kids[Math.floor(0.9 * (n - 1))], starved, anyKid };
 }
 function netAtBirth(d, x) {
-  const eat = (d.birth >= d.minEat ? x.patt * x.pprey * x.prey : 0);
+  const eat = (d.birth >= d.minEat ? x.patt * x.pprey * d.preyGain : 0);
   return x.st * (d.water + eat - x.patt * d.atry - d.think) - d.basal - (d.birth > d.mthr ? x.pmove * d.mcost : 0);
 }
 
@@ -403,6 +415,13 @@ function currentKeys(wcd) {
   if (typeof w.ATTACK_COST_PER_MASS_TRY === "number") {
     const birth = typeof w.MASS_AT_BIRTH_ATTACK_PLANT === "number" && w.MASS_AT_BIRTH_ATTACK_PLANT > 0 ? w.MASS_AT_BIRTH_ATTACK_PLANT : 3;
     w.ATTACK_COST_PER_MASS = w.ATTACK_COST_PER_MASS_TRY / birth;
+  }
+  // ASSIMILATION_EFFICIENCY is nested by genus: one flat key per value, as in PARAMS
+  const eff = w.ASSIMILATION_EFFICIENCY;
+  if (eff && typeof eff === "object") {
+    for (const [genus, values] of Object.entries(eff)) {
+      for (const [kind, v] of Object.entries(values || {})) w[`ASSIMILATION_EFFICIENCY.${genus}.${kind}`] = v;
+    }
   }
   return w;
 }
@@ -604,8 +623,8 @@ function renderSim(kind) {
     : `Genérica · masa al nacer ${fmtN(d.birth)} · máxima ${fmtN(d.maxMass)}`;
   // break-even
   const fixed = d.basal + (d.birth > d.mthr ? x.pmove * d.mcost : 0) + x.st * (d.think + x.patt * d.atry);
-  const minPhoto = Math.max(0, (fixed - x.st * (d.birth >= d.minEat ? x.patt * x.pprey * x.prey : 0)) / (x.st * P.MASS_WATER_TO_MASS_PER_STEP));
-  const preyPerStep = x.prey > 0 ? Math.max(0, (fixed - x.st * d.water) / x.prey) : null;
+  const minPhoto = Math.max(0, (fixed - x.st * (d.birth >= d.minEat ? x.patt * x.pprey * d.preyGain : 0)) / (x.st * d.effPhoto * P.MASS_WATER_TO_MASS_PER_STEP));
+  const preyPerStep = d.preyGain > 0 ? Math.max(0, (fixed - x.st * d.water) / d.preyGain) : null;
   const kp = [
     ["Balance por paso al nacer", (net >= 0 ? "+" : "") + fmt(net, 3), net >= 0 ? "pos" : "neg", "ganancia media − gasto medio"],
     ["Primera reproducción", exp.firstRepro ? "paso " + exp.firstRepro : "nunca", exp.firstRepro ? "" : "neg", `umbral: más de ${fmtN(d.rthr)} de masa`],
