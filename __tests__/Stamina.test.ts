@@ -14,7 +14,7 @@ import { MutationMode } from "@/simulation/creature/brain/MutationMode";
 
 const ACTIONS: ActionName[] = [
   "MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward",
-  "Photosynthesis", "Reproduction", "AttackPlant", "AttackAnimal",
+  "Photosynthesis", "Reproduction", "Attack",
 ];
 
 function makeWorld(staminaEnabled: boolean, metabolismEnabled = false): WorldController {

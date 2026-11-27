@@ -106,6 +106,75 @@ describe("save format migration", () => {
     expect(fromVersion2.LOG_LOCALE_STRING).toBe("en-US");
   });
 
+  describe("version 2: AttackPlant and AttackAnimal become Attack", () => {
+    const actionGene = (sinkId: number) => (1 << 31 | 0 << 24 | 1 << 23 | sinkId << 16 | 12345) | 0;
+    const neuronGene = (sinkId: number) => (1 << 31 | 0 << 24 | 0 << 23 | sinkId << 16 | 12345) | 0;
+    const actionOf = (gene: number, actions: string[]) => actions[((gene >> 16) & 127) % actions.length];
+
+    function version2(enabledActions: string[], genes: number[]) {
+      return {
+        ...current,
+        version: 2,
+        worldGenerationsData: { ...current.worldGenerationsData, enabledActions, plantGenes: genes },
+        species: [{ genes, creatures: [] }],
+        startGenomes: [{ genes, count: 1 }],
+      };
+    }
+
+    test("genes keep driving the same action, under its new position", () => {
+      const oldActions = ["MoveEast", "Reproduction", "AttackPlant", "AttackAnimal", "MoveToPrey"];
+      // raw ids 8 and 9 wrap to AttackAnimal and MoveToPrey
+      const genes = [0, 1, 2, 3, 4, 8, 9].map(actionGene).concat(neuronGene(3));
+      const migrated = migrateSavedSimulationData(version2(oldActions, genes));
+      const newActions = migrated.worldGenerationsData.enabledActions;
+      expect(newActions).toEqual(["MoveEast", "Reproduction", "Attack", "MoveToPrey"]);
+      for (const migratedGenes of [migrated.species![0].genes, migrated.startGenomes![0].genes, migrated.worldGenerationsData.plantGenes]) {
+        expect(migratedGenes.slice(0, 7).map((gene) => actionOf(gene, newActions)))
+          .toEqual(genes.slice(0, 7).map((gene) => actionOf(gene, oldActions).replace(/AttackPlant|AttackAnimal/, "Attack")));
+        // the weight, the source and the genes that drive neurons do not change
+        expect(migratedGenes.map((gene) => gene & 0xFFFF)).toEqual(genes.map((gene) => gene & 0xFFFF));
+        expect(migratedGenes[7]).toBe(genes[7]);
+      }
+    });
+
+    test("with only AttackPlant the genes are not changed", () => {
+      const genes = [0, 1, 2, 5].map(actionGene);
+      const migrated = migrateSavedSimulationData(version2(["MoveEast", "Reproduction", "AttackPlant"], genes));
+      expect(migrated.worldGenerationsData.enabledActions).toEqual(["MoveEast", "Reproduction", "Attack"]);
+      expect(migrated.species![0].genes).toEqual(genes);
+    });
+
+    test("files with the older Attack action keep their genes and get Attack back", () => {
+      const genes = [0, 1, 2, 5].map(actionGene);
+      const migrated = migrateSavedSimulationData(version2(["Attack", "MoveEast", "Reproduction"], genes));
+      expect(migrated.worldGenerationsData.enabledActions).toEqual(["MoveEast", "Reproduction", "Attack"]);
+      expect(migrated.species![0].genes).toEqual(genes);
+    });
+
+    test("carnivore settings go: their genus share goes to herbivores and AttackPlant's cost to Attack", () => {
+      const file = version2(["Reproduction", "AttackPlant", "AttackAnimal"], []);
+      const migrated = migrateSavedSimulationData({
+        ...file,
+        constants: { ...file.constants, POPULATION_DEFAULT_GENUS: [
+          { genus: "plant", probability: 0.5 }, { genus: "attack_plant", probability: 0.3 }, { genus: "attack_animal", probability: 0.2 },
+        ] },
+        worldControllerData: {
+          ...file.worldControllerData,
+          MASS_AT_BIRTH_ATTACK_ANIMAL: 6,
+          ASSIMILATION_EFFICIENCY: { plant: { photosynthesis: 1 }, attack_plant: { prey: 0.5 }, attack_animal: { prey: 0.2 } },
+          ACTION_COSTS: { Reproduction: 0.1, AttackPlant: 0.3, AttackAnimal: 0.4 },
+        },
+      });
+      expect(migrated.version).toBe(SAVE_FORMAT_VERSION);
+      expect(migrated.constants.POPULATION_DEFAULT_GENUS).toEqual([
+        { genus: "plant", probability: 0.5 }, { genus: "attack_plant", probability: 0.5 },
+      ]);
+      expect("MASS_AT_BIRTH_ATTACK_ANIMAL" in migrated.worldControllerData).toBe(false);
+      expect(migrated.worldControllerData.ASSIMILATION_EFFICIENCY).toEqual({ plant: { photosynthesis: 1 }, attack_plant: { prey: 0.5 } });
+      expect(migrated.worldControllerData.ACTION_COSTS).toEqual({ Reproduction: 0.1, Attack: 0.3 });
+    });
+  });
+
   // the scenarios users see first
   const publicDir = path.join(__dirname, "..", "public");
   // see docs/known-issues.md: its creatures carry more mass than the world has water

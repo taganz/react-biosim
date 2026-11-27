@@ -109,7 +109,7 @@ Options of the running simulation. They apply at once (see [How changes are appl
 
 | UI label | Key | Allowed values | Startup | Notes |
 |---|---|---|---|---|
-| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level), `greenPlants` (Green plants) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants, blue for herbivores, red for carnivores, with the shade taken from the genome. `greenPlants`: a shade of green for each plant species and a non-green colour for each species of any other genus, both from a hash of the genome, so related species do not look alike. A change recolours the running creatures at once, also while paused. |
+| Phenotype mode | `worldGenerationsData.phenotypeColorMode` | `genome` (Genome), `trophicLevel` (Trophic level), `greenPlants` (Green plants) | `genome` | How creatures are coloured. `genome`: colour from the genome, so each species has its own colour. `trophicLevel`: green for plants and blue for animals, with the shade taken from the genome. `greenPlants`: a shade of green for each plant species and a non-green colour for each species of any other genus, both from a hash of the genome, so related species do not look alike. A change recolours the running creatures at once, also while paused. |
 
 ## Control bar: speed controls
 
@@ -133,9 +133,8 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 |---|---|---|
 | `MASS_WATER_TO_MASS_PER_STEP` | 0.1 | Water a creature takes from its cell in one photosynthesis step, multiplied by the action's output. |
 | `MASS_AT_BIRTH_PLANT` | 1 | Birth mass of a plant. |
-| `MASS_AT_BIRTH_ATTACK_PLANT` | 3 | Birth mass of a herbivore. |
+| `MASS_AT_BIRTH_ATTACK_PLANT` | 3 | Birth mass of an animal. |
 | `MASS_AT_BIRTH_ATTACK` | 2 | Birth mass of the old "attack" genus (no longer used). |
-| `MASS_AT_BIRTH_ATTACK_ANIMAL` | 6 | Birth mass of a carnivore. |
 | `MASS_MAX_MULTIPLE_MASS_AT_BIRT` | 5 | Maximum mass, as a multiple of birth mass. |
 | `MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE` | 0.04 | Mass spent per step for each gene in the genome, except the primary genes and the Stamina gene. |
 | `MASS_COST_PER_SENSOR` | 0 | Mass spent in every step the brain runs for each sensor it reads, counted once however many genes read it. A sensor can have its own cost instead (`SENSOR_COSTS`, set below each sensor in the Sensors section). Without the Stamina action the brain runs every step. Files saved without it take 0. |
@@ -155,8 +154,8 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
 | `ATTACK_SAME_GENUS` | false | Attackers can eat other species of their genus, never their own species (identical genome). Off, they cannot eat their genus at all. Files saved without it have it off. |
-| `ASSIMILATION_EFFICIENCY` | 1 for every genus and source | For each genus (`plant`, `attack_plant`, `attack_animal`), the share of what it takes that becomes mass: `photosynthesis` (of the water taken from its cell) and `prey` (of the prey eaten). The rest goes to the cloud. 0: the genus takes nothing that way, so `attack_plant: { photosynthesis: 0 }` stops herbivores from photosynthesising. Kept between 0 and 1. A genus or source missing, as in files saved without it, takes 1. Edited under *Constants → Mass and metabolism*, one row per source with one value per genus. See [Creatures → Assimilation efficiency](../model/creatures.md#assimilation-efficiency). |
-| `ACTION_ATTACK_OFFSET` | 0.6 | The minimum neuron output that triggers the attack actions. Files saved without it take the value of `ACTION_REPRODUCTION_OFFSET`, which the attacks used before. |
+| `ASSIMILATION_EFFICIENCY` | 1 for every genus and source | For each genus (`plant`, `attack_plant`), the share of what it takes that becomes mass: `photosynthesis` (of the water taken from its cell) and `prey` (of the prey eaten). The rest goes to the cloud. 0: the genus takes nothing that way, so `attack_plant: { photosynthesis: 0 }` stops animals from photosynthesising. Kept between 0 and 1. A genus or source missing, as in files saved without it, takes 1. Edited under *Constants → Mass and metabolism*, one row per source with one value per genus. See [Creatures → Assimilation efficiency](../model/creatures.md#assimilation-efficiency). |
+| `ACTION_ATTACK_OFFSET` | 0.6 | The minimum neuron output that triggers the Attack action. Files saved without it take the value of `ACTION_REPRODUCTION_OFFSET`, which the attacks used before. |
 | `ACTION_REPRODUCTION_OFFSET` | 0.6 | Not used. |
 
 ### Random seed (`worldControllerData`)

@@ -53,8 +53,7 @@ describe('genome test', () => {
     "MoveForward",      // 5
     "Photosynthesis",   // 6 
     "Reproduction",     // 7
-    "AttackPlant",      // 8
-    "AttackAnimal",     // 9
+    "Attack",           // 8
   ];
   simulationData = TEST_SIMULATION_DATA;
   simulationData.worldGenerationsData.enabledSensors = allSensors;

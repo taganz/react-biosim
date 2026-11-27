@@ -18,7 +18,6 @@ export default interface WorldControllerData {
     MASS_AT_BIRTH_PLANT : number, 
     MASS_AT_BIRTH_ATTACK_PLANT : number, 
     MASS_AT_BIRTH_ATTACK : number, 
-    MASS_AT_BIRTH_ATTACK_ANIMAL : number, 
     MASS_MAX_MULTIPLE_MASS_AT_BIRT : number, 
     
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number, 

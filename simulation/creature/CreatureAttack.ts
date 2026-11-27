@@ -37,7 +37,7 @@ export default class CreatureAttack {
 
     // only these genera eat: for the others canEat is always false
     private get isAttackGenus() : boolean {
-        return this.creature._genus === "attack_plant" || this.creature._genus === "attack_animal";
+        return this.creature._genus === "attack_plant";
     }
 
     private creatureAt(x: number, y: number) : Creature | null {
@@ -80,7 +80,14 @@ export default class CreatureAttack {
    // kills the prey and takes its mass; returns the mass the prey had
    eat(prey: Creature) : number {
         const preyMass = prey.mass;
-        this.creature.waterFromPrey += this.creature._mass.eat(prey._mass);
+        const eaten = this.creature._mass.eat(prey._mass);
+        if (prey._genus === "plant") {
+            this.creature.waterFromPlants += eaten;
+            this.creature.plantKillCount++;
+        } else {
+            this.creature.waterFromAnimals += eaten;
+            this.creature.animalKillCount++;
+        }
         prey.killedByAttack(this.creature.speciesId);
         this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_DO);
         return preyMass;

@@ -6,7 +6,7 @@
 
 ```jsonc
 {
-  "version": 2,                      // SAVE_FORMAT_VERSION; missing in older files (version 1)
+  "version": 3,                      // SAVE_FORMAT_VERSION; missing in older files (version 1)
   "constants": { ... },              // SimulationData.constants, as is
   "worldGenerationsData": {          // SavedWorldGenerationData
     "simulationType": "generational", "maxAge": 1000,
@@ -83,7 +83,7 @@ When a run resumes, every saved creature is rebuilt for the new world (see [Arch
 
 `startGenomes` are the genomes of the creatures that started the current generation. `WorldGenerations.startGenomes` records them each time a generation is populated (`populate`, `selectionAndRepopulate`, `populateWithGenomes`), and `resumeRun` keeps or rebuilds them. Creatures that share a genome are saved once with a `count`.
 
-`WorldController.startGeneration(sim)` builds the world like `startRun`, keeps `simCode` and `currentGen` from the file, copies `stats` if present, and calls `WorldGenerations.populateWithGenomes()`. That places one creature per genome, without mutation, split among the spawn areas by size if there are any and at random otherwise, the same way the first generation of *Asexual Zone* does. The population strategy is not called, so a strategy with its own placement rules (plants and herbivores, for example) is not followed for that one generation.
+`WorldController.startGeneration(sim)` builds the world like `startRun`, keeps `simCode` and `currentGen` from the file, copies `stats` if present, and calls `WorldGenerations.populateWithGenomes()`. That places one creature per genome, without mutation, split among the spawn areas by size if there are any and at random otherwise, the same way the first generation of *Asexual Zone* does. The population strategy is not called, so a strategy with its own placement rules (plants and animals, for example) is not followed for that one generation.
 
 The JSON is stored in the browser's IndexedDB by [helpers/userScenarios.ts](../../helpers/userScenarios.ts): database `biosim`, store `userScenarios` for the list (name, kind, generation, date, size) and `userScenarioData` for the JSON, both keyed by the scenario id.
 
@@ -99,10 +99,16 @@ Version 1 files are changed like this:
 - The constants of the old event logger (`LOG_ENABLED`, `LOG_LEVEL`, `LOG_CREATURE_ID`, `LOG_STEP_TOTALS`, `LOG_EVENTLOGGER_MAX_EVENTS`, `LOG_ALLOWED_EVENTS`) are dropped from files of any version (see `migrateLogConstants`).
 - The oldest files, from before metabolism and water, have no `constants` and no `waterData`, and keep `worldObjects` (and `waterFirstRainPerCell`) inside `worldControllerData`. Those are moved to their place, and any missing `constants`, water or `worldControllerData` setting takes the startup value.
 
+Version 2 files are changed like this (version 1 files go through both steps):
+
+- The actions AttackPlant and AttackAnimal, which did the same, are now one **Attack** action in the place of AttackPlant, and the carnivore genus (`attack_animal`) is gone. `enabledActions` lists Attack instead of either of them. When the file has one of them, every gene that drives an action, in `species`, `startGenomes` and `plantGenes`, is rewritten to point to the same action under its new position; with only AttackPlant the positions do not change and the genes are left as they are. A gene that drove AttackAnimal now drives Attack, so former carnivores load as animals.
+- Files with the older **Attack** action, which versions 1 and 2 ignored because the name no longer existed, get it back in the same position (after Reproduction) and keep their genes. Their brains are again the ones they were saved with.
+- `MASS_AT_BIRTH_ATTACK_ANIMAL` and the `attack_animal` entry of `ASSIMILATION_EFFICIENCY` are dropped. In `POPULATION_DEFAULT_GENUS` the probability of `attack_animal` is added to `attack_plant`. In `ACTION_COSTS` the cost of AttackPlant (or else of AttackAnimal) becomes the cost of Attack.
+
 Fields are read by name, so:
 
 - **Adding** a field to `SimulationData`: older files leave it `undefined`. Give it a default in the migration, or make it optional.
-- **Changing the format** of a saved field: increase `SAVE_FORMAT_VERSION` and add a step to the migration (`fromVersion2`, and so on) that converts the files of the previous version. Add a test to [migrateSavedSimulationData.test.ts](../../__tests__/migrateSavedSimulationData.test.ts).
+- **Changing the format** of a saved field: increase `SAVE_FORMAT_VERSION` and add a step to the migration (`fromVersion3`, and so on) that converts the files of the previous version. Add a test to [migrateSavedSimulationData.test.ts](../../__tests__/migrateSavedSimulationData.test.ts).
 - **Renaming** a sensor, action, strategy, method or object class breaks every file that uses the old name.
 - **Reordering** sensors or actions does not change what saved genes mean, because a gene points to a position in the *enabled* list (see [gene encoding](../reference/sensors-and-actions.md#gene-encoding)). The enabled list follows the order of the `data` table in `CreatureSensors` and `CreatureActions`. So reordering that table *does* change what every saved genome means.
 

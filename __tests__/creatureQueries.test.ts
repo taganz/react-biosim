@@ -111,11 +111,13 @@ describe('creature queries', () => {
 
         test('the per creature averages divide by every known creature, dead or alive', () => {
             a1.childrenCount = 3;
-            a1.waterFromPrey = 4;
+            a1.waterFromPlants = 4;
+            a1.waterFromAnimals = 2;
             kill(a1);
             const { perCreature } = computeSpeciesStats(worldController.generations, a2.speciesId);
             expect(perCreature?.children).toBe(1.5);
-            expect(perCreature?.fromPrey).toBe(2);
+            expect(perCreature?.fromPlants).toBe(2);
+            expect(perCreature?.fromAnimals).toBe(1);
         });
 
         test('the mass balance sums to its mass and is averaged line by line', () => {

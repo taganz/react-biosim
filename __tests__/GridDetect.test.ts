@@ -18,7 +18,6 @@ describe('gridDetect', () => {
     let generations : WorldGenerations;
     let joe : Creature;
     let grid : Grid;
-    let genomeAttackAnimal : Genome;
     let genomeAttackPlant : Genome;;
     let genomePlant : Genome;;
     
@@ -36,7 +35,6 @@ describe('gridDetect', () => {
         grid = worldController.generations.grid;
         //joe = worldController.generations.newCreature([1, 1]);
         //console.log(grid.debugPrintGridCreatures());
-        genomeAttackAnimal = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_animal", 1));  
         genomeAttackPlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 1));
         genomePlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "plant", 1));
           });
@@ -161,7 +159,7 @@ describe('gridDetect', () => {
     });
     test('grid.detectClosest(): returns closest plant 2/6/24 ', () => {
         let joeAttackPlantAt00 = worldController.generations.newCreature([0, 0], true, genomeAttackPlant);
-        let joeAttackAnimalAt11 = worldController.generations.newCreature([1, 1], true, genomeAttackAnimal);
+        let joeAttackPlantAt11 = worldController.generations.newCreature([1, 1], true, genomeAttackPlant);
         let joePlantAt22 = worldController.generations.newCreature([2, 2], true, genomePlant);
         let joePlantAt33 = worldController.generations.newCreature([3, 3], true, genomePlant);
         //console.log("2/6/24\n");
@@ -181,7 +179,7 @@ describe('gridDetect', () => {
     test('grid.detectClosest(): returns closest creature for a given genus ', () => {
         let joePlant = worldController.generations.newCreature([1, 0], true, genomePlant);
         let joeAttackPlant = worldController.generations.newCreature([2, 0], true, genomeAttackPlant);
-        let joeAttackAnimal = worldController.generations.newCreature([3, 0], true, genomeAttackAnimal);
+        let joeAttackPlant2 = worldController.generations.newCreature([3, 0], true, genomeAttackPlant);
         //console.log(grid.debugPrintGridCreatures());
         //console.log("eeeeeee\n\n", joePlant.position, joeMove.position, joeAttack.position);
         //console.log("yyyyyy\n\n", detectAll(grid, [2,0], 3));
@@ -190,15 +188,14 @@ describe('gridDetect', () => {
         expect(detectClosest(grid, [2, 0], 3, "plant")).toEqual(
             {distance: 1, position: [1,0], genus: "plant"},
         );
-        expect(detectClosest(grid, [2, 0], 3, "attack_animal")).toEqual(
-            {distance: 1, position: [3,0], genus: "attack_animal"},
+        expect(detectClosest(grid, [2, 0], 3, "attack_plant")).toEqual(
+            {distance: 1, position: [3,0], genus: "attack_plant"},
         );
     });
 
     test('grid.detectClosest(): no creatures for given genus ', () => {
         let joePlant = worldController.generations.newCreature([1, 0], true, genomePlant);
         let joeAttackPlant = worldController.generations.newCreature([2, 0], true, genomeAttackPlant);
-        let joeAttackAnimal = worldController.generations.newCreature([3, 0], true, genomeAttackAnimal);
         //console.log(grid.debugPrintGridCreatures());
         //console.log("eeeeeee\n\n", joePlant.position, joeMove.position, joeAttack.position);
         //console.log("yyyyyy\n\n", detectAll(grid, [2,0], 3));
@@ -219,8 +216,8 @@ describe('gridDetect', () => {
         simulationData.worldObjects = [];
         simulationData.worldControllerData.size = 30;
         simulationData.worldGenerationsData.initialPopulation = 0;
-        const genomes = [genomePlant, genomeAttackPlant, genomeAttackAnimal];
-        const genera: (Genus | undefined)[] = [undefined, "plant", "attack_plant", "attack_animal"];
+        const genomes = [genomePlant, genomeAttackPlant];
+        const genera: (Genus | undefined)[] = [undefined, "plant", "attack_plant"];
 
         for (const density of [0.01, 0.05, 0.3, 0.8]) {
             worldController = new WorldController(simulationData);
@@ -228,14 +225,14 @@ describe('gridDetect', () => {
             for (let x = 0; x < grid.size; x++) {
                 for (let y = 0; y < grid.size; y++) {
                     if (Math.random() < density) {
-                        worldController.generations.newCreature([x, y], true, genomes[Math.floor(Math.random() * 3)]);
+                        worldController.generations.newCreature([x, y], true, genomes[Math.floor(Math.random() * genomes.length)]);
                     }
                 }
             }
             for (let n = 0; n < 300; n++) {
                 const origin: [number, number] = [Math.floor(Math.random() * grid.size), Math.floor(Math.random() * grid.size)];
                 const radius = [0, 1, 3, 10, 40][n % 5];
-                const genus = genera[Math.floor(n / 5) % 4];
+                const genus = genera[Math.floor(n / 5) % genera.length];
                 expect(detectClosest(grid, origin, radius, genus)).toEqual(detectClosestReference(origin, radius, genus));
             }
         }

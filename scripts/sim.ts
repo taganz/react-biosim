@@ -114,7 +114,7 @@ function parseArgs(argv: string[]): RunConfig {
 
 const CSV_COLUMNS: (keyof GenerationRow)[] = [
   "run", "generation", "startingPopulation", "survivorCount", "births", "deaths", "maxFitnessValue",
-  "durationMs", "nextPopulation", "nextPlants", "nextAttackPlants", "nextAttackAnimals", "nextUnknown",
+  "durationMs", "nextPopulation", "nextPlants", "nextAttackPlants", "nextUnknown",
 ];
 
 function toCsv(rows: GenerationRow[]): string {
@@ -161,7 +161,7 @@ async function main() {
       if (progressEvery > 0 && row.generation % progressEvery === 0) {
         print(`  run ${row.run} gen ${row.generation}: population ${row.startingPopulation}, survivors ${row.survivorCount},`
           + ` births ${row.births}, deaths ${row.deaths}, next ${row.nextPopulation}`
-          + ` (plants ${row.nextPlants}, attack_plant ${row.nextAttackPlants}, attack_animal ${row.nextAttackAnimals}, unknown ${row.nextUnknown})`);
+          + ` (plants ${row.nextPlants}, attack_plant ${row.nextAttackPlants}, unknown ${row.nextUnknown})`);
       }
     },
   });

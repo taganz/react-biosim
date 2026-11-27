@@ -65,10 +65,14 @@ export default class Creature {
   spawnZone : number | null = null;
   childrenCount : number = 0;
   attackCount : number = 0;          // every attack action, including the ones without enough mass
-  killCount : number = 0;
+  // prey killed, split like the mass eaten: plants and other animals
+  plantKillCount : number = 0;
+  animalKillCount : number = 0;
   thinkCount : number = 0;           // steps in which the brain ran
   waterFromPhotosynthesis : number = 0;
-  waterFromPrey : number = 0;        // the mass it gained from its prey, up to its maximum mass
+  // the mass it gained from its prey, up to its maximum mass: from plants and from other animals
+  waterFromPlants : number = 0;
+  waterFromAnimals : number = 0;
   deathCause : DeathCause | null = null;
   deathStep : number | null = null;
   deathGen : number | null = null;
@@ -78,6 +82,11 @@ export default class Creature {
   speciesId : string;
   speciesParentId : string | null;
   //_worldWater : WorldWater;
+
+  /** prey killed, plants and animals */
+  get killCount() : number {
+    return this.plantKillCount + this.animalKillCount;
+  }
   
   private _health: number = maxHealth;
 
@@ -134,14 +143,12 @@ export default class Creature {
     return this._genus;
   }
   get preyGenus(): Genus | undefined {
-    if (this._genus === "attack_animal") return "attack_plant";
     if (this._genus === "attack_plant") return "plant";
     return undefined;    
   }
 
   get predatorGenus(): Genus | undefined {
     if (this._genus === "plant") return "attack_plant";
-    if (this._genus === "attack_plant") return "attack_animal";
     return undefined;    
   }
 
@@ -240,11 +247,8 @@ export default class Creature {
   //TODO actionInputValue es sempre 1?
   attack(actionInputValue: number, targetDirection: Direction4) {
     this.attackCount++;
-    const preyMass = this._attack.attack(actionInputValue, targetDirection);
-    // the attack has already moved the prey's mass to this creature
-    if (preyMass > 0) {
-      this.killCount++;
-    }
+    // a kill is counted by CreatureAttack.eat, which knows the genus of the prey
+    this._attack.attack(actionInputValue, targetDirection);
   }
 
   // MoveToPrey: an urge to move towards the closest prey found at the start of the thought, as

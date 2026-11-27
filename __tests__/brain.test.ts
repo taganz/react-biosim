@@ -17,7 +17,7 @@ describe('brain basic tests', () => {
     const generations = worldController.generations;
     let genomePlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "plant", 1));
     let genomeMove = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 1));
-    let genomeAttack = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_animal", 1));
+    let genomeAttack = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 1));
     //const grid = worldController.generations.grid; 
     const joe = generations.newCreature([10, 10], true, genomePlant);
 

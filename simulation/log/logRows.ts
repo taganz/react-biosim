@@ -24,7 +24,7 @@ export interface Column<T> {
 export const creatureKey = (birthGen: number, id: number): string => `${birthGen}-${id}`;
 
 const BALANCE_KEYS: (keyof MassBalance)[] = [
-  "start", "photosynthesis", "fromPrey", "basal", "thinking", "moving", "attacking",
+  "start", "photosynthesis", "fromPlants", "fromAnimals", "basal", "thinking", "moving", "attacking",
   "reproductionCost", "givenToChildren", "end",
 ];
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
@@ -87,11 +87,13 @@ export function creatureColumns(options: CreatureColumnOptions): Column<Creature
     { name: "canReproduce", value: (c) => c.isAlive && c.reproduction.hasEnoughtMassToReproduce },
     { name: "stamina", value: (c) => c.brain.stamina },
     { name: "children", value: (c) => c.childrenCount },
-    { name: "kills", value: (c) => c.killCount },
+    { name: "plantKills", value: (c) => c.plantKillCount },
+    { name: "animalKills", value: (c) => c.animalKillCount },
     { name: "attacks", value: (c) => c.attackCount },
     { name: "thinkCount", value: (c) => c.thinkCount },
     { name: "waterFromPhotosynthesis", value: (c) => c.waterFromPhotosynthesis },
-    { name: "waterFromPrey", value: (c) => c.waterFromPrey },
+    { name: "waterFromPlants", value: (c) => c.waterFromPlants },
+    { name: "waterFromAnimals", value: (c) => c.waterFromAnimals },
     ...BALANCE_KEYS.map((key): Column<Creature> => ({ name: `mass${capitalize(key)}`, value: (c) => balance(c)[key] })),
     { name: "deathCause", value: (c) => c.deathCause },
     { name: "deathGen", value: (c) => c.deathGen },
@@ -158,10 +160,12 @@ export function speciesColumns(options: SpeciesColumnOptions): Column<SpeciesSna
     { name: "pctCanMove", value: (s) => s.stats.living?.canMove ?? null },
     { name: "pctCanReproduce", value: (s) => s.stats.living?.canReproduce ?? null },
     { name: "avgChildren", value: (s) => s.stats.perCreature?.children ?? null },
-    { name: "avgKills", value: (s) => s.stats.perCreature?.kills ?? null },
+    { name: "avgPlantKills", value: (s) => s.stats.perCreature?.plantKills ?? null },
+    { name: "avgAnimalKills", value: (s) => s.stats.perCreature?.animalKills ?? null },
     { name: "avgAttacks", value: (s) => s.stats.perCreature?.attacks ?? null },
     { name: "avgPhotosynthesis", value: (s) => s.stats.perCreature?.photosynthesis ?? null },
-    { name: "avgFromPrey", value: (s) => s.stats.perCreature?.fromPrey ?? null },
+    { name: "avgFromPlants", value: (s) => s.stats.perCreature?.fromPlants ?? null },
+    { name: "avgFromAnimals", value: (s) => s.stats.perCreature?.fromAnimals ?? null },
     ...BALANCE_KEYS.map((key): Column<SpeciesSnapshot> => ({
       name: `avgMass${capitalize(key)}`, value: (s) => s.stats.perCreature?.balance[key] ?? null,
     })),

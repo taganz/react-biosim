@@ -44,5 +44,4 @@ export const CONSTANTS_DEFAULT = {
 export const DEFAULT_GENUS_PROBABILITIES : GenusProbability[] = [
   {genus: "plant", probability: 0.7},
   {genus: "attack_plant", probability: 0.3},
-  {genus: "attack_animal", probability: 0},
 ];

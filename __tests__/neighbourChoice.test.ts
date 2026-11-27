@@ -153,7 +153,8 @@ describe('CreatureAttack prey choice', () => {
     test('without prey there is no target', () => {
         const attacker = spawn("attack_plant", [2, 2]);
         spawn("attack_plant", [3, 2]);
-        spawn("attack_animal", [1, 1]);      // too heavy to eat
+        const heavyPlant = spawn("plant", [1, 2]);
+        heavyPlant._mass._mass = attacker.mass;     // too heavy to eat
         expect(attacker.findPreyDirection()).toBeNull();
     });
 

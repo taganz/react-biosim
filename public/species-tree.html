@@ -98,7 +98,7 @@ button { background: var(--sunken); border: 1px solid var(--line); border-radius
   <section class="panel" id="summary" hidden>
     <div class="status" id="counts"></div>
     <div class="legend" id="legend">
-      <span style="--c: var(--plant)">plant</span><span style="--c: var(--herb)">herbivore</span>
+      <span style="--c: var(--plant)">plant</span><span style="--c: var(--herb)">animal</span>
       <span style="--c: var(--carn)">carnivore</span><span style="--c: var(--unknown)">unknown</span>
     </div>
   </section>
@@ -114,7 +114,7 @@ button { background: var(--sunken); border: 1px solid var(--line); border-radius
 const $ = (id) => document.getElementById(id);
 const SVG_NS = "http://www.w3.org/2000/svg";
 const GENUS_VAR = { plant: "--plant", attack_plant: "--herb", attack_animal: "--carn", unknown: "--unknown" };
-const GENUS_LABEL = { plant: "plant", attack_plant: "herbivore", attack_animal: "carnivore", unknown: "unknown" };
+const GENUS_LABEL = { plant: "plant", attack_plant: "animal", attack_animal: "carnivore", unknown: "unknown" };
 const LANE_GAP = 3;
 const MIN_LANE = 2;
 const MARGIN = { left: 12, right: 16, top: 8, bottom: 28 };

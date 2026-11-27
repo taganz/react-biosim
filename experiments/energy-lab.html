@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
 <style>
-/* Layout: a lab bench. File strip on top, scenario constants, then two simulators side by side (plant | herbivore), species register at the bottom. */
+/* Layout: a lab bench. File strip on top, scenario constants, then two simulators side by side (plant | animal), species register at the bottom. */
 :root {
   --bg: #f3f6f4;
   --surface: #ffffff;
@@ -144,7 +144,6 @@ td input.changed { border-color: var(--warn); background: var(--warn-soft); }
 .genus { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .genus.plant { background: var(--plant-soft); color: var(--plant); }
 .genus.attack_plant { background: var(--herb-soft); color: var(--herb); }
-.genus.attack_animal { background: var(--bad-soft); color: var(--bad); }
 .genus.unknown { background: var(--sunken); color: var(--muted); }
 .empty { padding: 22px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; }
 .foot { font-size: 12px; color: var(--muted); max-width: 90ch; display: grid; gap: 4px; }
@@ -181,7 +180,7 @@ td input.changed { border-color: var(--warn); background: var(--warn-soft); }
     <div class="map-head">
       <div><h2>Especies del fichero</h2><p class="muted small" id="spSummary">Genomas descodificados con la tabla de sensores y acciones actual del motor.</p></div>
       <div class="species-pick"><label class="small muted" for="spFilter">Mostrar</label>
-        <select id="spFilter"><option value="all">todas</option><option value="plant">plantas</option><option value="attack_plant">herbívoros</option><option value="attack_animal">carnívoros</option><option value="unknown">sin género</option></select></div>
+        <select id="spFilter"><option value="all">todas</option><option value="plant">plantas</option><option value="attack_plant">animales</option><option value="unknown">sin género</option></select></div>
     </div>
     <div id="spBody"><div class="empty">Carga un <span class="mono">.sim</span> para ver sus especies: género, genes que cuestan masa, sensores, acciones, stamina y masa real de sus criaturas.</div></div>
   </section>
@@ -196,17 +195,19 @@ td input.changed { border-color: var(--warn); background: var(--warn-soft); }
 "use strict";
 // ---------------------------------------------------------------- engine tables (simulation/creature/brain)
 const SENSOR_TABLE = ["HorizontalPosition","VerticalPosition","Age","Oscillator","Random","HorizontalSpeed","VerticalSpeed","HorizontalBorderDistance","VerticalBorderDistance","BorderDistance","TouchNorth","TouchEast","TouchSouth","TouchWest","Pain","PopulationDensity","Mass","PreyDistance","PreyNorth","PreyEast","PreySouth","PreyWest","PredatorDistance","PredatorDirection","PreyProximity"];
-const ACTION_TABLE = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","Photosynthesis","Reproduction","AttackPlant","AttackAnimal","Stamina","MoveToPrey"];
-const ACTION_MAIN_GENUS = { Photosynthesis: "plant", AttackPlant: "attack_plant", AttackAnimal: "attack_animal" };
+const ACTION_TABLE = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","Photosynthesis","Reproduction","Attack","Stamina","MoveToPrey"];
+// files before format 3 had two attack actions, which did the same; their carnivores count as animals
+const ACTION_TABLE_V2 = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","Photosynthesis","Reproduction","AttackPlant","AttackAnimal","Stamina","MoveToPrey"];
+const ATTACK_ACTIONS = ["Attack","AttackPlant","AttackAnimal"];
+const ACTION_MAIN_GENUS = { Photosynthesis: "plant", Attack: "attack_plant", AttackPlant: "attack_plant", AttackAnimal: "attack_plant" };
 const MOVE_ACTIONS = ["MoveNorth","MoveSouth","MoveEast","MoveWest","RandomMove","MoveForward","MoveToPrey"];
-const GENUS_LABEL = { plant: "planta", attack_plant: "herbívoro", attack_animal: "carnívoro", unknown: "sin género" };
+const GENUS_LABEL = { plant: "planta", attack_plant: "animal", unknown: "sin género" };
 
 // ---------------------------------------------------------------- constants (startupScenario.ts)
 const PARAMS = [
   ["MASS_WATER_TO_MASS_PER_STEP", 0.1, "Agua que toma la fotosíntesis en un paso, × salida"],
   ["MASS_AT_BIRTH_PLANT", 1, "Masa al nacer de una planta"],
-  ["MASS_AT_BIRTH_ATTACK_PLANT", 3, "Masa al nacer de un herbívoro"],
-  ["MASS_AT_BIRTH_ATTACK_ANIMAL", 6, "Masa al nacer de un carnívoro"],
+  ["MASS_AT_BIRTH_ATTACK_PLANT", 3, "Masa al nacer de un animal"],
   ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 5, "Masa máxima, × masa al nacer"],
   ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Por paso, por gen primario"],
   ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.04, "Por paso, por cada otro gen"],
@@ -236,7 +237,7 @@ const state = {
 // ---------------------------------------------------------------- simulators: inputs
 const SIM_DEFS = {
   plant: { title: "Planta", genus: "plant", inputs: { prim: 2, other: 1, sens: 2, acts: 2, st: 1, photo: 1, cell: 1, repro: 1, pfree: 1, pmove: 0, patt: 0, pprey: 0, prey: 0, maxAge: 300 } },
-  herb:  { title: "Herbívoro", genus: "attack_plant", inputs: { prim: 1, other: 4, sens: 4, acts: 4, st: 1, photo: 0, cell: 1, repro: 1, pfree: 1, pmove: 0.1, patt: 0.5, pprey: 0.8, prey: 1.2, maxAge: 300 } },
+  herb:  { title: "Animal", genus: "attack_plant", inputs: { prim: 1, other: 4, sens: 4, acts: 4, st: 1, photo: 0, cell: 1, repro: 1, pfree: 1, pmove: 0.1, patt: 0.5, pprey: 0.8, prey: 1.2, maxAge: 300 } },
 };
 const sims = {};
 for (const k of Object.keys(SIM_DEFS)) sims[k] = { kind: k, genus: SIM_DEFS[k].genus, x: { ...SIM_DEFS[k].inputs }, species: null, mapY: k === "plant" ? "photo" : "pmove" };
@@ -263,7 +264,6 @@ const CONTROLS = [
 
 // ---------------------------------------------------------------- model
 function birthMass(sim, P) {
-  if (sim.genus === "attack_animal") return P.MASS_AT_BIRTH_ATTACK_ANIMAL;
   if (sim.genus === "attack_plant") return P.MASS_AT_BIRTH_ATTACK_PLANT;
   return P.MASS_AT_BIRTH_PLANT;
 }
@@ -308,7 +308,7 @@ function live(sim, P, x, rng) {
     const cb = Math.min(c, d.basal); T.basal += cb; T.think += c - cb;
     if (m <= 0) { death = s; cause = "sin masa"; mass[s] = 0; break; }
     if (thinks) {
-      // actions in the order of the table: Photosynthesis, Reproduction, AttackPlant
+      // actions in the order of the table: Photosynthesis, Reproduction, Attack
       const g = Math.max(0, Math.min(d.water, d.maxMass - m)); m += g; T.photo += g;
       if (x.repro && m > d.rthr) {
         if (rng) {
@@ -373,7 +373,7 @@ function netAtBirth(d, x) {
 function decodeSpecies(genes, enabledSensors, enabledActions, P, staminaEnabled) {
   const nS = enabledSensors.length, nA = enabledActions.length;
   const sensors = new Set(), actions = new Set();
-  let genus = { plant: false, attack_plant: false, attack_animal: false };
+  let genus = { plant: false, attack_plant: false };
   let staminaW = null, staminaGenes = 0, broken = false;
   const actionsInGenome = new Set();
   for (const gene of genes) {
@@ -386,12 +386,12 @@ function decodeSpecies(genes, enabledSensors, enabledActions, P, staminaEnabled)
     if (sourceType === 1) sensors.add(enabledSensors[sourceId % nS]);
     if (action) { actions.add(action); actionsInGenome.add(action); const mg = ACTION_MAIN_GENUS[action]; if (mg) genus[mg] = true; }
   }
-  const g = genus.attack_animal ? "attack_animal" : genus.attack_plant ? "attack_plant" : genus.plant ? "plant" : "unknown";
+  const g = genus.attack_plant ? "attack_plant" : genus.plant ? "plant" : "unknown";
   const primaryActs = g === "plant" ? ["Photosynthesis", "Reproduction"] : ["Reproduction"];
   const prim = primaryActs.filter(a => actionsInGenome.has(a)).length;
   const st = staminaEnabled ? (staminaW === null ? 1 : Math.max(P.STAMINA_MIN, Math.min(1, (staminaW + 4) / 8))) : 1;
   return { genus: g, prim, other: genes.length - prim - staminaGenes, staminaGenes, total: genes.length, sensors: [...sensors], actions: [...actions], st, broken,
-    moves: [...actions].some(a => MOVE_ACTIONS.includes(a)), attacks: actions.has("AttackPlant") || actions.has("AttackAnimal"), photos: actions.has("Photosynthesis") };
+    moves: [...actions].some(a => MOVE_ACTIONS.includes(a)), attacks: ATTACK_ACTIONS.some(a => actions.has(a)), photos: actions.has("Photosynthesis") };
 }
 
 // ---------------------------------------------------------------- file loading
@@ -409,8 +409,9 @@ function loadSim(name, text) {
   const unused = Object.keys(wcd).filter(k => !KNOWN_KEYS.has(k));
   const fileSensors = gen.enabledSensors || [], fileActions = gen.enabledActions || [];
   const enabledSensors = SENSOR_TABLE.filter(s => fileSensors.includes(s));
-  const enabledActions = ACTION_TABLE.filter(a => fileActions.includes(a));
-  const unknownS = fileSensors.filter(s => !SENSOR_TABLE.includes(s)), unknownA = fileActions.filter(a => !ACTION_TABLE.includes(a));
+  const actionTable = (data.version ?? 1) >= 3 ? ACTION_TABLE : ACTION_TABLE_V2;
+  const enabledActions = actionTable.filter(a => fileActions.includes(a));
+  const unknownS = fileSensors.filter(s => !SENSOR_TABLE.includes(s)), unknownA = fileActions.filter(a => !actionTable.includes(a));
   const staminaEnabled = enabledActions.includes("Stamina");
   const sensorCosts = wcd.SENSOR_COSTS || {}, actionCosts = wcd.ACTION_COSTS || {};
   const species = (data.species || []).map((sp, i) => {
@@ -429,8 +430,8 @@ function loadSim(name, text) {
   state.stepsPerGen = typeof wcd.stepsPerGen === "number" ? wcd.stepsPerGen : 300;
   state.file = { name, gen, wcd, water: data.waterData || null, species, enabledSensors, enabledActions, unknownS, unknownA, unused, metabolism: gen.metabolismEnabled, staminaEnabled, version: data.version };
   for (const k of Object.keys(sims)) { sims[k].species = null; sims[k].genus = SIM_DEFS[k].genus; sims[k].x = { ...SIM_DEFS[k].inputs, maxAge: state.stepsPerGen }; }
-  // load the most numerous plant and herbivore species
-  const firstPlant = species.find(s => s.genus === "plant" && !s.broken), firstHerb = species.find(s => (s.genus === "attack_plant" || s.genus === "attack_animal") && !s.broken);
+  // load the most numerous plant and animal species
+  const firstPlant = species.find(s => s.genus === "plant" && !s.broken), firstHerb = species.find(s => s.genus === "attack_plant" && !s.broken);
   if (firstPlant) applySpecies("plant", firstPlant);
   if (firstHerb) applySpecies("herb", firstHerb);
   renderAll();
@@ -438,7 +439,7 @@ function loadSim(name, text) {
 function applySpecies(kind, s) {
   const sim = sims[kind]; const x = sim.x;
   sim.species = s;
-  if (kind === "herb") sim.genus = s.genus === "attack_animal" ? "attack_animal" : "attack_plant";
+  if (kind === "herb") sim.genus = "attack_plant";
   else sim.genus = "plant";
   x.prim = s.prim; x.other = s.other; x.sens = s.sensors.length; x.acts = s.actions.length; x.st = s.st;
   if (!s.photos) x.photo = 0; else if (x.photo === 0) x.photo = 1;
@@ -567,7 +568,7 @@ function syncControls(kind) {
   const f = state.file;
   const opts = [`<option value="">Genérica (sin especie)</option>`];
   if (f) {
-    const okGenus = kind === "plant" ? ["plant", "unknown"] : ["attack_plant", "attack_animal"];
+    const okGenus = kind === "plant" ? ["plant", "unknown"] : ["attack_plant"];
     f.species.filter(s => okGenus.includes(s.genus)).slice(0, 300).forEach(s => {
       opts.push(`<option value="${s.idx}">#${s.idx + 1} ${GENUS_LABEL[s.genus]} · ${s.total} genes · ${s.n} criaturas</option>`);
     });
@@ -692,8 +693,8 @@ function renderSpecies() {
   const counts = {}; f.species.forEach(s => counts[s.genus] = (counts[s.genus] || 0) + 1);
   $("#spSummary").innerHTML = `${f.species.length} especies: ${Object.entries(counts).map(([g, c]) => `${c} ${GENUS_LABEL[g]}`).join(", ")}. Genomas leídos con la tabla actual de sensores y acciones. Ordenadas por número de criaturas.`;
   const rows = list.slice(0, 250).map(s => {
-    const kind = s.genus === "attack_plant" || s.genus === "attack_animal" ? "herb" : "plant";
-    const tmp = { kind, genus: kind === "herb" ? (s.genus === "attack_animal" ? "attack_animal" : "attack_plant") : "plant", species: s, x: { ...sims[kind].x } };
+    const kind = s.genus === "attack_plant" ? "herb" : "plant";
+    const tmp = { kind, genus: kind === "herb" ? "attack_plant" : "plant", species: s, x: { ...sims[kind].x } };
     tmp.x.prim = s.prim; tmp.x.other = s.other; tmp.x.sens = s.sensors.length; tmp.x.acts = s.actions.length; tmp.x.st = s.st;
     const d = derive(tmp, state.P, tmp.x);
     const fixedCost = d.basal + x0(s.st) * d.think;

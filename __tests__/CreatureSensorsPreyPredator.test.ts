@@ -22,7 +22,6 @@ describe('CreatureSensors - Prey and Predator sensors', () => {
     let cs : CreatureSensors;
     let genomePlant : Genome;
     let genomeAttackPlant : Genome;
-    let genomeAttackAnimal : Genome;
     
     const allSensors : SensorName[] = [
         "HorizontalPosition"    // 0
@@ -72,7 +71,6 @@ describe('CreatureSensors - Prey and Predator sensors', () => {
       
       genomePlant = new Genome(CreatureGenus.geneArrayForGenus(generations, "plant", 1));
       genomeAttackPlant  = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 1));
-      genomeAttackAnimal = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_animal", 1));
   
 
       //joeAt11 = worldController.generations.newCreature([1, 1], true, genomePlant);
@@ -95,7 +93,7 @@ describe('CreatureSensors - Prey and Predator sensors', () => {
       cs.loadFromList(enabledSensors);
       generations.worldController.simData.constants.DETECT_RADIUS = 5
       let joeAttackPlantAt00 = worldController.generations.newCreature([0, 0], true, genomeAttackPlant);
-      let joeAttackAnimalAt11 = worldController.generations.newCreature([1, 1], true, genomeAttackAnimal);
+      let joeAttackPlantAt11 = worldController.generations.newCreature([1, 1], true, genomeAttackPlant);   // same genus: not a prey
       let joePlantAt22 = worldController.generations.newCreature([2, 2], true, genomePlant);
       let joePlantAt33 = worldController.generations.newCreature([3, 3], true, genomePlant);
       expect(cs.calculateOutputs(joeAttackPlantAt00)).toEqual([2]);  

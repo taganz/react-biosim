@@ -27,7 +27,7 @@ Your edits are a **draft**. The simulation keeps running with its old settings u
 Some changes behave differently depending on how you apply them:
 
 - **World size and map:** **Update simulation** rebuilds the world straight away. Creatures that no longer fit are removed: those outside a smaller world, or on a cell that is now an obstacle.
-- **Initial population** and the population strategy take effect when the next generation is created. Choosing *Random Fixed Genera* or *Plant/Herbivore* also enables the actions their genera need (Photosynthesis, Attack Plant, Attack Animal, and Reproduction for all of them) and turns metabolism on, so use **Restart** after choosing them (see Sensors and actions below). With *Random Fixed Genera*, the **Genera of generation 1** box lets you see and change the probability of each genus, and so how generation 1 genomes are built ([details](../reference/population-and-selection.md#random-fixed-genera-randomfixedgenepopulation)).
+- **Initial population** and the population strategy take effect when the next generation is created. Choosing *Random Fixed Genera* or *Plants and Animals* also enables the actions their genera need (Photosynthesis, Attack Plant, Attack Animal, and Reproduction for all of them) and turns metabolism on, so use **Restart** after choosing them (see Sensors and actions below). With *Random Fixed Genera*, the **Genera of generation 1** box lets you see and change the probability of each genus, and so how generation 1 genomes are built ([details](../reference/population-and-selection.md#random-fixed-genera-randomfixedgenepopulation)).
 - **Simulation type:** with **Update simulation**, the current creatures carry on in the new mode, and the change takes effect at the end of the current generation. In continuous mode, the tab warns you if no creature can be born: metabolism is off, or the Reproduction action is not enabled.
 - **Water** (in World): the water settings check its settings against the world size and the initial population. Generation 1 takes its mass from the total water before the first rain, so if even the smallest mass at birth times the initial population is more than the world's total water, the World section shows the error in red and **Update simulation** and **Restart** are disabled until you fix it. It also warns, without disabling anything, when only the lighter genera fit, when the cells will start with less than *Initial water per cell*, and when *Rain max per cell* is above *Total water (per cell)* in a generational run, so it never rains.
 - **Metabolism** (at the top of Generations): with **Update simulation**, the creatures keep their current mass and start gaining or losing it from the next step. With metabolism on, *Inside Reproduction Area* cannot be chosen as the selection method; turning metabolism on while it is selected switches to *Reproduction*, and a notice below the checkbox says so.
@@ -55,7 +55,7 @@ There are three collapsible sections, closed at first (click a title to open it)
 
 - **Simulation code:** a name for the run, used in the names of saved files, images, GIFs and logs. Changing it renames the running simulation straight away. **Restart**, and the automatic restart after an extinction, keep a code you chose. They also keep the code when the seed is fixed and the scenario has not changed, because the restart repeats the same simulation. Otherwise they pick a new random one.
 - **Fixed seed:** off, every **Restart** picks a new random seed. On, every **Restart** repeats the same simulation (same settings and map); change the number to get another one. Turning it on fills in the seed of the running simulation, and **Fix this seed** does the same later, so you can repeat a run you liked. The seed only takes effect at the next **Restart**: the running simulation keeps its random sequence.
-- **Phenotype mode** only changes how creatures are coloured: by genome, so each species has its own colour; by trophic level (green plants, blue herbivores, red carnivores); or with green plants, where plants are shades of green and every other species has its own colour that is not green. The creatures are recoloured straight away.
+- **Phenotype mode** only changes how creatures are coloured: by genome, so each species has its own colour; by trophic level (green plants, blue animals); or with green plants, where plants are shades of green and every other species has its own colour that is not green. The creatures are recoloured straight away.
 
 ### Fitness chart
 
@@ -67,7 +67,7 @@ The section title is the name of the fitness value, for example **Survival rate 
 |---|---|---|
 | Inside Reproduction Area | Survival rate (%) | Share of the population that survived |
 | Greatest Distance | Distance index | Longest distance covered |
-| Greatest Mass | Greatest mass | Heaviest herbivore |
+| Greatest Mass | Greatest mass | Heaviest animal |
 | Reproduction | Reproduction | Number of survivors |
 | *(continuous runs)* | Population | Creatures alive at the end of the generation. The births and deaths of the last generation are shown above the chart. |
 

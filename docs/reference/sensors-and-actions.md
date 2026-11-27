@@ -10,44 +10,43 @@ Every creature belongs to a **genus** (its trophic level), worked out from the a
 
 | Genus | Common name | Rule | Colour in `trophicLevel` mode |
 |---|---|---|---|
-| `attack_animal` | carnivore | has a gene connected to **AttackAnimal** | red |
-| `attack_plant` | herbivore | otherwise, has a gene connected to **AttackPlant** | blue |
+| `attack_plant` | animal | has a gene connected to **Attack** | blue |
 | `plant` | plant | otherwise, has a gene connected to **Photosynthesis** | green |
 | `unknown` | — | none of the above | black |
 
-Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Genera and Plant/Herbivore. Random genomes can connect any sensor to any action.
+Each sensor and action also lists the genera it is **compatible** with. This only matters for strategies that build genomes for a given genus: Random Fixed Genera and Plants and Animals. Random genomes can connect any sensor to any action.
 
 ## Sensors
 
-Sensor outputs are mostly between 0 and 1. Genus columns: P = plant, H = herbivore, C = carnivore.
+Sensor outputs are mostly between 0 and 1. Genus columns: P = plant, A = animal.
 
-| # | Sensor | Output | P | H | C |
-|---|---|---|---|---|---|
-| 0 | HorizontalPosition | x position ÷ world size. 0 at the left edge, 1 at the right edge. | ✓ | ✓ | ✓ |
-| 1 | VerticalPosition | y position ÷ world size. 0 at the top, 1 at the bottom. | ✓ | ✓ | ✓ |
-| 2 | Age | Generational runs: current step ÷ steps per generation. All creatures share it: it measures time in the generation, not the age of the creature. Continuous runs: the creature's age ÷ **Maximum age**. | ✓ | ✓ | ✓ |
-| 3 | Oscillator | `(sin(step / 10) + 1) / 2`, a wave with a period of about 63 steps. | ✓ | ✓ | ✓ |
-| 4 | Random | A new random number in [0, 1) every step. | ✓ | ✓ | ✓ |
-| 5 | HorizontalSpeed | Last horizontal move: 0 = left, 0.5 = still, 1 = right. | | ✓ | ✓ |
-| 6 | VerticalSpeed | Last vertical move: 0 = up, 0.5 = still, 1 = down. | | ✓ | ✓ |
-| 7 | HorizontalBorderDistance | Distance to the nearest left or right edge: 0 at the edge, 1 at the centre. | ✓ | ✓ | ✓ |
-| 8 | VerticalBorderDistance | Distance to the nearest top or bottom edge: 0 at the edge, 1 at the centre. | ✓ | ✓ | ✓ |
-| 9 | BorderDistance | The smaller of the two border distances. | ✓ | ✓ | ✓ |
-| 10 | TouchNorth | 1 if the cell above holds a creature or an obstacle, or is outside the world. Otherwise 0. | ✓ | ✓ | ✓ |
-| 11 | TouchEast | The same for the cell to the right. | ✓ | ✓ | ✓ |
-| 12 | TouchSouth | The same for the cell below. | ✓ | ✓ | ✓ |
-| 13 | TouchWest | The same for the cell to the left. | ✓ | ✓ | ✓ |
-| 14 | Pain | `(100 − health) / 100`. Always 0 at present, because health areas are disabled. | ✓ | ✓ | ✓ |
-| 15 | PopulationDensity | Share of the 8 neighbouring cells that hold a creature. | ✓ | ✓ | ✓ |
-| 16 | Mass | The creature's mass. Not scaled to 0–1. | ✓ | ✓ | ✓ |
-| 17 | PreyDistance | Distance in cells to the closest prey within `DETECT_RADIUS` (10), with diagonal steps counting as 1. 999999 if there is none. Not scaled to 0–1. | | ✓ | ✓ |
-| 18 | PreyNorth | 1 if the closest prey is above. Otherwise 0. | | ✓ | ✓ |
-| 19 | PreyEast | 1 if the closest prey is to the right. | | ✓ | ✓ |
-| 20 | PreySouth | 1 if the closest prey is below. | | ✓ | ✓ |
-| 21 | PreyWest | 1 if the closest prey is to the left. | | ✓ | ✓ |
-| 22 | PredatorDistance | Not implemented yet (see [known issues](#known-issues)). | | ✓ | |
-| 23 | PredatorDirection | Not implemented yet (see [known issues](#known-issues)). | | ✓ | |
-| 24 | PreyProximity | How close the closest prey is: `(DETECT_RADIUS + 1 − distance) / DETECT_RADIUS`, so 1 for a neighbour (diagonals included) and `1 / DETECT_RADIUS` at the edge of the radius. 0 if there is none. Unlike PreyDistance it is between 0 and 1 and grows as the prey gets closer. Disabled by default. | | ✓ | ✓ |
+| # | Sensor | Output | P | A |
+|---|---|---|---|---|
+| 0 | HorizontalPosition | x position ÷ world size. 0 at the left edge, 1 at the right edge. | ✓ | ✓ |
+| 1 | VerticalPosition | y position ÷ world size. 0 at the top, 1 at the bottom. | ✓ | ✓ |
+| 2 | Age | Generational runs: current step ÷ steps per generation. All creatures share it: it measures time in the generation, not the age of the creature. Continuous runs: the creature's age ÷ **Maximum age**. | ✓ | ✓ |
+| 3 | Oscillator | `(sin(step / 10) + 1) / 2`, a wave with a period of about 63 steps. | ✓ | ✓ |
+| 4 | Random | A new random number in [0, 1) every step. | ✓ | ✓ |
+| 5 | HorizontalSpeed | Last horizontal move: 0 = left, 0.5 = still, 1 = right. | | ✓ |
+| 6 | VerticalSpeed | Last vertical move: 0 = up, 0.5 = still, 1 = down. | | ✓ |
+| 7 | HorizontalBorderDistance | Distance to the nearest left or right edge: 0 at the edge, 1 at the centre. | ✓ | ✓ |
+| 8 | VerticalBorderDistance | Distance to the nearest top or bottom edge: 0 at the edge, 1 at the centre. | ✓ | ✓ |
+| 9 | BorderDistance | The smaller of the two border distances. | ✓ | ✓ |
+| 10 | TouchNorth | 1 if the cell above holds a creature or an obstacle, or is outside the world. Otherwise 0. | ✓ | ✓ |
+| 11 | TouchEast | The same for the cell to the right. | ✓ | ✓ |
+| 12 | TouchSouth | The same for the cell below. | ✓ | ✓ |
+| 13 | TouchWest | The same for the cell to the left. | ✓ | ✓ |
+| 14 | Pain | `(100 − health) / 100`. Always 0 at present, because health areas are disabled. | ✓ | ✓ |
+| 15 | PopulationDensity | Share of the 8 neighbouring cells that hold a creature. | ✓ | ✓ |
+| 16 | Mass | The creature's mass. Not scaled to 0–1. | ✓ | ✓ |
+| 17 | PreyDistance | Distance in cells to the closest prey within `DETECT_RADIUS` (10), with diagonal steps counting as 1. 999999 if there is none. Not scaled to 0–1. | | ✓ |
+| 18 | PreyNorth | 1 if the closest prey is above. Otherwise 0. | | ✓ |
+| 19 | PreyEast | 1 if the closest prey is to the right. | | ✓ |
+| 20 | PreySouth | 1 if the closest prey is below. | | ✓ |
+| 21 | PreyWest | 1 if the closest prey is to the left. | | ✓ |
+| 22 | PredatorDistance | Not implemented yet (see [known issues](#known-issues)). | | ✓ |
+| 23 | PredatorDirection | Not implemented yet (see [known issues](#known-issues)). | | ✓ |
+| 24 | PreyProximity | How close the closest prey is: `(DETECT_RADIUS + 1 − distance) / DETECT_RADIUS`, so 1 for a neighbour (diagonals included) and `1 / DETECT_RADIUS` at the edge of the radius. 0 if there is none. Unlike PreyDistance it is between 0 and 1 and grows as the prey gets closer. Disabled by default. | | ✓ |
 
 The # column is the position in the full list. Genes do not use this number: they use the position among the **enabled** sensors (see [Gene encoding](#gene-encoding)).
 
@@ -55,28 +54,27 @@ The # column is the position in the full list. Genes do not use this number: the
 
 Each action reads the output of its neuron once per step in which the brain runs (every step, unless the Stamina action is enabled). Unless stated otherwise, the action runs when the output is above 0.
 
-| # | Action | Effect | P | H | C |
-|---|---|---|---|---|---|
-| 0 | MoveNorth | Adds an urge to move up, as strong as the output. | | ✓ | ✓ |
-| 1 | MoveSouth | Adds an urge to move down. | | ✓ | ✓ |
-| 2 | MoveEast | Adds an urge to move right. | | ✓ | ✓ |
-| 3 | MoveWest | Adds an urge to move left. | | ✓ | ✓ |
-| 4 | RandomMove | Adds an urge to move in a random direction. | | ✓ | ✓ |
-| 5 | MoveForward | Repeats the last move. After a move that fails (blocked, or not enough mass) there is no last move, so it does nothing until the creature moves again. | | ✓ | ✓ |
-| 6 | Photosynthesis | Turns water from the creature's cell into mass. | ✓ | | |
-| 7 | Reproduction | Creates a child in a free cell as far as possible, up to `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` (4 %) of the world size away, if the creature has enough mass. With no free cell, no child is born. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ | ✓ |
-| 8 | AttackPlant | Only when the output is above `ACTION_ATTACK_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. | | ✓ | ✓ |
-| 9 | AttackAnimal | The same as AttackPlant. Only the genus it gives the creature differs. | | | ✓ |
-| 10 | Stamina | Not executed: the weight of the first gene that drives it sets the creature's stamina, how often its brain runs. Disabled by default. See [Stamina](#stamina). | ✓ | ✓ | ✓ |
-| 11 | MoveToPrey | Adds an urge to move towards the closest prey, the one the prey sensors see, as strong as the output on each axis that leads to it. Disabled by default. See [MoveToPrey](#movetoprey). | | ✓ | ✓ |
+| # | Action | Effect | P | A |
+|---|---|---|---|---|
+| 0 | MoveNorth | Adds an urge to move up, as strong as the output. | | ✓ |
+| 1 | MoveSouth | Adds an urge to move down. | | ✓ |
+| 2 | MoveEast | Adds an urge to move right. | | ✓ |
+| 3 | MoveWest | Adds an urge to move left. | | ✓ |
+| 4 | RandomMove | Adds an urge to move in a random direction. | | ✓ |
+| 5 | MoveForward | Repeats the last move. After a move that fails (blocked, or not enough mass) there is no last move, so it does nothing until the creature moves again. | | ✓ |
+| 6 | Photosynthesis | Turns water from the creature's cell into mass. | ✓ | |
+| 7 | Reproduction | Creates a child in a free cell as far as possible, up to `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` (4 %) of the world size away, if the creature has enough mass. With no free cell, no child is born. Needed in continuous runs, where it is the only way creatures are born. | ✓ | ✓ |
+| 8 | Attack | Only when the output is above `ACTION_ATTACK_OFFSET` (0.6). Attacks a creature it can eat in one of the 4 neighbouring cells. Files saved before format 3 had two attack actions, AttackPlant and AttackAnimal, which did the same; they load as Attack (see [Save format](../development/serialization.md#compatibility)). | | ✓ |
+| 9 | Stamina | Not executed: the weight of the first gene that drives it sets the creature's stamina, how often its brain runs. Disabled by default. See [Stamina](#stamina). | ✓ | ✓ |
+| 10 | MoveToPrey | Adds an urge to move towards the closest prey, the one the prey sensors see, as strong as the output on each axis that leads to it. Disabled by default. See [MoveToPrey](#movetoprey). | | ✓ |
 
 **Movement.** The urges from all movement actions are added up separately for x and for y. On each axis the creature moves one cell, in the direction of the urge, with probability `|tanh(urge)|`. So it moves at most one cell per axis per step, and only if the target cell is free.
 
-**Prey.** Herbivores hunt plants and carnivores hunt herbivores. Plants have no prey, so the prey sensors read "no prey" for them.
+**Prey.** Animals hunt plants. Plants have no prey, so the prey sensors read "no prey" for them.
 
 **MoveToPrey.** With one gene the creature heads for its closest prey, which with the direction sensors takes four (PreyNorth → MoveNorth and so on). The prey is the one found at the start of the thought, within `DETECT_RADIUS`, by the same search as the prey sensors.
 - Further than one cell, it urges towards the prey on both axes, or on one if the prey is in line.
-- Next to the prey (N, E, S or W), where AttackPlant and AttackAnimal reach it, it adds no urge.
+- Next to the prey (N, E, S or W), where Attack reaches it, it adds no urge.
 - With the prey in a diagonal neighbour cell, which an attack cannot reach, it urges on one axis only, to a free cell beside the prey: horizontally if that cell is free, otherwise vertically, otherwise not at all.
 - It looks only for the prey genus, like the sensors. It also heads for prey too heavy to eat (see [Attack](#actions)).
 - In the steps a creature does not think (Stamina), the urge stays, like the other movement actions.

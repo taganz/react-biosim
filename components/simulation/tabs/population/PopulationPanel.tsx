@@ -9,7 +9,7 @@ import { Species } from "../../../../simulation/creature/Species";
 import SelectedSpecies from "./SelectedSpecies";
 import SpeciesButton from "./SpeciesButton";
 import PopulationSummary from "./PopulationSummary";
-import HerbivoreGenomeSummary from "./HerbivoreGenomeSummary";
+import AnimalGenomeSummary from "./AnimalGenomeSummary";
 import CreatureIdSearch from "./CreatureIdSearch";
 import SpeciesFilter from "./SpeciesFilter";
 import SpeciesOrder, { SpeciesOrderKey } from "./SpeciesOrder";
@@ -136,7 +136,7 @@ export default function PopulationPanel() {
   return (
     <div className="flex flex-col gap-6">
       <PopulationSummary speciesCount={species.length} />
-      <HerbivoreGenomeSummary />
+      <AnimalGenomeSummary />
       <CreatureIdSearch />
       <SpeciesFilter
         sensors={enabledNames.sensors}

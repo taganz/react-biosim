@@ -9,8 +9,7 @@ function sim(water: Partial<SimulationData["waterData"]>, simulationType: "gener
   data.worldObjects = [];
   data.worldControllerData.size = 10;
   data.worldControllerData.MASS_AT_BIRTH_PLANT = 1;
-  data.worldControllerData.MASS_AT_BIRTH_ATTACK_PLANT = 3;
-  data.worldControllerData.MASS_AT_BIRTH_ATTACK_ANIMAL = 6;
+  data.worldControllerData.MASS_AT_BIRTH_ATTACK_PLANT = 6;
   data.worldGenerationsData.initialPopulation = 10;
   data.worldGenerationsData.simulationType = simulationType;
   data.waterData = {

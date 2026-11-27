@@ -142,7 +142,8 @@ export default function SelectedCreatureInfo({ creature }: Props) {
           {preyGenus && (
             <>
               <Field label="Attacks">{creature.attackCount}</Field>
-              <Field label="Kills">{creature.killCount}</Field>
+              <Field label="Kills of plants">{creature.plantKillCount}</Field>
+              <Field label="Kills of animals">{creature.animalKillCount}</Field>
             </>
           )}
         </Group>

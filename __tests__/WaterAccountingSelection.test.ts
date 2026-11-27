@@ -39,7 +39,7 @@ describe("water accounting across generations", () => {
         metabolismEnabled: true,
         populationStrategy: selectPopulationStrategy(strategy),
         selectionMethod: selectSelectionMethod(selection),
-        enabledActions: Array.from(new Set([...generationsData.enabledActions, "Photosynthesis", "Reproduction", "AttackPlant"])),
+        enabledActions: Array.from(new Set([...generationsData.enabledActions, "Photosynthesis", "Reproduction", "Attack"])),
       },
     };
     const worldController = new WorldController(simulationData);

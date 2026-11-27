@@ -48,8 +48,7 @@ const getActionLabel = (action: Action) => `${getPrettyName(action.name)} (1 neu
 
 const GENERA: { genus: Genus; label: string }[] = [
   { genus: "plant", label: "Plant" },
-  { genus: "attack_plant", label: "Herbivore (attack_plant)" },
-  { genus: "attack_animal", label: "Carnivore (attack_animal)" },
+  { genus: "attack_plant", label: "Animal (attack_plant)" },
 ];
 
 // The share of creatures each entry gets, picked the way selectGenusBasedOnProbability
@@ -710,7 +709,7 @@ export default function ScenarioSettings() {
       <ScenarioSection
         id="actions" changed={changedSections}
         title="Actions"
-        description="At least one action must stay enabled. Photosynthesis, reproduction and attack actions are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (MASS_COST_PER_ACTION unless changed here)."
+        description="At least one action must stay enabled. Photosynthesis, Reproduction and Attack are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (MASS_COST_PER_ACTION unless changed here)."
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {actions.map((action) => (

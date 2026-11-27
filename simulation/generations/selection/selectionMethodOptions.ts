@@ -17,7 +17,7 @@ export const selectionMethodOptions: SelectionMethodOption[] = [
   {value: "GreatestDistanceSelection", label: "Greatest Distance (in dev)",
     description: "The 5% of creatures with the highest distance index, which rewards long straight runs, survive."},
   {value: "GreatestMassSelection", label: "Greatest Mass (hervivores only)",
-    description: "Only herbivores can survive: the heaviest ones, as many as 5% of all creatures."},
+    description: "Only animals can survive: the heaviest ones, as many as 5% of all creatures."},
   {value: "ReproductionSelection", label: "Reproduction",
     description: "Creatures born during the generation with the Reproduction action survive. The water is not reset between generations."},
 ];

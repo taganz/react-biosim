@@ -14,8 +14,7 @@ export type ActionName =
   | "MoveForward"
   | "Photosynthesis"
   | "Reproduction"
-  | "AttackPlant"
-  | "AttackAnimal"
+  | "Attack"
   | "Stamina"
   | "MoveToPrey";
 
@@ -36,37 +35,37 @@ export default class CreatureActions {
     MoveNorth: {
       name: "MoveNorth",    // 0
       enabled: false,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     MoveSouth: {
       name: "MoveSouth",  // 1
       enabled: false,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     MoveEast: {
       name: "MoveEast", // 2
       enabled: true,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null
     },
     MoveWest: {
       name: "MoveWest", // 3
       enabled: false,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     RandomMove: {
       name: "RandomMove", // 4
       enabled: false,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     MoveForward: {
       name: "MoveForward",  // 5
       enabled: false,
-      compatibleGenus: ["attack_plant","attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
     Photosynthesis: {
@@ -78,34 +77,29 @@ export default class CreatureActions {
     Reproduction: {
       name: "Reproduction", // 7
       enabled: true,
-      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      compatibleGenus: ["plant", "attack_plant"],
       mainGenus: null,
     },
-    AttackPlant: {
-      name: "AttackPlant", // 8
+    // replaces AttackPlant and AttackAnimal, which did the same (see migrateSavedSimulationData)
+    Attack: {
+      name: "Attack", // 8
       enabled: true,
-      compatibleGenus: ["attack_plant", "attack_animal"],   //TODO review should attack_animal attack plants?
+      compatibleGenus: ["attack_plant"],
       mainGenus: "attack_plant",
-    },
-    AttackAnimal: {
-      name: "AttackAnimal", // 9
-      enabled: true,
-      compatibleGenus: ["attack_animal"],
-      mainGenus: "attack_animal",
     },
     // not executed: the weight of the first gene that drives it is the creature's stamina,
     // read once at birth (see CreatureBrain)
     Stamina: {
-      name: "Stamina", // 10
+      name: "Stamina", // 9
       enabled: false,
-      compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+      compatibleGenus: ["plant", "attack_plant"],
       mainGenus: null,
     },
     // moves towards the closest prey, the one the prey sensors see
     MoveToPrey: {
-      name: "MoveToPrey", // 11
+      name: "MoveToPrey", // 10
       enabled: false,
-      compatibleGenus: ["attack_plant", "attack_animal"],
+      compatibleGenus: ["attack_plant"],
       mainGenus: null,
     },
 
@@ -306,12 +300,12 @@ export default class CreatureActions {
       input = values[currentIndex];
     }
 
-    // AttackPlant
-    if (this.data.AttackPlant.enabled) {
+    // Attack
+    if (this.data.Attack.enabled) {
       if (input > this.actionAttackOffset) {    // was 0
 
         const targetDirection : Direction4 = creature.findPreyDirection();
-        if (targetDirection!=null) {    //TODO check if target creature is plant
+        if (targetDirection!=null) {
           creature.attack(input, targetDirection);
         }
       }
@@ -319,20 +313,6 @@ export default class CreatureActions {
       currentIndex++;
       input = values[currentIndex];
     }
-
-   // AttackAnimal
-   if (this.data.AttackAnimal.enabled) {
-    if (input > this.actionAttackOffset) {    // was 0
-
-      const targetDirection : Direction4 = creature.findPreyDirection();
-      if (targetDirection!=null) {      //TODO check if target creature is animal or change to Attack and don't check
-        creature.attack(input, targetDirection);
-      }
-    }
-
-    currentIndex++;
-    input = values[currentIndex];
-  }
 
   // Stamina: read at birth, nothing to execute
   if (this.data.Stamina.enabled) {

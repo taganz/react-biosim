@@ -53,7 +53,7 @@ A species gets a row in every recording of every generation in which it lived, *
 | `speciesId` | Id of the species (16 hexadecimal digits) |
 | `speciesParentId` | Species it came from; empty for a root |
 | `firstGen` | Generation in which it appeared. Only approximate for species loaded from files saved before species ids existed. |
-| `genus` | `plant`, `attack_plant`, `attack_animal` or `unknown` |
+| `genus` | `plant`, `attack_plant` or `unknown` |
 | `genomeColor` | Colour code of the genome, as shown in the Population tab. Not unique. |
 | `genomeSize` | Number of genes |
 | `usedSensors`, `usedActions` | Sensors and actions its network uses, separated by `\|` |
@@ -65,8 +65,8 @@ A species gets a row in every recording of every generation in which it lived, *
 | `died` | Creatures that died since then |
 | `avgAge`, `avgMass`, `avgHealth`, `avgDistance`, `avgStepsStopped` | Averages of the living; empty when none is alive |
 | `pctCanMove`, `pctCanReproduce` | Share of the living with enough mass to move or reproduce (0 to 100) |
-| `avgChildren`, `avgKills`, `avgAttacks`, `avgPhotosynthesis`, `avgFromPrey` | Averages per creature, of the living and the ones that died in the generation |
-| `avgMassStart` … `avgMassEnd` | Average of each line of the mass balance, as in *Species stats*: start, photosynthesis, from prey, basal, thinking, moving, attacking, reproduction cost, given to children, end |
+| `avgChildren`, `avgPlantKills`, `avgAnimalKills`, `avgAttacks`, `avgPhotosynthesis`, `avgFromPlants`, `avgFromAnimals` | Averages per creature, of the living and the ones that died in the generation. Kills and food are split by the genus of the prey: `avgPlantKills` and `avgFromPlants` for plants, `avgAnimalKills` and `avgFromAnimals` for other animals |
+| `avgMassStart` … `avgMassEnd` | Average of each line of the mass balance, as in *Species stats*: start, photosynthesis, from plants, from animals, basal, thinking, moving, attacking, reproduction cost, given to children, end |
 | `avgAgeAtDeath` | Average age of the ones that died in the generation |
 | `pctDeathOld`, `pctDeathBasalConsumption`, `pctDeathAttacked`, `pctDeathHealth` | Share of the deaths of each cause; empty without deaths |
 | `aliveCreatures` | Keys of its living creatures, separated by `\|`; only with **Species: list of living creatures** (`LOG_SPECIES_CREATURE_LIST`) |
@@ -92,8 +92,8 @@ Rows are ordered by `alive`, the largest first.
 | `distanceCovered`, `stepsStopped` | Distance index of *Greatest Distance* and steps without moving |
 | `canMove`, `canReproduce` | Enough mass to move or reproduce |
 | `stamina` | Share of the steps in which its brain runs |
-| `children`, `kills`, `attacks`, `thinkCount` | Counters since birth |
-| `waterFromPhotosynthesis`, `waterFromPrey` | Mass gained by each way since birth |
+| `children`, `plantKills`, `animalKills`, `attacks`, `thinkCount` | Counters since birth; kills are split by the genus of the prey |
+| `waterFromPhotosynthesis`, `waterFromPlants`, `waterFromAnimals` | Mass gained by each way since birth: photosynthesis, eating plants and eating other animals |
 | `massStart` … `massEnd` | Its mass balance (see [Creatures](../model/creatures.md)) |
 | `deathCause`, `deathGen`, `deathStep`, `killedBySpecies` | Empty while alive. `killedBySpecies` is the `speciesId` of the killer. |
 | `genomeSize`, `usedSensors`, `usedActions` | As in the species file |

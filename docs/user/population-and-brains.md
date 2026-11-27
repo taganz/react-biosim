@@ -8,19 +8,19 @@ The **Population** tab shows what is alive and how it thinks.
 
 The line at the top shows how many creatures are alive and how many species there are. In scenarios with plants and animals it also counts the creatures of each genus. Everything is live except the number of species, which is counted at the start of each generation.
 
-## Herbivores
+## Animals
 
-Below the summary line, three indicators describe the herbivores of the last generation that ended. They change only when a generation ends, and are hidden until then or if the generation had no herbivores to report.
+Below the summary line, three indicators describe the animals of the last generation that ended. They change only when a generation ends, and are hidden until then or if the generation had no animals to report.
 
-- **Largest genome**: the largest genome among the herbivores alive at the end of the generation, in genes, and the colour code of its species. If several species have that size, the one with most creatures is shown.
-- **Average genome**: the average genome size of those herbivores, counting each creature.
-- **Most deaths of old age**: the herbivore species with most deaths of old age during the generation, how many, and its genome size. If species tie, the first to reach that number is shown. Creatures only die of old age in continuous runs, so in generational runs this shows **none**.
+- **Largest genome**: the largest genome among the animals alive at the end of the generation, in genes, and the colour code of its species. If several species have that size, the one with most creatures is shown.
+- **Average genome**: the average genome size of those animals, counting each creature.
+- **Most deaths of old age**: the animal species with most deaths of old age during the generation, how many, and its genome size. If species tie, the first to reach that number is shown. Creatures only die of old age in continuous runs, so in generational runs this shows **none**.
 
 ## Species
 
 A **species** is a lineage: creatures with the same genome that come from the same species. A child born with exactly its parent's genome stays in its parent's species; a child with a mutation starts a new species, which remembers the species it came from. So two species can have the same genome, and then they also have the same colour. Each species has an id of 16 hexadecimal digits, shown next to it and used by the [log](settings-and-stats.md#log) ([details](../reference/log-file.md#species)). Each species is shown with the same colour as its creatures on the world, so it follows the phenotype mode: with `genome` each species has a colour taken from its genome, and with `trophicLevel` it is a shade of green, blue or red for its genus, and with `greenPlants` plants are shades of green and the other species have their own non-green colour.
 
-- The coloured boxes on the right are the first 42 species in the chosen order, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** herbivore, **C** carnivore (no letter for `unknown`). Hover a box to see its colour code, genus, number of creatures and genome size.
+- The coloured boxes on the right are the first 42 species in the chosen order, counted at the start of the generation. Each box shows how many creatures the species has. A small letter in the corner shows the genus: **P** plant, **H** animal (no letter for `unknown`). Hover a box to see its colour code, genus, number of creatures and genome size.
 - Click a box to select that species. One of its living creatures is selected too, with a ring around it in the world, so the live values of its network are shown. If the selected creature already belongs to that species, it stays selected. Click the box again to clear both the species and the creature.
 - **Filter species by** shows only the species whose network uses a given **Sensor** and/or **Action**: the ones with at least one connection from that sensor or to that action, as drawn in the network diagram. The lists contain the enabled sensors and actions. With both set, a species must use both. A line below says how many species match; the boxes show the first 42 of them in the chosen order. **Clear filter** sets both back to **Any**. The filter only hides boxes: it does not change the selection.
 - **Order species by**, below the filter, sorts the boxes by **Number of creatures** (the default) or **Genome size**, largest first. Species with the same genome size are sorted by number of creatures.
@@ -64,8 +64,8 @@ The selected species, with the same groups as a [selected creature](#selected-cr
 - **Life** (average of the living): health and age.
 - **Body**: the average mass of the living; the mass at birth, basal consumption and thinking cost, which are the same for every member; and the share of the living with enough mass to move and to reproduce.
 - **Movement** (average of the living): distance index and steps without moving.
-- **Activity** (average per creature, dead or alive): children, and attacks and kills (herbivores and carnivores).
-- **Mass balance** (average per creature, dead or alive; with metabolism): the average of each line of the creature's mass balance. Since the balance is a sum, the averages add up too: the last line is the average of the mass of the living and the mass the dead had when they died.
+- **Activity** (average per creature, dead or alive): children, and for animals attacks and kills, with the kills of plants and of other animals apart.
+- **Mass balance** (average per creature, dead or alive; with metabolism): the average of each line of the creature's mass balance. Since the balance is a sum, the averages add up too: the last line is the average of the mass of the living and the mass the dead had when they died. Food from plants and food from other animals are shown apart, as for a single creature.
 - **Deaths**: the average age of the dead when they died, and the share of the deaths of each cause. Creatures still alive are not included, so while a species is young this age is low even if it lives long.
 - **Brain**: the genes split by what they cost, neurons, connections and stamina, the same for every member.
 
@@ -87,8 +87,8 @@ The section is updated at every step:
 - **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
 - **Body**: mass against the maximum mass, mass at birth, basal consumption per step and thinking cost (what the sensors and actions of its brain cost in each step it thinks). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
-- **Activity**: children, and attacks and kills (for herbivores and carnivores).
-- **Mass balance** (with metabolism): where its mass came from and went since it was born, as a sum. It starts from the mass it got at birth, adds the water from photosynthesis and the mass eaten from prey, both as the mass gained after the [assimilation efficiency](../model/creatures.md#assimilation-efficiency) (with the net of the attacks: eaten minus what attacking cost), and takes away the basal consumption of its genes, the actions (thinking, moving and attacking) and reproduction (the cost of the attempts and births, and the birth mass given to its children). The last line is the result, which should be its mass; if it is not, its real mass is shown in red. For a dead creature it is the mass it had when it died. A creature loaded from a file starts from the mass it had when it was saved.
+- **Activity**: children, and for animals attacks and kills, with the kills of plants and of other animals apart.
+- **Mass balance** (with metabolism): where its mass came from and went since it was born, as a sum. It starts from the mass it got at birth, adds the water from photosynthesis and, for animals, the mass eaten from plants and the mass eaten from other animals on separate lines, all as the mass gained after the [assimilation efficiency](../model/creatures.md#assimilation-efficiency) (the line of animals also gives the net of all the food: eaten from plants and animals minus what attacking cost), and takes away the basal consumption of its genes, the actions (thinking, moving and attacking) and reproduction (the cost of the attempts and births, and the birth mass given to its children). The last line is the result, which should be its mass; if it is not, its real mass is shown in red. For a dead creature it is the mass it had when it died. A creature loaded from a file starts from the mass it had when it was saved.
 - **Brain**: genes, split by what they cost every step (the primary genes, the free Stamina gene and the others; see [Mass and metabolism](../model/creatures.md#mass-and-metabolism)), neurons and connections, the stamina and how many steps the brain has run (see [Stamina](../reference/sensors-and-actions.md#stamina)), and the action with the highest output in this step.
 
 If the creature dies, the section says why (old age, out of mass, eaten and by which species, or health), when, and keeps the values of its last step. In generational runs most creatures do not die: they are replaced when the generation ends, and the section says so.
@@ -154,4 +154,4 @@ The table is a linear estimate: it ignores neuron saturation and self-connection
 
 ## Genus
 
-In scenarios with plants and animals, each creature also has a **genus** (plant, herbivore or carnivore). The genus depends on the actions in its genome, and the world can colour creatures by genus instead of by species. In most scenarios the genus is `unknown`, because none of those actions are enabled. See [Genus](../reference/sensors-and-actions.md#genus).
+In scenarios with plants and animals, each creature also has a **genus** (plant or animal). The genus depends on the actions in its genome, and the world can colour creatures by genus instead of by species. In most scenarios the genus is `unknown`, because none of those actions are enabled. See [Genus](../reference/sensors-and-actions.md#genus).

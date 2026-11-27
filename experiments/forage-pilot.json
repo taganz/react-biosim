@@ -46,7 +46,7 @@
         "RandomMove",
         "MoveForward",
         "Photosynthesis",
-        "AttackPlant"
+        "Attack"
       ]
     }
   }

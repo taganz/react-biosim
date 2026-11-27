@@ -142,13 +142,13 @@ if (process.env.PLANTS_ONLY_PHOTOSYNTHESIS !== "0") {
   };
 }
 
-// FIXED_GENUS=1: a mutation that would change the genus (a plant child that gains AttackPlant, say)
+// FIXED_GENUS=1: a mutation that would change the genus (a plant child that gains Attack, say)
 // is dropped and the child gets the parent's genome unchanged. Needs BASE_SIM (reads its action list).
 if (process.env.FIXED_GENUS === "1" && process.env.BASE_SIM) {
   const actions: string[] = JSON.parse(fs.readFileSync(process.env.BASE_SIM, "utf8")).worldGenerationsData.enabledActions;
   const genusOf = (genes: number[]) => {
     const used = new Set(genes.filter((g) => ((g >>> 23) & 1) === 1).map((g) => actions[((g >>> 16) & 127) % actions.length]));
-    return used.has("AttackAnimal") ? "attack_animal" : used.has("AttackPlant") ? "attack_plant" : used.has("Photosynthesis") ? "plant" : "unknown";
+    return used.has("Attack") ? "attack_plant" : used.has("Photosynthesis") ? "plant" : "unknown";
   };
   const originalClone = Genome.prototype.clone;
   Genome.prototype.clone = function (this: Genome, ...args: Parameters<Genome["clone"]>) {

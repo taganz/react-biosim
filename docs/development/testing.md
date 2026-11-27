@@ -31,7 +31,7 @@ At the time of writing (October 2026), all 32 suites pass, and 6 tests are skipp
 
 ## Writing a test
 
-Tests start from `TEST_SIMULATION_DATA` in [__tests__/support/testSimulationData.ts](../../__tests__/support/testSimulationData.ts): the startup settings with the changes the tests rely on (a 50×50 world, metabolism off and free, big brains, every sensor and action enabled, Plant/Herbivore and Greatest Mass). It lists those changes explicitly, so any other default comes from [startupScenario.ts](../../simulation/startupScenario.ts). Jest ignores `__tests__/support/`, which holds helpers, not tests.
+Tests start from `TEST_SIMULATION_DATA` in [__tests__/support/testSimulationData.ts](../../__tests__/support/testSimulationData.ts): the startup settings with the changes the tests rely on (a 50×50 world, metabolism off and free, big brains, every sensor and action enabled, Plants and Animals and Greatest Mass). It lists those changes explicitly, so any other default comes from [startupScenario.ts](../../simulation/startupScenario.ts). Jest ignores `__tests__/support/`, which holds helpers, not tests.
 
 The usual setup is: take `TEST_SIMULATION_DATA`, make the world small, and create a `WorldController` without starting the loop:
 

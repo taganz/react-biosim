@@ -6,6 +6,7 @@ For people who want to change the code. Read the [simulation model](../model/REA
 2. [Save format](serialization.md): what a `.sim` file contains and how loading works
 3. [Extending](extending.md): add a sensor, an action, a population strategy, a selection method, a map object or a scenario
 4. [Testing](testing.md): running the tests, current status, writing new ones
+5. [Performance](performance.md): where the engine spends its time, how to measure it, and options to make it faster
 
 ## Setup
 

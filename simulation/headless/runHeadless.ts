@@ -48,7 +48,6 @@ export type GenerationRow = {
   nextPopulation: number;
   nextPlants: number;
   nextAttackPlants: number;
-  nextAttackAnimals: number;
   /** genus "unknown": brains without the genus-defining actions */
   nextUnknown: number;
 };
@@ -165,7 +164,6 @@ export function runHeadless(options: HeadlessOptions): Promise<HeadlessResult> {
         nextPopulation: creatures.length,
         nextPlants: countGenus("plant"),
         nextAttackPlants: countGenus("attack_plant"),
-        nextAttackAnimals: countGenus("attack_animal"),
         nextUnknown: countGenus("unknown"),
       };
       rows.push(row);

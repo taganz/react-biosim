@@ -21,7 +21,6 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
     let cs : CreatureSensors;
     let genomePlant : Genome;
     let genomeAttackPlant : Genome;
-    let genomeAttackAnimal : Genome;
     
     const allSensors : SensorName[] = [
       "HorizontalPosition"    // 0
@@ -71,7 +70,6 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
       
       genomePlant = new Genome([CreatureGenus.randomGeneForGenus(generations, "plant")]);
       genomeAttackPlant  = new Genome([CreatureGenus.randomGeneForGenus(generations, "attack_plant")]);
-      genomeAttackAnimal = new Genome([CreatureGenus.randomGeneForGenus(generations, "attack_animal")]);
   
 
       joeAt11 = worldController.generations.newCreature([1, 1], true, genomePlant);
@@ -129,13 +127,12 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
         , "PreyDistance"          // 17
            ];
       cs.loadFromList(enabledSensors);
-      expect(cs.sensorsByCompatibleGenus(0)).toStrictEqual(["plant", "attack_plant", "attack_animal"]);
-      expect(cs.sensorsByCompatibleGenus(1)).toStrictEqual( ["attack_plant", "attack_animal"]);
+      expect(cs.sensorsByCompatibleGenus(0)).toStrictEqual(["plant", "attack_plant"]);
+      expect(cs.sensorsByCompatibleGenus(1)).toStrictEqual( ["attack_plant"]);
     });
     test('sensorsByMainGenus(): DEPRECATED  //TODO', () => {
       expect(cs.sensorsByMainGenus("plant")).toStrictEqual([]);
       expect(cs.sensorsByMainGenus("attack_plant")).toStrictEqual([]);
-      expect(cs.sensorsByMainGenus("attack_animal")).toStrictEqual([]);
     });
     
     test('calculateOutputs(): return a list of values with lenght = neuronCount if creature not at borders', () => {
@@ -280,33 +277,6 @@ describe('CreatureSensors - not including prey sensors, ...', () => {
 
         ]
       );
-      expect(cs.enabledSensorsForGenus("attack_animal")).toEqual( 
-        [
-          "HorizontalPosition"    // 0
-          , "VerticalPosition"      // 1
-          , "Age"                   // 2
-          , "Oscillator"            // 3
-          , "Random"                // 4
-          , "HorizontalSpeed"       // 5
-          , "VerticalSpeed"         // 6
-          , "HorizontalBorderDistance"  // 7
-          , "VerticalBorderDistance"  // 8
-          , "BorderDistance"        // 9
-          , "TouchNorth"                 // 10
-          , "TouchEast"                 // 11
-          , "TouchSouth"                 // 12
-          , "TouchWest"                 // 13
-          , "Pain"                  // 14
-          , "PopulationDensity"     // 15
-          , "Mass"                  // 16
-          , "PreyDistance"          // 17
-          , "PreyNorth"             // 18
-          , "PreyEast"      // 19
-          , "PreySouth"     // 20
-          , "PreyWest"      // 21
-      //    , "PredatorDistance"      // 19
-      //    , "PredatorDirection"     // 20
-         ]);
         expect(cs.enabledSensorsForGenus("attack_plant")).toEqual( 
           [
             "HorizontalPosition"    // 0

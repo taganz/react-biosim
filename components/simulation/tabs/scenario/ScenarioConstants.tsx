@@ -112,8 +112,7 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
     rows: [
       ["MASS_WATER_TO_MASS_PER_STEP", 0.01, "Water a plant turns into mass in one photosynthesis step, times the action's output."],
       ["MASS_AT_BIRTH_PLANT", 0.1, "Birth mass of a plant."],
-      ["MASS_AT_BIRTH_ATTACK_PLANT", 0.1, "Birth mass of a herbivore."],
-      ["MASS_AT_BIRTH_ATTACK_ANIMAL", 0.1, "Birth mass of a carnivore."],
+      ["MASS_AT_BIRTH_ATTACK_PLANT", 0.1, "Birth mass of an animal."],
       ["MASS_AT_BIRTH_ATTACK", 0.1, "Birth mass of the old \"attack\" genus (no longer used)."],
       ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 0.1, "Maximum mass, as a multiple of birth mass."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent per step for each gene, except the primary genes and the Stamina gene."],
@@ -153,7 +152,7 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["ATTACK_COST_PER_MASS_TRY", 0.01, "Mass lost by trying to attack; a lighter creature dies trying."],
       ["ATTACK_COST_PER_MASS_DO", 0.01, "Mass lost by a successful attack."],
       ["ATTACK_MIN_PREY_MASS_FACTOR", 0.1, "The attacker must weigh at least this many times the prey."],
-      ["ACTION_ATTACK_OFFSET", 0.05, "Minimum neuron output that triggers the attack actions."],
+      ["ACTION_ATTACK_OFFSET", 0.05, "Minimum neuron output that triggers the Attack action."],
     ],
   },
 ];
@@ -169,14 +168,13 @@ const COLOR_ROWS: [keyof ObjectColors, string][] = [
 const GENERA: { genus: Genus; label: string }[] = [
   { genus: "plant", label: "Plant" },
   { genus: "attack_plant", label: "Herb." },
-  { genus: "attack_animal", label: "Carn." },
 ];
 
 type AssimilationGenus = keyof NonNullable<WorldControllerData["ASSIMILATION_EFFICIENCY"]>;
 
 // ASSIMILATION_EFFICIENCY, one row per source with one value per genus
 const ASSIMILATION_ROWS: [keyof AssimilationEfficiency, string][] = [
-  ["photosynthesis", "Share of the water taken by photosynthesis that becomes mass, by genus (plant, herbivore, carnivore). The rest goes to the cloud. 0: the genus cannot photosynthesise."],
+  ["photosynthesis", "Share of the water taken by photosynthesis that becomes mass, by genus (plant, animal). The rest goes to the cloud. 0: the genus cannot photosynthesise."],
   ["prey", "Share of the prey eaten that becomes mass, by genus. The rest goes to the cloud. Plants never eat."],
 ];
 
@@ -254,7 +252,7 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
             ))}
             {group.title === "Mass and metabolism" && ASSIMILATION_ROWS.map(([source, description]) => (
               <ConstantRow key={source} name={`ASSIMILATION_EFFICIENCY ${source}`} description={description}>
-                <div className="grid grid-cols-3 gap-1">
+                <div className="grid grid-cols-2 gap-1">
                   {GENERA.map(({ genus, label }) => (
                     <NumberInput
                       key={genus}
@@ -301,8 +299,8 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
         ))}
 
         <ConstantGroup title="Population, selection and sensors">
-          <ConstantRow name="POPULATION_DEFAULT_GENUS" description="Genus probabilities of generation 1 in Random Fixed Genera (plant, herbivore, carnivore).">
-            <div className="grid grid-cols-3 gap-1">
+          <ConstantRow name="POPULATION_DEFAULT_GENUS" description="Genus probabilities of generation 1 in Random Fixed Genera (plant, animal).">
+            <div className="grid grid-cols-2 gap-1">
               {GENERA.map(({ genus, label }) => (
                 <NumberInput
                   key={genus}

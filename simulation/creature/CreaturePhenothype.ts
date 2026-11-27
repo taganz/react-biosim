@@ -25,7 +25,6 @@ export default class CreaturePhenothype {
                 if (genus == "plant") return "#008000";
                 if (genus == "attack") return "#0000FF";
                 if (genus == "attack_plant") return "#CCCC00";
-                if (genus == "attack_animal") return "#FF0000";
                 if (genus == "unknown") return "#444444";
                 throw new Error("error genus");
                 break;
@@ -51,8 +50,6 @@ export default class CreaturePhenothype {
             color = `rgb(0, ${colorMain}, 0)`; // green
         } else if (genus == "attack_plant") {
             color = `rgb(0, 0, ${colorMain})`;  // blue
-        } else if (genus == "attack_animal") {
-            color = `rgb(${colorMain}, 0, 0)`;  // red
         } else {
             color = 'black'; 
         }

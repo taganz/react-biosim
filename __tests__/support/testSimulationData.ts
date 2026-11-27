@@ -25,7 +25,6 @@ export const TEST_SIMULATION_DATA : SimulationData = {
     size: 50,
     MASS_AT_BIRTH_ATTACK_PLANT: 2,
     MASS_AT_BIRTH_ATTACK: 2,
-    MASS_AT_BIRTH_ATTACK_ANIMAL: 3,
     MASS_MAX_MULTIPLE_MASS_AT_BIRT: 10,
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE: 0,
     MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY: 0,
@@ -53,7 +52,7 @@ export const TEST_SIMULATION_DATA : SimulationData = {
     ],
     enabledActions: [
       "MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward",
-      "Photosynthesis", "Reproduction", "AttackPlant", "AttackAnimal",
+      "Photosynthesis", "Reproduction", "Attack",
     ],
     plantGenes: [...startup.worldGenerationsData.plantGenes],
     phenotypeColorMode: "trophicLevel",

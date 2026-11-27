@@ -7,13 +7,13 @@ import { addCreaturesFromGenus, addCreaturesFromParent } from "./addCreatures";
 /* 
   WORK
 
-  populate with a given distribution of plants and herbivores
+  populate with a given distribution of plants and animals
 
   plants are created by genus
   attackPlants are created from parents
 
 */
-const HERBIVORES_PROPORTION = 0.2;
+const ANIMALS_PROPORTION = 0.2;
 
 export default class PlantHerbivorePopulation implements PopulationStrategy {
   name = "PlantHerbivorePopulation";
@@ -22,24 +22,24 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
   populate(worldGenerations: WorldGenerations, attackPlantParents?: Creature[]): void {
 
     if (worldGenerations.currentGen === 1) {
-        addCreaturesFromGenus(worldGenerations, "attack_plant", worldGenerations.initialPopulation*HERBIVORES_PROPORTION );
-        addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
+        addCreaturesFromGenus(worldGenerations, "attack_plant", worldGenerations.initialPopulation*ANIMALS_PROPORTION );
+        addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-ANIMALS_PROPORTION) );
     } 
     else {
       if (!attackPlantParents) {throw new Error ("generations > 0 should have parents");}
 
-      // only herbivore parents will be taken into account; other selection methods
+      // only animal parents will be taken into account; other selection methods
       // than Greatest Mass also let plants survive, and those are dropped
       const parents = attackPlantParents.filter(item => item._genus == "attack_plant");
       if (parents.length != attackPlantParents.length) {
-        console.warn(`PlantHerbivorePopulation ignored ${attackPlantParents.length - parents.length} survivors that are not herbivores`);
+        console.warn(`PlantHerbivorePopulation ignored ${attackPlantParents.length - parents.length} survivors that are not animals`);
       }
 
-      let totalNeededCreatures = worldGenerations.initialPopulation*HERBIVORES_PROPORTION - parents.length;
+      let totalNeededCreatures = worldGenerations.initialPopulation*ANIMALS_PROPORTION - parents.length;
       
       // more parents that needed creatures?
       if (totalNeededCreatures < 0 ) {
-        for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation*HERBIVORES_PROPORTION; parentIdx++) {
+        for (let parentIdx = 0; parentIdx < worldGenerations.initialPopulation*ANIMALS_PROPORTION; parentIdx++) {
           addCreaturesFromParent(worldGenerations, parents[parentIdx], 1);
         }
       }
@@ -48,7 +48,7 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
         // we want all survivors to have at least one children
         let shuffledParents = shuffle(parents);
         const childrenPerParent = Math.max(
-          Math.ceil(worldGenerations.initialPopulation * HERBIVORES_PROPORTION / parents.length),
+          Math.ceil(worldGenerations.initialPopulation * ANIMALS_PROPORTION / parents.length),
           1
         );
 
@@ -66,7 +66,7 @@ export default class PlantHerbivorePopulation implements PopulationStrategy {
       }
 
       // now add plants to complete population, also when there were more parents than needed
-      addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-HERBIVORES_PROPORTION) );
+      addCreaturesFromGenus(worldGenerations, "plant", worldGenerations.initialPopulation*(1-ANIMALS_PROPORTION) );
     }
 
   }

@@ -5,7 +5,7 @@ import Genome from "@/simulation/creature/brain/Genome";
 import CreatureGenus from "@/simulation/creature/CreatureGenus";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
 
-describe('herbivore genome stats', () => {
+describe('animal genome stats', () => {
 
     let generations : WorldGenerations;
     let plantGene : number;
@@ -20,24 +20,24 @@ describe('herbivore genome stats', () => {
         simulationData.worldGenerationsData.initialPopulation = 3;
         generations = new WorldController(simulationData).generations;
         plantGene = CreatureGenus.mainGeneForGenus(generations, "plant");
-        const herbivoreGene = CreatureGenus.mainGeneForGenus(generations, "attack_plant");
-        small = [herbivoreGene];
-        large = [herbivoreGene, herbivoreGene, herbivoreGene];
-        otherLarge = [herbivoreGene, herbivoreGene, plantGene];
+        const animalGene = CreatureGenus.mainGeneForGenus(generations, "attack_plant");
+        small = [animalGene];
+        large = [animalGene, animalGene, animalGene];
+        otherLarge = [animalGene, animalGene, plantGene];
     });
 
     const add = (x : number, genes : number[]) => generations.newCreature([x, 0], true, new Genome(genes.slice()));
 
-    test('reports the largest genome and the average of the living herbivores', () => {
+    test('reports the largest genome and the average of the living animals', () => {
         add(0, small);
         add(1, large);
         add(2, new Array(9).fill(plantGene)); // a plant, not counted
         const dead = add(3, new Array(7).fill(small[0]));
         dead.health = 0;
 
-        generations.closeHerbivoreGenomeStats();
+        generations.closeAnimalGenomeStats();
 
-        const stats = generations.lastHerbivoreGenomeStats!;
+        const stats = generations.lastAnimalGenomeStats!;
         expect(stats.alive).toBe(2);
         expect(stats.largest?.species.genomeSize).toBe(3);
         expect(stats.largest?.creatures).toBe(1);
@@ -50,9 +50,9 @@ describe('herbivore genome stats', () => {
         add(2, large);
         expect(single.genus).toBe("attack_plant");
 
-        generations.closeHerbivoreGenomeStats();
+        generations.closeAnimalGenomeStats();
 
-        const { largest } = generations.lastHerbivoreGenomeStats!;
+        const { largest } = generations.lastAnimalGenomeStats!;
         expect(largest?.species.code).toBe(twice.brain.genome.getHexColor());
         expect(largest?.creatures).toBe(2);
     });
@@ -67,22 +67,22 @@ describe('herbivore genome stats', () => {
         for (const creature of [...old, oldPlant]) creature._age = creature.maxAge + 1;
 
         generations.step();
-        generations.closeHerbivoreGenomeStats();
+        generations.closeAnimalGenomeStats();
 
-        const { mostOldAgeDeaths } = generations.lastHerbivoreGenomeStats!;
+        const { mostOldAgeDeaths } = generations.lastAnimalGenomeStats!;
         expect(mostOldAgeDeaths?.deaths).toBe(2);
         expect(mostOldAgeDeaths?.species.genomeSize).toBe(1);
         expect(mostOldAgeDeaths?.species.code).toBe(old[0].brain.genome.getHexColor());
 
         // the next generation starts counting again
-        generations.closeHerbivoreGenomeStats();
-        expect(generations.lastHerbivoreGenomeStats?.mostOldAgeDeaths).toBeNull();
+        generations.closeAnimalGenomeStats();
+        expect(generations.lastAnimalGenomeStats?.mostOldAgeDeaths).toBeNull();
     });
 
-    test('has no values without herbivores', () => {
+    test('has no values without animals', () => {
         add(0, [plantGene]);
-        generations.closeHerbivoreGenomeStats();
-        expect(generations.lastHerbivoreGenomeStats).toMatchObject({
+        generations.closeAnimalGenomeStats();
+        expect(generations.lastAnimalGenomeStats).toMatchObject({
             alive: 0, largest: null, averageGenomeSize: null, mostOldAgeDeaths: null,
         });
     });

@@ -96,7 +96,8 @@ export default function SpeciesStats({ species }: Props) {
             {eatsPrey && (
               <>
                 <Field label="Attacks">{perCreature.attacks.toFixed(2)}</Field>
-                <Field label="Kills">{perCreature.kills.toFixed(2)}</Field>
+                <Field label="Kills of plants">{perCreature.plantKills.toFixed(2)}</Field>
+                <Field label="Kills of animals">{perCreature.animalKills.toFixed(2)}</Field>
               </>
             )}
           </Group>

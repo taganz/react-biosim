@@ -5,7 +5,7 @@ import SelectionMethod from "./SelectionMethod";
 
 /*
 
-  1/6/24 - only selecting herbivores
+  1/6/24 - only selecting animals
 
 
 
@@ -15,7 +15,7 @@ export default class GreatestMassSelection
   implements SelectionMethod
 {
   name = "GreatestMassSelection";
-  prettyName = "GreatestMass (herbivores)";  //TODO update when changed
+  prettyName = "GreatestMass (animals)";  //TODO update when changed
   isContinuous = false;
   fitnessValueName = "Greatest mass";
   shouldResetLastCreatureIdCreatedEveryGeneration = true;
@@ -24,7 +24,7 @@ export default class GreatestMassSelection
     const topPercentSelected = generations.worldController.simData.constants.GREATEST_MASS_SELECTION_TOP_SURVIVORS;  
    
     const creaturesPreSelection = generations.currentCreatures.filter(item => item._genus === "attack_plant");
-    console.warn("greatest mass selction only selecting herbivores");
+    console.warn("greatest mass selction only selecting animals");
 
     const massSorted : Creature [] = creaturesPreSelection.sort((a, b) =>{ return b.mass - a.mass});
     const top = Math.floor(generations.currentCreatures.length * topPercentSelected);   
@@ -33,9 +33,9 @@ export default class GreatestMassSelection
     const parents = massSorted.slice(0, top)
     
     console.log(`GreatestMassSelection generation ${generations.currentGen}`);
-    // no herbivores, or too few creatures for the top percentage: there are no parents to log
+    // no animals, or too few creatures for the top percentage: there are no parents to log
     if (parents.length > 0) {
-      console.log(`top herbivore ${parents[0].id} mass ${parents[0].mass.toFixed(1)} massAtBirth ${parents[0].massAtBirth}`);
+      console.log(`top animal ${parents[0].id} mass ${parents[0].mass.toFixed(1)} massAtBirth ${parents[0].massAtBirth}`);
       console.log(parents[0].brain.genome.toString(generations));
     }
     

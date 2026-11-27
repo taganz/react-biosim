@@ -111,7 +111,7 @@ export default function SimulationPanel() {
             </SelectInput>
             <ul className="text-xs">
               <li><b>Genome:</b> the colour comes from the genome, so each species has its own colour.</li>
-              <li><b>Trophic level:</b> green for plants, blue for herbivores and red for carnivores. The shade comes from the genome.</li>
+              <li><b>Trophic level:</b> green for plants and blue for animals. The shade comes from the genome.</li>
               <li><b>Green plants:</b> plants are shades of green, and every other species has its own colour that is not green.</li>
             </ul>
           </div>

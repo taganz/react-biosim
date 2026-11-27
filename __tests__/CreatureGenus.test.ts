@@ -38,8 +38,7 @@ describe('CreatureGenus', () => {
       "MoveForward",      // 5
       "Photosynthesis",   // 6 
       "Reproduction",     // 7
-      "AttackPlant",      // 8
-      "AttackAnimal",     // 9
+      "Attack",           // 8
     ],
     simulationData.worldGenerationsData.enabledSensors = [
       "HorizontalPosition",       // 0
@@ -69,7 +68,6 @@ describe('CreatureGenus', () => {
     grid = worldController.generations.grid;
     let genomePlant = new Genome([CreatureGenus.randomGeneForGenus(generations, "plant")]);
     let genomeMove = new Genome([CreatureGenus.randomGeneForGenus(generations, "attack_plant")]);
-    let genomeAnimal = new Genome([CreatureGenus.randomGeneForGenus(generations, "attack_animal")]);
     let joePlant = worldController.generations.newCreature([1, 0], true, genomePlant);
 
 
@@ -89,7 +87,7 @@ describe('CreatureGenus', () => {
     //console.log("gene\n", geneToString(generations, gene), "\ngenus\n", genus);
 
     test.skip('DISPLAY Genus', () => {
-      const genome : Genome = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_animal", 20));
+      const genome : Genome = new Genome(CreatureGenus.geneArrayForGenus(generations, "attack_plant", 20));
       console.log("genome: \n", genome.toString(generations));
     });
     test('randomGeneForGenus(plant) returns plant gene  ', () => {
@@ -106,14 +104,6 @@ describe('CreatureGenus', () => {
         //console.log("attack_plant -- gene:\n", geneToString(generations, gene));
         const genus = CreatureGenus.getGenusFromGene(generations, gene);
         expect(["unknown", "attack_plant" ]).toContain(genus);
-      }
-    });
-    test('randomGeneForGenus(attack_animal) returns unknown, attack_animal gene ', () => {
-      for (let i=0; i<TEST_LOOPS;i++) {
-        const gene = CreatureGenus.randomGeneForGenus(generations, "attack_animal");
-        //console.log("attack_animal -- gene:\n", geneToString(generations, gene));
-        const genus = CreatureGenus.getGenusFromGene(generations, gene);
-        expect(["unknown","attack_animal"]).toContain(genus);
       }
     });
 
@@ -133,14 +123,6 @@ describe('CreatureGenus', () => {
       let joePlant = worldController.generations.newCreature([0, 0], true, longGenome);
       //console.log("CreatureGenus.getGenus(joePlant.brain): ", CreatureGenus.getGenus(joePlant.brain));
       expect(CreatureGenus.getGenus(joePlant.brain)).toEqual("attack_plant");
-    });
-    test('geneArrayForGenus - get correct genus from a long random attack_animal genome (10 genes)', () => {
-      let longGeneArray : Gene[] = CreatureGenus.geneArrayForGenus(worldController.generations, "attack_animal", 10);
-      const longGenome = new Genome(longGeneArray);
-      //console.log("longGenome: \nb", longGenome.toString(generations));
-      let joePlant = worldController.generations.newCreature([0, 0], true, longGenome);
-      //console.log("CreatureGenus.getGenus(joePlant.brain): ", CreatureGenus.getGenus(joePlant.brain));
-      expect(CreatureGenus.getGenus(joePlant.brain)).toEqual("attack_animal");
     });
 
 })

@@ -49,8 +49,8 @@ describe('CreatureActions', () => {
                "Reproduction",     
              ];
         ca.loadFromList(enabledActions);
-        expect(ca.actionsByCompatibleGenus(0)).toStrictEqual(["attack_plant", "attack_animal"]);
-        expect(ca.actionsByCompatibleGenus(1)).toStrictEqual(["plant", "attack_plant", "attack_animal"]);
+        expect(ca.actionsByCompatibleGenus(0)).toStrictEqual(["attack_plant"]);
+        expect(ca.actionsByCompatibleGenus(1)).toStrictEqual(["plant", "attack_plant"]);
     });
     test('actionsByCompatibleGenus throw error if invalid index ', () => {
         expect(() => {
@@ -81,8 +81,7 @@ describe('CreatureActions', () => {
         "MoveForward",      // 5
         "Photosynthesis",   // 6 
         "Reproduction",     // 7
-        "AttackPlant",      // 8
-        "AttackAnimal",     // 9
+        "Attack",           // 8
     ];
     ca.loadFromList(enabledSensors);
       //console.log("ca.enabledSensorsForFamily()\n\n", ca.enabledSensorsForFamily("attack"));
@@ -95,8 +94,7 @@ describe('CreatureActions', () => {
       //  "MoveForward",      // 5
         "Photosynthesis",   // 6 
         "Reproduction",     // 7
-      //  "AttackPlant",           // 8
-      //  "AttackAnimal",           // 9
+      //  "Attack",           // 8
       ]);
       expect(ca.enabledActionsForGenus("attack_plant")).toEqual([
         "MoveNorth",        // 0
@@ -107,21 +105,7 @@ describe('CreatureActions', () => {
         "MoveForward",      // 5
       //  "Photosynthesis",   // 6 
         "Reproduction",     // 7
-        "AttackPlant",           // 8
-      //  "AttackAnimal",           // 9
-    ]);
-
-      expect(ca.enabledActionsForGenus("attack_animal")).toEqual([
-        "MoveNorth",        // 0
-        "MoveSouth",        // 1
-        "MoveEast",         // 2
-        "MoveWest",         // 3
-        "RandomMove",       // 4
-        "MoveForward",      // 5
-      //  "Photosynthesis",   // 6 
-        "Reproduction",     // 7
-        "AttackPlant",           // 8
-        "AttackAnimal",           // 9
+        "Attack",           // 8
     ]);
     });
 

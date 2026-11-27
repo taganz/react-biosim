@@ -54,6 +54,11 @@ describe('attack and reproduction', () => {
 
         expect(attacker.killCount).toBe(1);
         expect(attacker.mass).toBeGreaterThan(attacker.massAtBirth);
+        // a plant is counted as food from plants
+        expect(attacker.waterFromPlants).toBeGreaterThan(0);
+        expect(attacker.waterFromAnimals).toBe(0);
+        expect(attacker.plantKillCount).toBe(1);
+        expect(attacker.animalKillCount).toBe(0);
     });
 
     test('there is no minimum mass to attack', () => {
@@ -158,6 +163,11 @@ describe('attack and reproduction', () => {
 
         expect(other.deathCause).toBe("attacked");
         expect(attacker.killCount).toBe(1);
+        // another animal is counted as food from animals
+        expect(attacker.waterFromAnimals).toBeGreaterThan(0);
+        expect(attacker.waterFromPlants).toBe(0);
+        expect(attacker.animalKillCount).toBe(1);
+        expect(attacker.plantKillCount).toBe(0);
     });
 
     test('with ATTACK_SAME_GENUS the own species cannot be eaten', () => {

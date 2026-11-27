@@ -15,7 +15,7 @@ Sensors live in [CreatureSensors.ts](../../simulation/creature/brain/CreatureSen
      name: "MySensor",
      enabled: false,
      neuronCount: 1,                        // always 1
-     compatibleGenus: ["plant", "attack_plant", "attack_animal"],
+     compatibleGenus: ["plant", "attack_plant"],
      mainGenus: null,                       // always null for sensors
    },
    ```

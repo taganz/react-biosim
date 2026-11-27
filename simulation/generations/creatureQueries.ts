@@ -5,7 +5,10 @@ import WorldGenerations from "./WorldGenerations";
 export type MassBalance = {
   start: number;
   photosynthesis: number;
-  fromPrey: number;
+  /** eaten from prey of the plant genus */
+  fromPlants: number;
+  /** eaten from prey of the other genera: other animals */
+  fromAnimals: number;
   basal: number;
   thinking: number;
   moving: number;
@@ -21,7 +24,8 @@ export function creatureMassBalance(creature: Creature): MassBalance {
   const balance = {
     start: mass.startMass,
     photosynthesis: creature.waterFromPhotosynthesis,
-    fromPrey: creature.waterFromPrey,
+    fromPlants: creature.waterFromPlants,
+    fromAnimals: creature.waterFromAnimals,
     basal: mass.totalBasal,
     thinking: mass.totalThinking,
     moving: mass.totalMoving,
@@ -31,7 +35,7 @@ export function creatureMassBalance(creature: Creature): MassBalance {
   };
   return {
     ...balance,
-    end: balance.start + balance.photosynthesis + balance.fromPrey - balance.basal - balance.thinking
+    end: balance.start + balance.photosynthesis + balance.fromPlants + balance.fromAnimals - balance.basal - balance.thinking
       - balance.moving - balance.attacking - balance.reproductionCost - balance.givenToChildren,
   };
 }
@@ -52,7 +56,7 @@ export type SpeciesStats = {
   } | null;
   /** averages of every known creature, dead or alive; null when there are none */
   perCreature: {
-    children: number; kills: number; attacks: number; photosynthesis: number; fromPrey: number;
+    children: number; plantKills: number; animalKills: number; attacks: number; photosynthesis: number; fromPlants: number; fromAnimals: number;
     /** the average of each line of the mass balance */
     balance: MassBalance;
   } | null;
@@ -62,27 +66,27 @@ export type SpeciesStats = {
   deathCauses: { cause: DeathCause; percentage: number }[];
 };
 
-export type HerbivoreSpeciesRef = {
+export type AnimalSpeciesRef = {
   /** colour code of the genome, as shown for the selected species */
   code: string;
   color: string;
   genomeSize: number;
 };
 
-export type HerbivoreOldAgeDeaths = Map<string, { species: HerbivoreSpeciesRef; deaths: number }>;
+export type AnimalOldAgeDeaths = Map<string, { species: AnimalSpeciesRef; deaths: number }>;
 
-export type HerbivoreGenomeStats = {
+export type AnimalGenomeStats = {
   generation: number;
-  /** herbivores alive when the generation ended */
+  /** animals alive when the generation ended */
   alive: number;
   /** the largest genome among them; when several species have it, the one with most creatures */
-  largest: { species: HerbivoreSpeciesRef; creatures: number } | null;
+  largest: { species: AnimalSpeciesRef; creatures: number } | null;
   averageGenomeSize: number | null;
-  /** of the herbivores that died of old age during the generation; the first to reach it wins a tie */
-  mostOldAgeDeaths: { species: HerbivoreSpeciesRef; deaths: number } | null;
+  /** of the animals that died of old age during the generation; the first to reach it wins a tie */
+  mostOldAgeDeaths: { species: AnimalSpeciesRef; deaths: number } | null;
 };
 
-function herbivoreSpeciesRef(creature: Creature): HerbivoreSpeciesRef {
+function animalSpeciesRef(creature: Creature): AnimalSpeciesRef {
   return {
     code: creature.brain.genome.getHexColor(),
     color: creature.getColor(),
@@ -90,21 +94,21 @@ function herbivoreSpeciesRef(creature: Creature): HerbivoreSpeciesRef {
   };
 }
 
-// counts a herbivore that died of old age for the stats of the generation
-export function addHerbivoreOldAgeDeath(deaths: HerbivoreOldAgeDeaths, creature: Creature): void {
+// counts an animal that died of old age for the stats of the generation
+export function addAnimalOldAgeDeath(deaths: AnimalOldAgeDeaths, creature: Creature): void {
   const key = creature.brain.genome.toDecimalString(false);
   const entry = deaths.get(key);
   if (entry) entry.deaths++;
-  else deaths.set(key, { species: herbivoreSpeciesRef(creature), deaths: 1 });
+  else deaths.set(key, { species: animalSpeciesRef(creature), deaths: 1 });
 }
 
-// Genome sizes of the living herbivores and the species with most deaths of old age
-export function computeHerbivoreGenomeStats(generation: number, creatures: readonly Creature[], oldAgeDeaths: HerbivoreOldAgeDeaths): HerbivoreGenomeStats {
-  const herbivores = creatures.filter((creature) => creature.isAlive && creature.genus === "attack_plant");
+// Genome sizes of the living animals and the species with most deaths of old age
+export function computeAnimalGenomeStats(generation: number, creatures: readonly Creature[], oldAgeDeaths: AnimalOldAgeDeaths): AnimalGenomeStats {
+  const animals = creatures.filter((creature) => creature.isAlive && creature.genus === "attack_plant");
 
   let maxSize = 0;
   let totalSize = 0;
-  for (const creature of herbivores) {
+  for (const creature of animals) {
     const size = creature.brain.genome.genes.length;
     totalSize += size;
     if (size > maxSize) maxSize = size;
@@ -112,30 +116,30 @@ export function computeHerbivoreGenomeStats(generation: number, creatures: reado
 
   // only the genomes of the largest size are converted to a key
   const largestCounts = new Map<string, { creature: Creature; creatures: number }>();
-  for (const creature of herbivores) {
+  for (const creature of animals) {
     if (creature.brain.genome.genes.length !== maxSize) continue;
     const key = creature.brain.genome.toDecimalString(false);
     const entry = largestCounts.get(key);
     if (entry) entry.creatures++;
     else largestCounts.set(key, { creature, creatures: 1 });
   }
-  let largest: HerbivoreGenomeStats["largest"] = null;
+  let largest: AnimalGenomeStats["largest"] = null;
   for (const { creature, creatures } of largestCounts.values()) {
     if (!largest || creatures > largest.creatures) {
-      largest = { species: herbivoreSpeciesRef(creature), creatures };
+      largest = { species: animalSpeciesRef(creature), creatures };
     }
   }
 
-  let mostOldAgeDeaths: HerbivoreGenomeStats["mostOldAgeDeaths"] = null;
+  let mostOldAgeDeaths: AnimalGenomeStats["mostOldAgeDeaths"] = null;
   for (const entry of oldAgeDeaths.values()) {
     if (!mostOldAgeDeaths || entry.deaths > mostOldAgeDeaths.deaths) mostOldAgeDeaths = entry;
   }
 
   return {
     generation,
-    alive: herbivores.length,
+    alive: animals.length,
     largest,
-    averageGenomeSize: herbivores.length > 0 ? totalSize / herbivores.length : null,
+    averageGenomeSize: animals.length > 0 ? totalSize / animals.length : null,
     mostOldAgeDeaths,
   };
 }
@@ -193,10 +197,12 @@ export function speciesStatsOf(living: readonly Creature[], dead: readonly Creat
     } : null,
     perCreature: known.length > 0 ? {
       children: average(known, known.length, (creature) => creature.childrenCount),
-      kills: average(known, known.length, (creature) => creature.killCount),
+      plantKills: average(known, known.length, (creature) => creature.plantKillCount),
+      animalKills: average(known, known.length, (creature) => creature.animalKillCount),
       attacks: average(known, known.length, (creature) => creature.attackCount),
       photosynthesis: average(known, known.length, (creature) => creature.waterFromPhotosynthesis),
-      fromPrey: average(known, known.length, (creature) => creature.waterFromPrey),
+      fromPlants: average(known, known.length, (creature) => creature.waterFromPlants),
+      fromAnimals: average(known, known.length, (creature) => creature.waterFromAnimals),
       balance: averageBalance(known.map(creatureMassBalance)),
     } : null,
     // the age stops changing when a creature dies

@@ -23,7 +23,7 @@ describe('CreaturePhenotype', () => {
         }
     });
 
-    test.each(["attack_plant", "attack_animal", "unknown"] as const)(
+    test.each(["attack_plant", "unknown"] as const)(
         'green plants mode never gives green hues to %s',
         (genus) => {
             for (const hash of sampleHashes()) {
@@ -36,7 +36,7 @@ describe('CreaturePhenotype', () => {
     );
 
     test('green plants mode uses both sides of the excluded hues', () => {
-        const hues = sampleHashes().map((hash) => hueOf(CreaturePhenothype.greenPlantsColorAssign("attack_animal", hash)));
+        const hues = sampleHashes().map((hash) => hueOf(CreaturePhenothype.greenPlantsColorAssign("attack_plant", hash)));
         expect(hues.some((hue) => hue < 70)).toBe(true);
         expect(hues.some((hue) => hue > 170)).toBe(true);
     });
@@ -46,7 +46,7 @@ describe('CreaturePhenotype', () => {
         const colors = new Set<string>();
         for (let i = 0; i < 100; i++) {
             const genome = new Genome([...base, base[0] + i]);
-            colors.add(CreaturePhenothype.greenPlantsColorAssign("attack_animal", genome.getHash()));
+            colors.add(CreaturePhenothype.greenPlantsColorAssign("attack_plant", genome.getHash()));
         }
         expect(colors.size).toBeGreaterThan(90);
     });

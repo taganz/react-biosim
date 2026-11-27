@@ -8,7 +8,7 @@ interface Props {
   speciesCount: number;
 }
 
-const COUNTED_GENERA: Genus[] = ["plant", "attack_plant", "attack_animal"];
+const COUNTED_GENERA: Genus[] = ["plant", "attack_plant"];
 
 // One line with the state of the whole population. Everything but the species count is live;
 // the species are grouped at the start of each generation.

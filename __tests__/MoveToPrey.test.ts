@@ -10,7 +10,7 @@ import Creature from "@/simulation/creature/Creature";
 import { GridPosition } from "@/simulation/world/grid/Grid";
 
 const SENSORS: SensorName[] = ["HorizontalPosition", "PreyNorth", "PreyProximity"];
-const ACTIONS: ActionName[] = ["MoveEast", "Photosynthesis", "AttackPlant", "MoveToPrey"];
+const ACTIONS: ActionName[] = ["MoveEast", "Photosynthesis", "Attack", "MoveToPrey"];
 
 function makeWorld(radius = 5): WorldController {
   const simulationData: SimulationData = {
@@ -45,7 +45,7 @@ function plant(world: WorldController, position: GridPosition): Creature {
 // a herbivore whose brain drives MoveToPrey from HorizontalPosition (positive away from x = 0)
 function hunter(world: WorldController, position: GridPosition, extraGenes: number[] = []): Creature {
   return world.generations.newCreature(position, true, new Genome([
-    gene(world, "HorizontalPosition", "AttackPlant", 1),
+    gene(world, "HorizontalPosition", "Attack", 1),
     gene(world, "HorizontalPosition", "MoveToPrey", 3),
     ...extraGenes,
   ]))!;
@@ -82,7 +82,7 @@ describe("PreyProximity sensor", () => {
   test("counts as a prey sensor, so a brain that reads it searches the prey", () => {
     const world = makeWorld();
     const herbivore = world.generations.newCreature([1, 1], true, new Genome([
-      gene(world, "PreyProximity", "AttackPlant", 1),
+      gene(world, "PreyProximity", "Attack", 1),
     ]))!;
     expect(herbivore.brain.usesPreySensors).toBe(true);
     expect(herbivore.brain.usesPreySearch).toBe(true);
@@ -142,7 +142,7 @@ describe("MoveToPrey action", () => {
   test("a brain not connected to MoveToPrey and without prey sensors does not search", () => {
     const world = makeWorld();
     const herbivore = world.generations.newCreature([5, 5], true, new Genome([
-      gene(world, "HorizontalPosition", "AttackPlant", 1),
+      gene(world, "HorizontalPosition", "Attack", 1),
     ]))!;
     plant(world, [5, 2]);
     herbivore.brain.step();

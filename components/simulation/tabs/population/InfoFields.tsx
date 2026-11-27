@@ -87,7 +87,7 @@ export function GeneFields({ creature }: { creature: Creature }) {
 
 interface MassBalanceProps {
   balance: MassBalance;
-  /** herbivores and carnivores: shows what they ate and what attacking cost */
+  /** animals: shows what they ate, from plants and from other animals, and what attacking cost */
   eatsPrey: boolean;
   endLabel: string;
   /** when given and different from the balance, it is shown in red */
@@ -103,9 +103,12 @@ export function MassBalanceFields({ balance, eatsPrey, endLabel, realMass }: Mas
       <Field label="Mass at start">{formatMass(balance.start)}</Field>
       <Field label="+ Photosynthesis">{formatMass(balance.photosynthesis)}</Field>
       {eatsPrey && (
-        <Field label="+ Eaten from prey">
-          {`${formatMass(balance.fromPrey)} (net of attack cost ${formatSigned(balance.fromPrey - balance.attacking)})`}
-        </Field>
+        <>
+          <Field label="+ Eaten from plants">{formatMass(balance.fromPlants)}</Field>
+          <Field label="+ Eaten from animals">
+            {`${formatMass(balance.fromAnimals)} (all food net of attack cost ${formatSigned(balance.fromPlants + balance.fromAnimals - balance.attacking)})`}
+          </Field>
+        </>
       )}
       <Field label="− Basal (genes)">{formatMass(balance.basal)}</Field>
       <Field label="− Actions">

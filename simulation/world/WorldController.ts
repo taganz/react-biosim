@@ -503,7 +503,7 @@ export default class WorldController {
 
     this.worldWater.evaporation(this.grid);
     this.simulationLog.onGenerationEnd();
-    this.generations.closeHerbivoreGenomeStats();
+    this.generations.closeAnimalGenomeStats();
     if (!this.generations.isContinuous) {
       // selected before the pause, while the generation that ends is still in the world
       this.generations.selectSurvivors();

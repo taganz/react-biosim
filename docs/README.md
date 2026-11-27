@@ -38,6 +38,7 @@ How the code is organised and how to change it. Start with the [developer guide]
 2. [Save format](development/serialization.md): the `.sim` file and loading
 3. [Extending](development/extending.md): new sensors, actions, strategies, selection methods, map objects, scenarios
 4. [Testing](development/testing.md): running and writing tests
+5. [Performance](development/performance.md): where the time goes, how to measure it, options to speed it up
 
 ## Other
 

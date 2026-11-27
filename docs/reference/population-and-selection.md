@@ -35,19 +35,19 @@ Works like Asexual Random, but places creatures inside the **spawn areas** of th
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.
 - **Next generations:** every survivor has `ceil(initial population ÷ survivors)` children, so the population can end up slightly above the target.
 
-When you choose this strategy in the Scenario tab and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list (`DEFAULT_GENUS_PROBABILITIES` in `constantsDefault.ts`) is copied into the settings: plant 0.7, attack_plant 0.3, attack_animal 0. The list is saved with the simulation. The main action of each genus with a probability above 0 is also enabled (see below).
+When you choose this strategy in the Scenario tab and the current list is empty or missing (the startup scenario and the bundled scenarios have none), the default list (`DEFAULT_GENUS_PROBABILITIES` in `constantsDefault.ts`) is copied into the settings: plant 0.7, attack_plant 0.3. The list is saved with the simulation. The main action of each genus with a probability above 0 is also enabled (see below).
 
-While this strategy is selected, the Scenario tab shows the list under **Genera of generation 1**: one row per genus (plant, attack_plant, attack_animal) with its probability, the action its main gene uses, and the share of generation 1 it will get. Genera are picked in list order, so if the probabilities add up to less than 1 the last genus in the list gets the rest, and if they add up to more, genera later in the list get less. It warns when the total is not 1 or the list is empty. It also warns, on the row of each genus that gets creatures, when the enabled sensors and actions cannot build its genome: no enabled sensor is compatible with the genus, its main action is off, or (with more than one gene) no enabled action is compatible with it. Raising a genus above 0 enables its main action, Reproduction and metabolism, as choosing the strategy does. Changes take effect with **Restart**.
+While this strategy is selected, the Scenario tab shows the list under **Genera of generation 1**: one row per genus (plant, attack_plant) with its probability, the action its main gene uses, and the share of generation 1 it will get. Genera are picked in list order, so if the probabilities add up to less than 1 the last genus in the list gets the rest, and if they add up to more, genera later in the list get less. It warns when the total is not 1 or the list is empty. It also warns, on the row of each genus that gets creatures, when the enabled sensors and actions cannot build its genome: no enabled sensor is compatible with the genus, its main action is off, or (with more than one gene) no enabled action is compatible with it. Raising a genus above 0 enables its main action, Reproduction and metabolism, as choosing the strategy does. Changes take effect with **Restart**.
 
-### Plant/Herbivore (`PlantHerbivorePopulation`) *(in dev)*
+### Plants and Animals (`PlantHerbivorePopulation`) *(in dev)*
 
 A predator–prey experiment. Use it with the Greatest Mass selection method.
 
-- Every generation is 80% plants and 20% herbivores.
+- Every generation is 80% plants and 20% animals.
 - **Generation 1:** both groups are built from their genus.
-- **Next generations:** herbivores are children of the surviving herbivores. Plants are created again from scratch, so only herbivores evolve.
+- **Next generations:** animals are children of the surviving animals. Plants are created again from scratch, so only animals evolve.
 
-Choosing Random Fixed Genera or Plant/Herbivore in the Scenario tab enables the main action of every genus the strategy creates, because a creature of that genus cannot be built without it: **Photosynthesis** for plant, **Attack Plant** for attack_plant and **Attack Animal** for attack_animal. **Reproduction** is enabled too, since every genus needs it. It also turns **metabolism** on, since those actions only change mass when it is on. Other actions stay as they were, and you can still turn any of this off afterwards.
+Choosing Random Fixed Genera or Plants and Animals in the Scenario tab enables the main action of every genus the strategy creates, because a creature of that genus cannot be built without it: **Photosynthesis** for plant and **Attack** for attack_plant. **Reproduction** is enabled too, since every genus needs it. It also turns **metabolism** on, since those actions only change mass when it is on. Other actions stay as they were, and you can still turn any of this off afterwards.
 
 ## Selection methods
 
@@ -57,7 +57,7 @@ Source: [simulation/generations/selection/](../../simulation/generations/selecti
 |---|---|---|---|
 | Inside Reproduction Area | `InsideReproductionAreaSelection` | Living creatures standing inside a **reproduction area** when the generation ends. | Survival rate: survivors ÷ initial population × 100 |
 | Greatest Distance *(in dev)* | `GreatestDistanceSelection` | The 5% of living creatures with the highest [distance index](../model/creatures.md#distance-index) (`GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS`), and at least one. Ties, such as the many creatures at 0 in the first generations, are broken at random. | Largest distance covered |
-| Greatest Mass *(in dev)* | `GreatestMassSelection` | Herbivores only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no herbivores left there are no survivors. | Largest mass |
+| Greatest Mass *(in dev)* | `GreatestMassSelection` | Animals only, ranked by mass. The number kept is 5% of **all** creatures (`GREATEST_MASS_SELECTION_TOP_SURVIVORS`). With no animals left there are no survivors. | Largest mass |
 | Reproduction *(in dev)* | `ReproductionSelection` | Living creatures that were born during the generation. | Number of survivors |
 
 *Inside Reproduction Area* cannot be chosen with metabolism on. It ignores mass, and with the default metabolism constants most creatures starve before the last step, so the run keeps going extinct and restarting. Turning metabolism on while it is selected switches to *Reproduction*. A file loaded with both shows a warning under the selector.
@@ -72,7 +72,7 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 |---|---|---|
 | Learn to reach a zone (as in the video) | Asexual Random or Asexual Zone | Inside Reproduction Area |
 | Learn to travel far | Asexual Random | Greatest Distance |
-| Plants and herbivores | Plant/Herbivore | Greatest Mass |
+| Plants and animals | Plants and Animals | Greatest Mass |
 | Open-ended, no generations | Continuous simulation type, any strategy for generation 1 | — |
 
 ## Adding a new strategy or method
@@ -82,6 +82,6 @@ The old **Continuous** strategy and selection method were replaced by the *Conti
 
 ## Known issues
 
-- **Plant/Herbivore ignores survivors that are not herbivores** and logs a warning in the console. Only Greatest Mass selects herbivores alone; with other methods the surviving plants are dropped, and if no herbivore survives the next generation has only plants.
+- **Plants and Animals ignores survivors that are not animals** and logs a warning in the console. Only Greatest Mass selects animals alone; with other methods the surviving plants are dropped, and if no animal survives the next generation has only plants.
 - **Random Fixed Genera** depends on `POPULATION_DEFAULT_GENUS`. It is filled with the default list only when the strategy is chosen in the Scenario tab, so a file saved with this strategy and an empty list still starts with no genus to pick from, until you give one a probability under **Genera of generation 1**.
 - **Random Fixed Genera writes broken genes when a genus cannot be built.** If no enabled sensor is compatible with a genus, or its main action is off, the random pick finds nothing and the gene gets id 127. The brain wraps that id around the number of sensors or actions, so the gene ends up wired to an arbitrary one and the creature may not have the genus it was built for. The Scenario tab warns about it under **Genera of generation 1**, but does not stop the run.

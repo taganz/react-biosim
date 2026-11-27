@@ -30,8 +30,7 @@ describe('creature test', () => {
       "MoveForward",      // 5
       "Photosynthesis",   // 6 
       "Reproduction",     // 7
-      "AttackPlant",      // 8
-      "AttackAnimal",     // 9
+      "Attack",           // 8
     ],
     simulationData.worldGenerationsData.mutationProbability = 0;
     simulationData.worldGenerationsData.deletionRatio = 0;
@@ -42,11 +41,9 @@ describe('creature test', () => {
     worldWater = worldController.worldWater;
     let genomePlant = new Genome([CreatureGenus.mainGeneForGenus(generations, "plant")]);
     let genomeAttackPlant = new Genome([CreatureGenus.mainGeneForGenus(generations, "attack_plant")]);
-    let genomeAttackAnimal = new Genome([CreatureGenus.mainGeneForGenus(generations, "attack_animal")]);
     let joeRandom = worldController.generations.newCreature([1, 0], true);
     let joePlant = worldController.generations.newCreature([1, 0], true, genomePlant);
     let joeAttackPlant = worldController.generations.newCreature([2, 0], true, genomeAttackPlant);
-    let joeAttackAnimal = worldController.generations.newCreature([3, 0], true, genomeAttackAnimal);
     
     test('constructor first generation: brain genes length', () => {
       let genesPlantAnd4MoreGenes = CreatureGenus.geneArrayForGenus(worldController.generations, "plant", 5);
@@ -67,9 +64,6 @@ describe('creature test', () => {
       }
       if (genus === "attack_plant") {
         expect(joeRandom.massAtBirth).toBe(worldController.simData.worldControllerData.MASS_AT_BIRTH_ATTACK_PLANT);
-      }
-      if (genus === "attack_animal") {
-        expect(joeRandom.massAtBirth).toBe(worldController.simData.worldControllerData.MASS_AT_BIRTH_ATTACK_ANIMAL);
       }
     });
     test.skip('step()', () => {
@@ -92,11 +86,7 @@ describe('creature test', () => {
       const joeAttackPlant = worldController.generations.newCreature([3,3], true, genomeAttackPlant);
       expect(joeAttackPlant.genus).toBe("attack_plant");
       expect(joeAttackPlant.preyGenus).toBe("plant");
-      expect(joeAttackPlant.predatorGenus).toBe("attack_animal");
-      const joeAttackAnimal = worldController.generations.newCreature([2,2], true, genomeAttackAnimal);
-      expect(joeAttackAnimal.genus).toBe("attack_animal");
-      expect(joeAttackAnimal.preyGenus).toBe("attack_plant");
-      expect(joeAttackAnimal.predatorGenus).toBeUndefined();
+      expect(joeAttackPlant.predatorGenus).toBeUndefined();
 
     });
 

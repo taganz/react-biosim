@@ -17,12 +17,12 @@ const format = (value: number) => Number.isInteger(value) ? String(value) : valu
 export function checkWaterSettings(sim: SimulationData): WaterSettingsCheck {
     const errors: string[] = [];
     const warnings: string[] = [];
-    const { size, MASS_AT_BIRTH_PLANT, MASS_AT_BIRTH_ATTACK_PLANT, MASS_AT_BIRTH_ATTACK_ANIMAL } = sim.worldControllerData;
+    const { size, MASS_AT_BIRTH_PLANT, MASS_AT_BIRTH_ATTACK_PLANT } = sim.worldControllerData;
     const { waterTotalPerCell, waterFirstRainPerCell, waterCellCapacity, waterRainMaxPerCell } = sim.waterData;
     const population = sim.worldGenerationsData.initialPopulation;
     const cells = size * size;
     const total = cells * waterTotalPerCell;
-    const masses = [MASS_AT_BIRTH_PLANT, MASS_AT_BIRTH_ATTACK_PLANT, MASS_AT_BIRTH_ATTACK_ANIMAL];
+    const masses = [MASS_AT_BIRTH_PLANT, MASS_AT_BIRTH_ATTACK_PLANT];
     const minimumNeed = population * Math.min(...masses);
     const maximumNeed = population * Math.max(...masses);
 

@@ -21,7 +21,7 @@ import { SensorName } from "../creature/brain/CreatureSensors";
 import { ActionName } from "../creature/brain/CreatureActions";
 import { SimulationType } from "./SimulationType";
 import { GeneDecoding } from "../creature/brain/geneTranslation";
-import { addHerbivoreOldAgeDeath, computeHerbivoreGenomeStats, HerbivoreGenomeStats, HerbivoreOldAgeDeaths } from "./creatureQueries";
+import { addAnimalOldAgeDeath, computeAnimalGenomeStats, AnimalGenomeStats, AnimalOldAgeDeaths } from "./creatureQueries";
 import { countsByArea, positionInArea, spawnAreas } from "./population/spawnZones";
 
 
@@ -72,9 +72,9 @@ export default class WorldGenerations {
   deathsThisGeneration: number = 0;
   lastBirths: number = 0;
   lastDeaths: number = 0;
-  // herbivores that died of old age during the current generation, and the stats of the last one
-  private herbivoreOldAgeDeaths: HerbivoreOldAgeDeaths = new Map();
-  lastHerbivoreGenomeStats: HerbivoreGenomeStats | null = null;
+  // animals that died of old age during the current generation, and the stats of the last one
+  private animalOldAgeDeaths: AnimalOldAgeDeaths = new Map();
+  lastAnimalGenomeStats: AnimalGenomeStats | null = null;
   // genomes of the creatures placed at the start of the current generation, for "Save generation"
   startGenomes : Genome[] = [];
   
@@ -300,9 +300,11 @@ export default class WorldGenerations {
     creature.thinkCount = source.thinkCount;
     creature.childrenCount = source.childrenCount;
     creature.attackCount = source.attackCount;
-    creature.killCount = source.killCount;
+    creature.plantKillCount = source.plantKillCount;
+    creature.animalKillCount = source.animalKillCount;
     creature.waterFromPhotosynthesis = source.waterFromPhotosynthesis;
-    creature.waterFromPrey = source.waterFromPrey;
+    creature.waterFromPlants = source.waterFromPlants;
+    creature.waterFromAnimals = source.waterFromAnimals;
     creature._age = source._age;
     creature.lastPosition = [source.lastPosition[0], source.lastPosition[1]];
     creature.lastMovement = [source.lastMovement[0], source.lastMovement[1]];
@@ -357,7 +359,7 @@ public step(): number {
         this.deathsThisGeneration++;
         this.speciesRegistry.removeDeadCreature(creature);
         if (creature.deathCause === "old" && creature.genus === "attack_plant") {
-          addHerbivoreOldAgeDeath(this.herbivoreOldAgeDeaths, creature);
+          addAnimalOldAgeDeath(this.animalOldAgeDeaths, creature);
         }
       }
     }
@@ -387,9 +389,9 @@ public endTimeWindow(): void {
 }
 
 // called when the generation ends, while its creatures are still in the world
-public closeHerbivoreGenomeStats(): void {
-  this.lastHerbivoreGenomeStats = computeHerbivoreGenomeStats(this.currentGen, this.currentCreatures, this.herbivoreOldAgeDeaths);
-  this.herbivoreOldAgeDeaths = new Map();
+public closeAnimalGenomeStats(): void {
+  this.lastAnimalGenomeStats = computeAnimalGenomeStats(this.currentGen, this.currentCreatures, this.animalOldAgeDeaths);
+  this.animalOldAgeDeaths = new Map();
 }
 
 private closeBirthAndDeathCounts(): void {

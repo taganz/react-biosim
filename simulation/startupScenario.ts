@@ -71,7 +71,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MASS_AT_BIRTH_PLANT : 1,
           MASS_AT_BIRTH_ATTACK_PLANT : 3,
           MASS_AT_BIRTH_ATTACK : 2,
-          MASS_AT_BIRTH_ATTACK_ANIMAL : 6,
           MASS_MAX_MULTIPLE_MASS_AT_BIRT : 5,
 
           MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : 0.04,   // 0.07
@@ -91,7 +90,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT : 4,   // the child is born as far as possible, up to 4 % of the world size (4 cells in 100)
 
           ACTION_REPRODUCTION_OFFSET : 0.6,  // not used
-          ACTION_ATTACK_OFFSET : 0.6,  // the attack actions fire if their output is greater
+          ACTION_ATTACK_OFFSET : 0.6,  // Attack fires if its output is greater
 
           MOVE_COST_PER_MASS_TRY : 0.2,
           MOVE_COST_PER_MASS_DO : 0.6,
@@ -105,7 +104,6 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           ASSIMILATION_EFFICIENCY : {
             plant: { photosynthesis: 1, prey: 1 },
             attack_plant: { photosynthesis: 1, prey: 1 },
-            attack_animal: { photosynthesis: 1, prey: 1 },
           },
 
         // user values

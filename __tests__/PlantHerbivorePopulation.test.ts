@@ -25,12 +25,12 @@ describe("PlantHerbivorePopulation", () => {
         ...generationsData,
         initialPopulation,
         metabolismEnabled: true,
-        // no mutations: a child that loses its AttackPlant gene would be a plant and change the counts
+        // no mutations: a child that loses its Attack gene would be a plant and change the counts
         mutationProbability: 0,
         geneInsertionDeletionProbability: 0,
         populationStrategy: selectPopulationStrategy("PlantHerbivorePopulation"),
         selectionMethod: selectSelectionMethod("GreatestMassSelection"),
-        enabledActions: Array.from(new Set([...generationsData.enabledActions, "Photosynthesis", "Reproduction", "AttackPlant"])),
+        enabledActions: Array.from(new Set([...generationsData.enabledActions, "Photosynthesis", "Reproduction", "Attack"])),
       },
     };
     worldController = new WorldController(simulationData);

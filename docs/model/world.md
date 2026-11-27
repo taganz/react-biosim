@@ -34,7 +34,7 @@ The world's edges block movement like an obstacle, and the touch sensors read th
 
 ## Water
 
-Water only matters when **metabolism** is enabled. It is the raw material of mass: plants turn water into mass with **Photosynthesis**, and the mass flows on to herbivores and carnivores when they eat.
+Water only matters when **metabolism** is enabled. It is the raw material of mass: plants turn water into mass with **Photosynthesis**, and the mass flows on to animals when they eat.
 
 The total amount of water is fixed and is split between three stores ([WorldWater.ts](../../simulation/water/WorldWater.ts)):
 

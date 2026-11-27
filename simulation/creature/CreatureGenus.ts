@@ -6,7 +6,7 @@ import { Gene } from "./brain/Genome";
 import WorldGenerations from "../generations/WorldGenerations";
 import { ConnectionType } from "./brain/Connection";
 import { getRandomItem } from "../helpers/helpers";
-export type Genus = "unknown" | "plant" | "attack_plant" |"attack_animal";
+export type Genus = "unknown" | "plant" | "attack_plant";
 
 export default class CreatureGenus {
     
@@ -48,92 +48,28 @@ export default class CreatureGenus {
 }
     
     static getGenusFromGene(generations: WorldGenerations, gene: Gene): Genus {
-        let hasPlant = false;
-        let hasAttack = false;
-        let hasAttackPlant = false;
-        let hasAttackAnimal = false;
         const connection = Genome.geneToConnection(gene, generations);
-        if (connection.sourceType == NeuronType.SENSOR) {
-            /*
-            if (connection.sourceType == NeuronType.SENSOR) {
-                const compatibleGenus = generations.sensors.sensorsByCompatibleGenus(connection.sourceId);
-                if (compatibleGenus.includes("attack_animal")) hasAttackAnimal = true;
-                if (compatibleGenus.includes("attack_plant")) hasAttackPlant = true;
-                if (compatibleGenus.includes("plant")) hasPlant = true;
-            }
-            */
-            const mainGenus = generations.sensors.getGenusMain(connection.sourceId);
-            if (mainGenus != null) {
-                if (mainGenus.includes("attack_animal")) hasAttackAnimal = true;
-                else if (mainGenus.includes("attack_plant")) hasAttackPlant = true;
-                else if (mainGenus.includes("plant")) hasPlant = true;
-            }
-        }
-        if (connection.sinkType == NeuronType.ACTION) {
-            /*
-            if (connection.sinkType == NeuronType.ACTION) {
-                const compatibleGenus = generations.actions.sensorsByCompatibleGenus(connection.sinkId);
-                if (compatibleGenus.includes("attack_animal")) hasAttackAnimal = true;
-                if (compatibleGenus.includes("attack_plant")) hasAttackPlant = true;
-                if (compatibleGenus.includes("plant")) hasPlant = true;
-            }
-            */
-            const mainGenus = generations.actions.getGenusMain(connection.sinkId);
-            if (mainGenus != null) {
-                if (mainGenus.includes("attack_animal")) hasAttackAnimal = true;
-                else if (mainGenus.includes("attack")) hasAttack = true;
-                else if (mainGenus.includes("attack_plant")) hasAttackPlant = true;
-                else if (mainGenus.includes("plant")) hasPlant = true;
-            }
-        }
-        if (hasAttackAnimal) return "attack_animal";
-        if (hasAttackPlant) return "attack_plant";
-        if (hasPlant) return "plant";
-        return "unknown";
- 
+        return CreatureGenus.genusFromMainGenera([
+            connection.sourceType == NeuronType.SENSOR ? generations.sensors.getGenusMain(connection.sourceId) : null,
+            connection.sinkType == NeuronType.ACTION ? generations.actions.getGenusMain(connection.sinkId) : null,
+        ]);
     }
 
     //TODO should this be a getter in brain?
     static getGenus(brain: CreatureBrain): Genus {
-        let hasPlant = false;
-        let hasAttack = false;
-        let hasAttackPlant = false;
-        let hasAttackAnimal = false;
-        brain.brain.connections.map(connection => {
-            if (connection.sourceType == NeuronType.SENSOR) {
-                /*
-                const compatibleGenus = brain.sensors.sensorsByCompatibleGenus(connection.sourceId);
-                if (compatibleGenus.includes("attack_animal")) hasAttackAnimal = true;
-                if (compatibleGenus.includes("attack_plant")) hasAttackPlant = true;
-                if (compatibleGenus.includes("plant")) hasPlant = true;
-                */
-                const mainGenus = brain.sensors.getGenusMain(connection.sourceId);
-                if (mainGenus != null) {
-                    if (mainGenus === "attack_animal") hasAttackAnimal = true;
-                    else if (mainGenus === "attack_plant") hasAttackPlant = true;
-                    else if (mainGenus === "plant") hasPlant = true;
-                }
-            }
-            if (connection.sinkType == NeuronType.ACTION) {
-                /*
-                const compatibleGenus = brain.actions.sensorsByCompatibleGenus(connection.sinkId);
-                if (compatibleGenus.includes("attack_animal")) hasAttackAnimal = true;
-                if (compatibleGenus.includes("attack_plant")) hasAttackPlant = true;
-                if (compatibleGenus.includes("plant")) hasPlant = true;
-                */
-                const mainGenus = brain.actions.getGenusMain(connection.sinkId);
-                if (mainGenus != null) {
-                    if (mainGenus === "attack_animal") hasAttackAnimal = true;
-                    else if (mainGenus === "attack_plant") hasAttackPlant = true;
-                    else if (mainGenus === "plant") hasPlant = true;
-                }
-            }
-        });
-        if (hasAttackAnimal) return "attack_animal";
-        if (hasAttackPlant) return "attack_plant";
-        if (hasPlant) return "plant";
+        const mainGenera: (Genus | null)[] = [];
+        for (const connection of brain.brain.connections) {
+            if (connection.sourceType == NeuronType.SENSOR) mainGenera.push(brain.sensors.getGenusMain(connection.sourceId));
+            if (connection.sinkType == NeuronType.ACTION) mainGenera.push(brain.actions.getGenusMain(connection.sinkId));
+        }
+        return CreatureGenus.genusFromMainGenera(mainGenera);
+    }
+
+    // an Attack gene makes an animal, otherwise a Photosynthesis gene makes a plant
+    private static genusFromMainGenera(mainGenera: (Genus | null)[]): Genus {
+        if (mainGenera.includes("attack_plant")) return "attack_plant";
+        if (mainGenera.includes("plant")) return "plant";
         return "unknown";
- 
     }
 
 /*

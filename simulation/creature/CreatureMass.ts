@@ -28,7 +28,7 @@ export default class CreatureMass {
     totalBasal : number = 0;            // the genes (basal consumption)
     totalThinking : number = 0;         // the sensors and actions of the brain, in the steps it thinks
     totalMoving : number = 0;           // moving
-    totalAttacking : number = 0;        // attacking (the mass eaten is Creature.waterFromPrey)
+    totalAttacking : number = 0;        // attacking (the mass eaten is Creature.waterFromPlants and waterFromAnimals)
     totalReproductionCost : number = 0; // reproduction attempts and births
     totalGivenToChildren : number = 0;  // birth mass of the children
     startMass : number;                 // the mass it got at birth, or had when it was loaded from a file
@@ -45,9 +45,6 @@ export default class CreatureMass {
             break;
             case "attack_plant":
             this._massAtBirth = creature.generations.worldController.simData.worldControllerData.MASS_AT_BIRTH_ATTACK_PLANT;
-            break;
-            case "attack_animal":
-            this._massAtBirth = creature.generations.worldController.simData.worldControllerData.MASS_AT_BIRTH_ATTACK_ANIMAL;
             break;
             default:
             console.error("genus unknown ", creature._genus);

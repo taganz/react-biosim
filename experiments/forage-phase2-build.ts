@@ -17,7 +17,7 @@ const phase1 = JSON.parse(fs.readFileSync(phase1File, "utf8"));
 const S: string[] = phase1.worldGenerationsData.enabledSensors;
 const A1: string[] = phase1.worldGenerationsData.enabledActions;
 const A2 = ["MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward",
-  "Photosynthesis", "Reproduction", "AttackPlant", ...(A1.includes("MoveToPrey") ? ["MoveToPrey"] : [])];
+  "Photosynthesis", "Reproduction", "Attack", ...(A1.includes("MoveToPrey") ? ["MoveToPrey"] : [])];
 
 const sinkIsAction = (g: number) => ((g >>> 23) & 1) === 1;
 const actionOf = (g: number) => A1[((g >>> 16) & 127) % A1.length];
@@ -26,7 +26,7 @@ const makeGene = (sensor: string, action: string, weight: number) =>
   ((1 << 31) | (S.indexOf(sensor) << 24) | (1 << 23) | (A2.indexOf(action) << 16) | Math.round((weight + 4) * 8192)) | 0;
 
 const herbivores = (phase1.species as { genes: number[]; creatures: unknown[] }[])
-  .filter((p) => p.genes.some((g) => sinkIsAction(g) && actionOf(g) === "AttackPlant"))
+  .filter((p) => p.genes.some((g) => sinkIsAction(g) && actionOf(g) === "Attack"))
   .sort((a, b) => b.creatures.length - a.creatures.length);
 const hunter = herbivores[0].genes.map((g) => (sinkIsAction(g) ? withSink(g, A2.indexOf(actionOf(g))) : g));
 hunter.push(makeGene("Oscillator", "Reproduction", 2));

@@ -95,7 +95,7 @@ npm run sim -- experiments/example.json --generations 50
 | `startingPopulation`, `survivorCount`, `births`, `deaths`, `maxFitnessValue` | The generation's stats, as in the fitness chart of the Simulation tab |
 | `durationMs` | Time the generation took |
 | `nextPopulation` | Population at the start of the next generation |
-| `nextPlants`, `nextAttackPlants`, `nextAttackAnimals`, `nextUnknown` | The same population by [genus](../model/creatures.md) |
+| `nextPlants`, `nextAttackPlants`, `nextUnknown` | The same population by [genus](../model/creatures.md) |
 
 With `--log`, the recording starts with the run (generation 1, or the saved generation with `--resume`) and goes on after extinctions; their rows start again at generation 1, and `simCode` changes unless the seed is fixed. The `LOG_*` constants of the base choose the files and columns (for example `--set constants.LOG_EVERY_N_STEPS=10`). The recording stops at `LOG_MAX_ROWS` rows; logging creatures in large populations makes big files.
 
@@ -105,7 +105,7 @@ Claude Code can run the runner, read `summary.json` and `generations.csv`, and c
 
 - "Run 300 generations of the startup scenario with mutation probability 0.01 and 0.05, and compare the survivors."
 - "Continue `public/turn right generation 5574.sim` for 100 generations and tell me if survival improves."
-- "Find the smallest initial population at which the herbivores do not die out."
+- "Find the smallest initial population at which the animals do not die out."
 
 - "Repeat the last run with seeds 1 to 5 and give me the average survivors."
 
