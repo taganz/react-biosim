@@ -1,5 +1,11 @@
 # Plan: simplificar las constantes del metabolismo
 
+**Estado (2026-11-27):** fases 1 y 2 hechas, con formato de guardado 4 (commits e494a0d, a291856,
+3c2d255, 324c611). Decisiones tomadas: `ATTACK_COST_PER_MASS_DO` se descarta sin más (valía 0 en
+todos los ficheros); el ataque mantiene "más ligero que el coste muere al intentarlo"; arranque
+`ATTACK_COST_PER_MASS` = 0,007. La Energy Lab conserva `MASS_COST_PER_SENSOR/ACTION` como mandos
+propios. Falta la fase 3 (agrupar), que es opcional.
+
 Estado al escribirlo (2026-11-27): hay un cambio sin commitear que quita el género carnívoro
 (`attack_animal`), fusiona AttackPlant/AttackAnimal en `Attack` y sube el formato de guardado a la
 versión 3. Ese cambio ya elimina `MASS_AT_BIRTH_ATTACK_ANIMAL` y la fila `attack_animal` de
