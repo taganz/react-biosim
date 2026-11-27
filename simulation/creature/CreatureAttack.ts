@@ -63,9 +63,9 @@ export default class CreatureAttack {
     const preyPosition = this.grid.cellOffsetDirection4(this.creature.position, targetDirection);
     if (preyPosition != null) {
         const prey = this.grid.cell(preyPosition[0], preyPosition[1]).creature;
-        // check before paying the try: the cost could leave the attacker too light for the prey it found
+        // check before paying the cost: it could leave the attacker too light for the prey it found
         const canEat = this.canEat(prey);
-        this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_TRY);
+        this.creature._mass.consumeForAttack(this.creature.massAtBirth * this.worldControllerData.ATTACK_COST_PER_MASS);
         if (!canEat) {
             return 0;
         }
@@ -89,7 +89,6 @@ export default class CreatureAttack {
             this.creature.animalKillCount++;
         }
         prey.killedByAttack(this.creature.speciesId);
-        this.creature._mass.consumeForAttack(this.worldControllerData.ATTACK_COST_PER_MASS_DO);
         return preyMass;
    }
 

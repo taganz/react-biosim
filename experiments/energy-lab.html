@@ -219,10 +219,10 @@ const PARAMS = [
   ["REPRODUCTION_COST_PER_MASS_DO", 0.25, "Reproducirse, × masa al nacer (más la masa del hijo)"],
   ["MOVE_MULTIPLE_MASS_AT_BIRTH", 0, "Umbral para moverse, × masa al nacer (+ coste)"],
   ["MOVE_COST_PER_MASS", 0.8, "Cada intento de moverse, × masa al nacer (aunque esté bloqueado)"],
-  ["ATTACK_COST_PER_MASS_TRY", 0.02, "Intentar atacar (absoluto)"],
+  ["ATTACK_COST_PER_MASS", 0.007, "Cada ataque, × masa al nacer"],
   ["ATTACK_MIN_PREY_MASS_FACTOR", 2, "El atacante pesa al menos este múltiplo de la presa"],
 ];
-const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","MOVE_COST_PER_MASS_TRY","MOVE_COST_PER_MASS_DO","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
+const KNOWN_KEYS = new Set([...PARAMS.map(p => p[0]), "size","stepsPerGen","MASS_AT_BIRTH_ATTACK","SENSOR_COSTS","ACTION_COSTS","STAMINA_DEFAULT","STAMINA_MUTATION_STEP","ACTION_REPRODUCTION_OFFSET","ACTION_ATTACK_OFFSET","ATTACK_COST_PER_MASS_DO","ATTACK_SAME_GENUS","MOVE_COST_PER_MASS_TRY","MOVE_COST_PER_MASS_DO","ATTACK_COST_PER_MASS_TRY","pauseBetweenSteps","immediateSteps","pauseBetweenGenerations","simCode","currentGen","currentStep","lastGenerationDuration","totalTime","runSeed","rngState","seed","lastCreatureIdCreated","lastCreatureCount","lastSurvivorsCount","lastFitnessMaxValue","lastSurvivalRate","maxAge","continuous","MAX_AGE"]);
 const DEFAULTS = Object.fromEntries(PARAMS.map(p => [p[0], p[1]]));
 
 const state = {
@@ -280,7 +280,7 @@ function derive(sim, P, x = sim.x) {
     rtry: birth * P.REPRODUCTION_COST_PER_MASS_TRY,
     mthr: birth * (P.MOVE_MULTIPLE_MASS_AT_BIRTH + P.MOVE_COST_PER_MASS),
     mcost: birth * P.MOVE_COST_PER_MASS,
-    atry: P.ATTACK_COST_PER_MASS_TRY,
+    atry: birth * P.ATTACK_COST_PER_MASS,
     minEat: x.prey * P.ATTACK_MIN_PREY_MASS_FACTOR,
   };
 }
@@ -399,6 +399,10 @@ function currentKeys(wcd) {
   const w = { ...wcd };
   if (typeof w.MOVE_COST_PER_MASS_TRY === "number" || typeof w.MOVE_COST_PER_MASS_DO === "number") {
     w.MOVE_COST_PER_MASS = (w.MOVE_COST_PER_MASS_TRY || 0) + (w.MOVE_COST_PER_MASS_DO || 0);
+  }
+  if (typeof w.ATTACK_COST_PER_MASS_TRY === "number") {
+    const birth = typeof w.MASS_AT_BIRTH_ATTACK_PLANT === "number" && w.MASS_AT_BIRTH_ATTACK_PLANT > 0 ? w.MASS_AT_BIRTH_ATTACK_PLANT : 3;
+    w.ATTACK_COST_PER_MASS = w.ATTACK_COST_PER_MASS_TRY / birth;
   }
   return w;
 }

@@ -146,8 +146,7 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
   {
     title: "Attack",
     rows: [
-      ["ATTACK_COST_PER_MASS_TRY", 0.01, "Mass lost by trying to attack; a lighter creature dies trying."],
-      ["ATTACK_COST_PER_MASS_DO", 0.01, "Mass lost by a successful attack."],
+      ["ATTACK_COST_PER_MASS", 0.001, "Mass lost by every attack, successful or not, as a multiple of birth mass; a lighter creature dies trying."],
       ["ATTACK_MIN_PREY_MASS_FACTOR", 0.1, "The attacker must weigh at least this many times the prey."],
       ["ACTION_ATTACK_OFFSET", 0.05, "Minimum neuron output that triggers the Attack action."],
     ],

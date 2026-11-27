@@ -127,7 +127,7 @@ The metabolism constants and the `constants` object are edited under **Constants
 
 ### Metabolism constants (`worldControllerData`)
 
-Mass is only consumed when metabolism is enabled. The mass thresholds ("needs more than…") are always checked for reproduction, and only with metabolism for moving. Attacking has no mass threshold. "Birth mass" means the creature's own mass at birth.
+Mass is only consumed when metabolism is enabled. The mass thresholds ("needs more than…") are always checked for reproduction, and only with metabolism for moving. Attacking has no mass threshold. The costs of moving, attacking and reproducing are multiples of birth mass. "Birth mass" means the creature's own mass at birth.
 
 | Key | Startup | Meaning |
 |---|---|---|
@@ -148,8 +148,7 @@ Mass is only consumed when metabolism is enabled. The mass thresholds ("needs mo
 | `REPRODUCTION_OFFSPRING_MAX_DISTANCE_PERCENT` | 4 | The child of the Reproduction action is born in a free cell at most this percentage of the world size from the parent (counting steps to any of the 8 neighbours), in the farthest ring that has one. The distance is rounded to whole cells and is at least 1 (only the 8 cells around, as before): 4 cells in a world of 100. The Scenario tab shows the cells it gives in the current world. Files saved without it take 4. See [Creatures → Reproduction](../model/creatures.md#reproduction). |
 | `MOVE_MULTIPLE_MASS_AT_BIRTH` | 0 | A creature needs more than this multiple of its birth mass, plus `MOVE_COST_PER_MASS`, to move. |
 | `MOVE_COST_PER_MASS` | 0.8 | Mass lost by every move attempt, also when the target cell is blocked, as a multiple of birth mass. A creature without enough mass to move does not try and loses nothing. Files saved before format 4 had it split in `MOVE_COST_PER_MASS_TRY` and `MOVE_COST_PER_MASS_DO`, always paid together: they load as their sum. |
-| `ATTACK_COST_PER_MASS_TRY` | 0.02 | Mass lost by trying to attack. A creature lighter than this dies when it tries. |
-| `ATTACK_COST_PER_MASS_DO` | 0 | Mass lost by a successful attack. |
+| `ATTACK_COST_PER_MASS` | 0.007 | Mass lost by every attack, successful or not, as a multiple of birth mass, like the other action costs: 0.021 for an animal born with 3. A creature lighter than the cost dies when it tries. Files saved before format 4 had `ATTACK_COST_PER_MASS_TRY`, an absolute mass: it loads divided by the animal birth mass, so attacks cost the same. Their `ATTACK_COST_PER_MASS_DO`, paid on top by a successful attack (0 in every bundled file), is dropped: to make eating cost more, lower the `prey` efficiency in `ASSIMILATION_EFFICIENCY`. |
 | `ATTACK_MIN_PREY_MASS_FACTOR` | 2 | An attack fails unless the attacker weighs at least this many times the prey's mass. |
 | `ATTACK_SAME_GENUS` | false | Attackers can eat other species of their genus, never their own species (identical genome). Off, they cannot eat their genus at all. Files saved without it have it off. |
 | `ASSIMILATION_EFFICIENCY` | 1 for every genus and source | For each genus (`plant`, `attack_plant`), the share of what it takes that becomes mass: `photosynthesis` (of the water taken from its cell) and, for animals only, `prey` (of the prey eaten; plants never eat). The rest goes to the cloud. 0: the genus takes nothing that way, so `attack_plant: { photosynthesis: 0 }` stops animals from photosynthesising. Kept between 0 and 1. A genus or source missing, as in files saved without it, takes 1. Edited under *Constants → Mass and metabolism*, one row per source with one value per genus. See [Creatures → Assimilation efficiency](../model/creatures.md#assimilation-efficiency). |

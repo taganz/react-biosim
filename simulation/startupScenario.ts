@@ -93,8 +93,7 @@ const startupScenarioWorldControllerData : WorldControllerData = {
           MOVE_COST_PER_MASS : 0.8,   // every attempt, blocked or not
           MOVE_MULTIPLE_MASS_AT_BIRTH : 0, // 2,    // 2
 
-          ATTACK_COST_PER_MASS_TRY : 0.02,
-          ATTACK_COST_PER_MASS_DO : 0,
+          ATTACK_COST_PER_MASS : 0.007,   // every attack, × birth mass (0.021 for an animal born with 3)
           ATTACK_MIN_PREY_MASS_FACTOR : 2,      // 0
           ATTACK_SAME_GENUS : false,
           // share of what is taken that becomes mass, by genus; the rest goes to the cloud

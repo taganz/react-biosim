@@ -49,8 +49,8 @@ export default interface WorldControllerData {
     MOVE_COST_PER_MASS : number,
     MOVE_MULTIPLE_MASS_AT_BIRTH : number, 
 
-    ATTACK_COST_PER_MASS_TRY : number, 
-    ATTACK_COST_PER_MASS_DO : number, 
+    /** mass lost by every attack, successful or not, as a multiple of birth mass */
+    ATTACK_COST_PER_MASS : number,
     ATTACK_MIN_PREY_MASS_FACTOR : number
     /** attackers can eat other species of their genus, never their own species. Missing: off */
     ATTACK_SAME_GENUS? : boolean

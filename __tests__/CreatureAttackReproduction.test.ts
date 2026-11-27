@@ -74,8 +74,9 @@ describe('attack and reproduction', () => {
     });
 
     test('the attack checks the prey before paying its cost', () => {
-        worldController.simData.worldControllerData.ATTACK_COST_PER_MASS_TRY = 0.4;
+        worldController.simData.worldControllerData.ATTACK_COST_PER_MASS = 0.2;
         const attacker = spawn("attack_plant", [2, 2]);
+        expect(attacker.massAtBirth).toBe(2);   // so the attack costs 0.4
         attacker._mass._mass = 2;
         const prey = spawn("plant", [3, 2]);
         prey._mass._mass = 0.9;     // edible now, too heavy once the attacker has paid the 0.4

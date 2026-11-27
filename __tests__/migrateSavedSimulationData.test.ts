@@ -201,6 +201,17 @@ describe("save format migration", () => {
     expect("MOVE_COST_PER_MASS_DO" in data).toBe(false);
   });
 
+  test("a version 3 attack cost becomes a multiple of the animal birth mass", () => {
+    const { ATTACK_COST_PER_MASS, ...controller } = current.worldControllerData;
+    const data = migrateSavedSimulationData({
+      ...current, version: 3,
+      worldControllerData: { ...controller, MASS_AT_BIRTH_ATTACK_PLANT: 2, ATTACK_COST_PER_MASS_TRY: 0.4, ATTACK_COST_PER_MASS_DO: 0 },
+    }).worldControllerData as any;
+    expect(data.ATTACK_COST_PER_MASS).toBeCloseTo(0.2);
+    expect("ATTACK_COST_PER_MASS_TRY" in data).toBe(false);
+    expect("ATTACK_COST_PER_MASS_DO" in data).toBe(false);
+  });
+
   // the scenarios users see first
   const publicDir = path.join(__dirname, "..", "public");
   // see docs/known-issues.md: its creatures carry more mass than the world has water
