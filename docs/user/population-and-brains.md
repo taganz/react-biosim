@@ -14,7 +14,7 @@ Below the summary line, three indicators describe the animals of the last genera
 
 - **Largest genome**: the largest genome among the animals alive at the end of the generation, in genes, and the colour code of its species. If several species have that size, the one with most creatures is shown.
 - **Average genome**: the average genome size of those animals, counting each creature.
-- **Most deaths of old age**: the animal species with most deaths of old age during the generation, how many, and its genome size. If species tie, the first to reach that number is shown. Creatures only die of old age in continuous runs, so in generational runs this shows **none**.
+- **Most deaths of old age**: the animal species with most deaths of old age during the generation, how many, and its genome size. If species tie, the first to reach that number is shown. In generational runs creatures only die of old age when **Maximum age** is shorter than the generation; otherwise this shows **none**.
 
 ## Species
 
@@ -84,7 +84,7 @@ At the top of the **Creature** section there are some buttons:
 The section is updated at every step:
 
 - **Identity**: id, species (colour code and id), genus and its parent (id and the generation the parent was born in; most selection methods restart the ids every generation).
-- **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation.
+- **Life**: alive or dead, health, age against the maximum age, and the generation and step it was born. In generational runs the maximum age is the length of the generation, or **Maximum age** if it is shorter.
 - **Body**: mass against the maximum mass, mass at birth, basal consumption per step and thinking cost (what the sensors and actions of its brain cost in each step it thinks). "Enough mass to move / reproduce" tell whether the creature has the mass that each action needs (attacking needs none) ([Creatures](../model/creatures.md)). Without metabolism the mass never changes.
 - **Movement**: position, last movement, direction, the distance index used by *Greatest Distance* selection (it is not the number of cells travelled), steps without moving, and the water in its cell.
 - **Activity**: children, and for animals attacks and kills, with the kills of plants and of other animals apart.

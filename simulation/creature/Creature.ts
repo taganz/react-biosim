@@ -166,11 +166,12 @@ export default class Creature {
     return this._color;
   }
 
-  // in generational runs creatures are replaced before they get this old
+  // in generational runs creatures are replaced when the generation ends, so
+  // the limit only applies when it is shorter than the generation
   get maxAge(): number {
     return this.generations.isContinuous
       ? this.generations.maxAge
-      : this.generations.worldController.stepsPerGen + 1;
+      : Math.min(this.generations.maxAge, this.generations.worldController.stepsPerGen + 1);
   }
 
   computeStep(): void {

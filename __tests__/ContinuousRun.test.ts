@@ -85,6 +85,22 @@ describe("continuous simulation type", () => {
     expect(worldController.generations.deathsThisGeneration).toBe(10);
   });
 
+  test("in generational runs creatures older than maxAge die before the generation ends", () => {
+    start("generational", 1000);
+    const generations = worldController.generations;
+    generations.maxAge = generations.currentCreatures[0]._age + 2;
+    for (let i = 0; i < 3; i++) generations.step();
+    expect(generations.currentCreatures.every((c) => c.isAlive)).toBe(true);
+
+    generations.step();
+    expect(generations.currentCreatures.some((c) => c.isAlive)).toBe(false);
+  });
+
+  test("in generational runs a maxAge longer than the generation does nothing", () => {
+    start("generational", 5, 1000);
+    expect(worldController.generations.currentCreatures[0].maxAge).toBe(6);
+  });
+
   test("the Age sensor is the age of the creature over maxAge", () => {
     start("continuous", 1000, 10);
     for (let i = 0; i < 4; i++) worldController.generations.step();

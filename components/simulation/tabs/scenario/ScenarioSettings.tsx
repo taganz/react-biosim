@@ -536,18 +536,19 @@ export default function ScenarioSettings() {
               <li><b>Continuous:</b> creatures carry on from one generation to the next. They are born with the Reproduction action and die of hunger, attacks or old age. A generation is only a time window for the stats.</li>
             </ul>
           </div>
-          {isContinuous && (
-            <div className="flex flex-col gap-1">
-              <NumberInput
-                label="Maximum age (steps)"
-                value={worldGenerationsData.maxAge}
-                onChange={(value) => setGenerationsValue("maxAge", value)}
-                integer
-                min={1}
-              />
-              <p className="text-xs">A creature older than this dies.</p>
-            </div>
-          )}
+          <div className="flex flex-col gap-1">
+            <NumberInput
+              label="Maximum age (steps)"
+              value={worldGenerationsData.maxAge}
+              onChange={(value) => setGenerationsValue("maxAge", value)}
+              integer
+              min={1}
+            />
+            <p className="text-xs">
+              A creature older than this dies.
+              {!isContinuous && " In generational runs it only matters if it is shorter than the generation."}
+            </p>
+          </div>
           <div className="flex flex-col gap-1">
             <SelectInput
               label="Population strategy"
