@@ -197,15 +197,13 @@ describe("stamina", () => {
   test("the genes cost every step, the sensors and actions of the brain only in the steps it thinks", () => {
     const world = makeWorld(true, true);
     const data = world.simData.worldControllerData;
-    data.MASS_COST_PER_SENSOR = 0.002;
-    data.MASS_COST_PER_ACTION = 0.003;
-    data.SENSOR_COSTS = { VerticalPosition: 0.02 };
-    data.ACTION_COSTS = { MoveEast: 0.03 };
+    data.SENSOR_COSTS = { HorizontalPosition: 0.002, VerticalPosition: 0.02 };
+    data.ACTION_COSTS = { Reproduction: 0.003, MoveEast: 0.03 };
     const fromSensor = (sensor: number, action: ActionName) => Genome.connectionToGene({
       sourceType: NeuronType.SENSOR, sourceId: sensor,
       sinkType: NeuronType.ACTION, sinkId: world.generations.actions.actionNameToId(action), weight: 1,
     });
-    // sensors 0 (HorizontalPosition) and 1 (VerticalPosition, own cost); Reproduction twice, MoveEast (own cost)
+    // sensors 0 (HorizontalPosition) and 1 (VerticalPosition); Reproduction twice, MoveEast
     const genes = [fromSensor(0, "Reproduction"), fromSensor(1, "Reproduction"), fromSensor(1, "MoveEast"), geneTo(world, "Stamina", 0)];
     const creature = world.generations.newCreature([1, 1], true, new Genome(genes));
     // each sensor and action once: 0.002 + 0.02 + 0.003 + 0.03; the Stamina gene is neither
@@ -225,8 +223,6 @@ describe("stamina", () => {
   test("files saved without the thinking costs spend nothing for thinking", () => {
     const world = makeWorld(true, true);
     const data = world.simData.worldControllerData;
-    delete data.MASS_COST_PER_SENSOR;
-    delete data.MASS_COST_PER_ACTION;
     delete data.SENSOR_COSTS;
     delete data.ACTION_COSTS;
     const creature = world.generations.newCreature([1, 1], true, new Genome([geneTo(world, "Reproduction", 1)]));

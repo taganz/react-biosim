@@ -285,20 +285,18 @@ export default class CreatureBrain {
     // each sensor read and each action connected counts once, however many connections it has
     private computeThinkCost(connections: Connection[]): number {
         const data = this.creature.generations.worldController.simData.worldControllerData;
-        const perSensor = data.MASS_COST_PER_SENSOR ?? 0;
-        const perAction = data.MASS_COST_PER_ACTION ?? 0;
         const sensorCosts = data.SENSOR_COSTS;
         const actionCosts = data.ACTION_COSTS;
         let cost = 0;
         for (const id of this.sensorIds) {
-            cost += sensorCosts?.[this.sensors.enabledSensors[id]] ?? perSensor;
+            cost += sensorCosts?.[this.sensors.enabledSensors[id]] ?? 0;
         }
         const actionIds = new Set<number>();
         for (const connection of connections) {
             if (connection.sinkType === NeuronType.ACTION) actionIds.add(connection.sinkId);
         }
         for (const id of actionIds) {
-            cost += actionCosts?.[this.actions.enabledActions[id]] ?? perAction;
+            cost += actionCosts?.[this.actions.enabledActions[id]] ?? 0;
         }
         return cost;
     }

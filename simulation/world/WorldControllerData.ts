@@ -21,11 +21,8 @@ export default interface WorldControllerData {
     
     MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE : number, 
     MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY : number,
-    /** mass spent in every step the brain runs for each sensor it reads. Missing: 0 */
-    MASS_COST_PER_SENSOR? : number,
-    /** mass spent in every step the brain runs for each action it is connected to. Missing: 0 */
-    MASS_COST_PER_ACTION? : number,
-    /** costs of single sensors and actions, by name, instead of MASS_COST_PER_SENSOR / MASS_COST_PER_ACTION */
+    /** mass spent in every step the brain runs, by name, for each sensor it reads and each action it is
+     *  connected to. Missing: 0 */
     SENSOR_COSTS? : Partial<Record<SensorName, number>>,
     ACTION_COSTS? : Partial<Record<ActionName, number>>,
 

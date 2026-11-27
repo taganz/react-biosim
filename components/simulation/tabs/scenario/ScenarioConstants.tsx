@@ -116,8 +116,6 @@ const MASS_GROUPS: { title: string; rows: [MassConstant, number, string][] }[] =
       ["MASS_MAX_MULTIPLE_MASS_AT_BIRT", 0.1, "Maximum mass, as a multiple of birth mass."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE", 0.01, "Mass spent per step for each gene, except the primary genes and the Stamina gene."],
       ["MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY", 0.01, "Mass spent per step for each primary gene (Reproduction, and Photosynthesis in plants)."],
-      ["MASS_COST_PER_SENSOR", 0.01, "Mass spent in every step the brain runs for each sensor it reads. A sensor can have its own cost in the Sensors section."],
-      ["MASS_COST_PER_ACTION", 0.01, "Mass spent in every step the brain runs for each action it is connected to. An action can have its own cost in the Actions section."],
     ],
   },
   {

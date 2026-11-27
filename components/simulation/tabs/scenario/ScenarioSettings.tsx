@@ -231,21 +231,16 @@ export default function ScenarioSettings() {
       waterData: { ...prev.waterData, [key]: value },
     }));
 
-  // The cost of thinking with a sensor or an action: its own if it has one, otherwise the general
-  // MASS_COST_PER_SENSOR / MASS_COST_PER_ACTION. A cost equal to the general one is not kept as its own
-  const sensorCost = (name: SensorName) =>
-    worldControllerData.SENSOR_COSTS?.[name] ?? worldControllerData.MASS_COST_PER_SENSOR ?? 0;
-  const actionCost = (name: ActionName) =>
-    worldControllerData.ACTION_COSTS?.[name] ?? worldControllerData.MASS_COST_PER_ACTION ?? 0;
+  // The cost of thinking with a sensor or an action, 0 when it has none. A cost of 0 is not kept
+  const sensorCost = (name: SensorName) => worldControllerData.SENSOR_COSTS?.[name] ?? 0;
+  const actionCost = (name: ActionName) => worldControllerData.ACTION_COSTS?.[name] ?? 0;
   const setSensorCost = (name: SensorName, value: number) => {
     const { [name]: _old, ...others } = worldControllerData.SENSOR_COSTS ?? {};
-    setWorldValue("SENSOR_COSTS",
-      value === (worldControllerData.MASS_COST_PER_SENSOR ?? 0) ? others : { ...others, [name]: value });
+    setWorldValue("SENSOR_COSTS", value === 0 ? others : { ...others, [name]: value });
   };
   const setActionCost = (name: ActionName, value: number) => {
     const { [name]: _old, ...others } = worldControllerData.ACTION_COSTS ?? {};
-    setWorldValue("ACTION_COSTS",
-      value === (worldControllerData.MASS_COST_PER_ACTION ?? 0) ? others : { ...others, [name]: value });
+    setWorldValue("ACTION_COSTS", value === 0 ? others : { ...others, [name]: value });
   };
 
   // at least one sensor and one action must stay enabled
@@ -682,7 +677,7 @@ export default function ScenarioSettings() {
       <ScenarioSection
         id="sensors" changed={changedSections}
         title="Sensors"
-        description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development. With metabolism, each enabled sensor has a cost: the mass a brain that reads it spends in every step it runs (MASS_COST_PER_SENSOR unless changed here)."
+        description="At least one sensor must stay enabled. Pain, mass, prey and predator sensors are under development. With metabolism, each enabled sensor has a cost: the mass a brain that reads it spends in every step it runs (0 unless set here)."
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {sensors.map((sensor) => (
@@ -696,7 +691,6 @@ export default function ScenarioSettings() {
               {enabledSensors.includes(sensor.name) && (
                 <CostInput
                   value={sensorCost(sensor.name)}
-                  isOwn={worldControllerData.SENSOR_COSTS?.[sensor.name] !== undefined}
                   onChange={(value) => setSensorCost(sensor.name, value)}
                 />
               )}
@@ -709,7 +703,7 @@ export default function ScenarioSettings() {
       <ScenarioSection
         id="actions" changed={changedSections}
         title="Actions"
-        description="At least one action must stay enabled. Photosynthesis, Reproduction and Attack are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (MASS_COST_PER_ACTION unless changed here)."
+        description="At least one action must stay enabled. Photosynthesis, Reproduction and Attack are under development. With metabolism, each enabled action has a cost: the mass a brain connected to it spends in every step it runs (0 unless set here)."
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {actions.map((action) => (
@@ -724,7 +718,6 @@ export default function ScenarioSettings() {
               {enabledActions.includes(action.name) && action.name !== "Stamina" && (
                 <CostInput
                   value={actionCost(action.name)}
-                  isOwn={worldControllerData.ACTION_COSTS?.[action.name] !== undefined}
                   onChange={(value) => setActionCost(action.name, value)}
                 />
               )}
@@ -739,12 +732,12 @@ export default function ScenarioSettings() {
   );
 }
 
-// the cost of a sensor or an action; "own" when it is not the general one
-function CostInput({ value, isOwn, onChange }: { value: number; isOwn: boolean; onChange: (value: number) => void }) {
+// the cost of a sensor or an action
+function CostInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   return (
     <div className="ml-6 w-32 text-xs">
       <NumberInput
-        label={<span className="text-xs">Cost{isOwn ? " (own)" : ""}</span>}
+        label={<span className="text-xs">Cost</span>}
         value={value}
         onChange={onChange}
         step={0.01}

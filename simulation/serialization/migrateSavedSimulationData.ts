@@ -150,10 +150,22 @@ function mergeCarnivoreProbability(genera: { genus: string, probability: number 
 // "attack" genus), ACTION_REPRODUCTION_OFFSET and the prey efficiency of plants, which never eat.
 // MOVE_COST_PER_MASS_TRY and MOVE_COST_PER_MASS_DO were always paid together: their sum is MOVE_COST_PER_MASS.
 // ATTACK_COST_PER_MASS_TRY was an absolute mass: ATTACK_COST_PER_MASS is a multiple of birth mass, and only
-// animals attack. ATTACK_COST_PER_MASS_DO, paid on top by a successful attack, is dropped
+// animals attack. ATTACK_COST_PER_MASS_DO, paid on top by a successful attack, is dropped.
+// MASS_COST_PER_SENSOR and MASS_COST_PER_ACTION were the cost of the sensors and actions without one in
+// SENSOR_COSTS and ACTION_COSTS: the enabled ones get it there
 function fromVersion3(parsed: any): SavedSimulationData {
   const { MASS_AT_BIRTH_ATTACK, ACTION_REPRODUCTION_OFFSET, MOVE_COST_PER_MASS_TRY, MOVE_COST_PER_MASS_DO,
-    ATTACK_COST_PER_MASS_TRY, ATTACK_COST_PER_MASS_DO, ...controller } = parsed.worldControllerData;
+    ATTACK_COST_PER_MASS_TRY, ATTACK_COST_PER_MASS_DO, MASS_COST_PER_SENSOR, MASS_COST_PER_ACTION,
+    ...controller } = parsed.worldControllerData;
+  const generations = parsed.worldGenerationsData;
+  if (MASS_COST_PER_SENSOR) {
+    controller.SENSOR_COSTS = withGeneralCost(controller.SENSOR_COSTS, generations.enabledSensors, MASS_COST_PER_SENSOR);
+  }
+  if (MASS_COST_PER_ACTION) {
+    // the Stamina gene is not a connection: it never had a cost
+    const actions = (generations.enabledActions ?? []).filter((name: string) => name !== "Stamina");
+    controller.ACTION_COSTS = withGeneralCost(controller.ACTION_COSTS, actions, MASS_COST_PER_ACTION);
+  }
   if (ATTACK_COST_PER_MASS_TRY !== undefined) {
     const birthMass = controller.MASS_AT_BIRTH_ATTACK_PLANT;
     controller.ATTACK_COST_PER_MASS = birthMass > 0 ? ATTACK_COST_PER_MASS_TRY / birthMass : ATTACK_COST_PER_MASS_TRY;
@@ -171,4 +183,11 @@ function fromVersion3(parsed: any): SavedSimulationData {
     version: SAVE_FORMAT_VERSION,
     worldControllerData: controller,
   };
+}
+
+// the costs by name, with the general cost for every name in the list that has none
+function withGeneralCost(costs: Record<string, number> | undefined, names: string[] | undefined, cost: number) {
+  const result: Record<string, number> = { ...costs };
+  for (const name of names ?? []) result[name] ??= cost;
+  return result;
 }

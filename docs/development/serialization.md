@@ -110,6 +110,7 @@ Version 3 files are changed like this (older files go through every earlier step
 - The metabolism constants that did nothing are dropped: `MASS_AT_BIRTH_ATTACK` (the old "attack" genus), `ACTION_REPRODUCTION_OFFSET` and the `prey` efficiency of plants, which never eat.
 - `MOVE_COST_PER_MASS_TRY` and `MOVE_COST_PER_MASS_DO`, which every move attempt paid together, become `MOVE_COST_PER_MASS`, their sum.
 - `ATTACK_COST_PER_MASS_TRY`, an absolute mass, becomes `ATTACK_COST_PER_MASS`, divided by `MASS_AT_BIRTH_ATTACK_PLANT` so that attacks cost the same. `ATTACK_COST_PER_MASS_DO` is dropped.
+- The general `MASS_COST_PER_SENSOR` and `MASS_COST_PER_ACTION` are dropped. When they are not 0, every enabled sensor or action (except Stamina) without a cost in `SENSOR_COSTS` or `ACTION_COSTS` gets it there, so brains cost the same.
 
 Fields are read by name, so:
 

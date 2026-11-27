@@ -29,7 +29,7 @@ describe("getChangedSections", () => {
     expect([...getChangedSections(withController({ ACTION_COSTS: { MoveNorth: 9 } }), base)]).toEqual(["actions"]);
     expect([...getChangedSections({ ...base, waterData: { ...base.waterData, waterCellCapacity: 99 } }, base)])
       .toEqual(["world"]);
-    expect([...getChangedSections(withController({ MASS_COST_PER_SENSOR: 99 }), base)]).toEqual(["constants"]);
+    expect([...getChangedSections(withController({ MOVE_COST_PER_MASS: 99 }), base)]).toEqual(["constants"]);
     expect([...getChangedSections({ ...base, constants: { ...base.constants, colors: {} } }, base)])
       .toEqual(["constants"]);
   });

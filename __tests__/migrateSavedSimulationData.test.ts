@@ -212,6 +212,31 @@ describe("save format migration", () => {
     expect("ATTACK_COST_PER_MASS_DO" in data).toBe(false);
   });
 
+  test("version 3 general sensor and action costs go to every enabled sensor and action without one", () => {
+    const file = {
+      ...current, version: 3,
+      worldGenerationsData: { ...current.worldGenerationsData, enabledSensors: ["Age", "Random"], enabledActions: ["MoveEast", "Stamina", "Reproduction"] },
+      worldControllerData: {
+        ...current.worldControllerData, MASS_COST_PER_SENSOR: 0.01, MASS_COST_PER_ACTION: 0.02,
+        SENSOR_COSTS: { Random: 0.5 }, ACTION_COSTS: undefined,
+      },
+    };
+    const data = migrateSavedSimulationData(file).worldControllerData as any;
+    expect(data.SENSOR_COSTS).toEqual({ Age: 0.01, Random: 0.5 });
+    expect(data.ACTION_COSTS).toEqual({ MoveEast: 0.02, Reproduction: 0.02 });
+    expect("MASS_COST_PER_SENSOR" in data).toBe(false);
+    expect("MASS_COST_PER_ACTION" in data).toBe(false);
+  });
+
+  test("version 3 general costs of 0 add nothing", () => {
+    const data = migrateSavedSimulationData({
+      ...current, version: 3,
+      worldControllerData: { ...current.worldControllerData, MASS_COST_PER_SENSOR: 0, MASS_COST_PER_ACTION: 0, SENSOR_COSTS: {}, ACTION_COSTS: {} },
+    }).worldControllerData as any;
+    expect(data.SENSOR_COSTS).toEqual({});
+    expect(data.ACTION_COSTS).toEqual({});
+  });
+
   // the scenarios users see first
   const publicDir = path.join(__dirname, "..", "public");
   // see docs/known-issues.md: its creatures carry more mass than the world has water
