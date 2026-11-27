@@ -87,7 +87,7 @@ Shows how the world's water is split between the cloud, the cells and the creatu
 
 ### Log
 
-The **Log** section saves tables of species and creatures as CSV files, one row per species or creature, to analyse a run outside the app (a spreadsheet, Power BI, Python). Every save also downloads a file with the settings of the simulation. What each file contains, column by column, is in [The log files](../reference/log-file.md).
+The **Log** section saves tables of species and creatures as CSV files, one row per species or creature, to analyse a run outside the app (a spreadsheet, Power BI, Python). Every save also downloads a file with the settings of the simulation and a `.sim` with the simulation as it is then (not after a restart or a load, when it is another run), to load it later or open it in the energy lab page. What each file contains, column by column, is in [The log files](../reference/log-file.md).
 
 A species here is a lineage: creatures with the same genome **and** the same origin. The same genome reached from two different species is two species. See [Species](population-and-brains.md#species).
 

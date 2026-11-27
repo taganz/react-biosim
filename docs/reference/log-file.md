@@ -16,17 +16,20 @@ The id draws no random numbers, so a seeded run gives the same ids every time. C
 
 ## The files
 
-Each snapshot or recording is downloaded as two or three files with the same name and a different ending:
+Each snapshot or recording is downloaded as three or four files with the same name and a different ending:
 
 | File | Content |
 |---|---|
 | `sim <code> log <gens> settings.csv` | The options of the log and the settings and constants of the simulation when it started |
 | `sim <code> log <gens> species.csv` | One row per species, with **Species** on (`LOG_SPECIES`, default on) |
 | `sim <code> log <gens> creatures.csv` | One row per creature, with **Creatures** on (`LOG_CREATURES`, default off) |
+| `sim <code> log <gens>.sim` | The simulation when the files were saved, as the Save tab saves it (without stats). Not saved for a recording stopped by a restart or a load, since the simulation is then another run. It can be loaded in the app or opened in the energy lab page (`/energy-lab.html`) |
+
+The settings file has the configuration when the recording started and the `.sim` the one when it was saved: they differ if the constants were changed in between. The headless runner does not write this `.sim`: with `--log` it already writes `final.sim`.
 
 `<code>` is the simulation code. `<gens>` is the generation and step of a snapshot (`57 step 120`) or the first and last generation of a recording (`1-200`).
 
-All files are plain UTF-8 text:
+The CSV files are plain UTF-8 text:
 
 - The separator is `;` and the first line is the header.
 - Numbers use the locale in **Number format** (`LOG_LOCALE_STRING`, default `es-ES`): with `es-ES` the decimal separator is a comma, with `en-US` a point. There is no thousands separator. Rows have at most 4 decimals; the settings file has up to 10.

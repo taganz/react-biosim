@@ -4,7 +4,7 @@ import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
 import deserializeSimulationData, { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
-import { LogFile } from "@/simulation/log/SimulationLog";
+import { LogFile, simFileName } from "@/simulation/log/SimulationLog";
 import { creatureKey } from "@/simulation/log/logRows";
 
 /* the log of species and creatures (Simulation → Log) and the lineage species id */
@@ -128,6 +128,9 @@ describe("snapshot", () => {
     const [settings, species, creatures] = worldController.simulationLog.snapshot();
     const living = worldController.generations.currentCreatures.filter((creature) => creature.isAlive);
     expect(settings.name).toBe(`sim ${worldController.simCode} log 1 step ${worldController.currentStep} settings.csv`);
+    // the .sim saved with the files takes the name of the settings file
+    expect(simFileName([species, settings, creatures])).toBe(`sim ${worldController.simCode} log 1 step ${worldController.currentStep}.sim`);
+    expect(simFileName([species])).toBeNull();
     expect(table(creatures).length).toBe(living.length);
     expect(new Set(table(species).map((row) => row.speciesId))).toEqual(new Set(living.map((creature) => creature.speciesId)));
     expect(table(species).reduce((total, row) => total + Number(row.alive), 0)).toBe(living.length);
