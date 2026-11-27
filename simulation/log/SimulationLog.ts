@@ -386,6 +386,12 @@ export default class SimulationLog {
   }
 }
 
+/** the name of the .sim saved with some log files: the one of their settings file, ending in .sim */
+export function simFileName(files: LogFile[]): string | null {
+  const settings = files.find((file) => file.kind === "settings");
+  return settings ? settings.name.replace(/ settings\.csv$/, ".sim") : null;
+}
+
 /** the LOG_* options in a constants object, without the other constants */
 export function pickLogOptions(constants: Record<string, unknown> | undefined): Partial<LogOptions> {
   const result: Record<string, unknown> = {};

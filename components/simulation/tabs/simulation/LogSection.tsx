@@ -8,7 +8,9 @@ import CheckboxInput from "@/components/global/inputs/CheckboxInput";
 import NumberInput from "@/components/global/inputs/NumberInput";
 import SelectInput from "@/components/global/inputs/SelectInput";
 import useWorldValue from "@/hooks/useWorldValue";
-import { LogFile, LogScope, LogState, LOG_OPTIONS_DEFAULT } from "@/simulation/log/SimulationLog";
+import { LogFile, LogScope, LogState, LOG_OPTIONS_DEFAULT, simFileName } from "@/simulation/log/SimulationLog";
+import { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
+import type WorldController from "@/simulation/world/WorldController";
 import { checkWaterSettings } from "@/simulation/water/checkWaterSettings";
 import { simulationDataAtom, worldControllerAtom } from "../../store";
 import CollapsibleSection from "../CollapsibleSection";
@@ -25,6 +27,18 @@ function saveFiles(files: LogFile[]) {
   for (const file of files) {
     saveAs(new Blob(file.lines, { type: "text/csv;charset=utf-8" }), file.name);
   }
+}
+
+// the simulation as it is now, saved next to the log files with their name (as the Save tab, without stats).
+// Returns the name of the file, or null when there is none
+function saveSim(worldController: WorldController, files: LogFile[]): string | null {
+  const name = simFileName(files);
+  if (!name) return null;
+  const prettify = worldController.simData.constants.PRETTIFY_OUTPUT_TO_FILE;
+  const saved = serializeSimulationData(worldController, false);
+  const json = prettify ? JSON.stringify(saved, null, 2) : JSON.stringify(saved);
+  saveAs(new Blob([json], { type: "application/json;charset=utf-8" }), name);
+  return name;
 }
 
 // The log of species and creatures: tables with one row per species or creature, saved as CSV
@@ -67,11 +81,27 @@ export default function LogSection() {
   const confirmDiscard = () =>
     !hasUnsavedRows || window.confirm(`The recording has ${rowCount} rows that are not saved. Delete them?`);
 
-  const handleSnapshot = () => run(() => {
-    const files = worldController!.simulationLog.snapshot();
+  // during the pause between generations the world is half way: the .sim waits until it is between
+  // two steps, like the Save tab
+  const untilBetweenSteps = async () => {
+    if (worldController!.isWaiting) await worldController!.untilBetweenSteps();
+  };
+
+  // saves the files and a .sim of the simulation now. After a restart or a load, the simulation is
+  // not the one recorded: no .sim then
+  const saveWithSim = (files: LogFile[], withSim: boolean) => {
     saveFiles(files);
-    setMessage(`Saved ${files.map((file) => file.name).join(", ")}.`);
-  });
+    const sim = withSim ? saveSim(worldController!, files) : null;
+    const names = files.map((file) => file.name);
+    if (sim) names.push(sim);
+    setMessage(`Saved ${names.join(", ")}.`);
+  };
+
+  const handleSnapshot = async () => {
+    if (!worldController) return;
+    await untilBetweenSteps();
+    run(() => saveWithSim(worldController.simulationLog.snapshot(), true));
+  };
 
   const handleStart = () => {
     if (!worldController || !confirmDiscard()) return;
@@ -91,12 +121,15 @@ export default function LogSection() {
     });
   };
 
-  const handleSave = () => run(() => {
-    const files = worldController!.simulationLog.recordedFiles();
-    saveFiles(files);
-    worldController!.simulationLog.markSaved();
-    setMessage(`Saved ${files.map((file) => file.name).join(", ")}.`);
-  });
+  const handleSave = async () => {
+    if (!worldController) return;
+    await untilBetweenSteps();
+    run(() => {
+      const log = worldController.simulationLog;
+      saveWithSim(log.recordedFiles(), log.state !== LogState.RUN_REPLACED);
+      worldController.simulationLog.markSaved();
+    });
+  };
 
   const describeState = (): string => {
     switch (state) {
@@ -239,6 +272,12 @@ export default function LogSection() {
           Then open its species file in the{" "}
           <a className="underline" href="/species-tree.html" target="_blank" rel="noopener">species tree</a> page.
           A recording keeps the options it started with.
+        </p>
+        <p className="text-xs">
+          Saving a snapshot or a recording also saves the simulation as it is then, as a <b>.sim</b> file with
+          the same name (not after a restart or a load, when it is another run). Open it in the{" "}
+          <a className="underline" href="/energy-lab.html" target="_blank" rel="noopener">energy lab</a> page,
+          or load it in the Save tab.
         </p>
         {message && <p role="status" className="text-sm">{message}</p>}
 
