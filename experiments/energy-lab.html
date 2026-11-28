@@ -187,7 +187,7 @@ td input.changed { border-color: var(--warn); background: var(--warn-soft); }
 
   <footer class="foot">
     <p><b>Modelo.</b> Línea continua: valor esperado (movimiento, ataque y celda libre como medias). Banda: el 80 % central de 200 vidas sorteadas; línea discontinua: la mediana. El agua de la celda no se agota: se limita con «agua máxima de la celda». Una muerte por edad ocurre cuando la edad supera la edad máxima.</p>
-    <p><b>Especies.</b> Los genes se leen igual que <span class="mono">Genome.geneToConnection</span>, con las listas de sensores y acciones del fichero ordenadas según la tabla actual. El género sale de todas las conexiones del genoma (el motor usa las que quedan tras podar el cerebro), y los sensores y acciones se cuentan sin podar: el coste de pensar es aproximado. La salida de las acciones depende del cerebro y no se calcula: ajústala con los controles. <b>Copiar genoma</b>, junto a la especie de cada simulador, copia sus genes en hexadecimal, en el mismo formato que la aplicación.</p>
+    <p><b>Especies.</b> Los genes se leen igual que <span class="mono">Genome.geneToConnection</span>, con las listas de sensores y acciones del fichero ordenadas según la tabla actual. El género sale de todas las conexiones del genoma (el motor usa las que quedan tras podar el cerebro), y los sensores y acciones se cuentan sin podar: el coste de pensar es aproximado. La salida de las acciones depende del cerebro y no se calcula: ajústala con los controles. <b>Copiar genoma</b>, junto a la especie de cada simulador, copia sus genes en hexadecimal, en el mismo formato que la aplicación. <b>Copiar JSON</b> la copia como una entrada de <span class="mono">POPULATION_DEFAULT_SPECIES</span>, por ejemplo <span class="mono">{"name":"fichero #3","genome":[…]}</span>, para pegarla dentro de la lista de esa constante en <i>Scenario → Constants</i> y empezar con ella la generación 1 de la estrategia <i>Default Species</i>.</p>
   </footer>
 </div>
 
@@ -454,7 +454,9 @@ function loadSim(name, text) {
     const s = { idx: i, ...dec, n: cr.length, meanMass: masses.length ? masses.reduce((a, b) => a + b, 0) / masses.length : null, massAtBirth: mb, points: ages,
       hex: ((sp.genes || [0])[0] >>> 0).toString(16).padStart(8, "0").slice(0, 6),
       // the genome as Genome.toHexadecimalString writes it, to paste it in the app
-      genome: (sp.genes || []).map(g => (g >>> 0).toString(16).padStart(8, "0")).join(" ") };
+      genome: (sp.genes || []).map(g => (g >>> 0).toString(16).padStart(8, "0")).join(" "),
+      // the genes as the file saves them, for the JSON entry of POPULATION_DEFAULT_SPECIES
+      genes: (sp.genes || []).slice() };
     s.thinkCost = (PP) => s.sensors.reduce((a, n) => a + (typeof sensorCosts[n] === "number" ? sensorCosts[n] : PP.MASS_COST_PER_SENSOR), 0)
       + s.actions.reduce((a, n) => a + (typeof actionCosts[n] === "number" ? actionCosts[n] : PP.MASS_COST_PER_ACTION), 0);
     return s;
@@ -535,7 +537,7 @@ function buildSim(kind) {
   el.innerHTML = `
     <div class="sim-head">
       <div><h2>${def.title}</h2><p class="muted small" data-role="genusLine"></p></div>
-      <div class="species-pick"><label class="small muted" for="sp-${kind}">Especie</label><select id="sp-${kind}"></select><button class="btn small" data-role="copyGenome" title="Copia los genes en hexadecimal, como los copia la aplicación">Copiar genoma</button></div>
+      <div class="species-pick"><label class="small muted" for="sp-${kind}">Especie</label><select id="sp-${kind}"></select><button class="btn small" data-role="copyGenome" title="Copia los genes en hexadecimal, como los copia la aplicación">Copiar genoma</button><button class="btn small" data-role="copyJson" title="Copia la especie como una entrada JSON de POPULATION_DEFAULT_SPECIES, para pegarla en la lista de Constants de la aplicación">Copiar JSON</button></div>
     </div>
     <div class="controls" data-role="controls"></div>
     <div class="kpis" data-role="kpis"></div>
@@ -583,26 +585,38 @@ function buildSim(kind) {
     else applySpecies(kind, f.species.find(s => String(s.idx) === v));
     renderSim(kind); renderSpecies();
   });
-  const copyBtn = el.querySelector('[data-role="copyGenome"]');
-  copyBtn.addEventListener("click", () => {
-    const s = sim.species; if (!s) return;
-    const done = (ok) => {
-      copyBtn.textContent = ok ? "Copiado" : "No se pudo copiar";
-      clearTimeout(copyBtn._t); copyBtn._t = setTimeout(() => { copyBtn.textContent = "Copiar genoma"; }, 1500);
-    };
-    const api = navigator.clipboard ? navigator.clipboard.writeText(s.genome) : Promise.reject(new Error("sin Clipboard API"));
-    api.then(() => done(true), (err) => {
-      // the Clipboard API is missing or denied (file://, embedded views): copy through a hidden textarea
-      const ta = document.createElement("textarea");
-      ta.value = s.genome; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      let ok = false; try { ok = document.execCommand("copy"); } catch { ok = false; }
-      ta.remove(); copyBtn.focus();
-      if (!ok) console.error("No se pudo copiar el genoma:", err);
-      done(ok);
+  // the genome in hexadecimal, or the species as a JSON entry of POPULATION_DEFAULT_SPECIES
+  // named after the file and its number in the list, like the app's Top species
+  const copyButtons = [
+    ["copyGenome", "Copiar genoma", (s) => s.genome],
+    ["copyJson", "Copiar JSON", (s) => JSON.stringify({ name: `${state.file.name.replace(/\.sim$/i, "")} #${s.idx + 1}`, genome: s.genes })],
+  ];
+  for (const [role, label, textOf] of copyButtons) {
+    const btn = el.querySelector(`[data-role="${role}"]`);
+    btn.addEventListener("click", () => {
+      const s = sim.species; if (!s) return;
+      copyText(btn, label, textOf(s));
     });
-  });
+  }
   return el;
+}
+// copies text and shows on the button whether it worked
+function copyText(btn, label, text) {
+  const done = (ok) => {
+    btn.textContent = ok ? "Copiado" : "No se pudo copiar";
+    clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = label; }, 1500);
+  };
+  const api = navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject(new Error("sin Clipboard API"));
+  api.then(() => done(true), (err) => {
+    // the Clipboard API is missing or denied (file://, embedded views): copy through a hidden textarea
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch { ok = false; }
+    ta.remove(); btn.focus();
+    if (!ok) console.error("No se pudo copiar:", err);
+    done(ok);
+  });
 }
 let pending = {};
 function scheduleRender(kind) { if (pending[kind]) return; pending[kind] = requestAnimationFrame(() => { pending[kind] = 0; renderSim(kind); }); }
@@ -628,8 +642,8 @@ function syncControls(kind) {
   sel.innerHTML = opts.join("");
   sel.value = sim.species ? String(sim.species.idx) : "";
   sel.disabled = !f;
-  const copyBtn = document.querySelector(`#sim-${kind} [data-role="copyGenome"]`);
-  copyBtn.disabled = !sim.species;
+  document.querySelectorAll(`#sim-${kind} [data-role="copyGenome"], #sim-${kind} [data-role="copyJson"]`)
+    .forEach(btn => { btn.disabled = !sim.species; });
 }
 
 function renderSim(kind) {
