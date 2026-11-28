@@ -92,7 +92,7 @@ Rows are ordered by `alive`, the largest first.
 | `age`, `mass`, `massAtBirth`, `health` | Mass is 0 once dead |
 | `x`, `y` | Position |
 | `lastMoveX`, `lastMoveY`, `lastDirection` | Last move (−1, 0 or 1 on each axis) and its direction (`N`, `NE`…) |
-| `distanceCovered`, `stepsStopped` | Distance index of *Greatest Distance* and steps without moving |
+| `distanceCovered`, `stepsStopped` | Distance index of *Greatest Distance* and steps without moving since its last move (0 right after a move) |
 | `canMove`, `canReproduce` | Enough mass to move or reproduce |
 | `stamina` | Share of the steps in which its brain runs |
 | `children`, `plantKills`, `animalKills`, `attacks`, `thinkCount` | Counters since birth; kills are split by the genus of the prey |
@@ -141,3 +141,29 @@ The app draws it in the **species tree** page (`/species-tree.html`, linked from
   - **Download its rows** saves the rows of the species, with every column, as a CSV.
 
 The page loads a file served by the app with `?csv=/<path>`, for example a file copied to `public/`.
+
+## Analysis report
+
+[experiments/analyze-log.ts](../../experiments/analyze-log.ts) reads the files of a log and writes a report, in Spanish, on why some species do better than others and which settings hold back more complex brains:
+
+```bash
+npx tsx experiments/analyze-log.ts results/<name>              # a folder of the headless runner
+npx tsx experiments/analyze-log.ts "sim X log 1-200 species.csv"  # files saved by the app
+```
+
+It writes `report.html` (or the name given with `--out`) and `species-summary.csv` next to the files. The summary has one row per species with its totals and its decoded circuit. It needs the species file, and the settings file to decode the genomes. It reads the creatures file when there is one. With several runs in the log (after extinctions) it takes the longest; `--run <n|code>` picks another. A species counts as relevant from a peak of 5 creatures; `--min-peak` changes that.
+
+The report has these sections:
+
+- **Settings** of the run.
+- **Diagnosis**: rules on the last third of the generations that point to the settings to change.
+- **Population** of each genus.
+- **Most successful species**, measured four ways: duration, creatures × generations, peak, and clade (the species and all its descendants).
+- **Successful, relevant and ephemeral species compared**: brain, mass gained and spent, children, causes of death.
+- **Mutations that work**: each daughter species compared with its parent.
+- **Changes of the dominant species**.
+- **Complexity over time**: genes, connections left after pruning, internal neurons, share of environment and clock sensors, and number of distinct behaviours.
+- **Mass balance** of the main species.
+- With the creatures file, **who eats whom** and the **variation within species**.
+
+The genomes are decoded and pruned as `CreatureBrain` does, with the sensors, actions and Max neurons of the settings file. Genomes written after a change of these during the recording are decoded wrongly.
