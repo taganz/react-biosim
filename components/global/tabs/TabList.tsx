@@ -42,7 +42,11 @@ export default function TabList({ label, children }: Props) {
     <div
       role="tablist"
       aria-label={label}
-      className={"-m-0.5 flex flex-wrap"}
+      // sticky under the control bar; one line that scrolls sideways, so its height stays --tab-bar-height.
+      // The grey line under the tabs is an inset shadow, so the underline of the active tab covers it
+      className={
+        "sticky top-(--control-bar-height) z-20 flex h-(--tab-bar-height) items-end overflow-x-auto bg-grey-dark shadow-[inset_0_-2px_0_var(--color-grey-mid)]"
+      }
       onKeyDown={handleKeyDown}
     >
       {children}

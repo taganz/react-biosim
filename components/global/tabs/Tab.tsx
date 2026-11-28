@@ -25,7 +25,7 @@ export default function Tab({ index, children }: Props) {
       // only the active tab is in the tab order; arrow keys move between tabs
       tabIndex={isActive ? 0 : -1}
       className={classNames(
-        "border-b-2 px-4 py-2 transition-colors",
+        "shrink-0 whitespace-nowrap border-b-2 px-4 py-2 transition-colors",
         isActive && "border-white",
         !isActive && "border-transparent"
       )}

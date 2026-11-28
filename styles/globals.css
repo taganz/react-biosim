@@ -17,6 +17,8 @@
     @apply break-words;
     /* height of the sticky control bar, so other sticky elements can stay below it */
     --control-bar-height: 3.5rem;
+    /* height of the sticky tab bar of the side panel, which sits under the control bar */
+    --tab-bar-height: 2.75rem;
 
     &.lock-scroll {
       @apply overflow-y-hidden;

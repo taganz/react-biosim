@@ -19,7 +19,7 @@ export default function TabPanel({ index, children }: Props) {
           id={getTabPanelId(baseId, index)}
           aria-labelledby={getTabId(baseId, index)}
           tabIndex={0}
-          className={"border-t-2 border-grey-mid py-4"}
+          className={"py-4"}
         >
           {children}
         </div>

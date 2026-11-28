@@ -364,7 +364,7 @@ export default function ScenarioSettings() {
       {/* === APPLY CHANGES === */}
       <div
         className={classNames(
-          "sticky top-(--control-bar-height) z-10 flex flex-col gap-2 rounded-md p-3",
+          "sticky top-[calc(var(--control-bar-height)+var(--tab-bar-height))] z-10 flex flex-col gap-2 rounded-md p-3",
           hasPendingChanges ? "bg-grey-mid" : "border border-grey-mid bg-grey-dark"
         )}
       >

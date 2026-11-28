@@ -8,7 +8,7 @@ The screen has three parts:
 
 - **The control bar** (top). Shows progress and holds the speed controls, Restart and Play / Pause. It stays at the top of the screen when you scroll.
 - **The world** (left). Each coloured square is a creature. Shaded rectangles are areas: blue for reproduction, yellow for spawn, green or red for health. Dark grey rectangles are obstacles. The top-left corner shows the current generation. On a wide screen it stays in view while you scroll the tabs, and it is never taller than the window.
-- **The tabs** (right). Use them to load scenarios, inspect creatures, read the fitness chart, change settings, edit the map and save your work.
+- **The tabs** (right). Use them to load scenarios, inspect creatures, read the fitness chart, change settings, edit the map and save your work. The row of tab names stays under the control bar when you scroll, so you can switch tabs from anywhere.
 
 ## 1. Load a scenario
 
