@@ -126,6 +126,7 @@ export default class WorldController {
     // before changing anything, so the running world stays as it was
     const waterError = checkWaterSettings(sim).errors[0];
     if (waterError) throw new Error(waterError);
+    this.simulationLog.beforeRunReplaced();
 
     if (reseed) {
       this.seed = sim.worldControllerData.seed ?? randomSeed();
@@ -187,6 +188,7 @@ export default class WorldController {
    */
   public startGeneration(sim: SimulationData): void {
 
+    this.simulationLog.beforeRunReplaced();
     this.restoreRandom(sim.worldControllerData);
     this.simData = sim;
     this.runStartSimData = sim;
@@ -226,6 +228,8 @@ export default class WorldController {
    * (hot change of the running simulation), otherwise from sim.species.
    */
   public resumeRun(sim: SimulationData, creatures?: Creature[]): void {
+    // a loaded file replaces the run; a hot change goes on with it
+    if (!creatures) this.simulationLog.beforeRunReplaced();
 
     const sourceCreatures : Creature[] = creatures ?? sim.species?.flatMap((species) => species.creatures) ?? [];
     // a hot change keeps the brains: the genes are rewritten for the new sensors, actions and neurons

@@ -11,6 +11,7 @@ import useWorldValue from "@/hooks/useWorldValue";
 import { LogFile, LogScope, LogState, LOG_OPTIONS_DEFAULT, simFileName } from "@/simulation/log/SimulationLog";
 import { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 import type WorldController from "@/simulation/world/WorldController";
+import type { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
 import { checkWaterSettings } from "@/simulation/water/checkWaterSettings";
 import { simulationDataAtom, worldControllerAtom } from "../../store";
 import CollapsibleSection from "../CollapsibleSection";
@@ -29,13 +30,12 @@ function saveFiles(files: LogFile[]) {
   }
 }
 
-// the simulation as it is now, saved next to the log files with their name (as the Save tab, without stats).
+// a simulation (as the Save tab saves it, without stats), saved next to the log files with their name.
 // Returns the name of the file, or null when there is none
-function saveSim(worldController: WorldController, files: LogFile[]): string | null {
+function saveSim(worldController: WorldController, files: LogFile[], saved: SavedSimulationData | null): string | null {
   const name = simFileName(files);
-  if (!name) return null;
+  if (!name || !saved) return null;
   const prettify = worldController.simData.constants.PRETTIFY_OUTPUT_TO_FILE;
-  const saved = serializeSimulationData(worldController, false);
   const json = prettify ? JSON.stringify(saved, null, 2) : JSON.stringify(saved);
   saveAs(new Blob([json], { type: "application/json;charset=utf-8" }), name);
   return name;
@@ -87,11 +87,11 @@ export default function LogSection() {
     if (worldController!.isWaiting) await worldController!.untilBetweenSteps();
   };
 
-  // saves the files and a .sim of the simulation now. After a restart or a load, the simulation is
-  // not the one recorded: no .sim then
-  const saveWithSim = (files: LogFile[], withSim: boolean) => {
+  // saves the files and a .sim: the simulation now, or for a recording stopped by a restart or a load,
+  // the one it recorded as it was then
+  const saveWithSim = (files: LogFile[], saved: SavedSimulationData | null) => {
     saveFiles(files);
-    const sim = withSim ? saveSim(worldController!, files) : null;
+    const sim = saveSim(worldController!, files, saved);
     const names = files.map((file) => file.name);
     if (sim) names.push(sim);
     setMessage(`Saved ${names.join(", ")}.`);
@@ -100,7 +100,7 @@ export default function LogSection() {
   const handleSnapshot = async () => {
     if (!worldController) return;
     await untilBetweenSteps();
-    run(() => saveWithSim(worldController.simulationLog.snapshot(), true));
+    run(() => saveWithSim(worldController.simulationLog.snapshot(), serializeSimulationData(worldController, false)));
   };
 
   const handleStart = () => {
@@ -126,7 +126,7 @@ export default function LogSection() {
     await untilBetweenSteps();
     run(() => {
       const log = worldController.simulationLog;
-      saveWithSim(log.recordedFiles(), log.state !== LogState.RUN_REPLACED);
+      saveWithSim(log.recordedFiles(), log.recordedSim());
       worldController.simulationLog.markSaved();
     });
   };
@@ -140,7 +140,7 @@ export default function LogSection() {
       case LogState.FULL:
         return "Stopped: the recording reached Maximum rows";
       case LogState.RUN_REPLACED:
-        return "Stopped: the simulation was restarted or loaded";
+        return "Stopped: the simulation was restarted, loaded or died out";
     }
   };
 
@@ -274,8 +274,15 @@ export default function LogSection() {
           A recording keeps the options it started with.
         </p>
         <p className="text-xs">
+          The{" "}
+          <a className="underline" href="/log-report.html" target="_blank" rel="noopener">log report</a> page
+          reads the species, settings and creatures files and shows why some species do better than others,
+          how complex their brains get, and which settings to change.
+        </p>
+        <p className="text-xs">
           Saving a snapshot or a recording also saves the simulation as it is then, as a <b>.sim</b> file with
-          the same name (not after a restart or a load, when it is another run). Open it in the{" "}
+          the same name. For a recording stopped by a restart, a load or an extinction, it is the recorded
+          simulation as it was just before. Open it in the{" "}
           <a className="underline" href="/energy-lab.html" target="_blank" rel="noopener">energy lab</a> page,
           or load it in the Save tab.
         </p>

@@ -4,7 +4,7 @@ import WorldController from "@/simulation/world/WorldController";
 import { SimulationData } from "@/simulation/SimulationData";
 import { startUpScenarioSimulationData } from "@/simulation/startupScenario";
 import deserializeSimulationData, { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
-import { LogFile, simFileName } from "@/simulation/log/SimulationLog";
+import { LogFile, LogState, simFileName } from "@/simulation/log/SimulationLog";
 import { creatureKey } from "@/simulation/log/logRows";
 
 /* the log of species and creatures (Simulation → Log) and the lineage species id */
@@ -164,5 +164,42 @@ describe("snapshot", () => {
     expect(ids(target)).toEqual(ids(worldController));
     const id = worldController.generations.currentCreatures[0].speciesId;
     expect(target.generations.speciesRegistry.firstGenOf(id)).toBe(1);
+  });
+
+  test("a recording stopped by a restart keeps the recorded simulation and its code", () => {
+    const log = worldController.simulationLog;
+    const ids = (wc: WorldController) => wc.generations.currentCreatures.map((creature) => creature.speciesId).sort();
+    const recordedCode = worldController.simCode;
+    const recordedIds = ids(worldController);
+    log.startRecording();
+    worldController.startRun({ ...simulationData, worldControllerData: { ...simulationData.worldControllerData, seed: 6 } }, "NEWRUN");
+    worldController.pause();
+    expect(log.state).toBe(LogState.RUN_REPLACED);
+    // the files keep the code of the recorded run
+    expect(simFileName(log.recordedFiles())).toBe(`sim ${recordedCode} log 1.sim`);
+    // the .sim is the recorded world as it was before the restart, not the new run
+    const saved = JSON.parse(JSON.stringify(log.recordedSim()));
+    expect(saved.worldControllerData.simCode).toBe(recordedCode);
+    const target = new WorldController(simulationData);
+    jest.spyOn(target as unknown as { startLoop: () => void }, "startLoop").mockImplementation(() => {});
+    target.resumeRun(deserializeSimulationData(target, saved));
+    expect(ids(target)).toEqual(recordedIds);
+    expect(ids(target)).not.toEqual(ids(worldController));
+    // going on with the recording: the .sim is the running simulation again
+    log.resumeRecording();
+    expect(log.recordedSim()?.worldControllerData.simCode).toBe("NEWRUN");
+    expect(simFileName(log.recordedFiles())).toBe(`sim ${recordedCode} log 1.sim`);
+  });
+
+  test("a recording stopped by a loaded file keeps the recorded simulation", () => {
+    const log = worldController.simulationLog;
+    const saved = JSON.parse(JSON.stringify(serializeSimulationData(worldController, false)));
+    saved.worldControllerData.simCode = "LOADED";
+    log.startRecording();
+    const recordedCode = worldController.simCode;
+    jest.spyOn(worldController as unknown as { startLoop: () => void }, "startLoop").mockImplementation(() => {});
+    worldController.resumeRun(deserializeSimulationData(worldController, saved));
+    expect(log.state).toBe(LogState.RUN_REPLACED);
+    expect(log.recordedSim()?.worldControllerData.simCode).toBe(recordedCode);
   });
 });

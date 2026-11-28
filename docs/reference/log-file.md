@@ -23,11 +23,11 @@ Each snapshot or recording is downloaded as three or four files with the same na
 | `sim <code> log <gens> settings.csv` | The options of the log and the settings and constants of the simulation when it started |
 | `sim <code> log <gens> species.csv` | One row per species, with **Species** on (`LOG_SPECIES`, default on) |
 | `sim <code> log <gens> creatures.csv` | One row per creature, with **Creatures** on (`LOG_CREATURES`, default off) |
-| `sim <code> log <gens>.sim` | The simulation when the files were saved, as the Save tab saves it (without stats). Not saved for a recording stopped by a restart or a load, since the simulation is then another run. It can be loaded in the app or opened in the energy lab page (`/energy-lab.html`) |
+| `sim <code> log <gens>.sim` | The simulation when the files were saved, as the Save tab saves it (without stats). For a recording stopped by a restart, a loaded file or an extinction, the running simulation is another run: the `.sim` is then the recorded one as it was just before (after an extinction, with no creatures left). It is missing only when the restart or load came during the pause between generations, when the world is half way. It can be loaded in the app or opened in the energy lab page (`/energy-lab.html`) |
 
 The settings file has the configuration when the recording started and the `.sim` the one when it was saved: they differ if the constants were changed in between. The headless runner does not write this `.sim`: with `--log` it already writes `final.sim`.
 
-`<code>` is the simulation code. `<gens>` is the generation and step of a snapshot (`57 step 120`) or the first and last generation of a recording (`1-200`).
+`<code>` is the simulation code; for a recording, the code of the run when it started, also after a restart or **Continue recording**. `<gens>` is the generation and step of a snapshot (`57 step 120`) or the first and last generation of a recording (`1-200`).
 
 The CSV files are plain UTF-8 text:
 
@@ -144,14 +144,13 @@ The page loads a file served by the app with `?csv=/<path>`, for example a file 
 
 ## Analysis report
 
-[experiments/analyze-log.ts](../../experiments/analyze-log.ts) reads the files of a log and writes a report, in Spanish, on why some species do better than others and which settings hold back more complex brains:
+The **log report** page (`/log-report.html`, linked from *Simulation → Log*; the code is [public/log-report.html](../../public/log-report.html)) shows why some species do better than others and which settings hold back more complex brains.
 
-```bash
-npx tsx experiments/analyze-log.ts results/<name>              # a folder of the headless runner
-npx tsx experiments/analyze-log.ts "sim X log 1-200 species.csv"  # files saved by the app
-```
-
-It writes `report.html` (or the name given with `--out`) and `species-summary.csv` next to the files. The summary has one row per species with its totals and its decoded circuit. It needs the species file, and the settings file to decode the genomes. It reads the creatures file when there is one. With several runs in the log (after extinctions) it takes the longest; `--run <n|code>` picks another. A species counts as relevant from a peak of 5 creatures; `--min-peak` changes that.
+- Choose the files of one log, or drop them on the page all at once. It tells them apart by the end of their names: `species.csv` (needed), `settings.csv` (needed to decode the genomes) and `creatures.csv` (optional). They work with the names of the app and of the headless runner (`log-species.csv`…). The files are read in the browser. The creatures file is read a piece at a time, so files of hundreds of MB work.
+- **Run** chooses the run when the log has several (after extinctions). It starts with the longest.
+- A species counts as **relevant** from a peak of 5 creatures; the page can change that.
+- **Download species summary** saves one row per species with its totals and its decoded circuit.
+- `?species=/<path>` loads a species file served by the app, and the settings and creatures files with the same name next to it.
 
 The report has these sections:
 

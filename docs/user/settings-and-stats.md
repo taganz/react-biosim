@@ -88,7 +88,7 @@ Shows how the world's water is split between the cloud, the cells and the creatu
 
 ### Log
 
-The **Log** section saves tables of species and creatures as CSV files, one row per species or creature, to analyse a run outside the app (a spreadsheet, Power BI, Python). Every save also downloads a file with the settings of the simulation and a `.sim` with the simulation as it is then (not after a restart or a load, when it is another run), to load it later or open it in the energy lab page. What each file contains, column by column, is in [The log files](../reference/log-file.md).
+The **Log** section saves tables of species and creatures as CSV files, one row per species or creature, to analyse a run outside the app (a spreadsheet, Power BI, Python). Every save also downloads a file with the settings of the simulation and a `.sim` with the simulation as it is then (for a recording stopped by a restart, a load or an extinction, the recorded simulation just before), to load it later or open it in the energy lab page. What each file contains, column by column, is in [The log files](../reference/log-file.md).
 
 A species here is a lineage: creatures with the same genome **and** the same origin. The same genome reached from two different species is two species. See [Species](population-and-brains.md#species).
 
@@ -98,11 +98,13 @@ A species here is a lineage: creatures with the same genome **and** the same ori
 
 A **recording** adds rows at the end of every generation until it is stopped. Choose **From** (*Now*, or *Generation 1*, which restarts the simulation like **Restart** and records from its first step) and press **Start recording**. While it records, the button is **Stop recording**.
 
-- **Recording** says what it is doing: *Recording*, *Stopped*, *Stopped: the recording reached Maximum rows*, or *Stopped: the simulation was restarted or loaded*. After a restart, **Continue recording** goes on with the same recording; its generations start again at 1.
+- **Recording** says what it is doing: *Recording*, *Stopped*, *Stopped: the recording reached Maximum rows*, or *Stopped: the simulation was restarted, loaded or died out*. After a restart (also the automatic one after an extinction), **Continue recording** goes on with the same recording; its generations start again at 1.
 - **Rows**, out of **Maximum rows**, with *(not saved)* when there are rows that have not been saved, and the **Generations** in it.
 - **Save recording** downloads its files; **Delete recording** deletes it. **Start recording** and **Delete recording** ask first when there are rows that have not been saved.
 
 To draw the tree of species over time, record the species from *Generation 1* with **All**: every species seen in a generation gets a row at its end, also the ones that died out, with the species it came from. Then open the file in the **species tree** page, linked from the section. Click a species (or find it by its id) to see everything the file has about it: its lineage, totals, genome, a chart of any column and all its rows ([details](../reference/log-file.md#drawing-the-tree-of-species)).
+
+The **log report** page, also linked from the section, reads the species, settings and creatures files of a log. It shows which species did best and why, which mutations helped, how complex the brains got over time, and a diagnosis of the settings to change ([details](../reference/log-file.md#analysis-report)).
 
 **Options** (the `LOG_*` constants) apply at once, also while paused, and are saved with the simulation; the Scenario tab does not show them as pending changes. A recording keeps the options it started with.
 

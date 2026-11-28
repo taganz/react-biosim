@@ -4,6 +4,8 @@ import { Column, creatureColumns, creatureKey, RowContext, SpeciesSnapshot, spec
 import { CSV_SEPARATOR, formatValue, headerLine, rowLine } from "./csv";
 import setupParams from "./setupParams";
 import { CONSTANTS_DEFAULT } from "../constantsDefault";
+import { serializeSimulationData } from "../serialization/formatters/simulationDataSerialization";
+import type { SavedSimulationData } from "../serialization/data/SavedSimulationData";
 
 /** the version of the format of the files, written in the settings file */
 export const LOG_FORMAT_VERSION = 1;
@@ -58,6 +60,10 @@ export interface LogFile {
 }
 
 interface Recording {
+  /** the code of the run when the recording started: it names the files, also after a restart */
+  simCode: string;
+  /** the simulation as it was when its run was replaced (a restart, a loaded file, an extinction) */
+  endSim: SavedSimulationData | null;
   options: LogOptions;
   scope: LogScope;
   settings: string[];
@@ -195,6 +201,8 @@ export default class SimulationLog {
     this._state = LogState.RECORDING;
     // the dead of the old world are not the ones of the new one
     this.recording.deadList = null;
+    // the recording goes on: the simulation saved with it is the one running then
+    this.recording.endSim = null;
     this.changed();
     return true;
   }
@@ -219,7 +227,20 @@ export default class SimulationLog {
     const range = recording.firstGen === recording.lastGen || recording.lastGen === 0
       ? `${recording.firstGen}`
       : `${recording.firstGen}-${recording.lastGen}`;
-    return this.filesOf(recording, `sim ${this.world.simCode} log ${range}`);
+    return this.filesOf(recording, `sim ${recording.simCode} log ${range}`);
+  }
+
+  /**
+   * The simulation to save with the files of the recording: the running one, or, when a restart
+   * or a loaded file stopped the recording, the one it recorded as it was then. Null when there
+   * is no recording, or when its run was replaced during the pause between generations, when the
+   * world is half way and cannot be saved.
+   */
+  recordedSim(): SavedSimulationData | null {
+    const recording = this.recording;
+    if (!recording) return null;
+    if (this._state === LogState.RUN_REPLACED) return recording.endSim;
+    return serializeSimulationData(this.world, false);
   }
 
   markSaved(): void {
@@ -250,7 +271,21 @@ export default class SimulationLog {
   /** WorldController: every creature died; the run restarts from generation 1 */
   onExtinction(): void {
     this.startIfPending();
-    if (this._state === LogState.RECORDING && this.recording) this.record(this.recording);
+    if (this._state === LogState.RECORDING && this.recording) {
+      this.record(this.recording);
+      // the restart comes after a pause, during which the world cannot be saved: keep it now
+      this.recording.endSim = serializeSimulationData(this.world, false);
+    }
+  }
+
+  /**
+   * WorldController: the run is about to be replaced (a restart, a loaded file), and the world is
+   * still the recorded one. Keeps it, to save it with the files. Not during the pause between
+   * generations, when the world is half way (after an extinction it was kept by onExtinction)
+   */
+  beforeRunReplaced(): void {
+    if (this._state !== LogState.RECORDING || !this.recording || this.startWithNextRun || this.world.isWaiting) return;
+    this.recording.endSim = serializeSimulationData(this.world, false);
   }
 
   /** WorldController: the run was replaced (restart, a loaded file). The rows are kept */
@@ -286,6 +321,8 @@ export default class SimulationLog {
   private newRecording(options: LogOptions, scope: LogScope): Recording {
     const world = this.world;
     const recording: Recording = {
+      simCode: world.simCode,
+      endSim: null,
       options,
       scope,
       settings: this.settingsLines(options, scope),

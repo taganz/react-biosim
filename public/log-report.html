@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biosim Log Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+/* A report on a log: why some species do better than others, and which settings hold back more complex brains. */
+:root {
+  --bg: #f3f6f4; --surface: #ffffff; --sunken: #eaefec; --fg: #15201b; --muted: #5b6a63; --line: #d6dfda; --accent: #2a68a8;
+  --plant: #2c8549; --herb: #2a68a8; --unknown: #8a948f;
+  --d-1: #1baf7a; --d-2: #eda100; --d-3: #e34948; --d-4: #6250d6;
+  --g-photo: #1baf7a; --c-1: #8a948f; --c-2: #6250d6; --c-3: #eb6834; --c-4: #e34948; --c-5: #e87ba4;
+  --good: #0a7a33; --bad: #c03030; --warn-bg: #fff4e0; --info-bg: #eaf2fc; --ok-bg: #e8f5ec;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631; --accent: #6ea6e4;
+    --plant: #5cc27c; --herb: #6ea6e4; --unknown: #8d9892; --d-1: #199e70; --d-2: #c98500; --d-3: #e66767; --d-4: #9085e9;
+    --g-photo: #199e70; --c-1: #8d9892; --c-2: #9085e9; --c-3: #d95926; --c-4: #e66767; --c-5: #d55181;
+    --good: #4cc06e; --bad: #ef7a7a; --warn-bg: #3a2f18; --info-bg: #1d2a3a; --ok-bg: #1c3324; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1412; --surface: #161f1b; --sunken: #111916; --fg: #e3ebe6; --muted: #93a39b; --line: #2a3631; --accent: #6ea6e4;
+  --plant: #5cc27c; --herb: #6ea6e4; --unknown: #8d9892; --d-1: #199e70; --d-2: #c98500; --d-3: #e66767; --d-4: #9085e9;
+  --g-photo: #199e70; --c-1: #8d9892; --c-2: #9085e9; --c-3: #d95926; --c-4: #e66767; --c-5: #d55181;
+  --good: #4cc06e; --bad: #ef7a7a; --warn-bg: #3a2f18; --info-bg: #1d2a3a; --ok-bg: #1c3324; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 var(--font-body); }
+main { max-width: 1240px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 14px; }
+h1 { font: 600 22px/1.2 var(--font-display); margin: 0; }
+h2 { font: 600 18px/1.3 var(--font-display); margin: 0 0 8px; }
+h3 { font: 600 14px/1.3 var(--font-display); margin: 18px 0 6px; }
+p, li { max-width: 85ch; }
+.sub, .muted { color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.drop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.drop.over { outline: 2px dashed var(--accent); outline-offset: -4px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: end; }
+label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+input, select, button { font: inherit; color: var(--fg); }
+select, input[type="number"] { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+input[type="number"] { width: 6em; }
+button { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.status { color: var(--muted); font-size: 13px; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--font-mono); font-size: 12px; }
+.good { color: var(--good); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+dl.facts { display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 3px 16px; margin: 0; }
+dl.facts dt { color: var(--muted); } dl.facts dd { margin: 0; overflow-wrap: anywhere; }
+.tableWrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 12px; margin: 6px 0; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; background: var(--sunken); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.circuit { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 14px; }
+figure.chart { margin: 0; background: var(--sunken); border-radius: 8px; padding: 10px 12px; }
+figcaption { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+svg { width: 100%; height: auto; display: block; }
+line.grid { stroke: var(--line); stroke-width: 1; } line.axis { stroke: var(--muted); }
+text.tick { fill: var(--muted); font: 11px var(--font-body); }
+rect.hit { fill: transparent; } rect.hit:hover { fill: var(--fg); fill-opacity: .06; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin: 4px 0; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.stack { display: flex; gap: 2px; width: 130px; height: 12px; }
+.stack span { display: block; border-radius: 2px; min-width: 2px; }
+.finding { display: flex; gap: 12px; padding: 10px 12px; border-radius: 8px; margin: 8px 0; }
+.finding p { margin: 2px 0; }
+.finding.warn { background: var(--warn-bg); } .finding.info { background: var(--info-bg); } .finding.ok { background: var(--ok-bg); }
+.tag { font-size: 12px; font-weight: 600; min-width: 64px; }
+#tip { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 8px; font-size: 12px; box-shadow: 0 4px 14px #0003; display: none; z-index: 10; white-space: pre-line; }
+.empty { color: var(--muted); padding: 30px 10px; text-align: center; }
+@media print { .drop, .controls { display: none !important; } .panel { break-inside: avoid-page; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Log report</h1>
+    <p class="sub">Why some species do better than others, and which settings hold back more complex brains. Load the files of one log (Simulation → Log, or the headless runner with <span class="mono">--log</span>): <span class="mono">species.csv</span> and <span class="mono">settings.csv</span>, and <span class="mono">creatures.csv</span> if you have it. The files are read in the browser and not sent anywhere. The species tree of the same file is in the <a href="species-tree.html">species tree</a> page.</p>
+  </header>
+
+  <section class="panel drop" id="drop">
+    <input type="file" id="file" accept=".csv,text/csv" multiple>
+    <span class="status" id="fileStatus">Choose the files, or drop them here (all at once).</span>
+  </section>
+
+  <section class="panel controls" id="controls" hidden>
+    <label>Run <select id="run"></select></label>
+    <label>Relevant species: peak of at least <input type="number" id="minPeak" min="1" value="5"></label>
+    <button id="summaryCsv" type="button">Download species summary (CSV)</button>
+    <span class="status" id="progress"></span>
+  </section>
+
+  <div id="report"><section class="panel empty">No files loaded.</section></div>
+</main>
+<div id="tip"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+
+// ---------- CSV ----------
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
+  if (lines.length === 0) return [];
+  const header = lines[0].replace(/^﻿/, "").split(";");
+  return lines.slice(1).map((line) => {
+    const cells = line.split(";");
+    const row = {};
+    header.forEach((name, i) => (row[name] = cells[i] ?? ""));
+    return row;
+  });
+}
+/** a number with a decimal comma or point; null if empty */
+function num(value) {
+  if (value === undefined || value === null || value === "") return null;
+  const n = Number(String(value).replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+const n0 = (value) => num(value) ?? 0;
+
+/** the lines of a stream (a File or a fetch body), without reading it all at once */
+async function* streamLines(stream) {
+  const reader = stream.pipeThrough(new TextDecoderStream()).getReader();
+  let carry = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const parts = (carry + value).split("\n");
+    carry = parts.pop();
+    for (const line of parts) yield line.endsWith("\r") ? line.slice(0, -1) : line;
+  }
+  if (carry) yield carry;
+}
+
+// ---------- settings ----------
+
+function readSettings(text) {
+  const values = new Map();
+  const sensors = [];
+  const actions = [];
+  for (const row of text ? parseCsv(text) : []) {
+    values.set(row.name, { value: num(row.value), text: row.text, kind: row.kind });
+    if (row.kind === "SETTING" && row.name.startsWith("sensor.") && num(row.value) === 1) sensors.push(row.name.slice(7));
+    if (row.kind === "SETTING" && row.name.startsWith("action.") && num(row.value) === 1) actions.push(row.name.slice(7));
+  }
+  return {
+    loaded: !!text, values, sensors, actions,
+    get: (name) => values.get(name)?.value ?? null,
+    text: (name) => values.get(name)?.text || (values.get(name)?.value?.toString() ?? ""),
+  };
+}
+
+// ---------- genome ----------
+
+const CLOCK_SENSORS = new Set(["Age", "Oscillator", "Random"]);
+const ENV_SENSORS = new Set(["TouchNorth", "TouchEast", "TouchSouth", "TouchWest", "Pain", "PopulationDensity", "PreyDistance",
+  "PreyNorth", "PreyEast", "PreySouth", "PreyWest", "PredatorDistance", "PredatorDirection", "PreyProximity"]);
+const MOVE_ACTIONS = new Set(["MoveNorth", "MoveSouth", "MoveEast", "MoveWest", "RandomMove", "MoveForward", "MoveToPrey"]);
+const sensorKind = (name) => (CLOCK_SENSORS.has(name) ? "clock" : ENV_SENSORS.has(name) ? "env" : "self");
+
+let circuitCache = new Map();
+
+/** Decodes a genome as CreatureBrain.createBrainFromGenome() does, with the sensors and actions of the settings file */
+function decodeGenome(genomeHex, settings) {
+  if (circuitCache.has(genomeHex)) return circuitCache.get(genomeHex);
+  const sensorCount = settings.sensors.length;
+  const actionCount = settings.actions.length;
+  const maxNeurons = settings.get("maxNumberNeurons") ?? 1;
+  if (!genomeHex || sensorCount === 0 || actionCount === 0) return null;
+  const staminaId = settings.actions.indexOf("Stamina");
+  const conns = [];
+  for (const hex of genomeHex.trim().split(/\s+/)) {
+    const gene = parseInt(hex, 16) | 0;
+    const c = { sourceType: (gene >> 31) & 1, sourceId: (gene >> 24) & 127, sinkType: (gene >> 23) & 1, sinkId: (gene >> 16) & 127, weight: (gene & 65535) / 8192 - 4 };
+    c.sourceId %= c.sourceType === 1 ? sensorCount : maxNeurons;
+    c.sinkId %= c.sinkType === 1 ? actionCount : maxNeurons;
+    if (c.sinkType === 1 && c.sinkId === staminaId) continue;   // Stamina genes are not connections
+    conns.push(c);
+  }
+  // prune the neurons without outputs (or that only feed themselves), as the engine does
+  const nodes = new Map();
+  const node = (id) => { if (!nodes.has(id)) nodes.set(id, { outputs: 0, selfInputs: 0 }); return nodes.get(id); };
+  for (const c of conns) {
+    if (c.sinkType === 0) { const n = node(c.sinkId); if (c.sourceType === 0 && c.sourceId === c.sinkId) n.selfInputs++; }
+    if (c.sourceType === 0) node(c.sourceId).outputs++;
+  }
+  let done = false;
+  while (!done) {
+    done = true;
+    for (const [id, n] of nodes) {
+      if (n.outputs !== n.selfInputs) continue;
+      done = false;
+      for (let i = conns.length - 1; i >= 0; i--) {
+        const c = conns[i];
+        if (c.sinkType === 0 && c.sinkId === id) {
+          if (c.sourceType === 0) nodes.get(c.sourceId).outputs--;
+          conns.splice(i, 1);
+        }
+      }
+      nodes.delete(id);
+    }
+  }
+  const remap = new Map();
+  [...nodes.keys()].forEach((id, i) => remap.set(id, i));
+  const name = (type, id, isSource) => (type === 1 ? (isSource ? settings.sensors[id] : settings.actions[id]) : `N${remap.get(id)}`);
+  const links = conns.map((c) => ({ from: name(c.sourceType, c.sourceId, true), to: name(c.sinkType, c.sinkId, false), weight: c.weight }));
+  const sensors = [...new Set(conns.filter((c) => c.sourceType === 1).map((c) => settings.sensors[c.sourceId]))];
+  const actions = [...new Set(conns.filter((c) => c.sinkType === 1).map((c) => settings.actions[c.sinkId]))];
+  // the actions each sensor reaches, through the neurons
+  const reach = (start) => {
+    const seen = new Set([start]);
+    const found = new Set();
+    const stack = [start];
+    while (stack.length) {
+      const from = stack.pop();
+      for (const l of links) {
+        if (l.from !== from) continue;
+        if (/^N\d+$/.test(l.to)) { if (!seen.has(l.to)) { seen.add(l.to); stack.push(l.to); } }
+        else found.add(l.to);
+      }
+    }
+    return found;
+  };
+  const pairs = [];
+  let envToMove = false;
+  for (const s of sensors) {
+    const reached = [...reach(s)].sort();
+    for (const a of reached) pairs.push(`${s}→${a}`);
+    if (sensorKind(s) === "env" && reached.some((a) => MOVE_ACTIONS.has(a))) envToMove = true;
+  }
+  // actions driven only by neurons without inputs (a constant output)
+  for (const a of actions) if (!pairs.some((p) => p.endsWith(`→${a}`))) pairs.push(`·→${a}`);
+  const circuit = {
+    links, neurons: nodes.size, sensors, actions,
+    envSensors: sensors.filter((s) => sensorKind(s) === "env").length,
+    clockSensors: sensors.filter((s) => sensorKind(s) === "clock").length,
+    envToMove,
+    signature: pairs.sort().join(", "),
+    text: links.map((l) => `${l.from} → ${l.to} (${l.weight >= 0 ? "+" : ""}${l.weight.toFixed(1)})`).join("; "),
+  };
+  circuitCache.set(genomeHex, circuit);
+  return circuit;
+}
+
+// ---------- species ----------
+
+const BALANCE = ["Start", "Photosynthesis", "FromPlants", "FromAnimals", "Basal", "Thinking", "Moving", "Attacking", "ReproductionCost", "GivenToChildren", "End"];
+const COSTS = ["Basal", "Thinking", "Moving", "Attacking", "ReproductionCost"];
+const COST_LABEL = ["basal (genes)", "thinking (sensors and actions)", "moving", "attacking", "reproducing"];
+const DEATHS = ["Old", "BasalConsumption", "Attacked", "Health"];
+const DEATH_LABEL = { Old: "old age", BasalConsumption: "starvation (basal consumption)", Attacked: "attacked", Health: "health" };
+const GENUS_LABEL = { plant: "plants", attack_plant: "animals", unknown: "no genus" };
+const GENUS_COLOR = { plant: "var(--plant)", attack_plant: "var(--herb)", unknown: "var(--unknown)" };
+const genusLabel = (genus) => GENUS_LABEL[genus] ?? genus;
+const genusColor = (genus) => GENUS_COLOR[genus] ?? "var(--unknown)";
+
+/** splits the runs: the code changes or the generation goes back (a restart after an extinction) */
+function splitRuns(rows) {
+  const runs = [];
+  let current = null;
+  let lastGen = -Infinity;
+  for (const row of rows) {
+    const gen = n0(row.generation);
+    if (!current || row.simCode !== current.code || gen < lastGen) {
+      current = { code: row.simCode, index: runs.length + 1, rows: [] };
+      runs.push(current);
+    }
+    current.rows.push(row);
+    lastGen = gen;
+  }
+  return runs;
+}
+
+/** a weighted mean */
+class WMean {
+  constructor() { this.sum = 0; this.weight = 0; }
+  add(value, weight) { if (value !== null && value !== undefined && weight > 0) { this.sum += value * weight; this.weight += weight; } }
+  get value() { return this.weight > 0 ? this.sum / this.weight : null; }
+}
+
+const LIVING_COLS = ["avgAge", "avgMass", "avgDistance", "avgStepsStopped", "pctCanMove", "pctCanReproduce"];
+const PER_CREATURE_COLS = ["avgChildren", "avgPlantKills", "avgAnimalKills", "avgAttacks", "avgPhotosynthesis", "avgFromPlants", "avgFromAnimals", ...BALANCE.map((b) => `avgMass${b}`)];
+
+/** columns of older logs */
+function colValue(row, col) {
+  if (col in row) return num(row[col]);
+  if (col === "avgPlantKills") return num(row.avgKills);
+  if (col === "avgFromPlants") return num(row.avgFromPrey);
+  if (col === "avgMassFromPlants") return num(row.avgMassFromPrey);
+  return null;
+}
+
+/** the last row of each species in each generation (LOG_EVERY_N_STEPS writes several) */
+function lastRowsPerGeneration(rows) {
+  const byGen = new Map();
+  for (const row of rows) {
+    const gen = n0(row.generation);
+    if (!byGen.has(gen)) byGen.set(gen, new Map());
+    const m = byGen.get(gen);
+    const prev = m.get(row.speciesId);
+    if (!prev || n0(row.step) >= n0(prev.step)) m.set(row.speciesId, row);
+  }
+  const result = new Map();
+  [...byGen.keys()].sort((a, b) => a - b).forEach((g) => result.set(g, [...byGen.get(g).values()]));
+  return result;
+}
+
+function buildSpecies(byGen, settings) {
+  const species = new Map();
+  for (const [gen, rows] of byGen) {
+    for (const row of rows) {
+      let s = species.get(row.speciesId);
+      if (!s) {
+        s = {
+          id: row.speciesId, parentId: row.speciesParentId, firstGen: n0(row.firstGen), lastGen: gen, genus: row.genus, genome: row.genome,
+          genomeSize: n0(row.genomeSize), usedSensors: row.usedSensors, usedActions: row.usedActions, generations: 0, sumAlive: 0, peak: 0,
+          born: 0, died: 0, clade: 0, descendants: 0, children: [], parent: null, circuit: null,
+          living: Object.fromEntries(LIVING_COLS.map((c) => [c, new WMean()])),
+          perCreature: Object.fromEntries(PER_CREATURE_COLS.map((c) => [c, new WMean()])),
+          deaths: Object.fromEntries(["avgAgeAtDeath", ...DEATHS.map((d) => `pctDeath${d}`)].map((c) => [c, new WMean()])),
+        };
+        species.set(row.speciesId, s);
+      }
+      const alive = n0(row.alive);
+      const died = n0(row.died);
+      s.lastGen = gen;
+      s.generations++;
+      s.sumAlive += alive;
+      s.peak = Math.max(s.peak, n0(row.peakAlive), alive);
+      s.born += n0(row.born);
+      s.died += died;
+      for (const c of LIVING_COLS) s.living[c].add(colValue(row, c), alive);
+      for (const c of PER_CREATURE_COLS) s.perCreature[c].add(colValue(row, c), alive + died);
+      for (const c of Object.keys(s.deaths)) s.deaths[c].add(colValue(row, c), died);
+    }
+  }
+  for (const s of species.values()) {
+    s.circuit = decodeGenome(s.genome, settings);
+    const parent = species.get(s.parentId);
+    if (parent && parent !== s) { s.parent = parent; parent.children.push(s); }
+  }
+  // clade: the species and all its descendants, without recursion (the chains are long)
+  const order = [];
+  const stack = [...species.values()].filter((s) => !s.parent);
+  while (stack.length) {
+    const s = stack.pop();
+    order.push(s);
+    for (const child of s.children) stack.push(child);
+  }
+  for (let i = order.length - 1; i >= 0; i--) {
+    const s = order[i];
+    s.clade = s.sumAlive + s.children.reduce((sum, c) => sum + c.clade, 0);
+    s.descendants = s.children.reduce((sum, c) => sum + 1 + c.descendants, 0);
+  }
+  return species;
+}
+
+// ---------- time series ----------
+
+function timeSeries(byGen, species, genera) {
+  const points = [];
+  for (const [gen, rows] of byGen) {
+    const p = { gen, alive: {}, genomeSize: {}, links: {}, neurons: {}, envShare: {}, clockShare: {}, behaviours: {}, dominant: {}, moveToPrey: {}, envToMove: {} };
+    for (const genus of genera) {
+      const gRows = rows.filter((r) => r.genus === genus && n0(r.alive) > 0);
+      const total = gRows.reduce((sum, r) => sum + n0(r.alive), 0);
+      p.alive[genus] = total;
+      const m = { size: new WMean(), links: new WMean(), neurons: new WMean(), env: new WMean(), clock: new WMean(), mtp: new WMean(), envMove: new WMean() };
+      const bySignature = new Map();
+      let best = null;
+      for (const r of gRows) {
+        const alive = n0(r.alive);
+        if (!best || alive > n0(best.alive)) best = r;
+        const c = species.get(r.speciesId)?.circuit ?? null;
+        m.size.add(n0(r.genomeSize), alive);
+        if (!c) continue;
+        m.links.add(c.links.length, alive);
+        m.neurons.add(c.neurons, alive);
+        if (c.sensors.length) { m.env.add(c.envSensors / c.sensors.length, alive); m.clock.add(c.clockSensors / c.sensors.length, alive); }
+        m.mtp.add(c.actions.includes("MoveToPrey") ? 1 : 0, alive);
+        m.envMove.add(c.envToMove ? 1 : 0, alive);
+        bySignature.set(c.signature, (bySignature.get(c.signature) ?? 0) + alive);
+      }
+      const asPct = (v) => (v === null ? null : v * 100);
+      p.genomeSize[genus] = m.size.value;
+      p.links[genus] = m.links.value;
+      p.neurons[genus] = m.neurons.value;
+      p.envShare[genus] = asPct(m.env.value);
+      p.clockShare[genus] = asPct(m.clock.value);
+      p.moveToPrey[genus] = asPct(m.mtp.value);
+      p.envToMove[genus] = asPct(m.envMove.value);
+      let entropy = 0;
+      for (const count of bySignature.values()) { const q = count / total; entropy -= q * Math.log(q); }
+      p.behaviours[genus] = total > 0 && bySignature.size ? Math.exp(entropy) : null;
+      p.dominant[genus] = best?.speciesId ?? null;
+    }
+    points.push(p);
+  }
+  return points;
+}
+
+// ---------- creatures ----------
+
+/** the last state of each creature of the chosen run, streamed: the file can be hundreds of MB */
+async function readCreatures(openStream, code, runIndexOfCode, runsOfCode, onProgress) {
+  const creatures = new Map();
+  let idx = null;
+  let lastCode = "";
+  let lastGen = -Infinity;
+  let run = 0;
+  let count = 0;
+  for await (const line of streamLines(await openStream())) {
+    if (!line) continue;
+    if (!idx) { idx = Object.fromEntries(line.replace(/^﻿/, "").split(";").map((h, i) => [h, i])); continue; }
+    if (++count % 200000 === 0) onProgress(count);
+    const cells = line.split(";");
+    const rowCode = cells[idx.simCode];
+    const gen = n0(cells[idx.generation]);
+    if (rowCode !== lastCode || gen < lastGen) run++;
+    lastCode = rowCode; lastGen = gen;
+    if (rowCode !== code) continue;
+    if (runsOfCode > 1 && run !== runIndexOfCode) continue;
+    const get = (name) => cells[idx[name]];
+    creatures.set(get("creatureKey"), {
+      genus: get("genus"), species: get("speciesId"), alive: get("alive") === "1", children: n0(get("children")),
+      plantKills: n0(get("plantKills")), animalKills: n0(get("animalKills")), age: n0(get("age")), stopped: n0(get("stepsStopped")),
+      killedBy: get("killedBySpecies") ?? "",
+    });
+  }
+  return creatures;
+}
+
+// ---------- formatting and charts ----------
+
+const esc = (text) => String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const fmt = (value, decimals = 1) => (value === null || value === undefined || !Number.isFinite(value) ? "—" : value.toLocaleString("en-US", { maximumFractionDigits: decimals }));
+const pct = (value, decimals = 0) => (value === null || value === undefined ? "—" : `${fmt(value, decimals)}%`);
+const shortId = (id) => id.slice(0, 6);
+
+/** a line chart in SVG; hovering a generation shows the values of every series */
+function lineChart(title, series, { unit = "" } = {}) {
+  const W = 560, H = 210, L = 46, R = 12, T = 10, B = 26;
+  const all = series.flatMap((s) => s.points.filter((p) => p[1] !== null));
+  if (all.length === 0) return `<figure class="chart"><figcaption>${esc(title)}</figcaption><p class="muted">No data.</p></figure>`;
+  const xMin = all.reduce((m, p) => Math.min(m, p[0]), Infinity), xMax = all.reduce((m, p) => Math.max(m, p[0]), -Infinity);
+  let yMax = all.reduce((m, p) => Math.max(m, p[1]), 0);
+  if (yMax <= 0) yMax = 1;
+  const niceStep = (range) => { const raw = range / 4; const mag = Math.pow(10, Math.floor(Math.log10(raw))); return [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw); };
+  const step = niceStep(yMax);
+  yMax = Math.ceil(yMax / step) * step;
+  const x = (v) => L + (xMax === xMin ? 0.5 : (v - xMin) / (xMax - xMin)) * (W - L - R);
+  const y = (v) => T + (1 - v / yMax) * (H - T - B);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">`;
+  for (let v = 0; v <= yMax + 1e-9; v += step) svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="tick" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v, 2)}</text>`;
+  const xStep = niceStep(Math.max(1, xMax - xMin));
+  for (let v = Math.ceil(xMin / xStep) * xStep; v <= xMax; v += xStep) svg += `<text class="tick" x="${x(v)}" y="${H - 7}" text-anchor="middle">${fmt(v, 0)}</text>`;
+  svg += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  for (const s of series) {
+    let d = "";
+    let pen = false;
+    for (const [px, py] of s.points) {
+      if (py === null) { pen = false; continue; }
+      d += `${pen ? "L" : "M"}${x(px).toFixed(1)},${y(py).toFixed(1)}`;
+      pen = true;
+    }
+    svg += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  const gens = [...new Set(all.map((p) => p[0]))].sort((a, b) => a - b);
+  const half = gens.length > 1 ? (x(gens[1]) - x(gens[0])) / 2 : 10;
+  for (const g of gens) {
+    const lines = series.map((s) => { const p = s.points.find((q) => q[0] === g); return p && p[1] !== null ? `${s.name}: ${fmt(p[1], 2)}${unit}` : null; }).filter(Boolean);
+    svg += `<rect class="hit" x="${x(g) - half}" y="${T}" width="${half * 2}" height="${H - T - B}" data-tip="${esc(`Generation ${g}\n${lines.join("\n")}`)}"/>`;
+  }
+  svg += "</svg>";
+  const legend = series.length > 1 ? `<div class="legend">${series.map((s) => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+  return `<figure class="chart"><figcaption>${esc(title)}</figcaption>${legend}${svg}</figure>`;
+}
+
+/** a bar stacked to 100% */
+function stackBar(parts) {
+  const total = parts.reduce((s, p) => s + p.value, 0);
+  if (total <= 0) return `<span class="muted">—</span>`;
+  return `<div class="stack">${parts.filter((p) => p.value > 0).map((p) => `<span style="flex:${p.value};background:${p.color}" data-tip="${esc(`${p.label}: ${fmt((p.value / total) * 100, 0)}%`)}"></span>`).join("")}</div>`;
+}
+
+function table(headers, rows, numeric = []) {
+  return `<div class="tableWrap"><table><thead><tr>${headers.map((h, i) => `<th${numeric[i] ? ' class="num"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows
+    .map((r) => `<tr>${r.map((c, i) => `<td${numeric[i] ? ' class="num"' : ""}>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+const legendOf = (items) => `<div class="legend">${items.map(([label, color]) => `<span><i style="background:${color}"></i>${esc(label)}</span>`).join("")}</div>`;
+
+// ---------- the report ----------
+
+const state = { files: {}, settings: null, rows: [], runs: [], creaturesCache: new Map(), summaryCsv: "", rendering: 0 };
+
+async function render() {
+  const token = ++state.rendering;
+  const { settings } = state;
+  const runs = state.runs;
+  const run = runs[Number($("run").value) - 1] ?? runs[0];
+  const MIN_PEAK = Math.max(1, Number($("minPeak").value) || 5);
+  circuitCache = new Map();
+  const byGen = lastRowsPerGeneration(run.rows);
+  const species = buildSpecies(byGen, settings);
+  const all = [...species.values()];
+  const genera = ["attack_plant", "plant", "unknown"].filter((g) => all.some((s) => s.genus === g && s.sumAlive > 0));
+  const series = timeSeries(byGen, species, genera);
+  const gens = series.map((p) => p.gen);
+  const firstGen = gens[0], lastGen = gens[gens.length - 1];
+  const finalFrom = gens[Math.floor((gens.length * 2) / 3)] ?? firstGen;
+  const finalPoints = series.filter((p) => p.gen >= finalFrom);
+  const meanFinal = (pick) => { const v = finalPoints.map(pick).filter((x) => x !== null && x !== undefined); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const relevant = all.filter((s) => s.peak >= MIN_PEAK);
+  const ephemeral = all.filter((s) => s.peak < MIN_PEAK);
+  const mainGenus = genera.includes("attack_plant") ? "attack_plant" : genera[0];
+  const sameCode = runs.filter((r) => r.code === run.code);
+
+  // creatures: read once per run
+  let creatures = null;
+  if (state.files.creatures) {
+    const key = `${run.code}/${run.index}`;
+    creatures = state.creaturesCache.get(key);
+    if (!creatures) {
+      $("progress").textContent = "Reading the creatures file…";
+      creatures = await readCreatures(state.files.creatures, run.code, sameCode.indexOf(run) + 1, sameCode.length,
+        (n) => { $("progress").textContent = `Reading the creatures file… ${n.toLocaleString("en-US")} rows`; });
+      state.creaturesCache.set(key, creatures);
+      $("progress").textContent = "";
+      if (token !== state.rendering) return;
+    }
+  }
+
+  const st = (name) => settings.text(name);
+  const cText = (name) => { const v = settings.values.get(name); return v ? (v.text || fmt(v.value, 4)) : "—"; };
+  const sections = [];
+
+  // settings
+  const metab = settings.get("metabolismEnabled");
+  const keys = [...settings.values.keys()];
+  const assimRows = keys.filter((k) => k.startsWith("ASSIMILATION_EFFICIENCY."));
+  const costRows = keys.filter((k) => (k.startsWith("SENSOR_COSTS.") || k.startsWith("ACTION_COSTS.")) && (settings.get(k) ?? 0) !== 0);
+  const facts = [
+    ["Code / run", `${esc(run.code)} · run ${run.index} of ${runs.length}`],
+    ["Generations", `${firstGen} – ${lastGen} (${gens.length})`],
+  ];
+  if (settings.loaded) facts.push(
+    ["Type", `${esc(st("simulationType"))}, metabolism ${metab === null ? "—" : metab ? "on" : "off"}`],
+    ["World", `${st("size")} × ${st("size")}, initial population ${st("initialPopulation")}, ${st("stepsPerGen")} steps per generation, maximum age ${st("maxAge")}`],
+    ["Population and selection", `${esc(st("populationStrategy"))} · ${esc(st("selectionMethod"))}`],
+    ["Seed", `${esc(st("seed"))} (this run: ${esc(st("runSeed"))})`],
+    ["Brain", `initial genome ${st("initialGenomeSize")}, at most ${st("maxGenomeSize")} genes, ${st("maxNumberNeurons")} neurons`],
+    ["Mutation", `${esc(st("mutationMode"))}, probability ${st("mutationProbability")}, insertion/deletion ${st("geneInsertionDeletionProbability")}`],
+    ["Sensors", esc(settings.sensors.join(", ")) || "—"],
+    ["Actions", esc(settings.actions.join(", ")) || "—"],
+    ["Costs", `gene ${cText("MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE")}, primary gene ${cText("MASS_BASAL_CONSUMPTION_PER_BRAIN_PRIMARY")}, move ${cText("MOVE_COST_PER_MASS")}, attack ${cText("ATTACK_COST_PER_MASS")}, reproduce ${cText("REPRODUCTION_COST_PER_MASS_DO")}` +
+      (costRows.length ? `; ${costRows.map((k) => `${esc(k)} ${fmt(settings.get(k), 4)}`).join(", ")}` : "")],
+    ["Eating", `the attacker weighs at least ${cText("ATTACK_MIN_PREY_MASS_FACTOR")} times the prey, same genus ${cText("ATTACK_SAME_GENUS")}, detect radius ${cText("DETECT_RADIUS")}` +
+      (assimRows.length ? `; efficiency ${assimRows.map((k) => `${esc(k.replace("ASSIMILATION_EFFICIENCY.", ""))} ${fmt(settings.get(k), 2)}`).join(", ")}` : "")],
+    ["Water", `${esc(st("rainType"))}, at most ${st("waterRainMaxPerCell")} per cell, evaporation ${st("waterEvaporationPerCellPerGeneration")}`],
+  );
+  else facts.push(["Warning", "No settings file: the genomes cannot be decoded, so the circuits and the complexity are missing."]);
+  facts.push(["Files", Object.entries(state.files).filter(([, v]) => v).map(([k]) => `${k}.csv`).join(", ")]);
+  sections.push(`<section class="panel"><h2>Settings</h2><dl class="facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></section>`);
+
+  // summary
+  const byClade = [...relevant].sort((a, b) => b.clade - a.clade);
+  const byMass = [...all].sort((a, b) => b.sumAlive - a.sumAlive);
+  const lastPoint = series[series.length - 1];
+  const firstPoint = series[0];
+  const rootsTotal = all.filter((s) => !s.parent).reduce((t, s) => t + s.clade, 0);
+  const summary = [`${fmt(all.length, 0)} species in ${gens.length} generations: ${fmt(relevant.length, 0)} relevant (peak of ${MIN_PEAK} creatures or more) and ${fmt(ephemeral.length, 0)} ephemeral (${pct((ephemeral.length / all.length) * 100)}).`];
+  if (runs.length > 1) summary.push(`The log has ${runs.length} runs: the population died out ${runs.length - 1} ${runs.length === 2 ? "time" : "times"}.`);
+  summary.push(`At the end: ${genera.map((g) => `${fmt(lastPoint.alive[g], 0)} ${genusLabel(g)}`).join(", ")}.`);
+  if (byMass[0]) summary.push(`The species with most presence is <code>${shortId(byMass[0].id)}</code> (${genusLabel(byMass[0].genus)}, ${fmt(byMass[0].sumAlive, 0)} creature-generations over ${byMass[0].generations} generations): <span class="circuit">${esc(byMass[0].circuit?.text || `${byMass[0].usedSensors} → ${byMass[0].usedActions}`)}</span>.`);
+  if (byClade[0]) summary.push(`The most successful lineage starts at <code>${shortId(byClade[0].id)}</code> (generation ${byClade[0].firstGen}): ${fmt(byClade[0].descendants, 0)} descendant species and ${pct((byClade[0].clade / Math.max(1, rootsTotal)) * 100)} of all the creature-generations of the log.`);
+  if (settings.loaded) for (const g of genera) {
+    const a = firstPoint.links[g], b = meanFinal((p) => p.links[g]);
+    if (a !== null && b !== null) summary.push(`Complexity of ${genusLabel(g)}: from ${fmt(a)} to ${fmt(b)} effective connections; ${pct(meanFinal((p) => p.envShare[g]))} of their sensors read the environment at the end.`);
+  }
+
+  // diagnosis
+  const findings = [];
+  const wc = (s) => s.sumAlive + s.died;
+  const groupStats = (group) => {
+    const w = (pick, weight) => { const m = new WMean(); for (const s of group) m.add(pick(s), weight(s)); return m.value; };
+    const costTotal = (s) => COSTS.reduce((t, c) => t + Math.abs(s.perCreature[`avgMass${c}`].value ?? 0), 0);
+    const share = (c) => w((s) => { const t = costTotal(s); return t > 0 ? (Math.abs(s.perCreature[`avgMass${c}`].value ?? 0) / t) * 100 : null; }, wc);
+    const gains = (s) => ["Photosynthesis", "FromPlants", "FromAnimals"].reduce((t, k) => t + (s.perCreature[`avgMass${k}`].value ?? 0), 0);
+    return {
+      duration: w((s) => s.generations, () => 1),
+      genome: w((s) => s.genomeSize, wc),
+      links: w((s) => s.circuit?.links.length ?? null, wc),
+      neurons: w((s) => s.circuit?.neurons ?? null, wc),
+      env: w((s) => (s.circuit && s.circuit.sensors.length ? (s.circuit.envSensors / s.circuit.sensors.length) * 100 : null), wc),
+      children: w((s) => s.perCreature.avgChildren.value, wc),
+      gains: w(gains, wc),
+      net: w((s) => gains(s) - costTotal(s), wc),
+      basal: share("Basal"), thinking: share("Thinking"), moving: share("Moving"), attacking: share("Attacking"), repro: share("ReproductionCost"),
+      stopped: w((s) => { const age = s.living.avgAge.value; const stopped = s.living.avgStepsStopped.value; return age && stopped !== null ? Math.min(100, (stopped / age) * 100) : null; }, (s) => s.sumAlive),
+      canRepro: w((s) => s.living.pctCanReproduce.value, (s) => s.sumAlive),
+      ageDeath: w((s) => s.deaths.avgAgeAtDeath.value, (s) => s.died),
+      deathHunger: w((s) => s.deaths.pctDeathBasalConsumption.value, (s) => s.died),
+      deathAttacked: w((s) => s.deaths.pctDeathAttacked.value, (s) => s.died),
+      deathOld: w((s) => s.deaths.pctDeathOld.value, (s) => s.died),
+    };
+  };
+  const animals = genera.includes("attack_plant");
+  const A = animals ? groupStats(relevant.filter((s) => s.genus === "attack_plant" && s.lastGen >= finalFrom)) : null;
+  const maxGenome = settings.get("maxGenomeSize") ?? 0;
+  const maxNeurons = settings.get("maxNumberNeurons") ?? 1;
+  const genomeFinal = meanFinal((p) => p.genomeSize[mainGenus]);
+  const linksFinal = meanFinal((p) => p.links[mainGenus]);
+  const neuronsFinal = meanFinal((p) => p.neurons[mainGenus]);
+  const envFinal = meanFinal((p) => p.envShare[mainGenus]);
+  const behavFinal = meanFinal((p) => p.behaviours[mainGenus]);
+  const who = genusLabel(mainGenus);
+  const add = (level, title, evidence, action) => findings.push({ level, title, evidence, action });
+  if (settings.loaded) {
+    if (metab === 0) add("info", "Metabolism off", "Without metabolism mass never changes and the Reproduction action never succeeds.", "Turn it on (<code>metabolismEnabled</code>) for success to depend on eating and spending.");
+    if (linksFinal !== null && maxGenome >= 6 && linksFinal <= 3)
+      add("warn", "Minimal brains", `${who}: ${fmt(linksFinal)} effective connections on average at the end, with up to ${maxGenome} genes allowed.`, `Genes are expensive: lower <code>MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE</code> (now ${cText("MASS_BASAL_CONSUMPTION_PER_BRAIN_SIZE")}) to 0.005–0.01, and check <code>SENSOR_COSTS</code> and <code>ACTION_COSTS</code>.`);
+    if (genomeFinal !== null && maxGenome > 0 && genomeFinal >= maxGenome * 0.9)
+      add("warn", "Genome at the ceiling", `${who}: ${fmt(genomeFinal)} genes on average, with a maximum of ${maxGenome}.`, `Raise <code>maxGenomeSize</code> (to ${Math.max(8, maxGenome * 2)}–${Math.max(12, maxGenome * 3)}): evolution wants more genes than it can have.`);
+    if (maxNeurons <= 1)
+      add("warn", "A single internal neuron", `<code>maxNumberNeurons</code> = ${maxNeurons}: almost every circuit is a sensor → action reflex.`, "Raise it to 2–3, together with a bigger genome. In the turning experiments this is what allowed timers.");
+    else if (neuronsFinal !== null && neuronsFinal < 0.3)
+      add("info", "Unused neurons", `${who}: ${fmt(neuronsFinal, 2)} internal neurons on average, with ${maxNeurons} allowed.`, "What they solve does not need them: the environment does not reward combining information. See “predictable environment”.");
+    if (A && A.thinking !== null && A.thinking > 30)
+      add("warn", "Thinking is the main cost", `Animals: ${pct(A.thinking)} of the mass spent goes to sensors and actions.`, "Lower <code>SENSOR_COSTS</code> and <code>ACTION_COSTS</code>.");
+    if (A && A.stopped !== null && A.stopped > 90)
+      add("warn", "Sedentary animals", `The living animals have not moved for ${pct(A.stopped)} of their lives (current streak, <code>avgStepsStopped</code> / <code>avgAge</code>).`, `Lower <code>MOVE_COST_PER_MASS</code> (now ${cText("MOVE_COST_PER_MASS")}) to 0.01–0.04 and spread the food (a bigger world, fewer plants). If plants sprout next to them, moving does not pay.`);
+    if (A && A.moving !== null && A.moving > 50)
+      add("warn", "Moving is the main cost", `Animals: ${pct(A.moving)} of the mass spent goes to moving.`, `Lower <code>MOVE_COST_PER_MASS</code> (now ${cText("MOVE_COST_PER_MASS")}).`);
+  }
+  if (animals) {
+    const photo = new WMean();
+    for (const s of relevant.filter((x) => x.genus === "attack_plant")) {
+      const p = s.perCreature.avgMassPhotosynthesis.value ?? 0;
+      const total = p + (s.perCreature.avgMassFromPlants.value ?? 0) + (s.perCreature.avgMassFromAnimals.value ?? 0);
+      if (total > 0) photo.add((p / total) * 100, s.sumAlive);
+    }
+    if (photo.value !== null && photo.value > 20)
+      add("warn", "Animals photosynthesise", `${pct(photo.value)} of the mass the animals gain comes from photosynthesis.`, "Set <code>ASSIMILATION_EFFICIENCY.attack_plant.photosynthesis</code> to 0: they grow without eating, so they need not look for food.");
+    const pop = series.filter((p) => p.gen >= firstGen + 5).map((p) => p.alive.attack_plant);
+    const mean = pop.length ? pop.reduce((a, b) => a + b, 0) / pop.length : 0;
+    const cv = mean > 0 ? Math.sqrt(pop.reduce((t, v) => t + (v - mean) ** 2, 0) / pop.length) / mean : null;
+    if ((cv !== null && cv > 0.6) || runs.length > 1)
+      add("warn", "Booms and busts", `Animal population with a coefficient of variation of ${fmt(cv, 2)}${runs.length > 1 ? `; ${runs.length - 1} extinctions in the log` : ""}.`, "Eating pays too much: lower <code>ASSIMILATION_EFFICIENCY.attack_plant.prey</code> to 0.3–0.5 to slow down the booms that wipe out the plants.");
+    if (A && A.deathHunger !== null && A.deathHunger > 70)
+      add("warn", "They starve", `Animals: ${pct(A.deathHunger)} of the deaths by basal consumption.`, "Food does not reach them or costs are high: check the gene cost, the move cost and the amount of plants.");
+    if (!all.some((s) => (s.perCreature.avgAnimalKills.value ?? 0) > 0))
+      add("info", "No predators", "No species killed animals.", "Without predators nothing pushes them to flee or hide. Turn on <code>ATTACK_SAME_GENUS</code> or add carnivores. Note that <code>PredatorDistance</code> and <code>PredatorDirection</code> produce NaN (docs/known-issues.md) and need a fix first.");
+    if (settings.actions.includes("MoveToPrey") && (meanFinal((p) => p.moveToPrey.attack_plant) ?? 0) > 50)
+      add("info", "The MoveToPrey shortcut", `${pct(meanFinal((p) => p.moveToPrey.attack_plant))} of the animals use MoveToPrey.`, "It solves chasing with one gene. For richer brains, remove it and keep <code>PreyNorth/East/South/West</code> + <code>MoveNorth/South/East/West</code>.");
+  }
+  if (settings.loaded) {
+    if (!settings.sensors.some((s) => sensorKind(s) === "env"))
+      add("warn", "No environment sensors", "Only position, own state and clock sensors are enabled.", "Enable <code>Prey*</code>, <code>Touch*</code> or <code>PopulationDensity</code>: without them they cannot react to anything.");
+    else if (envFinal !== null && envFinal < 25)
+      add("warn", "Predictable environment: clocks instead of reactions", `${who}: only ${pct(envFinal)} of the sensors they use read the environment.`,
+        `A clock is enough when the environment is predictable. Spread the food (a bigger world, less rain), add obstacles${settings.sensors.some((s) => s.startsWith("Touch")) ? "" : " with the <code>Touch*</code> sensors"} and try a smaller <code>DETECT_RADIUS</code> (now ${cText("DETECT_RADIUS")}). Every rain type (now <code>${esc(st("rainType"))}</code>) is a fixed pattern: a moving rain would need new code.`);
+    if (behavFinal !== null && behavFinal < 2)
+      add("info", "Few distinct behaviours", `${who}: ${fmt(behavFinal, 2)} effective behaviours at the end.`, st("simulationType") === "generational" ? "Selection is harsh: raise <code>GREATEST_*_SELECTION_TOP_SURVIVORS</code> to 0.1–0.2, or the mutation probability." : "Raise the mutation or the insertion/deletion probability.");
+    if (settings.sensors.includes("PreyDistance")) add("info", "PreyDistance enabled", "It is 999999 without prey and saturates the network.", "<code>PreyProximity</code> or <code>PreyNorth/East/South/West</code> work better.");
+    if (settings.sensors.includes("Pain")) add("info", "Pain enabled", "Health areas are not applied, so Pain is always 0 (docs/known-issues.md).", "Turn it off.");
+    for (const s of ["PredatorDistance", "PredatorDirection"]) if (settings.sensors.includes(s)) add("warn", `${s} enabled`, "It produces no value: brains that read it compute NaN (docs/known-issues.md).", "Turn it off until it is fixed.");
+  }
+  if (findings.length === 0) add("ok", "No clear symptom", "No rule fired.", "Compare several seeds, or change one setting at a time.");
+  const levelOrder = { warn: 0, info: 1, ok: 2 };
+  findings.sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
+  sections.push(`<section class="panel"><h2>Summary</h2><ul>${summary.map((s) => `<li>${s}</li>`).join("")}</ul></section>`);
+  sections.push(`<section class="panel"><h2>Diagnosis and settings to change</h2><p class="muted">Rules on the last third of the generations (from ${finalFrom}). The thresholds are rough; they are in the code of this page.</p>${findings.map((f) =>
+    `<div class="finding ${f.level}"><div class="tag">${f.level === "warn" ? "Change" : f.level === "info" ? "Note" : "OK"}</div><div><b>${esc(f.title)}</b><p>${f.evidence}</p><p>→ ${f.action}</p></div></div>`).join("")}</section>`);
+
+  // population
+  const popCharts = genera.map((g) => lineChart(`Living creatures: ${genusLabel(g)}`, [{ name: genusLabel(g), color: genusColor(g), points: series.map((p) => [p.gen, p.alive[g]]) }]));
+  popCharts.push(lineChart("Living relevant species", [{ name: "species", color: "var(--accent)", points: series.map((p) => [p.gen, (byGen.get(p.gen) ?? []).filter((r) => n0(r.alive) > 0 && (species.get(r.speciesId)?.peak ?? 0) >= MIN_PEAK).length]) }]));
+  sections.push(`<section class="panel"><h2>Population</h2><p class="muted">Each genus in its own chart: plants are usually many more and would flatten the animals on a shared axis.</p><div class="charts">${popCharts.join("")}</div></section>`);
+
+  // most successful species
+  const deathBar = (s) => stackBar(DEATHS.map((d, i) => ({ label: DEATH_LABEL[d], value: s.deaths[`pctDeath${d}`].value ?? 0, color: `var(--d-${i + 1})` })));
+  const speciesRow = (s) => [`<code>${shortId(s.id)}</code>`, genusLabel(s.genus), `${s.firstGen}–${s.lastGen}`, fmt(s.generations, 0), fmt(s.sumAlive, 0), fmt(s.peak, 0),
+    fmt(s.clade, 0), fmt(s.descendants, 0), fmt(s.perCreature.avgChildren.value, 2), deathBar(s), `<span class="circuit">${esc(s.circuit?.text || `${s.usedSensors} → ${s.usedActions}`)}</span>`];
+  const speciesHeaders = ["Species", "Genus", "Generations", "Duration", "Creature-gens", "Peak", "Clade", "Descendants", "Children each", "Deaths", "Circuit"];
+  const speciesNum = [false, false, false, true, true, true, true, true, true, false, false];
+  const topByGenus = genera.map((g) => {
+    const top = relevant.filter((s) => s.genus === g).sort((a, b) => b.sumAlive - a.sumAlive).slice(0, 10);
+    return top.length ? `<h3>${genusLabel(g)}</h3>${table(speciesHeaders, top.map(speciesRow), speciesNum)}` : "";
+  }).join("");
+  sections.push(`<section class="panel"><h2>Most successful species</h2>
+<p>Four measures, because they do not agree: <b>duration</b> (generations with creatures), <b>creature-generations</b> (the living creatures added up over the generations: how much it dominated), <b>peak</b>, and <b>clade</b> (the species and all its descendants: whether it founded a lineage, even if it died out itself). The circuit is the genome decoded and pruned as the engine does it: <code>sensor → action (weight)</code>, with <code>N0</code>, <code>N1</code>… the internal neurons.</p>
+${legendOf(DEATHS.map((d, i) => [DEATH_LABEL[d], `var(--d-${i + 1})`]))}${topByGenus}
+<h3>Founders of the most successful lineages</h3>${table(speciesHeaders, byClade.slice(0, 8).map(speciesRow), speciesNum)}</section>`);
+
+  // compared profile
+  const profile = genera.map((g) => {
+    const rel = relevant.filter((s) => s.genus === g).sort((a, b) => b.sumAlive - a.sumAlive);
+    const cut = Math.max(1, Math.ceil(rel.length * 0.1));
+    const eph = ephemeral.filter((s) => s.genus === g);
+    const groups = [
+      [`Most successful (top 10% of relevant, ${cut})`, groupStats(rel.slice(0, cut))],
+      [`Other relevant (${rel.length - cut})`, groupStats(rel.slice(cut))],
+      [`Ephemeral (${fmt(eph.length, 0)})`, groupStats(eph)],
+    ];
+    const metrics = [
+      ["Mean duration (generations)", (x) => fmt(x.duration)],
+      ["Genes", (x) => fmt(x.genome)],
+      ["Effective connections", (x) => fmt(x.links)],
+      ["Internal neurons", (x) => fmt(x.neurons)],
+      ["Environment sensors", (x) => pct(x.env)],
+      ["Children per creature", (x) => fmt(x.children, 2)],
+      ["Mass gained per creature", (x) => fmt(x.gains, 2)],
+      ["Gained − spent", (x) => fmt(x.net, 2)],
+      ...COSTS.map((c, i) => [`Spent on ${COST_LABEL[i]}`, (x) => pct(x[["basal", "thinking", "moving", "attacking", "repro"][i]])]),
+      ["Not moved for (% of age, living)", (x) => pct(x.stopped)],
+      ["Living with mass to reproduce", (x) => pct(x.canRepro)],
+      ["Age at death", (x) => fmt(x.ageDeath, 0)],
+      ["Deaths by starvation", (x) => pct(x.deathHunger)],
+      ["Deaths by attack", (x) => pct(x.deathAttacked)],
+      ["Deaths by old age", (x) => pct(x.deathOld)],
+    ];
+    return `<h3>${genusLabel(g)}</h3>${table(["", ...groups.map((x) => x[0])], metrics.map(([label, f]) => [label, ...groups.map((x) => f(x[1]))]), [false, true, true, true])}`;
+  }).join("");
+  sections.push(`<section class="panel"><h2>What sets successful species apart</h2><p>Means weighted by creatures. The costs are how the mass spent is shared out, to be read with the mass gained: a successful group usually gains more than it spends, has more children, and dies of old age rather than starvation.</p>${profile}</section>`);
+
+  // parent → daughter mutations
+  if (settings.loaded) {
+    const changes = new Map();
+    const addChange = (label, s) => {
+      if (!changes.has(label)) changes.set(label, { label, count: 0, relevant: 0, peakSum: 0, best: null });
+      const c = changes.get(label);
+      c.count++;
+      c.peakSum += s.peak;
+      if (s.peak >= MIN_PEAK) c.relevant++;
+      if (!c.best || s.clade > c.best.clade) c.best = s;
+    };
+    const daughters = all.filter((s) => s.parent && s.circuit && s.parent.circuit);
+    for (const s of daughters) {
+      const p = s.parent;
+      const labels = [];
+      if (s.genomeSize > p.genomeSize) labels.push("gene added");
+      else if (s.genomeSize < p.genomeSize) labels.push("gene deleted");
+      if (s.genus !== p.genus) labels.push(`genus changes: ${genusLabel(p.genus)} → ${genusLabel(s.genus)}`);
+      for (const x of s.circuit.sensors) if (!p.circuit.sensors.includes(x)) labels.push(`gains sensor ${x}`);
+      for (const x of p.circuit.sensors) if (!s.circuit.sensors.includes(x)) labels.push(`loses sensor ${x}`);
+      for (const x of s.circuit.actions) if (!p.circuit.actions.includes(x)) labels.push(`gains action ${x}`);
+      for (const x of p.circuit.actions) if (!s.circuit.actions.includes(x)) labels.push(`loses action ${x}`);
+      if (s.circuit.neurons > p.circuit.neurons) labels.push("gains a neuron");
+      if (s.circuit.neurons < p.circuit.neurons) labels.push("loses a neuron");
+      if (s.circuit.links.length > p.circuit.links.length) labels.push("more effective connections");
+      if (s.circuit.links.length < p.circuit.links.length) labels.push("fewer effective connections");
+      if (s.circuit.signature === p.circuit.signature) labels.push(s.circuit.text === p.circuit.text ? "no effect on the network (pruned gene)" : "same circuit, other weights");
+      else if (!labels.some((l) => l.startsWith("gains") || l.startsWith("loses"))) labels.push("rewires the circuit");
+      for (const l of labels) addChange(l, s);
+    }
+    const baseRate = daughters.length ? (daughters.filter((s) => s.peak >= MIN_PEAK).length / daughters.length) * 100 : null;
+    const changeRows = [...changes.values()].filter((c) => c.count >= 3).sort((a, b) => b.relevant / b.count - a.relevant / a.count || b.count - a.count).slice(0, 30).map((c) => {
+      const rate = (c.relevant / c.count) * 100;
+      const cls = baseRate === null ? "" : rate > baseRate * 1.5 ? "good" : rate < baseRate * 0.5 ? "bad" : "";
+      return [esc(c.label), fmt(c.count, 0), `<span class="${cls}">${pct(rate, 1)}</span>`, fmt(c.peakSum / c.count, 1), c.best ? `<code>${shortId(c.best.id)}</code> (clade ${fmt(c.best.clade, 0)})` : "—"];
+    });
+    sections.push(`<section class="panel"><h2>Which mutations work</h2><p>Each daughter species differs from its parent by one mutation, so comparing each daughter with its parent is a natural experiment: which change of the brain helps or hurts. A daughter can have several labels. On average ${pct(baseRate, 1)} of the daughters become relevant: <span class="good">green</span> is more than 1.5 times that rate, <span class="bad">red</span> less than half. Only changes with 3 daughters or more.</p>${table(["Change", "Daughters", "Become relevant", "Mean peak", "Best example"], changeRows, [false, true, true, true, false])}</section>`);
+  }
+
+  // changes of the dominant species
+  const shifts = genera.map((g) => {
+    const rows = [];
+    let prev = null;
+    for (const p of series) {
+      const d = p.dominant[g];
+      if (!d || d === prev) continue;
+      const s = species.get(d);
+      const before = prev ? species.get(prev) : null;
+      const related = before ? (s.parent === before ? "daughter" : before.parent === s ? "parent" : s.parent && s.parent === before.parent ? "sister" : "other lineage") : "—";
+      const dominantAlive = n0(byGen.get(p.gen).find((r) => r.speciesId === d)?.alive);
+      rows.push([fmt(p.gen, 0), before ? `<code>${shortId(before.id)}</code>` : "—", `<code>${shortId(s.id)}</code>`, related, pct(p.alive[g] ? (dominantAlive / p.alive[g]) * 100 : null), `<span class="circuit">${esc(s.circuit?.text ?? "")}</span>`]);
+      prev = d;
+    }
+    const shown = rows.length > 25 ? [...rows.slice(0, 12), ["…", "", "", "", "", ""], ...rows.slice(-12)] : rows;
+    return `<h3>${genusLabel(g)} (${rows.length} changes)</h3>${table(["Generation", "Before", "Now", "Relation", "Share", "Circuit of the new one"], shown, [true, false, false, false, true, false])}`;
+  }).join("");
+  sections.push(`<section class="panel"><h2>Changes of the dominant species</h2><p>When the species with most creatures of each genus changes. When the new one is a <b>daughter</b> of the old one, it won by a mutation; when it is from <b>another lineage</b>, the environment turned in its favour (look at the population and the causes of death around those generations).</p>${shifts}</section>`);
+
+  // complexity
+  if (settings.loaded) {
+    const multi = (title, pick, unit = "") => lineChart(title, genera.map((g) => ({ name: genusLabel(g), color: genusColor(g), points: series.map((p) => [p.gen, pick(p)[g]]) })), { unit });
+    const charts = [
+      multi("Genes per creature", (p) => p.genomeSize),
+      multi("Effective connections (after pruning)", (p) => p.links),
+      multi("Internal neurons used", (p) => p.neurons),
+      multi("Environment sensors (% of the used ones)", (p) => p.envShare, "%"),
+      multi("Clocks and chance: Age, Oscillator, Random (%)", (p) => p.clockShare, "%"),
+      multi("Distinct behaviours (effective number)", (p) => p.behaviours),
+      multi("An environment sensor moves the creature (%)", (p) => p.envToMove, "%"),
+    ];
+    if (settings.actions.includes("MoveToPrey")) charts.push(multi("Use MoveToPrey (%)", (p) => p.moveToPrey, "%"));
+    const signatures = genera.map((g) => {
+      const counts = new Map();
+      for (const r of byGen.get(lastGen) ?? []) {
+        if (r.genus !== g || n0(r.alive) === 0) continue;
+        const sig = species.get(r.speciesId)?.circuit?.signature ?? "?";
+        counts.set(sig, (counts.get(sig) ?? 0) + n0(r.alive));
+      }
+      const total = [...counts.values()].reduce((a, b) => a + b, 0);
+      const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([sig, c]) => [esc(sig || "(nothing)"), fmt(c, 0), pct((c / total) * 100)]);
+      return rows.length ? `<h3>Behaviours of ${genusLabel(g)} in generation ${lastGen}</h3>${table(["Sensors → actions", "Creatures", "Share"], rows, [false, true, true])}` : "";
+    }).join("");
+    sections.push(`<section class="panel"><h2>Complexity</h2>
+<p>Means weighted by the creatures alive at the end of each generation. The sensors are grouped in <b>environment</b> (Touch, Pain, PopulationDensity, Prey…, Predator…), <b>clocks and chance</b> (Age, Oscillator, Random) and <b>position and own state</b> (position, border distances, speeds, Mass). A behaviour is the set of sensor → action pairs the circuit connects, without weights; the effective number is exp(entropy): 1 when they all do the same, <i>k</i> with <i>k</i> equally common behaviours.</p>
+<div class="charts">${charts.join("")}</div>${signatures}</section>`);
+  }
+
+  // mass balance
+  const balanceRows = genera.flatMap((g) => relevant.filter((s) => s.genus === g).sort((a, b) => b.sumAlive - a.sumAlive).slice(0, 5)).map((s) => {
+    const v = (k) => s.perCreature[`avgMass${k}`].value;
+    const gainParts = [
+      { label: "photosynthesis", value: Math.abs(v("Photosynthesis") ?? 0), color: "var(--g-photo)" },
+      { label: "from plants", value: Math.abs(v("FromPlants") ?? 0), color: "var(--plant)" },
+      { label: "from animals", value: Math.abs(v("FromAnimals") ?? 0), color: "var(--herb)" },
+    ];
+    const costParts = COSTS.map((c, i) => ({ label: COST_LABEL[i], value: Math.abs(v(c) ?? 0), color: `var(--c-${i + 1})` }));
+    return [`<code>${shortId(s.id)}</code>`, genusLabel(s.genus), fmt(v("Start"), 2), stackBar(gainParts), fmt(gainParts.reduce((t, p) => t + p.value, 0), 2),
+      stackBar(costParts), fmt(costParts.reduce((t, p) => t + p.value, 0), 2), fmt(v("GivenToChildren"), 2), fmt(v("End"), 2)];
+  });
+  sections.push(`<section class="panel"><h2>Mass balance of the main species</h2><p>Mean per creature (the living and the dead of each generation). Hover the bars to see each part.</p>
+${legendOf([["photosynthesis", "var(--g-photo)"], ["from plants", "var(--plant)"], ["from animals", "var(--herb)"]])}${legendOf(COST_LABEL.map((l, i) => [l, `var(--c-${i + 1})`]))}
+${table(["Species", "Genus", "At start", "Gains", "Total", "Costs", "Total", "To children", "At end"], balanceRows, [false, false, true, false, true, false, true, true, true])}</section>`);
+
+  // creatures
+  if (creatures) {
+    const list = [...creatures.values()];
+    const kills = new Map();
+    let attacked = 0;
+    for (const c of list) {
+      if (!c.killedBy) continue;
+      attacked++;
+      if (!kills.has(c.killedBy)) kills.set(c.killedBy, new Map());
+      const m = kills.get(c.killedBy);
+      m.set(c.genus, (m.get(c.genus) ?? 0) + 1);
+    }
+    const killRows = [...kills.entries()].map(([k, m]) => ({ k, m, total: [...m.values()].reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total).slice(0, 12)
+      .map(({ k, m, total }) => [`<code>${shortId(k)}</code>`, species.get(k) ? genusLabel(species.get(k).genus) : "?", fmt(total, 0), ...genera.map((g) => fmt(m.get(g) ?? 0, 0))]);
+    const quant = (values, q) => { if (!values.length) return null; const s = [...values].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
+    const bySpecies = new Map();
+    for (const c of list) { if (!bySpecies.has(c.species)) bySpecies.set(c.species, []); bySpecies.get(c.species).push(c); }
+    const varRows = genera.flatMap((g) => relevant.filter((s) => s.genus === g).sort((a, b) => b.sumAlive - a.sumAlive).slice(0, 4)).map((s) => {
+      const members = bySpecies.get(s.id) ?? [];
+      const ch = members.map((c) => c.children);
+      const eaten = members.map((c) => c.plantKills + c.animalKills);
+      const stopped = members.filter((c) => c.alive && c.age > 0).map((c) => Math.min(100, (c.stopped / c.age) * 100));
+      return [`<code>${shortId(s.id)}</code>`, genusLabel(s.genus), fmt(members.length, 0), pct(members.length ? (ch.filter((x) => x === 0).length / members.length) * 100 : null),
+        `${fmt(quant(ch, 0.5), 0)} / ${fmt(quant(ch, 0.9), 0)} / ${fmt(quant(ch, 1), 0)}`, `${fmt(quant(eaten, 0.5), 0)} / ${fmt(quant(eaten, 0.9), 0)}`, pct(quant(stopped, 0.5))];
+    });
+    sections.push(`<section class="panel"><h2>Creatures</h2><p>From the creatures file: ${fmt(list.length, 0)} creatures of this run, each with its last state.</p>
+<h3>Who eats whom</h3><p>${fmt(attacked, 0)} creatures killed by an attack, by <code>killedBySpecies</code>. Columns: genus of the victim.</p>${table(["Attacking species", "Genus", "Victims", ...genera.map(genusLabel)], killRows, [false, false, true, ...genera.map(() => true)])}
+<h3>Variation within species</h3><p>Means hide that in many species a few creatures have almost all the children.</p>${table(["Species", "Genus", "Creatures", "Without children", "Children: median / p90 / max", "Prey: median / p90", "Living: not moved for (% of age, median)"], varRows, [false, false, true, true, true, true, true])}</section>`);
+  }
+
+  sections.push(`<section class="panel"><h2>Limitations</h2><ul>
+<li>The genomes are decoded with the sensors, actions and neurons of the settings file, the ones when the recording started. If they were changed during the run, the circuits of later species are wrong.</li>
+<li>A species is an exact genome: two nearly equal species count apart. That is why the clade and the behaviours, which group them, matter.</li>
+<li>A circuit says what is connected, not when it fires: a small weight may never trigger its action. To watch it, load the <span class="mono">.sim</span> saved with the log in the app and find the species in the Population tab.</li>
+<li>The means of species with one or two creatures are very noisy.</li>
+</ul></section>`);
+
+  $("report").innerHTML = sections.join("\n");
+
+  // species summary CSV
+  const header = ["speciesId", "speciesParentId", "genus", "firstGen", "lastGen", "generations", "sumAlive", "peak", "clade", "descendants", "genomeSize", "links", "neurons",
+    "sensors", "actions", "envSensors", "clockSensors", "avgChildren", "pctDeathBasalConsumption", "pctDeathAttacked", "pctDeathOld", "circuit", "genome"];
+  const dec = (v) => (v === null ? "" : String(Math.round(v * 10000) / 10000));
+  state.summaryCsv = [header.join(";"), ...[...all].sort((a, b) => b.sumAlive - a.sumAlive).map((s) => [
+    s.id, s.parentId, s.genus, s.firstGen, s.lastGen, s.generations, dec(s.sumAlive), s.peak, dec(s.clade), s.descendants, s.genomeSize,
+    s.circuit?.links.length ?? "", s.circuit?.neurons ?? "", s.circuit?.sensors.join("|") ?? "", s.circuit?.actions.join("|") ?? "", s.circuit?.envSensors ?? "",
+    s.circuit?.clockSensors ?? "", dec(s.perCreature.avgChildren.value), dec(s.deaths.pctDeathBasalConsumption.value), dec(s.deaths.pctDeathAttacked.value),
+    dec(s.deaths.pctDeathOld.value), s.circuit?.text ?? "", s.genome].join(";"))].join("\n") + "\n";
+  state.summaryName = `sim ${run.code} species summary.csv`;
+}
+
+// ---------- input ----------
+
+/** which file of the log: by the end of its name */
+const kindOf = (name) => (/species\.csv$/i.test(name) ? "species" : /settings\.csv$/i.test(name) ? "settings" : /creatures\.csv$/i.test(name) ? "creatures" : null);
+
+/**
+ * sources: { species, settings, creatures }, each a function that returns a ReadableStream, or null.
+ * The species and settings files are read whole; the creatures file is streamed when the report needs it.
+ */
+async function load(sources, label) {
+  const readText = async (open) => (open ? await new Response(await open()).text() : null);
+  try {
+    $("fileStatus").textContent = `Reading ${label}…`;
+    const speciesText = await readText(sources.species);
+    if (!speciesText) { $("fileStatus").textContent = "A species.csv file is needed."; return; }
+    state.files = sources;
+    state.settings = readSettings(await readText(sources.settings));
+    state.rows = parseCsv(speciesText);
+    state.runs = splitRuns(state.rows);
+    state.creaturesCache = new Map();
+    if (state.rows.length === 0) { $("fileStatus").textContent = "The species file has no rows."; return; }
+    const longest = state.runs.reduce((a, b) => (b.rows.length > a.rows.length ? b : a));
+    $("run").innerHTML = state.runs.map((r) => {
+      const g = r.rows.map((x) => n0(x.generation));
+      return `<option value="${r.index}"${r === longest ? " selected" : ""}>${esc(r.code)} · ${r.index} (generations ${g[0]}–${g[g.length - 1]})</option>`;
+    }).join("");
+    $("controls").hidden = false;
+    $("fileStatus").textContent = `${label}: ${state.rows.length.toLocaleString("en-US")} species rows${sources.settings ? "" : ", no settings file"}${sources.creatures ? ", with the creatures file" : ""}.`;
+    await render();
+  } catch (error) {
+    $("fileStatus").textContent = `Cannot read ${label}: ${error.message}`;
+    console.error(error);
+  }
+}
+
+function loadFiles(fileList) {
+  const sources = { species: null, settings: null, creatures: null };
+  const names = [];
+  for (const file of fileList) {
+    const kind = kindOf(file.name);
+    if (!kind) continue;
+    sources[kind] = () => file.stream();
+    names.push(file.name);
+  }
+  if (!sources.species) { $("fileStatus").textContent = "None of the files ends in species.csv."; return; }
+  load(sources, names.join(", "));
+}
+
+$("file").addEventListener("change", (event) => { if (event.target.files.length) loadFiles(event.target.files); });
+const drop = $("drop");
+drop.addEventListener("dragover", (event) => { event.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("over"); if (event.dataTransfer.files.length) loadFiles(event.dataTransfer.files); });
+document.addEventListener("dragover", (event) => event.preventDefault());
+document.addEventListener("drop", (event) => event.preventDefault());
+$("run").addEventListener("input", () => render());
+$("minPeak").addEventListener("change", () => render());
+$("summaryCsv").addEventListener("click", () => {
+  const url = URL.createObjectURL(new Blob([state.summaryCsv], { type: "text/csv" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = state.summaryName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+// tooltips of the charts and bars
+document.addEventListener("mousemove", (event) => {
+  const target = event.target.closest?.("[data-tip]");
+  const tip = $("tip");
+  if (!target) { tip.style.display = "none"; return; }
+  tip.textContent = target.dataset.tip;
+  tip.style.display = "block";
+  const x = Math.min(event.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+  tip.style.left = `${x}px`;
+  tip.style.top = `${event.clientY + 14}px`;
+});
+
+// ?species=/path loads a file served by the same site (for example one copied to public/); the settings and creatures
+// files with the same name are looked for next to it
+const source = new URLSearchParams(location.search).get("species");
+if (source && source.startsWith("/") && !source.startsWith("//")) {
+  const open = (url) => async () => { const response = await fetch(url); if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.body; };
+  const exists = async (url) => { try { const r = await fetch(url, { method: "HEAD" }); return r.ok; } catch { return false; } };
+  (async () => {
+    const settings = source.replace(/species\.csv$/i, "settings.csv");
+    const creatures = source.replace(/species\.csv$/i, "creatures.csv");
+    load({ species: open(source), settings: (await exists(settings)) ? open(settings) : null, creatures: (await exists(creatures)) ? open(creatures) : null }, source);
+  })();
+}
+</script>
+</body>
+</html>
