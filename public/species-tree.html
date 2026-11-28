@@ -35,6 +35,7 @@
   --accent: #6ea6e4; --plant: #5cc27c; --herb: #6ea6e4; --carn: #e7765c; --unknown: #8d9892; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html { scrollbar-gutter: stable; }  /* the page scrollbar coming and going would change the width of the tree */
 body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font-body); }
 main { max-width: 1400px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 14px; }
 h1 { font: 600 22px/1.2 var(--font-display); margin: 0; }
@@ -51,7 +52,7 @@ input[type="number"] { width: 6em; }
 button { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 .status { color: var(--muted); font-size: 13px; }
 .mono { font-family: var(--font-mono); font-size: 12px; }
-#chartWrap { overflow: auto; max-height: 75vh; position: relative; padding: 0; }
+#chartWrap { overflow: auto; max-height: 75vh; position: relative; padding: 0; scrollbar-gutter: stable; }
 #chart { display: block; }
 #chart .band { cursor: pointer; }
 #chart .dim { opacity: 0.15; }
@@ -59,9 +60,40 @@ button { background: var(--sunken); border: 1px solid var(--line); border-radius
 .axis line, .axis path { stroke: var(--line); }
 #tip { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
   padding: 6px 8px; font-size: 12px; box-shadow: 0 4px 14px #0003; display: none; z-index: 10; max-width: 320px; }
-#details dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 6px 0 0; }
+#details { display: flex; flex-direction: column; gap: 14px; }
+#details h2 { font: 600 16px/1.3 var(--font-display); margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#details h3 { font: 600 13px/1.3 var(--font-display); margin: 0 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+#details dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 0; }
 #details dt { color: var(--muted); }
 #details dd { margin: 0; overflow-wrap: anywhere; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px 24px; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; border: 1px solid var(--line); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { background: var(--sunken); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; font-size: 12px; }
+.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; font: 12px var(--font-mono); }
+.genome { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; margin: 0; white-space: pre-wrap; word-break: break-all; max-height: 8em; overflow: auto; }
+.tableWrap { overflow: auto; max-height: 50vh; border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; font: 12px var(--font-mono); white-space: nowrap; }
+th, td { padding: 3px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+th { position: sticky; top: 0; background: var(--sunken); font-weight: 500; color: var(--muted); cursor: pointer; }
+th.current { color: var(--accent); }
+td.current { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.rowsTools { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; margin-bottom: 6px; }
+#metricChart { display: block; width: 100%; }
+#metricChart .line { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+#metricChart .dot { fill: var(--accent); }
+#find { width: 14em; }
+.view { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+/* wide screens: the details are a side panel next to the tree, scrolling on their own */
+@media (min-width: 1100px) {
+  main:has(.view.open) { max-width: 1900px; }
+  .view.open { display: grid; grid-template-columns: minmax(0, 1fr) clamp(420px, 34vw, 620px); align-items: start; }
+  .view.open #chartWrap { max-height: calc(100vh - 32px); position: sticky; top: 16px; }
+  .view.open #details { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+  .view.open #details .cols { grid-template-columns: 1fr; }
+}
+.constants { columns: 240px; column-gap: 24px; }
+.constants > div { break-inside: avoid; display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dotted var(--line); }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
 .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; background: var(--c); vertical-align: -1px; }
 .empty { color: var(--muted); padding: 30px 10px; text-align: center; }
@@ -93,6 +125,8 @@ button { background: var(--sunken); border: 1px solid var(--line); border-radius
       <option value="genome">genome colour</option>
     </select></label>
     <label class="check"><input type="checkbox" id="parentLinks" checked> lines to the parent</label>
+    <label>Find species (start of its id) <input type="search" id="find" class="mono" list="findList" placeholder="0a1b…" spellcheck="false"></label>
+    <datalist id="findList"></datalist>
   </section>
 
   <section class="panel" id="summary" hidden>
@@ -103,9 +137,10 @@ button { background: var(--sunken); border: 1px solid var(--line); border-radius
     </div>
   </section>
 
-  <section class="panel" id="chartWrap"><div class="empty" id="empty">No file loaded.</div><svg id="chart" hidden></svg></section>
-
-  <section class="panel" id="details" hidden></section>
+  <div class="view" id="view">
+    <section class="panel" id="chartWrap"><div class="empty" id="empty">No file loaded.</div><svg id="chart" hidden></svg></section>
+    <section class="panel" id="details" hidden></section>
+  </div>
 </main>
 <div id="tip"></div>
 
@@ -120,7 +155,11 @@ const MIN_LANE = 2;
 const MARGIN = { left: 12, right: 16, top: 8, bottom: 28 };
 
 let rows = [];          // all parsed rows
+let header = [];        // the columns of the file, in its order
 let selected = null;    // speciesId whose lineage is highlighted
+let currentSpecies = new Map();  // the species of the run on screen
+let detailMetric = "alive";      // the column drawn in the details
+let detailSort = null;           // column the rows of the details are sorted by, null: by time
 
 // numbers of the log use the locale of the recording: "1,5" (es-ES) or "1.5" (en-US), never thousands separators
 const num = (text) => text === "" || text === undefined ? NaN : Number(text.replace(",", "."));
@@ -128,7 +167,7 @@ const num = (text) => text === "" || text === undefined ? NaN : Number(text.repl
 function parseCsv(text) {
   const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
   if (lines.length < 2) throw new Error("the file has no rows");
-  const header = lines[0].split(";");
+  header = lines[0].split(";");
   for (const column of ["generation", "step", "speciesId", "speciesParentId", "alive"]) {
     if (!header.includes(column)) throw new Error(`no column "${column}": is it the species file of the log?`);
   }
@@ -149,6 +188,8 @@ function parseCsv(text) {
       peakAlive: num(c[index.peakAlive]) || 0,
       usedActions: c[index.usedActions] ?? "",
       usedSensors: c[index.usedSensors] ?? "",
+      genome: c[index.genome] ?? "",
+      cells: c,           // every column, for the details
     };
   });
 }
@@ -177,11 +218,13 @@ function buildSpecies(runRows, metric) {
     let s = species.get(row.id);
     if (!s) {
       s = { id: row.id, parent: row.parent, genus: row.genus, color: row.color, genomeSize: row.genomeSize,
-        firstGen: row.firstGen, peak: 0, points: new Map(), usedActions: row.usedActions, usedSensors: row.usedSensors };
+        firstGen: row.firstGen, peak: 0, points: new Map(), usedActions: row.usedActions, usedSensors: row.usedSensors,
+        genome: row.genome, rows: [] };
       species.set(row.id, s);
     }
     // generation 3 step 300 of 300 is x = 3; rows every N steps fall between generations
     const x = row.generation - 1 + row.step / maxStep;
+    s.rows.push({ x, row });
     s.points.set(x, (s.points.get(x) ?? 0) + row[metric]);
     s.peak = Math.max(s.peak, row.peakAlive, row.alive);
   }
@@ -195,6 +238,13 @@ function render() {
   const merge = $("merge").checked;
   const scale = Number($("scale").value);
   const species = buildSpecies(rows.filter((row) => row.run === run), metric);
+  $("findList").innerHTML = [...species.values()].sort((a, b) => b.peak - a.peak).slice(0, 500)
+    .map((s) => `<option value="${s.id}">most at once ${s.peak}</option>`).join("");
+  currentSpecies = species;
+  if (selected && !species.has(selected)) selected = null;
+  // open or close the side panel before measuring the width of the tree
+  $("view").classList.toggle("open", selected !== null);
+  $("details").hidden = selected === null;
 
   const visible = (s) => s.peak >= minPeak;
   const visibleAncestor = (s) => {
@@ -248,6 +298,7 @@ function render() {
     svg.hidden = true;
     $("empty").hidden = false;
     $("empty").textContent = "No species with that many creatures: lower the filter.";
+    showDetails();
     return;
   }
   svg.hidden = false;
@@ -308,11 +359,22 @@ function render() {
     const band = el("path", { d, fill: colour, class: "band" });
     band.addEventListener("mousemove", (event) => showTip(event, s, points));
     band.addEventListener("mouseleave", () => { $("tip").style.display = "none"; });
-    band.addEventListener("click", () => { selected = selected === s.id ? null : s.id; render(); showDetails(s, points, species); });
+    band.addEventListener("click", () => select(selected === s.id ? null : s.id));
     group.append(band);
     svg.append(group);
   }
-  if (!selected) $("details").hidden = true;
+  showDetails();
+}
+
+// selects a species (null clears) and shows its details
+function select(id, scroll = false) {
+  if (id !== selected) detailSort = null;
+  selected = id;
+  render();
+  if (!id) return;
+  $("details").scrollTop = 0;
+  // a side panel is already in view; below the tree, scroll down to it
+  if (scroll && getComputedStyle($("details")).position !== "sticky") $("details").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // the species, its ancestors and its descendants
@@ -347,25 +409,204 @@ function showTip(event, s, points) {
   tip.style.top = `${event.clientY + 14}px`;
 }
 
-function showDetails(s, points, species) {
+// columns shown apart from the table of rows
+const SHOWN_APART = new Set(["simCode", "speciesId", "speciesParentId", "firstGen", "genus", "genomeColor", "genomeSize",
+  "usedSensors", "usedActions", "genome", "aliveCreatures"]);
+
+// everything the file has about the selected species
+function showDetails() {
   const panel = $("details");
-  if (!selected) { panel.hidden = true; return; }
-  const children = [...species.values()].filter((other) => other.parent === s.id).length;
+  const species = currentSpecies;
+  const s = selected ? species.get(selected) : null;
+  if (!s) { panel.hidden = true; panel.innerHTML = ""; return; }
   panel.hidden = false;
-  panel.innerHTML = `<strong>Species <span class="mono">${s.id}</span></strong> — its lineage is highlighted; click it again to clear.
-    <dl>
-      <dt>Came from</dt><dd class="mono">${s.parent ?? "root species"}${s.parent && !species.has(s.parent) ? " (not in the file)" : ""}</dd>
-      <dt>Appeared</dt><dd>generation ${Number.isNaN(s.firstGen) ? "?" : s.firstGen}</dd>
-      <dt>Last row</dt><dd>generation ${fmt(points[points.length - 1][0])}</dd>
-      <dt>Most at once</dt><dd>${s.peak}</dd>
-      <dt>Genus, genome</dt><dd>${GENUS_LABEL[s.genus] ?? s.genus}, ${s.genomeSize} genes, colour ${s.color}</dd>
-      <dt>Species it gave</dt><dd>${children}</dd>
-      <dt>Actions used</dt><dd>${s.usedActions || "none"}</dd>
-      <dt>Sensors used</dt><dd>${s.usedSensors || "none"}</dd>
-    </dl>`;
+
+  const entries = s.rows.slice().sort((a, b) => a.x - b.x);
+  const col = Object.fromEntries(header.map((name, i) => [name, i]));
+  const cell = (entry, name) => col[name] === undefined ? "" : (entry.row.cells[col[name]] ?? "");
+  const value = (entry, name) => num(cell(entry, name));
+  const has = (name) => col[name] !== undefined;
+
+  // the last row of each generation holds its totals (born, died... count from the start of the generation)
+  const byGen = new Map();
+  for (const entry of entries) {
+    const last = byGen.get(entry.row.generation);
+    if (!last || entry.row.step >= last.row.step) byGen.set(entry.row.generation, entry);
+  }
+  const genEnds = [...byGen.values()];
+  const sum = (name) => genEnds.reduce((total, e) => total + (value(e, name) || 0), 0);
+  const totalBorn = sum("born"), totalDied = sum("died");
+  const weightedByDeaths = (name) => {
+    let weight = 0, total = 0;
+    for (const e of genEnds) {
+      const died = value(e, "died") || 0, v = value(e, name);
+      if (died > 0 && !Number.isNaN(v)) { weight += died; total += died * v; }
+    }
+    return weight > 0 ? total / weight : NaN;
+  };
+
+  // lineage: ancestors up to the root, and the species that came from it
+  const ancestors = [];
+  for (let id = s.parent, guard = 0; id && guard < 100000; guard++) {
+    ancestors.push(id);
+    const parent = species.get(id);
+    if (!parent) break;
+    id = parent.parent;
+  }
+  const children = [...species.values()].filter((other) => other.parent === s.id).sort((a, b) => b.peak - a.peak);
+  let descendants = 0;
+  for (const id of lineageOf(s.id, species)) if (id !== s.id && !ancestors.includes(id)) descendants++;
+
+  const idLink = (id) => species.has(id)
+    ? `<button class="link" data-species="${id}">${id}</button>` : `<span class="mono">${id}</span> <span class="status">(not in the file)</span>`;
+  const chips = (text) => text ? `<div class="chips">${text.split("|").map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</div>` : `<span class="status">none</span>`;
+  const n = (v, digits = 2) => Number.isNaN(v) ? "—" : (Number.isInteger(v) ? String(v) : v.toFixed(digits));
+  const first = entries[0], last = entries[entries.length - 1];
+
+  const deathCauses = header.filter((name) => name.startsWith("pctDeath"));
+  const deathRows = deathCauses.map((name) => {
+    const share = weightedByDeaths(name);
+    const label = name.slice("pctDeath".length).replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+    return `<dt>${label}</dt><dd>${Number.isNaN(share) ? "—" : `${share.toFixed(1)}% (${Math.round((share / 100) * totalDied)})`}</dd>`;
+  }).join("");
+
+  // columns that change from row to row go to the table and the chart
+  // (with a single row everything is constant, so it all stays in the table)
+  const otherColumns = header.filter((name) => !SHOWN_APART.has(name));
+  const constantColumns = entries.length < 2 ? [] : otherColumns.filter((name) => !["generation", "step"].includes(name)
+    && entries.every((e) => cell(e, name) === cell(first, name)));
+  const tableColumns = otherColumns.filter((name) => !constantColumns.includes(name));
+  const numericColumns = tableColumns.filter((name) => entries.some((e) => !Number.isNaN(value(e, name))));
+  if (!numericColumns.includes(detailMetric)) detailMetric = numericColumns.includes("alive") ? "alive" : numericColumns[0];
+  const oldWrap = panel.querySelector(".tableWrap");
+  const tableScroll = oldWrap ? [oldWrap.scrollLeft, oldWrap.scrollTop] : [0, 0];
+
+  panel.innerHTML = `
+    <h2>Species <span class="mono">${s.id}</span>
+      <button data-copy="${s.id}">Copy id</button>
+      <button id="detailsCsv">Download its rows</button>
+      <button id="detailsClose">Close</button></h2>
+    <div class="status">Its lineage is highlighted in the tree. ${s.peak < Math.max(1, Number($("minPeak").value) || 1) ? "It is hidden by the filter." : ""}</div>
+    <div class="cols">
+      <div><h3>Identity</h3><dl>
+        <dt>Genus</dt><dd>${GENUS_LABEL[s.genus] ?? s.genus}</dd>
+        <dt>Genome colour</dt><dd><span class="swatch" style="background:${esc(s.color)}"></span><span class="mono">${esc(s.color) || "—"}</span></dd>
+        <dt>Genes</dt><dd>${n(s.genomeSize)}</dd>
+        <dt>Appeared</dt><dd>generation ${n(s.firstGen)}</dd>
+        <dt>First row</dt><dd>generation ${first.row.generation}, step ${first.row.step}</dd>
+        <dt>Last row</dt><dd>generation ${last.row.generation}, step ${last.row.step}${value(last, "alive") > 0 ? " (still alive)" : ""}</dd>
+        <dt>Rows in the file</dt><dd>${entries.length} in ${genEnds.length} generation${genEnds.length === 1 ? "" : "s"}</dd>
+        ${has("simCode") ? `<dt>Run</dt><dd class="mono">${esc(cell(first, "simCode")) || "—"}</dd>` : ""}
+      </dl></div>
+      <div><h3>Lineage</h3><dl>
+        <dt>Came from</dt><dd>${s.parent ? idLink(s.parent) : "root species"}</dd>
+        <dt>Ancestors</dt><dd>${ancestors.length}${ancestors.length > 1 ? `<details><summary class="status">show</summary>${ancestors.map(idLink).join("<br>")}</details>` : ""}</dd>
+        <dt>Species it gave</dt><dd>${children.length}${children.length ? `<details${children.length <= 5 ? " open" : ""}><summary class="status">most numerous first</summary>${children.slice(0, 200).map((c) => `${idLink(c.id)} <span class="status">${c.peak}</span>`).join("<br>")}${children.length > 200 ? `<br><span class="status">and ${children.length - 200} more</span>` : ""}</details>` : ""}</dd>
+        <dt>Descendants</dt><dd>${descendants}</dd>
+      </dl></div>
+      <div><h3>Over its life</h3><dl>
+        <dt>Most at once</dt><dd>${s.peak}</dd>
+        ${has("born") ? `<dt>Born</dt><dd>${n(totalBorn)}</dd>` : ""}
+        ${has("died") ? `<dt>Died</dt><dd>${n(totalDied)}</dd>` : ""}
+        ${has("started") ? `<dt>At its first generation</dt><dd>${n(value(genEnds[0], "started"))} at the start</dd>` : ""}
+        ${has("avgAgeAtDeath") ? `<dt>Age at death</dt><dd>${n(weightedByDeaths("avgAgeAtDeath"), 1)} on average</dd>` : ""}
+        ${deathRows && totalDied > 0 ? `<dt class="status" style="grid-column: 1 / -1">Causes of death</dt>${deathRows}` : ""}
+      </dl></div>
+    </div>
+    <div class="cols">
+      <div><h3>Sensors used</h3>${chips(s.usedSensors)}</div>
+      <div><h3>Actions used</h3>${chips(s.usedActions)}</div>
+    </div>
+    ${s.genome ? `<div><h3>Genome <button data-copy="${esc(s.genome)}">Copy</button></h3><pre class="genome mono">${esc(s.genome)}</pre></div>` : ""}
+    ${has("aliveCreatures") && cell(last, "aliveCreatures") ? `<div><h3>Living creatures in its last row</h3><pre class="genome mono">${esc(cell(last, "aliveCreatures").split("|").join(" "))}</pre></div>` : ""}
+    ${constantColumns.length ? `<div><h3>The same in every row</h3><div class="constants">${constantColumns.map((name) => `<div><span class="status mono">${name}</span> <span class="mono">${esc(cell(first, name)) || "—"}</span></div>`).join("")}</div></div>` : ""}
+    <div>
+      <h3>Over time</h3>
+      <div class="rowsTools"><label>Column <select id="detailMetric">${numericColumns.map((name) => `<option${name === detailMetric ? " selected" : ""}>${name}</option>`).join("")}</select></label>
+        <span class="status">Click a column of the table to draw it; click it again to sort by it.</span></div>
+      <svg id="metricChart"></svg>
+    </div>
+    <div><h3>Every row (${entries.length})</h3><div class="tableWrap"><table id="detailsTable"></table></div></div>`;
+
+  drawMetric(entries, (e) => value(e, detailMetric));
+  fillTable(entries, tableColumns, cell, value);
+  [panel.querySelector(".tableWrap").scrollLeft, panel.querySelector(".tableWrap").scrollTop] = tableScroll;
+
+  panel.querySelectorAll("[data-species]").forEach((button) => button.addEventListener("click", () => select(button.dataset.species, true)));
+  panel.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", () => copy(button.dataset.copy, button)));
+  $("detailsClose").addEventListener("click", () => select(null));
+  $("detailMetric").addEventListener("input", (event) => { detailMetric = event.target.value; showDetails(); });
+  $("detailsCsv").addEventListener("click", () => {
+    const text = [header.join(";"), ...entries.map((e) => e.row.cells.join(";"))].join("\n") + "\n";
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+    link.download = `species ${s.id}.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
 }
 
+// a line of one column of the species over time
+function drawMetric(entries, read) {
+  const svg = $("metricChart");
+  const width = Math.max(280, svg.clientWidth || $("details").clientWidth - 30);
+  const height = 160, m = { left: 48, right: 12, top: 10, bottom: 24 };
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("height", height);
+  const points = entries.map((e) => [e.x, read(e)]).filter(([, v]) => !Number.isNaN(v));
+  if (points.length === 0) { svg.innerHTML = `<text x="${m.left}" y="${height / 2}" fill="currentColor" opacity="0.6">no values</text>`; return; }
+  const xs = points.map((p) => p[0]), vs = points.map((p) => p[1]);
+  let minX = Math.min(...xs), maxX = Math.max(...xs);
+  if (minX === maxX) { minX -= 0.5; maxX += 0.5; }
+  let minV = Math.min(0, ...vs), maxV = Math.max(...vs);
+  if (minV === maxV) maxV = minV + 1;
+  const sx = (x) => m.left + ((x - minX) / (maxX - minX)) * (width - m.left - m.right);
+  const sy = (v) => height - m.bottom - ((v - minV) / (maxV - minV)) * (height - m.top - m.bottom);
+  const parts = [`<g class="axis">`];
+  for (const t of niceTicks(minX, maxX, Math.floor(width / 80))) {
+    parts.push(`<line x1="${sx(t)}" x2="${sx(t)}" y1="${m.top}" y2="${height - m.bottom}"/><text x="${sx(t)}" y="${height - 8}" text-anchor="middle">${t}</text>`);
+  }
+  for (const v of [minV, (minV + maxV) / 2, maxV]) {
+    parts.push(`<line x1="${m.left}" x2="${width - m.right}" y1="${sy(v)}" y2="${sy(v)}"/><text x="${m.left - 6}" y="${sy(v) + 4}" text-anchor="end">${fmtNum(v)}</text>`);
+  }
+  parts.push("</g>");
+  parts.push(`<path class="line" d="M${points.map(([x, v]) => `${sx(x).toFixed(1)},${sy(v).toFixed(1)}`).join("L")}"/>`);
+  if (points.length <= 200) for (const [x, v] of points) parts.push(`<circle class="dot" cx="${sx(x).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2"><title>${fmt(x)}: ${fmtNum(v)}</title></circle>`);
+  svg.innerHTML = parts.join("");
+}
+
+// every row of the species, every column that is not shown apart
+function fillTable(entries, columns, cell, value) {
+  const sorted = entries.slice();
+  if (detailSort) sorted.sort((a, b) => (value(b, detailSort) || 0) - (value(a, detailSort) || 0));
+  const limit = 2000;
+  const head = `<tr>${columns.map((name) => `<th class="${name === detailMetric ? "current" : ""}" data-column="${name}">${name}${name === detailSort ? " ▼" : ""}</th>`).join("")}</tr>`;
+  const body = sorted.slice(0, limit).map((e) => `<tr>${columns.map((name) => `<td class="${name === detailMetric ? "current" : ""}">${esc(cell(e, name))}</td>`).join("")}</tr>`).join("");
+  const table = $("detailsTable");
+  table.innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`
+    + (sorted.length > limit ? `<tfoot><tr><td colspan="${columns.length}" style="text-align:left">First ${limit} of ${sorted.length} rows; download them all with Download its rows.</td></tr></tfoot>` : "");
+  table.querySelectorAll("th").forEach((th) => th.addEventListener("click", () => {
+    const name = th.dataset.column;
+    if (name === detailMetric) detailSort = detailSort === name ? null : name;
+    else if (entries.some((e) => !Number.isNaN(value(e, name)))) detailMetric = name;
+    showDetails();
+  }));
+}
+
+async function copy(text, button) {
+  try {
+    await navigator.clipboard.writeText(text);
+    const label = button.textContent;
+    button.textContent = "Copied";
+    setTimeout(() => { button.textContent = label; }, 1200);
+  } catch {
+    button.textContent = "Cannot copy";
+  }
+}
+
+const esc = (text) => String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const fmt = (x) => Number.isInteger(x) ? String(x) : x.toFixed(2);
+const fmtNum = (v) => Number.isInteger(v) ? String(v) : Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2);
 
 function el(name, attributes) {
   const node = document.createElementNS(SVG_NS, name);
@@ -401,6 +642,19 @@ document.addEventListener("drop", (event) => event.preventDefault());
 for (const id of ["run", "metric", "minPeak", "merge", "scale", "colour", "parentLinks"]) {
   $(id).addEventListener("input", () => { if (rows.length) render(); });
 }
+$("find").addEventListener("change", (event) => {
+  const text = event.target.value.trim().toLowerCase();
+  if (!text) return;
+  const matches = [...currentSpecies.keys()].filter((id) => id.startsWith(text));
+  if (matches.length === 1 || currentSpecies.has(text)) {
+    select(currentSpecies.has(text) ? text : matches[0], true);
+    event.target.setCustomValidity("");
+  } else {
+    event.target.setCustomValidity(matches.length ? `${matches.length} species start with it` : "no species with that id");
+    event.target.reportValidity();
+  }
+});
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && selected) select(null); });
 let resizeTimer;
 window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => rows.length && render(), 150); });
 

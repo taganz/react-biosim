@@ -102,7 +102,7 @@ A **recording** adds rows at the end of every generation until it is stopped. Ch
 - **Rows**, out of **Maximum rows**, with *(not saved)* when there are rows that have not been saved, and the **Generations** in it.
 - **Save recording** downloads its files; **Delete recording** deletes it. **Start recording** and **Delete recording** ask first when there are rows that have not been saved.
 
-To draw the tree of species over time, record the species from *Generation 1* with **All**: every species seen in a generation gets a row at its end, also the ones that died out, with the species it came from. Then open the file in the **species tree** page, linked from the section ([details](../reference/log-file.md#drawing-the-tree-of-species)).
+To draw the tree of species over time, record the species from *Generation 1* with **All**: every species seen in a generation gets a row at its end, also the ones that died out, with the species it came from. Then open the file in the **species tree** page, linked from the section. Click a species (or find it by its id) to see everything the file has about it: its lineage, totals, genome, a chart of any column and all its rows ([details](../reference/log-file.md#drawing-the-tree-of-species)).
 
 **Options** (the `LOG_*` constants) apply at once, also while paused, and are saved with the simulation; the Scenario tab does not show them as pending changes. A recording keeps the options it started with.
 
