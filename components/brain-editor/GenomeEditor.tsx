@@ -139,12 +139,15 @@ export default function GenomeEditor({
 
       <section className="flex flex-col gap-2">
         <h3 className="font-bold">Brain</h3>
-        <NetworkDiagram
-          network={view.built.network}
-          sensorLabels={sensorLabels}
-          actionLabels={actionLabels}
-          neuronLabels={view.neuronLabels}
-        />
+        {/* at most the 640 units of its drawing, so its labels are the size of the text around it */}
+        <div className="w-full max-w-[640px]">
+          <NetworkDiagram
+            network={view.built.network}
+            sensorLabels={sensorLabels}
+            actionLabels={actionLabels}
+            neuronLabels={view.neuronLabels}
+          />
+        </div>
         <NetworkLegend />
         <p className="text-xs">
           As the simulation builds it: pruned genes are left out and Stamina is not drawn. Neurons keep their
