@@ -84,10 +84,15 @@ td.current { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 #metricChart .dot { fill: var(--accent); }
 #find { width: 14em; }
 .view { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-/* wide screens: the details are a side panel next to the tree, scrolling on their own */
+#splitter { display: none; }
+/* wide screens: the details are a side panel next to the tree, scrolling on their own; the splitter between them resizes it */
 @media (min-width: 1100px) {
   main:has(.view.open) { max-width: 1900px; }
-  .view.open { display: grid; grid-template-columns: minmax(0, 1fr) clamp(420px, 34vw, 620px); align-items: start; }
+  .view.open { display: grid; grid-template-columns: minmax(0, 1fr) 10px min(var(--side, clamp(420px, 34vw, 620px)), calc(100% - 370px)); gap: 2px; align-items: start; }
+  .view.open #splitter { display: block; position: sticky; top: 16px; height: calc(100vh - 32px); cursor: col-resize; border-radius: 4px; touch-action: none; }
+  .view.open #splitter::after { content: ""; position: absolute; left: 4px; top: 50%; width: 2px; height: 40px; margin-top: -20px; border-radius: 1px; background: var(--line); }
+  .view.open #splitter:hover, .view.open #splitter.dragging, .view.open #splitter:focus-visible { background: color-mix(in srgb, var(--accent) 18%, transparent); outline: none; }
+  .view.open #splitter:hover::after, .view.open #splitter.dragging::after { background: var(--accent); }
   .view.open #chartWrap { max-height: calc(100vh - 32px); position: sticky; top: 16px; }
   .view.open #details { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
   .view.open #details .cols { grid-template-columns: 1fr; }
@@ -139,6 +144,7 @@ td.current { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 
   <div class="view" id="view">
     <section class="panel" id="chartWrap"><div class="empty" id="empty">No file loaded.</div><svg id="chart" hidden></svg></section>
+    <div id="splitter" role="separator" aria-orientation="vertical" aria-label="Drag to resize the panels" title="Drag to resize; double-click to reset" tabindex="0"></div>
     <section class="panel" id="details" hidden></section>
   </div>
 </main>
@@ -655,6 +661,54 @@ $("find").addEventListener("change", (event) => {
   }
 });
 document.addEventListener("keydown", (event) => { if (event.key === "Escape" && selected) select(null); });
+
+// -- the splitter between the tree and the side panel: drag it, use the arrow keys, double-click to reset
+const SIDE_KEY = "speciesTree.sideWidth";
+let redrawTimer;
+function setSideWidth(width, redrawNow = false) {
+  const view = $("view");
+  if (width === null) view.style.removeProperty("--side");
+  else {
+    const max = view.clientWidth - 360;   // leave room for the tree
+    width = Math.round(Math.max(300, Math.min(max, width)));
+    view.style.setProperty("--side", `${width}px`);
+  }
+  try { width === null ? localStorage.removeItem(SIDE_KEY) : localStorage.setItem(SIDE_KEY, String(width)); } catch { /* no storage */ }
+  clearTimeout(redrawTimer);
+  if (redrawNow) render();
+  else redrawTimer = setTimeout(() => rows.length && render(), 120);
+}
+try {
+  const saved = Number(localStorage.getItem(SIDE_KEY));
+  if (saved > 0) $("view").style.setProperty("--side", `${saved}px`);
+} catch { /* no storage */ }
+const splitter = $("splitter");
+splitter.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  splitter.setPointerCapture(event.pointerId);
+  splitter.classList.add("dragging");
+});
+splitter.addEventListener("pointermove", (event) => {
+  if (!splitter.hasPointerCapture(event.pointerId)) return;
+  setSideWidth($("view").getBoundingClientRect().right - event.clientX - 6);
+});
+const endDrag = (event) => {
+  if (!splitter.hasPointerCapture(event.pointerId)) return;
+  splitter.releasePointerCapture(event.pointerId);
+  splitter.classList.remove("dragging");
+  setSideWidth($("details").getBoundingClientRect().width, true);
+};
+splitter.addEventListener("pointerup", endDrag);
+splitter.addEventListener("pointercancel", endDrag);
+splitter.addEventListener("dblclick", () => setSideWidth(null, true));
+splitter.addEventListener("keydown", (event) => {
+  const step = event.shiftKey ? 80 : 20;
+  const width = $("details").getBoundingClientRect().width;
+  if (event.key === "ArrowLeft") setSideWidth(width + step);
+  else if (event.key === "ArrowRight") setSideWidth(width - step);
+  else return;
+  event.preventDefault();
+});
 let resizeTimer;
 window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => rows.length && render(), 150); });
 

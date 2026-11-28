@@ -130,7 +130,7 @@ The app draws it in the **species tree** page (`/species-tree.html`, linked from
 - **Thickness**: `alive` at each row, or `peakAlive`.
 - **Hide species with fewer than** *n* creatures at their peak (default 5). With **add hidden species to their visible ancestor** their creatures are added to the band of their nearest shown ancestor, so the bands keep the whole population.
 - **Scale**, **Colour** (genus or genome colour) and **lines to the parent**.
-- Hover a band to see the species; click it to highlight its ancestors and descendants and open its details: in a side panel next to the tree on wide screens (1100 px or more), below the tree otherwise. **Find species** opens a species by the start of its id, also one hidden by the filter. **Close** or Esc clears it.
+- Hover a band to see the species; click it to highlight its ancestors and descendants and open its details: in a side panel next to the tree on wide screens (1100 px or more), below the tree otherwise. Drag the bar between the tree and the side panel (or focus it and use the arrow keys) to change their widths; the page remembers the width, and a double-click on the bar goes back to the default. **Find species** opens a species by the start of its id, also one hidden by the filter. **Close** or Esc clears it.
 - The details show everything the file has about the species:
   - **Identity**: genus, genome colour, genes, `firstGen`, its first and last row, and how many rows and generations it has.
   - **Lineage**: the species it came from, all its ancestors, the species it gave (most numerous first) and how many descendants it has. Each id opens that species.
