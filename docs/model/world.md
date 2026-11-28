@@ -28,7 +28,7 @@ The map is a list of objects ([WorldObject.ts](../../simulation/world/objects/Wo
 | Rectangle, Ellipse | — | yes | Obstacle. Blocks movement. The touch sensors detect it. |
 | Reproduction area (rectangle or ellipse) | 0 | no | Used by the *Inside Reproduction Area* selection method. |
 | Health area (rectangle or ellipse) | 1 | no | Meant to change creature health by its `health` value at every step. **This is currently disabled:** the call is commented out in `WorldGenerations.step()`, so health areas have no effect. |
-| Spawn area (rectangle) | 2 | no | Used by the *Asexual Zone* population strategy. With several, generation 1 is split among them by size, and children are placed in their parent's area. |
+| Spawn area (rectangle) | 2 | no | Used by the *Asexual Zone* and *Default Species* population strategies. With several, generation 1 is split among them by size, and children are placed in their parent's area. |
 
 The world's edges block movement like an obstacle, and the touch sensors read them as solid.
 

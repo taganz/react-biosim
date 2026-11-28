@@ -30,6 +30,16 @@ Works like Asexual Random, but places creatures inside the **spawn areas** of th
 - A creature's spawn area is the position of the area in the map's drawing order (see **To front** / **To back** in the [map editor](../user/map-editor.md)). If a parent has none, because the file was loaded or the spawn areas changed with **Update simulation**, its children go to the spawn area that covers its cell, or else to the one whose centre is nearest.
 - A spawn area that is too small for its creatures grows around its centre, as with a single area.
 
+### Default Species (`DefaultSpeciesPopulation`)
+
+Works like Asexual Zone, but generation 1 starts from given genomes instead of random ones. Use it to start a run from species that evolved in another run.
+
+- **Generation 1:** the genomes come from `constants.POPULATION_DEFAULT_SPECIES`, a list of `{name, genome}`. They are shared out equally: creature *i* gets species *i* mod *n*, so with 10 creatures and 3 species they get 4, 3 and 3. The genomes are copied without mutation, and placed as in Asexual Zone (in the spawn areas by size, or at random). With the Stamina action enabled, a genome without a Stamina gene gets one, as any genome does. With an empty list, generation 1 gets random genomes, as in Asexual Zone.
+- **Next generations:** the same as Asexual Zone.
+- Genes refer to sensors and actions by their position among the enabled ones (see [gene encoding](sensors-and-actions.md#gene-encoding)). A genome copied from another run means the same only if the same sensors and actions are enabled.
+
+While this strategy is selected, the Scenario tab shows the list under **Species of generation 1**: each species with its colour, name, number of genes and number of creatures in generation 1, and a button to remove it. Species are added with the **+** button of each species in **Top species in the loaded file**, or by editing `POPULATION_DEFAULT_SPECIES` as JSON under *Constants*. Changes take effect with **Restart**.
+
 ### Random Fixed Genera (`RandomFixedGenePopulation`)
 
 - **Generation 1:** for each creature, picks a genus at random using the probabilities in `constants.POPULATION_DEFAULT_GENUS`. It then builds a genome of **Initial genome size** genes for that genus: one gene that defines the genus plus random compatible genes.

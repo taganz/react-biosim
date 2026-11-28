@@ -178,7 +178,7 @@ The simulation writes these values itself so that a saved file can resume where 
 | `GREATEST_DISTANCE_SELECTION_TOP_SURVIVORS` | 0.05 | Share of living creatures selected by Greatest Distance (at least one). |
 | `GREATEST_MASS_SELECTION_TOP_SURVIVORS` | 0.05 | Share of creatures selected by Greatest Mass. |
 | `POPULATION_DEFAULT_GENUS` | `[]` | List of `{genus, probability}` used by the Random Fixed Genera strategy. Choosing that strategy in the Scenario tab fills an empty list with the default one, and the probabilities can then be edited under *Genera of generation 1* or under *Constants*. |
-| `POPULATION_DEFAULT_SPECIES` | `[]` | List of `{name, genome}`, edited as JSON. Not used by any strategy. |
+| `POPULATION_DEFAULT_SPECIES` | `[]` | List of `{name, genome}`, the genomes of generation 1 in the [Default Species](population-and-selection.md#default-species-defaultspeciespopulation) strategy. `genome` is a list of genes as integers. Edited as JSON under *Constants*, removed under *Species of generation 1*, and added with the **+** button of *Top species in the loaded file*, whose JSON button copies an entry in this format. |
 | `PRETTIFY_OUTPUT_TO_COPY`, `PRETTIFY_OUTPUT_TO_FILE` | `true` | Indent the JSON of saved simulations. |
 | `LOG_SPECIES`, `LOG_CREATURES` | `true`, `false` | Files of the [log](log-file.md): species and creatures. They are changed in *Simulation → Log* or under *Constants*, and apply at once, like the other `LOG_*`. |
 | `LOG_INCLUDE_DEAD` | `true` | The file of creatures also has the dead. |

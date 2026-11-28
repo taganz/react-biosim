@@ -1,6 +1,7 @@
 import { shuffle } from "@/simulation/helpers/random";
 import WorldGenerations from "../WorldGenerations";
 import {GridPosition} from "../../world/grid/Grid";
+import Genome from "../../creature/brain/Genome";
 import Creature from "../../creature/Creature";
 import PopulationStrategy from "./PopulationStrategy";
 import { countsByArea, positionInArea, spawnAreas, zoneOfCreature } from "./spawnZones";
@@ -11,6 +12,12 @@ import { countsByArea, positionInArea, spawnAreas, zoneOfCreature } from "./spaw
  */
 export default class AsexualZonePopulation implements PopulationStrategy {
   name = "AsexualZonePopulation";
+
+  /** The genome of the index-th creature of generation 1; undefined gives it a random one */
+  protected firstGenerationGenome(_generations: WorldGenerations, _index: number): Genome | undefined {
+    return undefined;
+  }
+
   populate(generations: WorldGenerations, parents?: Creature[]): void {
     const grid = generations.grid;
     const areas = spawnAreas(grid);
@@ -21,7 +28,7 @@ export default class AsexualZonePopulation implements PopulationStrategy {
         for (let i = 0; i < generations.initialPopulation; i++) {
           const position = grid.getRandomAvailablePosition();
           if (position != null) {
-            generations.newCreature(position, true);
+            generations.newCreature(position, true, this.firstGenerationGenome(generations, i));
           }
           else {
             console.warn("no position for creature");
@@ -30,9 +37,11 @@ export default class AsexualZonePopulation implements PopulationStrategy {
         return;
       }
       const counts = countsByArea(areas, generations.initialPopulation);
+      let index = 0;
       for (let zone = 0; zone < areas.length; zone++) {
         for (let i = 0; i < counts[zone]; i++) {
-          const creature = generations.newCreature(positionInArea(grid, areas[zone], counts[zone]), true);
+          const position = positionInArea(grid, areas[zone], counts[zone]);
+          const creature = generations.newCreature(position, true, this.firstGenerationGenome(generations, index++));
           creature.spawnZone = zone;
         }
       }

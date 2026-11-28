@@ -311,7 +311,7 @@ export default function ScenarioConstants({ changed, onGenusProbabilityChange }:
               ))}
             </div>
           </ConstantRow>
-          <ConstantRow name="POPULATION_DEFAULT_SPECIES" description="List of {name, genome} as JSON. Not used by any strategy.">
+          <ConstantRow name="POPULATION_DEFAULT_SPECIES" description="List of {name, genome} as JSON: the genomes of generation 1 in the Default Species strategy.">
             <ParsedTextInput
               value={constants.POPULATION_DEFAULT_SPECIES}
               format={(value) => JSON.stringify(value)}

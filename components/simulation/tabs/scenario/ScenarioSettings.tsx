@@ -33,6 +33,7 @@ import { getChangedSections, ScenarioSection as ScenarioSectionId } from "./scen
 import MapDesigner from "./map/MapDesigner";
 import ScenarioConstants from "./ScenarioConstants";
 import BrainChangeNotice from "./BrainChangeNotice";
+import DefaultSpeciesList from "./DefaultSpeciesList";
 import { DEFAULT_GENUS_PROBABILITIES } from "@/simulation/constantsDefault";
 import { Genus } from "@/simulation/creature/CreatureGenus";
 import { GenusProbability } from "@/simulation/generations/population/selectGenusBasedOnProbability";
@@ -605,6 +606,7 @@ export default function ScenarioSettings() {
             onChange={handleGenusProbabilityChange}
           />
         )}
+        {worldGenerationsData.populationStrategy.name === "DefaultSpeciesPopulation" && <DefaultSpeciesList />}
         {continuousWarnings.length > 0 && (
           <div className="bg-red p-2 text-sm">
             <p>No creature can be born in this continuous run:</p>

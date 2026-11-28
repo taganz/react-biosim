@@ -22,7 +22,7 @@ export const CONSTANTS_DEFAULT = {
   GREATEST_MASS_SELECTION_TOP_SURVIVORS : 0.05,
 
   // -- population strategy
-  POPULATION_DEFAULT_SPECIES : [] as { name: string, genome: number[] }[],   // not used by any strategy
+  POPULATION_DEFAULT_SPECIES : [] as { name: string, genome: number[] }[],   // genomes of generation 1 in DefaultSpeciesPopulation
   POPULATION_DEFAULT_GENUS : [] as GenusProbability[],   // used in RandomFixedGenePopulation, see DEFAULT_GENUS_PROBABILITIES
 
   SIM_CODE_LENGTH : 3,
