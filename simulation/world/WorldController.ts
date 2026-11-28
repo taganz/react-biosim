@@ -484,6 +484,7 @@ export default class WorldController {
     }
 
 
+    this.generationRegistry.endStep();
     if (this.currentStep != this.stepsPerGen) this.simulationLog.onStepEnd();
 
     if (this.currentStep == this.stepsPerGen) {

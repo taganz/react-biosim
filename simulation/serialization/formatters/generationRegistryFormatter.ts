@@ -9,6 +9,7 @@ const generationRegistryFormatter: DataFormatter<
 > = {
   serialize({
     generations,
+    populationSamples,
     maxSurvivorCount,
     minSurvivorCount,
     maxFitnessValue
@@ -24,6 +25,10 @@ const generationRegistryFormatter: DataFormatter<
           d
         })
       ),
+      // only continuous runs with metabolism have them
+      ...(populationSamples.length > 0
+        ? { populationSamples: populationSamples.map(({ step: s, plants: p, animals: a }) => ({ s, p, a })) }
+        : {}),
       maxSurvivorCount,
       minSurvivorCount,
       maxFitnessValue
@@ -43,6 +48,7 @@ const generationRegistryFormatter: DataFormatter<
         deaths
       })
     );
+    result.populationSamples = (data.populationSamples ?? []).map(({ s: step, p: plants, a: animals }) => ({ step, plants, animals }));
     return result;
   },
 };

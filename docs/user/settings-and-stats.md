@@ -70,8 +70,9 @@ The section title is the name of the fitness value, for example **Survival rate 
 | Greatest Mass | Greatest mass | Heaviest animal |
 | Reproduction | Reproduction | Number of survivors |
 | *(continuous runs)* | Population | Creatures alive at the end of the generation. The births and deaths of the last generation are shown above the chart. |
+| *(continuous runs with metabolism)* | Population | Plants (green) and animals (red) alive, counted every *x* steps, where *x* is a tenth of the shorter of **Maximum age** and **Steps per generation** (at least 1). The x axis is the step since the run started; the last count and the births and deaths of the last generation are shown above the chart. The counts are saved with the stats. |
 
-**maxFitnessValue** above the chart is the value of the last generation. The curve is smoothed.
+**maxFitnessValue** above the chart is the value of the last generation. The curve is smoothed, except the plants and animals chart, which shows every count.
 
 Below the chart, **Total time** is the time spent running the simulation, **Last generation duration** is how long the last generation took to compute, and **Steps per second** is how many steps were computed during the last second. Use it to compare the speed controls: the step counter of the control bar is redrawn at most once per frame, so it looks the same at very different speeds.
 

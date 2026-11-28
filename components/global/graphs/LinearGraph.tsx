@@ -4,13 +4,22 @@ import {
   WheelEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 
+type Getter = (point: any) => [number, number];
+
+/** a line of the graph: the getter reads its point from every item of the data */
+export type GraphSeries = { getter: Getter; color: string };
+
 interface Props extends React.ComponentPropsWithoutRef<"canvas"> {
   data: any[];
-  getter: (point: any) => [number, number];
+  /** the point of a single line; ignored when series is given */
+  getter?: Getter;
+  /** several lines sharing the axes */
+  series?: GraphSeries[];
   resolution?: number;
   margins?: { top: number; bottom: number; left: number; right: number };
   preSmooth?: boolean;
@@ -27,6 +36,7 @@ interface Props extends React.ComponentPropsWithoutRef<"canvas"> {
 export default function LinearGraph({
   data,
   getter,
+  series,
   resolution = 1,
   margins = { top: 20, bottom: 40, left: 20, right: 40 },
   preSmooth = true,
@@ -41,6 +51,12 @@ export default function LinearGraph({
   ...rest
 }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
+
+  // a stable list while the props don't change
+  const lines = useMemo<GraphSeries[]>(
+    () => series ?? (getter ? [{ getter, color: "blue" }] : []),
+    [series, getter]
+  );
 
   // the canvas size is state, so the graph redraws when it changes
   const [canvasSize, setCanvasSize] = useState({ width: 100, height: 100 });
@@ -86,7 +102,7 @@ export default function LinearGraph({
   };
 
   const getInterpolatedPointAt = useCallback(
-    (points: any[], index: number, useGetter = true): [number, number] => {
+    (points: any[], index: number, getter?: Getter): [number, number] => {
       // Position can be greater than (points.length - 1) (because of float
       // precision) for a extremely tiny value, for example (0.000000000002)
       // so let's clamp the value
@@ -102,24 +118,21 @@ export default function LinearGraph({
       const atPoint = index - leftIndex;
 
       // Get left and right points
-      const leftPoint = useGetter
-        ? getter(points[leftIndex])
-        : points[leftIndex];
-      const rightPoint = useGetter
-        ? getter(points[rightIndex])
-        : points[rightIndex];
+      const leftPoint = getter ? getter(points[leftIndex]) : points[leftIndex];
+      const rightPoint = getter ? getter(points[rightIndex]) : points[rightIndex];
 
       // Interpolate the points
       const interpolatedX = lerp(leftPoint[0], rightPoint[0], atPoint);
       const interpolatedY = lerp(leftPoint[1], rightPoint[1], atPoint);
       return [interpolatedX, interpolatedY];
     },
-    [getter]
+    []
   );
 
   const getFilteredData = useCallback(
     (
-      points: number[]
+      points: any[],
+      getter: Getter
     ): {
       points: [number, number][];
       minX: number;
@@ -143,7 +156,7 @@ export default function LinearGraph({
           offset + sampleIndex * resizeFactor * zoomViewportWidth;
 
         // Set the data
-        let finalValue = getInterpolatedPointAt(points, originalIndex);
+        let finalValue = getInterpolatedPointAt(points, originalIndex, getter);
 
         if (preSmooth) {
           // Apply median filter
@@ -165,7 +178,7 @@ export default function LinearGraph({
               maxInterpolant
             );
             const medianIndex = lerp(leftIndex, rightIndex, interpolant);
-            sum += getInterpolatedPointAt(points, medianIndex)[1];
+            sum += getInterpolatedPointAt(points, medianIndex, getter)[1];
           }
 
           finalValue[1] = sum / count;
@@ -179,9 +192,9 @@ export default function LinearGraph({
 
       // Record min and max values
       let minX = Number.MAX_VALUE;
-      let maxX = Number.MIN_VALUE;
+      let maxX = -Number.MAX_VALUE;
       let minY = Number.MAX_VALUE;
-      let maxY = Number.MIN_VALUE;
+      let maxY = -Number.MAX_VALUE;
 
       // Apply mean filter
       for (let index = 0; index < sampledPoints.length; index++) {
@@ -207,19 +220,11 @@ export default function LinearGraph({
         // Set new value
         finalPoints[index] = finalValue;
 
-        // Find min and max X values
-        if (finalValue[0] < minX) {
-          minX = finalValue[0];
-        } else if (finalValue[0] > maxX) {
-          maxX = finalValue[0];
-        }
-
-        // Find min and max Y values
-        if (finalValue[1] < minY) {
-          minY = finalValue[1];
-        } else if (finalValue[1] > maxY) {
-          maxY = finalValue[1];
-        }
+        // Find min and max values; the first point can be both
+        minX = Math.min(minX, finalValue[0]);
+        maxX = Math.max(maxX, finalValue[0]);
+        minY = Math.min(minY, finalValue[1]);
+        maxY = Math.max(maxY, finalValue[1]);
       }
 
       return { points: finalPoints, minX, maxX, minY, maxY };
@@ -241,7 +246,7 @@ export default function LinearGraph({
   // Function to get coordinates of point
   const pointToCanvasPoint = useCallback(
     (
-      filteredData: ReturnType<typeof getFilteredData>,
+      filteredData: { minX: number; maxX: number; minY: number; maxY: number },
       x: number,
       y: number
     ): [number, number] => {
@@ -283,8 +288,11 @@ export default function LinearGraph({
       canvas.width = width;
       canvas.height = height;
 
+      // the series have their own colours, so their axes are grey
+      const hasSeries = series !== undefined;
+
       // Draw X axis
-      context.strokeStyle = "red";
+      context.strokeStyle = hasSeries ? "#999" : "red";
       context.beginPath();
       const y = height - margins.bottom;
       context.moveTo(margins.left, y);
@@ -292,47 +300,39 @@ export default function LinearGraph({
       context.stroke();
 
       // Draw Y axis
-      context.strokeStyle = "green";
+      context.strokeStyle = hasSeries ? "#999" : "green";
       context.beginPath();
       const x = width - margins.right;
       context.moveTo(x, margins.top);
       context.lineTo(x, height - margins.bottom);
       context.stroke();
 
-      if (data.length > 1) {
+      if (data.length > 1 && lines.length > 0) {
         const textSize = 12;
         context.lineWidth = 2;
-        context.strokeStyle = "blue";
 
-        // Get the points to render
-        const filteredData = getFilteredData(data);
-        const { points, minY, maxY } = filteredData;
+        // Get the points to render; the lines share the bounds
+        const filteredLines = lines.map((line) => getFilteredData(data, line.getter));
+        const bounds = {
+          minX: Math.min(...filteredLines.map((line) => line.minX)),
+          maxX: Math.max(...filteredLines.map((line) => line.maxX)),
+          minY: Math.min(...filteredLines.map((line) => line.minY)),
+          maxY: Math.max(...filteredLines.map((line) => line.maxY)),
+        };
+        // a flat line would divide by zero
+        if (bounds.maxX === bounds.minX) bounds.maxX = bounds.minX + 1;
+        if (bounds.maxY === bounds.minY) bounds.maxY = bounds.minY + 1;
 
-        // Begin path
-        context.beginPath();
-
-        // Start path at the first point
-        const firstGraphPoint = points[0];
-        let canvasPoint = pointToCanvasPoint(
-          filteredData,
-          firstGraphPoint[0],
-          firstGraphPoint[1]
-        );
-        context.moveTo(canvasPoint[0], canvasPoint[1]);
-
-        for (let pointIndex = 1; pointIndex < points.length; pointIndex++) {
-          const graphPoint = points[pointIndex];
-          // Draw line to the next point
-          canvasPoint = pointToCanvasPoint(
-            filteredData,
-            graphPoint[0],
-            graphPoint[1]
-          );
-          context.lineTo(canvasPoint[0], canvasPoint[1]);
-        }
-
-        // Draw the path
-        context.stroke();
+        filteredLines.forEach(({ points }, lineIndex) => {
+          context.strokeStyle = lines[lineIndex].color;
+          context.beginPath();
+          points.forEach((graphPoint, pointIndex) => {
+            const canvasPoint = pointToCanvasPoint(bounds, graphPoint[0], graphPoint[1]);
+            if (pointIndex === 0) context.moveTo(canvasPoint[0], canvasPoint[1]);
+            else context.lineTo(canvasPoint[0], canvasPoint[1]);
+          });
+          context.stroke();
+        });
 
         if (isMouseInsideCanvas && drawLinesToCursor) {
           const clampedMouseX = clamp(
@@ -344,44 +344,47 @@ export default function LinearGraph({
           // Find the coordinates on the graph at the cursor
           const normalizedCursorX =
             (relativeMouseX - margins.left) / absoluteGraphWidth;
-          const targetIndex = normalizedCursorX * (points.length - 1);
-          const [x, y] = getInterpolatedPointAt(points, targetIndex, false);
-          const intersectionY =
-            margins.top + interpolate(y, minY, maxY, absoluteGraphHeight, 0);
 
-          // Draw X line to cursor intersection
-          context.strokeStyle = "rgba(0,0,255,0.2)";
-          context.beginPath();
-          context.moveTo(clampedMouseX, intersectionY);
-          context.lineTo(width - margins.right, intersectionY);
-          context.stroke();
+          filteredLines.forEach(({ points }, lineIndex) => {
+            const targetIndex = normalizedCursorX * (points.length - 1);
+            const [x, y] = getInterpolatedPointAt(points, targetIndex);
+            const intersectionY =
+              margins.top + interpolate(y, bounds.minY, bounds.maxY, absoluteGraphHeight, 0);
 
-          // Draw Y line to cursor intersection
-          context.beginPath();
-          context.moveTo(clampedMouseX, intersectionY);
-          context.lineTo(clampedMouseX, height - margins.bottom);
-          context.stroke();
+            // Draw X line to cursor intersection
+            context.strokeStyle = "rgba(0,0,255,0.2)";
+            context.beginPath();
+            context.moveTo(clampedMouseX, intersectionY);
+            context.lineTo(width - margins.right, intersectionY);
+            context.stroke();
 
-          // Get the labels to render
-          const xText = xLabelFormatter(x);
-          const yText = yLabelFormatter(y);
+            // Draw Y line to cursor intersection
+            context.beginPath();
+            context.moveTo(clampedMouseX, intersectionY);
+            context.lineTo(clampedMouseX, height - margins.bottom);
+            context.stroke();
 
-          // Print the x label
-          context.font = "bold 12px arial";
-          context.textAlign = "center";
-          context.fillText(
-            xText,
-            clampedMouseX,
-            height - margins.bottom + textSize * 2
-          );
+            context.font = "bold 12px arial";
+            if (lineIndex === 0) {
+              // Print the x label
+              context.fillStyle = "black";
+              context.textAlign = "center";
+              context.fillText(
+                xLabelFormatter(x),
+                clampedMouseX,
+                height - margins.bottom + textSize * 2
+              );
+            }
 
-          // Print the Y label
-          context.textAlign = "left";
-          context.fillText(
-            yText,
-            width - margins.right + textSize / 2,
-            intersectionY
-          );
+            // Print the Y label, in the colour of its line when there are several
+            context.fillStyle = lines.length > 1 ? lines[lineIndex].color : "black";
+            context.textAlign = "left";
+            context.fillText(
+              yLabelFormatter(y),
+              width - margins.right + textSize / 2,
+              intersectionY
+            );
+          });
         }
       }
 
@@ -407,6 +410,8 @@ export default function LinearGraph({
       getFilteredData,
       getInterpolatedPointAt,
       isMouseInsideCanvas,
+      lines,
+      series,
       margins.bottom,
       margins.left,
       margins.right,

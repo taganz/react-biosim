@@ -5,6 +5,8 @@ import RectangleReproductionArea from "@/simulation/world/areas/reproduction/Rec
 import WorldObject from "@/simulation/world/objects/WorldObject";
 import { serializeWorldGenerationData } from "@/simulation/serialization/formatters/worldGenerationDataSerialization";
 import deserializeSimulationData, { serializeSetup } from "@/simulation/serialization/formatters/simulationDataSerialization";
+import generationRegistryFormatter from "@/simulation/serialization/formatters/generationRegistryFormatter";
+import { populationSampleInterval } from "@/simulation/world/stats/GenerationRegistry";
 
 /* continuous runs: a generation is only a time window and the creatures carry on */
 
@@ -169,6 +171,54 @@ describe("continuous simulation type", () => {
       const saved = serializeWorldGenerationData(worldController);
       expect(saved.simulationType).toBe("continuous");
       expect(saved.maxAge).toBe(250);
+    });
+  });
+
+  describe("population samples", () => {
+    async function runSteps(ms: number) {
+      worldController.resume();
+      await jest.advanceTimersByTimeAsync(ms);
+      worldController.pause();
+    }
+
+    test("the interval is a tenth of the shorter of maxAge and stepsPerGen", () => {
+      expect(populationSampleInterval(50, 300)).toBe(5);
+      expect(populationSampleInterval(1000, 300)).toBe(30);
+      expect(populationSampleInterval(5, 300)).toBe(1);
+    });
+
+    test("continuous runs with metabolism count plants and animals every interval", async () => {
+      start("continuous", 20, 1000);
+      // only the check of the registry; the creatures keep their metabolism off
+      worldController.generations.metabolismEnabled = true;
+      await runSteps(100);
+
+      const samples = worldController.generationRegistry.populationSamples;
+      expect(worldController.currentGen).toBeGreaterThan(1);
+      expect(samples.length).toBeGreaterThan(2);
+      // interval min(1000, 20) / 10 = 2, counted across generations
+      samples.forEach((sample, i) => {
+        expect(sample.step % 2).toBe(0);
+        if (i > 0) expect(sample.step - samples[i - 1].step).toBe(2);
+        expect(sample.plants + sample.animals).toBe(10);
+      });
+      expect(samples.some((sample) => sample.step > 20)).toBe(true);
+    });
+
+    test("without metabolism there are no samples", async () => {
+      start("continuous", 20, 40);
+      await runSteps(100);
+      expect(worldController.generationRegistry.populationSamples).toEqual([]);
+    });
+
+    test("the samples are saved and loaded with the stats", async () => {
+      start("continuous", 20, 1000);
+      worldController.generations.metabolismEnabled = true;
+      await runSteps(50);
+      const registry = worldController.generationRegistry;
+      const loaded = generationRegistryFormatter.deserialize(generationRegistryFormatter.serialize(registry), worldController);
+      expect(loaded.populationSamples).toEqual(registry.populationSamples);
+      expect(registry.populationSamples.length).toBeGreaterThan(0);
     });
   });
 });

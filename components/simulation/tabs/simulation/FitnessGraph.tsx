@@ -1,17 +1,31 @@
 "use client";
 
 import { useCallback } from "react";
-import { SingleGeneration } from "@/simulation/world/stats/GenerationRegistry";
-import LinearGraph from "@/components/global/graphs/LinearGraph";
+import {
+  PopulationSample,
+  SingleGeneration,
+  populationSampleInterval,
+} from "@/simulation/world/stats/GenerationRegistry";
+import LinearGraph, { GraphSeries } from "@/components/global/graphs/LinearGraph";
 import RunTimes from "./RunTimes";
 import useWorldValue from "@/hooks/useWorldValue";
 import CollapsibleSection from "../CollapsibleSection";
 
 const NO_GENERATIONS: SingleGeneration[] = [];
+const NO_SAMPLES: PopulationSample[] = [];
 
 function getter(data: SingleGeneration): [number, number] {
   return [data.generation, data.maxFitnessValue];
 }
+
+const PLANT_COLOR = "green";
+const ANIMAL_COLOR = "red";
+
+// continuous runs with metabolism: plants and animals every few steps
+const sampleSeries: GraphSeries[] = [
+  { getter: (sample: PopulationSample) => [sample.step, sample.plants], color: PLANT_COLOR },
+  { getter: (sample: PopulationSample) => [sample.step, sample.animals], color: ANIMAL_COLOR },
+];
 
 // Fitness per generation (the survival rate, for Inside Reproduction Area), in a collapsible section
 export default function FitnessGraph() {
@@ -27,6 +41,18 @@ export default function FitnessGraph() {
       : world.generations.selectionMethod.fitnessValueName,
     ""
   );
+  const showsSamples = useWorldValue(
+    (world) => world.generations.isContinuous && world.generations.metabolismEnabled,
+    false
+  );
+  // samples are pushed into the same array, so use their number to trigger graph redraws
+  const samples = useWorldValue((world) => world.generationRegistry.populationSamples, NO_SAMPLES);
+  const sampleCount = useWorldValue((world) => world.generationRegistry.populationSamples.length, 0);
+  const sampleInterval = useWorldValue(
+    (world) => populationSampleInterval(world.generations.maxAge, world.stepsPerGen),
+    1
+  );
+  const stepsPerGen = useWorldValue((world) => world.stepsPerGen, 1);
   const lastBirths = useWorldValue((world) => world.generations.lastBirths, 0);
   const lastDeaths = useWorldValue((world) => world.generations.lastDeaths, 0);
   const lastFitnessMaxValue = useWorldValue(
@@ -45,13 +71,50 @@ export default function FitnessGraph() {
     return "Generation #" + Math.round(value).toString();
   }, []);
 
+  const countFormatter = useCallback((value: number) => Math.round(value).toString(), []);
+
+  const stepFormatter = useCallback(
+    (value: number) => {
+      const step = Math.round(value);
+      return `Step ${step} (generation #${Math.floor((step - 1) / stepsPerGen) + 1})`;
+    },
+    [stepsPerGen]
+  );
+
+  const lastSample = sampleCount > 0 ? samples[sampleCount - 1] : undefined;
+
   return (
     <CollapsibleSection title={fitnessValueName}>
-      {isContinuous ? (
+      {showsSamples ? (
+        <>
+          <p>
+            {lastSample
+              ? <>
+                  {"At step " + lastSample.step + ": "}
+                  <span style={{ color: PLANT_COLOR }}>{lastSample.plants} plants</span>{", "}
+                  <span style={{ color: ANIMAL_COLOR }}>{lastSample.animals} animals</span>
+                  {`. Counted every ${sampleInterval} steps.`}
+                </>
+              : `Plants and animals are counted every ${sampleInterval} steps.`}
+          </p>
+          <p>{`Last generation: ${lastBirths} births and ${lastDeaths} deaths.`}</p>
+        </>
+      ) : isContinuous ? (
         <p>{`At the end of the last generation: ${lastFitnessMaxValue} creatures, ${lastBirths} births and ${lastDeaths} deaths during it.`}</p>
       ) : (
         <p>{`maxFitnessValue: ${maxFitnessFormatter(lastFitnessMaxValue)}`}</p>
       )}
+      {showsSamples ? (
+        <LinearGraph
+          data={samples}
+          series={sampleSeries}
+          updateKey={sampleCount}
+          preSmooth={false}
+          xLabelFormatter={stepFormatter}
+          yLabelFormatter={countFormatter}
+          className="aspect-[2/1] w-full bg-white"
+        />
+      ) : (
       <LinearGraph
         data={data}
         getter={getter}
@@ -65,6 +128,7 @@ export default function FitnessGraph() {
         yLabelFormatter={maxFitnessFormatter}
         className="aspect-[2/1] w-full bg-white"
       />
+      )}
       <RunTimes />
       {/* TODO genus graph.... */}
     </CollapsibleSection>
