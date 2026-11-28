@@ -2,6 +2,9 @@ import { Gene } from "@/simulation/creature/brain/Genome";
 import { computeSpeciesId, sameGenes } from "@/simulation/creature/speciesId";
 import { SavedSimulationData } from "./data/SavedSimulationData";
 import migrateSavedSimulationData, { SAVE_FORMAT_VERSION } from "./migrateSavedSimulationData";
+import { SensorName } from "@/simulation/creature/brain/CreatureSensors";
+import { ActionName } from "@/simulation/creature/brain/CreatureActions";
+import { decodingFromData, translateGenome } from "@/simulation/creature/brain/geneTranslation";
 
 /*
 The genomes of a .sim file, for the brain editor (app/brain-editor): read them, change them and
@@ -109,4 +112,84 @@ export function stringifySimFile(data: SavedSimulationData): string {
 export function editedFileName(name: string): string {
   const base = name.replace(/\.(sim|json|txt)$/i, "");
   return `${base} edited.sim`;
+}
+
+/** what the genes of a file point to: its enabled sensors and actions, and Max neurons */
+export type GeneLists = {
+  enabledSensors: SensorName[];
+  enabledActions: ActionName[];
+  maxNumberNeurons: number;
+};
+
+export type ListsChange = {
+  data: SavedSimulationData;
+  /** genes deleted because their sensor or action is no longer enabled */
+  removed: number;
+  /** genes whose neuron is not below the new Max neurons: they connect to another neuron */
+  folded: number;
+  /** genomes that get another brain: some gene removed or folded */
+  changedGenomes: number;
+};
+
+/** the genes rewritten for other lists: the brain stays the same, except for what is removed */
+export function translateGenes(genes: readonly Gene[], from: GeneLists, to: GeneLists): Gene[] {
+  return translateGenome(genes, decodingFromData(from), decodingFromData(to)).genes;
+}
+
+/**
+ * A copy of the file with other enabled sensors, actions and Max neurons. Every genome is
+ * rewritten as "Update simulation" does in the app (see geneTranslation.ts): it keeps its brain,
+ * except for the genes of a sensor or action that is no longer enabled, which are deleted, and
+ * the neurons not below the new Max neurons, which connect to another neuron. Species keep their
+ * ids, as in the app. The lists are saved in table order, the order genes address them in.
+ */
+export function changeGeneLists(data: SavedSimulationData, lists: GeneLists): ListsChange {
+  if (lists.enabledSensors.length === 0 || lists.enabledActions.length === 0) {
+    throw new Error("at least one sensor and one action must stay enabled.");
+  }
+  if (!Number.isInteger(lists.maxNumberNeurons) || lists.maxNumberNeurons < 1) {
+    throw new Error("Max neurons must be a whole number of at least 1.");
+  }
+  const from = decodingFromData(data.worldGenerationsData);
+  const to = decodingFromData(lists);
+  const result: SavedSimulationData = structuredClone(data);
+  result.version = SAVE_FORMAT_VERSION;
+  result.worldGenerationsData.enabledSensors = [...to.sensors];
+  result.worldGenerationsData.enabledActions = [...to.actions];
+  result.worldGenerationsData.maxNumberNeurons = to.maxNeurons;
+
+  let removed = 0;
+  let folded = 0;
+  let changedGenomes = 0;
+  const translate = (genes: Gene[]) => {
+    const translation = translateGenome(genes, from, to);
+    removed += translation.removed;
+    folded += translation.folded;
+    if (translation.removed > 0 || translation.folded > 0) changedGenomes++;
+    return translation.genes;
+  };
+  result.species?.forEach((species) => { species.genes = translate(species.genes); });
+  result.startGenomes?.forEach((genome) => { genome.genes = translate(genome.genes); });
+  const defaultSpecies: { genome: Gene[] }[] = result.constants?.POPULATION_DEFAULT_SPECIES ?? [];
+  defaultSpecies.forEach((species) => { species.genome = translate(species.genome); });
+  if (result.worldGenerationsData.plantGenes?.length) {
+    result.worldGenerationsData.plantGenes = translate(result.worldGenerationsData.plantGenes);
+  }
+  return { data: result, removed, folded, changedGenomes };
+}
+
+/** what changing the lists would do to these genomes, without changing them */
+export function previewGeneLists(genomes: Iterable<readonly Gene[]>, from: GeneLists, to: GeneLists): Omit<ListsChange, "data"> {
+  const fromDecoding = decodingFromData(from);
+  const toDecoding = decodingFromData(to);
+  let removed = 0;
+  let folded = 0;
+  let changedGenomes = 0;
+  for (const genes of genomes) {
+    const translation = translateGenome(genes, fromDecoding, toDecoding);
+    removed += translation.removed;
+    folded += translation.folded;
+    if (translation.removed > 0 || translation.folded > 0) changedGenomes++;
+  }
+  return { removed, folded, changedGenomes };
 }

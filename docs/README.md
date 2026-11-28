@@ -11,7 +11,7 @@ How to use the app.
 5. [Export](user/export.md): your own scenarios, save, load, PNG and GIF export
 6. [Scenarios](user/scenarios.md): what each included scenario shows
 7. [Headless runner](user/headless-runner.md): run simulations from the command line or from Claude, without the browser
-8. [Brain editor](user/brain-editor.md): see and edit the brains of the species in a `.sim` file, copy their genomes, save the file with another name
+8. [Brain editor](user/brain-editor.md): see and edit the brains of the species in a `.sim` file, change its sensors, actions and Max neurons, copy the genomes, save the file with another name
 
 ## Simulation model
 

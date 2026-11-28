@@ -10,7 +10,20 @@ The code is in [components/brain-editor/](../../components/brain-editor/), with 
 
 ## Opening a file
 
-**Open .sim file** accepts the same files as **Load .sim file**. Files of older versions are first brought to the current format, as the app does when it loads them, so the genes are read with the sensors and actions the app would use. The box under the title shows the simulation code, the generation, the number of creatures, and what the genes can point to: the enabled sensors and actions and **Max neurons**. A brain can only use the sensors and actions the file enables; to use others, enable them in the app and save the simulation again.
+**Open .sim file** accepts the same files as **Load .sim file**. Files of older versions are first brought to the current format, as the app does when it loads them, so the genes are read with the sensors and actions the app would use. The box under the title shows the simulation code, the generation, the number of creatures, and what the genes can point to: the enabled sensors and actions and **Max neurons**. A brain can only use the sensors and actions the file enables; to use others, change them in [Sensors, actions and Max neurons](#sensors-actions-and-max-neurons).
+
+## Sensors, actions and Max neurons
+
+This section (closed until you open it, or while the lists differ from the file) has a checkbox for every sensor and action, in the order of the tables in the code, and the **Max neurons** of the file. Next to each enabled one is the number of genomes with a gene that uses it. Changes are shown in bold until you click **Apply**; **Discard changes** drops them.
+
+Genes point to positions in the enabled lists and take neuron numbers modulo Max neurons (see [gene encoding](../reference/sensors-and-actions.md#gene-encoding)), so changing the lists would rewire every brain. **Apply** rewrites every genome of the file, edited or not, the same way **Update simulation** does in the app ([geneTranslation.ts](../../simulation/creature/brain/geneTranslation.ts)), so that each brain stays the same, except that:
+
+- the genes of a sensor or action you disable are deleted (a genome that would lose all of them keeps its first gene);
+- a neuron that is not below the new Max neurons connects to another neuron.
+
+Before applying, a message says how many genomes would get another brain and how many genes would be deleted. Species keep their ids, as in the app. Disabling and enabling a sensor again does not bring its genes back: use **Undo last apply**, which goes back to the lists, genomes and edits before each Apply. At least one sensor and one action must stay enabled, and Max neurons goes from 1 to 128 (genes hold 7-bit neuron numbers).
+
+The new lists are saved with the file. With metabolism, a sensor or action enabled here has no cost (`SENSOR_COSTS`, `ACTION_COSTS`) until you set one in the app. Check also that the population strategy still has what it needs: *Random Fixed Genera*, for example, needs the main action of each genus (Photosynthesis, Attack), and continuous runs need Reproduction.
 
 ## Genomes
 
@@ -50,7 +63,7 @@ A genome always keeps at least one gene: a change that would delete all of them 
 
 ## Saving
 
-**Save .sim file** downloads the file with the edits, named `<file> edited.sim` unless you change the name. Everything else in the file is kept as it was, in the current format (indented when `PRETTIFY_OUTPUT_TO_FILE` is set).
+**Save .sim file** downloads the file with the edits and the applied sensors, actions and Max neurons, named `<file> edited.sim` unless you change the name. Everything else in the file is kept as it was, in the current format (indented when `PRETTIFY_OUTPUT_TO_FILE` is set).
 
 An edited species becomes a new species that comes from the one it was, as after a mutation: its id is computed from the new genes and the old id, its parent is the old id, and its first generation is the generation of the file (see [species](../reference/log-file.md#species)). Its creatures keep their positions, mass and age.
 

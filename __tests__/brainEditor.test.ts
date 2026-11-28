@@ -8,7 +8,7 @@ import {
   MAX_WEIGHT, addGene, addNeuron, describeGenome, editorContext, encodeGene, freeNeuronId, geneToHex,
   parseGenomeText, removeAction, removeGeneAt, removeNeuron, removeSensor, setGeneWeight,
 } from "@/simulation/creature/brain/genomeEditing";
-import { applyGenomeEdits, editedFileName, listGenomes, parseSimFile, stringifySimFile } from "@/simulation/serialization/genomeFile";
+import { applyGenomeEdits, changeGeneLists, editedFileName, listGenomes, parseSimFile, previewGeneLists, stringifySimFile, translateGenes } from "@/simulation/serialization/genomeFile";
 import deserializeSimulationData, { serializeSimulationData } from "@/simulation/serialization/formatters/simulationDataSerialization";
 import { computeSpeciesId } from "@/simulation/creature/speciesId";
 import { setSeed } from "@/simulation/helpers/random";
@@ -157,6 +157,44 @@ describe("genome file", () => {
     expect(saved.startGenomes![0]).toEqual({ genes: [7], count: 3 });
     expect(saved.constants.POPULATION_DEFAULT_SPECIES[0]).toEqual({ name: "a", genome: [8, 9] });
     expect(() => applyGenomeEdits(data, new Map([["startGenome:0", []]]))).toThrow();
+  });
+
+  test("other enabled sensors and actions keep the brains, except for what is removed", () => {
+    const text = fs.readFileSync(path.join(__dirname, "../public/turn right generation 5574.sim"), "utf-8");
+    const data = parseSimFile(text);
+    const lists = data.worldGenerationsData;
+    const before = editorContext(lists);
+    // a sensor used by some species is disabled, and another one (earlier in the table) is enabled
+    const usedSensor = before.sensors.enabledSensors[decodeGene(data.species![0].genes.find((gene) =>
+      decodeGene(gene, before.counts).sourceType === SENSOR)!, before.counts).sourceId];
+    const allSensors = Object.keys(before.sensors.data) as typeof lists.enabledSensors;
+    const added = allSensors.find((name) => !lists.enabledSensors.includes(name))!;
+    const newLists = {
+      enabledSensors: [added, ...lists.enabledSensors.filter((name) => name !== usedSensor)],
+      enabledActions: lists.enabledActions,
+      maxNumberNeurons: lists.maxNumberNeurons + 5,
+    };
+    const change = changeGeneLists(data, newLists);
+    const after = editorContext(change.data.worldGenerationsData);
+    expect(change.data.worldGenerationsData.enabledSensors).toContain(added);
+    expect(change.data.worldGenerationsData.enabledSensors).not.toContain(usedSensor);
+    expect(change.removed).toBeGreaterThan(0);
+    expect(previewGeneLists(data.species!.map((species) => species.genes), lists, newLists))
+      .toEqual({ removed: change.removed, folded: change.folded, changedGenomes: change.changedGenomes });
+    expect(translateGenes(data.species![0].genes, lists, newLists)).toEqual(change.data.species![0].genes);
+
+    // the connections that stay point to the same sensors, actions and weights
+    const named = (genes: number[], context: typeof before) => genes.map((gene) => decodeGene(gene, context.counts))
+      .filter((c) => !(c.sourceType === SENSOR && context.sensors.enabledSensors[c.sourceId] === usedSensor))
+      .map((c) => [c.sourceType === SENSOR ? context.sensors.enabledSensors[c.sourceId] : c.sourceId,
+        c.sinkType === ACTION ? context.actions.enabledActions[c.sinkId] : c.sinkId, c.weight]);
+    data.species!.forEach((species, index) => {
+      const genes = change.data.species![index].genes;
+      if (named(species.genes, before).length > 0) expect(named(genes, after)).toEqual(named(species.genes, before));
+      // species keep their ids
+      expect(change.data.species![index].id).toBe(species.id);
+    });
+    expect(() => changeGeneLists(data, { ...newLists, enabledActions: [] })).toThrow();
   });
 
   test("names the edited file", () => {

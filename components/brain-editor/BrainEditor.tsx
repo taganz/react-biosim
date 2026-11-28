@@ -11,22 +11,41 @@ import { describeGenome, editorContext, EditorContext } from "@/simulation/creat
 import { sameGenes } from "@/simulation/creature/speciesId";
 import { SavedSimulationData } from "@/simulation/serialization/data/SavedSimulationData";
 import {
-  GenomeEntry, applyGenomeEdits, editedFileName, listGenomes, parseSimFile, stringifySimFile,
+  GeneLists, GenomeEntry, applyGenomeEdits, changeGeneLists, editedFileName, listGenomes, parseSimFile,
+  previewGeneLists, stringifySimFile, translateGenes,
 } from "@/simulation/serialization/genomeFile";
+import { NeuronType } from "@/simulation/creature/brain/Neuron";
+import { decodeGene } from "@/simulation/creature/brain/buildNetwork";
 import type { Genus } from "@/simulation/creature/CreatureGenus";
 import { GENUS_LABELS } from "@/components/simulation/tabs/population/genusLabels";
 import GenomeEditor from "./GenomeEditor";
+import GeneListsEditor from "./GeneListsEditor";
 import useCopy from "./useCopy";
 
 type Loaded = {
   name: string;
+  /** the file with the applied sensors, actions and Max neurons; the genome edits are kept apart */
   data: SavedSimulationData;
+  /** the sensors, actions and Max neurons of the file as it was opened */
+  fileLists: GeneLists;
   entries: GenomeEntry[];
   context: EditorContext;
 };
 
 // the earlier genes of a genome, to undo
 type UndoStep = Gene[];
+
+const listsOf = (data: SavedSimulationData): GeneLists => ({
+  enabledSensors: data.worldGenerationsData.enabledSensors,
+  enabledActions: data.worldGenerationsData.enabledActions,
+  maxNumberNeurons: data.worldGenerationsData.maxNumberNeurons,
+});
+
+const sameListOrder = (a: GeneLists, b: GeneLists) => a.maxNumberNeurons === b.maxNumberNeurons
+  && a.enabledSensors.join() === b.enabledSensors.join() && a.enabledActions.join() === b.enabledActions.join();
+
+const mapValues = <T, U>(record: Record<string, T>, map: (value: T) => U): Record<string, U> =>
+  Object.fromEntries(Object.entries(record).map(([key, value]) => [key, map(value)]));
 
 const SOURCE_TITLES: Record<GenomeEntry["source"], string> = {
   species: "Species in the world",
@@ -43,6 +62,8 @@ export default function BrainEditor() {
   const [undo, setUndo] = useState<Record<string, UndoStep[]>>({});
   // the tag of the last change of each genome: changes with the same tag (dragging a weight) are undone together
   const lastTag = useRef<Record<string, string | undefined>>({});
+  // the state before each Apply of other sensors, actions or Max neurons, to undo it
+  const [listsHistory, setListsHistory] = useState<{ loaded: Loaded; current: Record<string, Gene[]>; undo: Record<string, UndoStep[]> }[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [fileName, setFileName] = useState("");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -50,18 +71,20 @@ export default function BrainEditor() {
 
   const genesOf = (entry: GenomeEntry) => current[entry.key] ?? entry.genes;
   const editedEntries = loaded?.entries.filter((entry) => !sameGenes(genesOf(entry), entry.genes)) ?? [];
+  const listsChanged = loaded !== null && !sameListOrder(listsOf(loaded.data), loaded.fileLists);
 
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    if (editedEntries.length > 0 && !window.confirm("The changes to the open file are not saved. Open the new file anyway?")) return;
+    if ((editedEntries.length > 0 || listsChanged) && !window.confirm("The changes to the open file are not saved. Open the new file anyway?")) return;
     try {
       const data = parseSimFile(await file.text());
       const entries = listGenomes(data);
-      setLoaded({ name: file.name, data, entries, context: editorContext(data.worldGenerationsData) });
+      setLoaded({ name: file.name, data, fileLists: listsOf(data), entries, context: editorContext(data.worldGenerationsData) });
       setCurrent({});
       setUndo({});
+      setListsHistory([]);
       lastTag.current = {};
       setSelectedKey(entries[0]?.key ?? null);
       setFileName(editedFileName(file.name));
@@ -92,6 +115,57 @@ export default function BrainEditor() {
   };
 
   const revert = (entry: GenomeEntry) => changeGenes(entry.key, entry.genes);
+
+  // other sensors, actions or Max neurons: every genome, edited or not, and the undo steps are rewritten
+  const applyLists = (lists: GeneLists) => {
+    if (!loaded) return;
+    try {
+      const from = listsOf(loaded.data);
+      const change = changeGeneLists(loaded.data, lists);
+      const to = listsOf(change.data);
+      const translate = (genes: Gene[]) => translateGenes(genes, from, to);
+      setListsHistory((prev) => [...prev, { loaded, current, undo }]);
+      setLoaded({
+        ...loaded,
+        data: change.data,
+        entries: listGenomes(change.data),
+        context: editorContext(change.data.worldGenerationsData),
+      });
+      setCurrent(mapValues(current, translate));
+      setUndo(mapValues(undo, (steps) => steps.map(translate)));
+      lastTag.current = {};
+      setSaveMessage(null);
+    } catch (err) {
+      setError(`Could not change the sensors and actions: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
+  const undoLists = () => {
+    const last = listsHistory[listsHistory.length - 1];
+    if (!last) return;
+    setLoaded(last.loaded);
+    setCurrent(last.current);
+    setUndo(last.undo);
+    lastTag.current = {};
+    setListsHistory((prev) => prev.slice(0, -1));
+  };
+
+  // how many genomes use each enabled sensor and action, with their edits
+  const usage = useMemo(() => {
+    const counts = new Map<string, number>();
+    if (!loaded) return counts;
+    const { sensors, actions, counts: geneCounts } = loaded.context;
+    for (const entry of loaded.entries) {
+      const names = new Set<string>();
+      for (const gene of current[entry.key] ?? entry.genes) {
+        const c = decodeGene(gene, geneCounts);
+        if (c.sourceType === NeuronType.SENSOR) names.add(sensors.enabledSensors[c.sourceId]);
+        if (c.sinkType === NeuronType.ACTION) names.add(actions.enabledActions[c.sinkId]);
+      }
+      for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
+    return counts;
+  }, [loaded, current]);
 
   const save = () => {
     if (!loaded) return;
@@ -156,6 +230,16 @@ export default function BrainEditor() {
         <>
           <FileInfo loaded={loaded} />
 
+          <GeneListsEditor
+            lists={listsOf(loaded.data)}
+            fileLists={loaded.fileLists}
+            usage={usage}
+            preview={(draft) => previewGeneLists(loaded.entries.map(genesOf), listsOf(loaded.data), draft)}
+            onApply={applyLists}
+            canUndo={listsHistory.length > 0}
+            onUndo={undoLists}
+          />
+
           <div className="grid gap-6 lg:grid-cols-[minmax(16rem,22rem)_1fr]">
             <GenomeList
               loaded={loaded}
@@ -195,8 +279,9 @@ export default function BrainEditor() {
           <section className="flex flex-col gap-2 border border-grey-mid p-3">
             <h2 className="text-lg font-bold">Save</h2>
             <p className="text-sm">
+              {listsChanged && "The sensors, actions or Max neurons are changed, and every genome is rewritten for them. "}
               {editedEntries.length === 0
-                ? "No genome is edited yet: the file would be saved as it is, in the current format."
+                ? listsChanged ? "No genome is edited." : "No genome is edited yet: the file would be saved as it is, in the current format."
                 : `${editedEntries.length} edited genome${editedEntries.length === 1 ? "" : "s"}: ${editedEntries.map((e) => e.label).join(", ")}.`}{" "}
               An edited species is saved as a new species that comes from the one it was.
             </p>
