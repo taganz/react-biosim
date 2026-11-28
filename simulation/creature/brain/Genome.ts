@@ -11,6 +11,7 @@ import { MutationMode } from "./MutationMode";
 import { ConnectionType } from "./Connection";
 import { NeuronType } from "./Neuron";
 import WorldGenerations from "@/simulation/generations/WorldGenerations";
+import { decodeGene } from "./buildNetwork";
 
 const logMutations = false;
 const logBeforeAndAfter = false;
@@ -252,27 +253,11 @@ export default class Genome {
   */
 
   static geneToConnection(gene : Gene, generations: WorldGenerations) : ConnectionType {
-    const connection =  {
-      sourceType: (gene >> 31) & 1,
-      sourceId: ((gene >> 24) & 127),
-      sinkType: (gene >> 23) & 1,
-      sinkId: (gene >> 16) & 127,
-      weight: (gene & 65535)/8192-4,
-    };
-
-    // Renumber sourceId: from random number to one of the available options<
-    if (connection.sourceType == NeuronType.SENSOR) {
-      connection.sourceId %= generations.sensors.neuronsCount;
-    } else {
-      connection.sourceId %= generations.maxNumberNeurons;
-    }
-    // Renumber sinkId
-    if (connection.sinkType == NeuronType.ACTION) {
-      connection.sinkId %= generations.actions.neuronsCount;
-    } else {
-      connection.sinkId %= generations.maxNumberNeurons;
-    }
-    return connection;
+    return decodeGene(gene, {
+      sensorCount: generations.sensors.neuronsCount,
+      actionCount: generations.actions.neuronsCount,
+      maxNeurons: generations.maxNumberNeurons,
+    });
   }
   static connectionToGene(data: ConnectionType): Gene {
     

@@ -35,6 +35,8 @@ interface Props {
   actionLabels: string[];
   // when set, nodes show their values and lines the signal they carry (value × weight)
   activity?: NetworkActivity;
+  // name of each internal neuron; N0, N1... when missing (the brain editor shows the number in the genes)
+  neuronLabels?: string[];
 }
 
 // brighter for values far from 0; values beyond ±1 are shown as fully bright
@@ -42,7 +44,8 @@ const intensity = (value: number) => 0.2 + 0.8 * Math.min(1, Math.abs(value));
 const formatValue = (value: number) => value.toFixed(2);
 
 // Layered diagram: sensors on the left, internal neurons in the middle, actions on the right
-export default function NetworkDiagram({ network, sensorLabels, actionLabels, activity }: Props) {
+export default function NetworkDiagram({ network, sensorLabels, actionLabels, activity, neuronLabels }: Props) {
+  const neuronName = (id: number) => neuronLabels?.[id] ?? `N${id}`;
   const markerId = useId();
   const [highlighted, setHighlighted] = useState<NodeKey | null>(null);
 
@@ -81,7 +84,7 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels, ac
     const id = parseInt(key.slice(1));
     if (key[0] === "s") return sensorLabels[id] ?? `Sensor ${id}`;
     if (key[0] === "a") return actionLabels[id] ?? `Action ${id}`;
-    return `N${id}`;
+    return neuronName(id);
   };
 
   // duplicated genes create parallel connections; draw them as one line with the summed weight
@@ -218,8 +221,8 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels, ac
           <g key={key} {...nodeProps(key)}>
             <title>
               {(constant
-                ? `Neuron N${id}: no inputs, constant output (works as a bias)`
-                : `Neuron N${id}`) + (value !== undefined ? ` = ${formatValue(value)}` : "")}
+                ? `Neuron ${neuronName(id)}: no inputs, constant output (works as a bias)`
+                : `Neuron ${neuronName(id)}`) + (value !== undefined ? ` = ${formatValue(value)}` : "")}
             </title>
             <circle
               cx={x}
@@ -239,7 +242,7 @@ export default function NetworkDiagram({ network, sensorLabels, actionLabels, ac
               fontSize={10}
               fill={constant ? "currentColor" : "#1a1a1a"}
             >
-              {`N${id}`}
+              {neuronName(id)}
             </text>
             {value !== undefined && (
               <text x={x} y={y + RADIUS + 11} textAnchor="middle" fontSize={10} fill="currentColor">

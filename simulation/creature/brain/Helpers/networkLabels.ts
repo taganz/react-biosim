@@ -6,8 +6,16 @@ const getPrettyName = (name: string) => name.replace(/([A-Z])/g, " $1").trim();
 // Names of the network inputs and outputs, in the same order the network uses:
 // one entry per neuron of every enabled sensor, and one per enabled action
 export function getNetworkLabels(creature: Creature): { sensors: string[]; actions: string[] } {
+  return networkLabelsFromLists(creature.brain.sensors, creature.brain.actions);
+}
+
+// The same from the sensor and action tables, for brains without a creature (the brain editor)
+export function networkLabelsFromLists(
+  sensorTable: { data: Record<string, { enabled: boolean; name: string; neuronCount: number }> },
+  actionTable: { data: Record<string, { enabled: boolean; name: string }> }
+): { sensors: string[]; actions: string[] } {
   const sensors: string[] = [];
-  for (const { enabled, name, neuronCount } of Object.values(creature.brain.sensors.data)) {
+  for (const { enabled, name, neuronCount } of Object.values(sensorTable.data)) {
     if (!enabled) continue;
     for (let i = 0; i < neuronCount; i++) {
       // sensors with more than one output get a number
@@ -16,7 +24,7 @@ export function getNetworkLabels(creature: Creature): { sensors: string[]; actio
   }
 
   const actions: string[] = [];
-  for (const { enabled, name } of Object.values(creature.brain.actions.data)) {
+  for (const { enabled, name } of Object.values(actionTable.data)) {
     if (enabled) actions.push(getPrettyName(name));
   }
 

@@ -33,6 +33,10 @@ export default function LoadSimFile() {
         onChange={handleLoadFile}
       />
       <StatusMessage status={status} />
+      <p className="text-xs">
+        To see and edit the brains of the species in a file, open it in the{" "}
+        <a className="underline" href="/brain-editor" target="_blank" rel="noopener">brain editor</a>.
+      </p>
     </div>
   );
 }

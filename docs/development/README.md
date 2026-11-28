@@ -38,8 +38,9 @@ Without them the tags load with empty ids and do nothing. You do not need them f
 ## Project layout
 
 ```
-app/                     Next.js App Router: page.tsx (tabs) and layout.tsx
+app/                     Next.js App Router: page.tsx (tabs), layout.tsx, brain-editor/ (the brain editor page)
 components/
+  brain-editor/          The brain editor page: BrainEditor (file, list, save), GenomeEditor (diagram, genes)
   global/                Reusable UI: Button, inputs, tabs, toggles, LinearGraph
   providers/             JotaiProvider
   simulation/            Everything tied to the simulation
@@ -53,9 +54,9 @@ simulation/              The engine: plain TypeScript, no React
   world/                   WorldController (loop), Grid, WorldCanvas, objects and areas, stats
   generations/             WorldGenerations, population strategies, selection methods
   creature/                Creature, mass, attack, reproduction, genus, phenotype
-    brain/                 Genome, CreatureBrain, Network, sensors, actions
+    brain/                 Genome, CreatureBrain, buildNetwork, Network, sensors, actions, genomeEditing (brain editor)
   water/                   WorldWater, rain types
-  serialization/           Saved* types and the formatters that read and write them
+  serialization/           Saved* types and the formatters that read and write them; genomeFile (brain editor)
   log/                     SimulationLog: CSV tables of species and creatures
   headless/                runHeadless: runs a simulation in Node without drawing
   helpers/                 random.ts (the seeded random generator), helpers.ts
@@ -84,3 +85,4 @@ The reference pages are lists taken from the code. Update them in the same chang
 | The save format | [serialization.md](serialization.md) |
 | A column of the log, or how species ids are made | [log-file.md](../reference/log-file.md) |
 | The headless runner's options or output files | [headless-runner.md](../user/headless-runner.md) |
+| The brain editor page | [brain-editor.md](../user/brain-editor.md) |

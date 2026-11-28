@@ -29,11 +29,11 @@ So a gene does not name a sensor: it names "the *n*-th enabled sensor". The same
 
 ## Building the network
 
-`CreatureBrain` turns the list of connections into a network once, when the creature is born:
+`CreatureBrain` turns the list of connections into a network once, when the creature is born, with `buildNetworkFromGenes()` in [buildNetwork.ts](../../simulation/creature/brain/buildNetwork.ts) (the [brain editor](../user/brain-editor.md) uses the same function):
 
 1. **Decode** every gene into a connection.
 2. **Prune useless neurons.** A neuron whose only outputs go back to itself cannot affect any action. It is removed with all the connections that feed it. The check is repeated until nothing more can be removed, because removing one neuron can make another useless.
-3. **Renumber** the remaining internal neurons as 0, 1, 2…. These are the N0, N1… labels in the diagrams.
+3. **Renumber** the remaining internal neurons as 0, 1, 2…. These are the N0, N1… labels in the diagrams of the app (the brain editor labels them with their number in the genes instead).
 4. **Order** the connections: first all connections into neurons, then all connections into actions.
 5. Mark each neuron as **driven** if it receives input from a sensor or from another neuron. A neuron with no inputs, or only a connection to itself, is **undriven**. It keeps its initial output of **0.5** forever and works as a constant bias. The network diagrams show these as dashed *constant neurons*.
 

@@ -35,6 +35,8 @@ Loading is in the **Scenario** tab, under **Load scenario**:
 - **Load .sim file** loads a `.sim`, `.txt` or `.json` file saved with **Save to file** or **Export .sim**. Files from older versions of the app, such as those in `_scenarios/`, may not load: if one fails, the message explains why.
 - **Load saved scenario** loads one of [My scenarios](#my-scenarios).
 
+To see the brains of the species in a `.sim` file, change them and save the file with another name, open it in the [brain editor](brain-editor.md) (`/brain-editor`, linked under **Load .sim file**).
+
 Loading a `.sim` file **resumes** the saved run: it continues from the saved generation with the saved creatures. The Scenario draft and the speed controls are updated to match. A message tells you whether the load worked or why it failed.
 
 ## Images and GIFs

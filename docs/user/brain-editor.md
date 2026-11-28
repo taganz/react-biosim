@@ -1,0 +1,57 @@
+# Brain editor
+
+![Brain editor](images/brain_editor.png)
+
+The brain editor is a separate page, `/brain-editor`, linked under **Scenario → Load scenario → Load .sim file**. It opens a `.sim` file, shows the brain of each genome in it, lets you change the brains gene by gene, and saves the result as a new `.sim` file. It also copies genomes, to start a run with them (see [Default Species](../reference/population-and-selection.md#default-species-defaultspeciespopulation)).
+
+The file is read in the browser and is never changed: the edited copy is a download. Load it in the app with **Load .sim file**.
+
+The code is in [components/brain-editor/](../../components/brain-editor/), with the engine helpers in [genomeEditing.ts](../../simulation/creature/brain/genomeEditing.ts) and [genomeFile.ts](../../simulation/serialization/genomeFile.ts).
+
+## Opening a file
+
+**Open .sim file** accepts the same files as **Load .sim file**. Files of older versions are first brought to the current format, as the app does when it loads them, so the genes are read with the sensors and actions the app would use. The box under the title shows the simulation code, the generation, the number of creatures, and what the genes can point to: the enabled sensors and actions and **Max neurons**. A brain can only use the sensors and actions the file enables; to use others, enable them in the app and save the simulation again.
+
+## Genomes
+
+The list on the left has every genome of the file, in groups:
+
+| Group | What it is |
+|---|---|
+| Species in the world | The species of a file saved during a run, largest first, with their number of creatures |
+| Genomes that start the generation | The genomes of a *Save generation* scenario, with how many creatures carry each |
+| Species of generation 1 | The entries of `POPULATION_DEFAULT_SPECIES`, used by the *Default Species* strategy |
+| Plant genes | The plant genes of the *Plants and Animals* strategy |
+
+Each genome shows its color (the same as in the app), its genes and its genus (plant or animal, from its brain), and an **edited** mark once it is changed. Two buttons copy it:
+
+- **Copy genome** (clipboard icon) copies the genes in hexadecimal, as the Population and Scenario tabs copy them.
+- **Copy JSON** (code icon) copies it as an entry of `POPULATION_DEFAULT_SPECIES`, for example `{"name":"vertical boxes #3","genome":[…]}`, to paste inside that list in *Scenario → Constants*.
+
+**Copy all as JSON** copies the whole list, with the edits, as a complete `POPULATION_DEFAULT_SPECIES` value.
+
+## The brain
+
+Clicking a genome shows its brain with the same diagram as the Population tab. It is built exactly as a creature builds it at birth (see [brain](../model/brain.md#building-the-network)): genes whose neuron has no way to an action are pruned, and Stamina genes are not drawn. One difference: neurons keep the number they have in the genes (N3, N12…), where the Population tab numbers the neurons left after pruning from N0. So the diagram and the gene table use the same names.
+
+The line above the diagram gives the genus, the number of genes, connections and neurons, the pruned genes, the stamina (with the Stamina action) and the think cost per step (with `SENSOR_COSTS` or `ACTION_COSTS`). A genome longer than **Max genome size** is marked: it still works, but mutation never makes it longer.
+
+## Editing
+
+Every change applies at once and redraws the brain. **Undo** goes back one change (moving a weight slider counts as one change), and **Revert** goes back to the genes of the file.
+
+- **Parts** lists every sensor, neuron and action that some gene uses, also the pruned ones. The × of a part deletes every gene that connects it.
+- **Genes** is one row per gene: where it comes from (a sensor or a neuron), where it goes (a neuron or an action), its weight, its role, and the gene in hexadecimal. Change the source and target in the lists, and the weight with the slider or the number field (from −4 to almost +4, kept in steps of 1/8192, as genes store it). The trash button deletes the gene. The role is *used*, *pruned* (the brain leaves it out) or *stamina*. A Stamina gene only has a weight: it gives the share of steps in which the brain runs, and only the first one counts. A genome without a Stamina gene gets a new one when its creatures are born.
+- **Add a connection** adds one gene. Adding a sensor or an action is adding a connection from that sensor or to that action.
+- **Add a neuron** adds the lowest neuron number that no gene uses, with two genes: one from the chosen source into the neuron and one from the neuron to the chosen target. It is disabled when every number below Max neurons is used.
+- **Replace the genes** replaces the whole genome with a pasted one: genes in hexadecimal, a JSON list of numbers, or a JSON entry with `genome` (what the copy buttons give). It is read with the sensors and actions of this file, so a genome copied from a file with other enabled lists gets another brain.
+
+A genome always keeps at least one gene: a change that would delete all of them is refused with a message.
+
+## Saving
+
+**Save .sim file** downloads the file with the edits, named `<file> edited.sim` unless you change the name. Everything else in the file is kept as it was, in the current format (indented when `PRETTIFY_OUTPUT_TO_FILE` is set).
+
+An edited species becomes a new species that comes from the one it was, as after a mutation: its id is computed from the new genes and the old id, its parent is the old id, and its first generation is the generation of the file (see [species](../reference/log-file.md#species)). Its creatures keep their positions, mass and age.
+
+Loading the saved file resumes the run with the edited brains. A file saved at the start of a generation (*Save generation*) starts it with the edited genomes, and edited `POPULATION_DEFAULT_SPECIES` are used the next time a run starts with the *Default Species* strategy.
