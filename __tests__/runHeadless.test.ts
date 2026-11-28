@@ -59,7 +59,7 @@ describe("runHeadless", () => {
   test("the log has the species of each generation at its end, with the living creatures", async () => {
     const result = await runHeadless({ base: "startup", generations: 3, overrides: small, log: true, seed: 1 });
     const files = result.worldController.simulationLog.recordedFiles();
-    expect(files.map((file) => file.kind)).toEqual(["settings", "species"]);
+    expect(files.map((file) => file.kind)).toEqual(["settings", "species", "world"]);
     const [header, ...rows] = files[1].lines.map((line) => line.trimEnd().split(";"));
     const column = (name: string) => header.indexOf(name);
     for (const row of result.rows) {

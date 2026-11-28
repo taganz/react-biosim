@@ -64,7 +64,22 @@ describe("log of species and creatures", () => {
       overrides: { ...small, constants: { LOG_CREATURES: true } },
     });
     const files = result.worldController.simulationLog.recordedFiles();
-    expect(files.map((file) => file.kind)).toEqual(["settings", "species", "creatures"]);
+    expect(files.map((file) => file.kind)).toEqual(["settings", "species", "creatures", "world"]);
+    // the world: a row per generation, with the population by genus and where the water is
+    const world = table(files[3]);
+    expect(world.map((row) => Number(row.generation))).toEqual([1, 2, 3, 4, 5, 6]);
+    for (const row of world) {
+      const n = (name: string) => Number(row[name].replace(",", "."));
+      expect(n("plants") + n("animals") + n("unknown")).toBe(n("creatures"));
+      expect(n("waterCloud") + n("waterCells") + n("waterCreatures")).toBeCloseTo(n("waterTotal"), 2);
+      expect(n("waterPlants") + n("waterAnimals") + n("waterUnknown")).toBeCloseTo(n("waterCreatures"), 2);
+      expect(n("cellCapacity")).toBeGreaterThan(0);
+      expect(n("rainMissed")).toBeGreaterThanOrEqual(0);
+    }
+    // the rain adds up over the run: at least the first rain
+    const rain = world.map((row) => Number(row.rainTotal.replace(",", ".")));
+    expect(rain[0]).toBeGreaterThan(0);
+    rain.slice(1).forEach((value, i) => expect(value).toBeGreaterThanOrEqual(rain[i]));
     expect(files[0].name).toMatch(/^sim \w+ log 1-6 settings\.csv$/);
     const species = table(files[1]);
     const ids = new Set(species.map((row) => row.speciesId));

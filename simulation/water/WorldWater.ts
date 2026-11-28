@@ -18,6 +18,10 @@ export default class WorldWater {
     waterInCreatures : number = 0;
     maxRainWaterPerCell : number;
     _worldSize : number;    //TODO should use grid size?
+    // since this world was made: water that fell from the cloud to the cells (rain and first rains),
+    // and rains that did not fall because the cloud had too little water (for the log)
+    rainedTotal : number = 0;
+    rainsMissed : number = 0;
 
     constructor (worldSize: number, waterData : WaterData) {
         this.waterInCloud = worldSize * worldSize * waterData.waterTotalPerCell;
@@ -89,7 +93,8 @@ export default class WorldWater {
         }
     }
     // initialize grid water 
-    firstRain(grid: Grid) {
+    // returns the water added to the cells
+    firstRain(grid: Grid): number {
         let waterToAddPerCell = this.waterData.waterFirstRainPerCell;
         let waterToAddTotal = waterToAddPerCell * grid.size * grid.size;
         let waterAdded = 0;
@@ -106,6 +111,8 @@ export default class WorldWater {
         }
         this.waterInCloud -= waterAdded;
         this.waterInCells += waterAdded;
+        this.rainedTotal += waterAdded;
+        return waterAdded;
     }
 
     // the water of every cell, row by row: what cellWater() saves and restoreCells() puts back
@@ -140,14 +147,17 @@ export default class WorldWater {
     // water from cloud go to cells
     // fraction scales the rain: continuous runs rain every step with 1 / steps per generation
     //TODO functions....
-    rain(grid: Grid, fraction: number = 1) {
+    // returns the water added to the cells, or null when the cloud has too little for the rain and it does not rain
+    rain(grid: Grid, fraction: number = 1): number | null {
 
         const rainValue = this.waterData.waterRainMaxPerCell * fraction;
         // if not enough water to do uniform rain, don't do rain at all
         if (rainValue * this._worldSize * this._worldSize 
             > this.waterInCloud ) {
-                return;
+                this.rainsMissed++;
+                return null;
         }
+        let rained = 0;
 
         // continuous runs rain every step, so the loop avoids closures, arrays and repeated sines.
         // The amount of each cell is computed as before: (rainValue * sin x) * sin y
@@ -178,11 +188,15 @@ export default class WorldWater {
                 cell.water += waterAdded;
                 this.waterInCloud-=waterAdded;
                 this.waterInCells+=waterAdded;
+                rained += waterAdded;
                 if (this.waterInCloud <= 0) {
-                    return;
+                    this.rainedTotal += rained;
+                    return rained;
                 }
             }
         }
+        this.rainedTotal += rained;
+        return rained;
     }
 
     // sin(PI * i / size) for every row or column, computed once per world size

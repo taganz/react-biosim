@@ -4,6 +4,8 @@ import { creatureMassBalance, MassBalance, SpeciesStats, speciesStatsOf } from "
 import type { SpeciesRecord } from "../generations/SpeciesRegistry";
 import { getUsedSensorsAndActions } from "../creature/brain/Helpers/networkLabels";
 import type { DeathCause } from "../creature/Creature";
+import type { Grid } from "../world/grid/Grid";
+import type WorldController from "../world/WorldController";
 
 /** a value of a log cell: numbers are formatted with the locale, booleans as 1 or 0, null is empty */
 export type LogValue = number | string | boolean | null;
@@ -221,4 +223,64 @@ export function speciesSnapshots(generations: WorldGenerations, onlyIds?: Readon
   }
   // the largest first, then by id so the order does not depend on the map
   return snapshots.sort((a, b) => b.stats.alive - a.stats.alive || (a.record.id < b.record.id ? -1 : 1));
+}
+
+/** the state of the world at a row of the log: population by genus and where the water is */
+export interface WorldSnapshot {
+  creatures: number;
+  plants: number;
+  animals: number;
+  unknown: number;
+  waterTotal: number;
+  waterCloud: number;
+  waterCells: number;
+  waterCreatures: number;
+  waterPlants: number;
+  waterAnimals: number;
+  waterUnknown: number;
+  /** the most water all the cells can hold together */
+  cellCapacity: number;
+  /** since the world was made: water that fell from the cloud to the cells, and rains that did not
+   *  fall because the cloud had too little water (each step of a continuous run is a rain) */
+  rainTotal: number;
+  rainMissed: number;
+}
+
+// the capacity of the cells only changes with the grid: once per run
+const cellCapacities = new WeakMap<Grid, number>();
+function cellCapacity(grid: Grid): number {
+  let total = cellCapacities.get(grid);
+  if (total === undefined) {
+    total = 0;
+    for (let y = 0; y < grid._size; y++) {
+      for (let x = 0; x < grid._size; x++) total += grid.cell(x, y).waterCapacity;
+    }
+    cellCapacities.set(grid, total);
+  }
+  return total;
+}
+
+export function worldSnapshot(world: WorldController): WorldSnapshot {
+  const snapshot: WorldSnapshot = {
+    creatures: 0, plants: 0, animals: 0, unknown: 0,
+    waterTotal: world.worldWater.totalWater, waterCloud: world.worldWater.waterInCloud,
+    waterCells: world.worldWater.waterInCells, waterCreatures: world.worldWater.waterInCreatures,
+    waterPlants: 0, waterAnimals: 0, waterUnknown: 0, cellCapacity: cellCapacity(world.grid),
+    rainTotal: world.worldWater.rainedTotal, rainMissed: world.worldWater.rainsMissed,
+  };
+  for (const creature of world.generations.currentCreatures) {
+    if (!creature.isAlive) continue;
+    snapshot.creatures++;
+    if (creature.genus === "plant") { snapshot.plants++; snapshot.waterPlants += creature.mass; }
+    else if (creature.genus === "attack_plant") { snapshot.animals++; snapshot.waterAnimals += creature.mass; }
+    else { snapshot.unknown++; snapshot.waterUnknown += creature.mass; }
+  }
+  return snapshot;
+}
+
+/** The columns of the log of the world: one row per recording */
+export function worldColumns(): Column<WorldSnapshot>[] {
+  const keys: (keyof WorldSnapshot)[] = ["creatures", "plants", "animals", "unknown", "waterTotal", "waterCloud", "waterCells",
+    "waterCreatures", "waterPlants", "waterAnimals", "waterUnknown", "cellCapacity", "rainTotal", "rainMissed"];
+  return [...contextColumns<WorldSnapshot>(), ...keys.map((key) => ({ name: key, value: (snapshot: WorldSnapshot) => snapshot[key] }))];
 }

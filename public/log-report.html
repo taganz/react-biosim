@@ -13,6 +13,7 @@
   --plant: #2c8549; --herb: #2a68a8; --unknown: #8a948f;
   --d-1: #1baf7a; --d-2: #eda100; --d-3: #e34948; --d-4: #6250d6;
   --g-photo: #1baf7a; --c-1: #8a948f; --c-2: #6250d6; --c-3: #eb6834; --c-4: #e34948; --c-5: #e87ba4;
+  --w-cloud: #6250d6; --w-cells: #1baf7a;
   --good: #0a7a33; --bad: #c03030; --warn-bg: #fff4e0; --info-bg: #eaf2fc; --ok-bg: #e8f5ec;
   --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
@@ -24,6 +25,7 @@
     --plant: #5cc27c; --herb: #6ea6e4; --unknown: #8d9892; --d-1: #199e70; --d-2: #c98500; --d-3: #e66767; --d-4: #9085e9;
     --g-photo: #199e70; --c-1: #8d9892; --c-2: #9085e9; --c-3: #d95926; --c-4: #e66767; --c-5: #d55181;
     --good: #4cc06e; --bad: #ef7a7a; --warn-bg: #3a2f18; --info-bg: #1d2a3a; --ok-bg: #1c3324; color-scheme: dark;
+    --w-cloud: #9085e9; --w-cells: #199e70;
   }
 }
 :root[data-theme="dark"] {
@@ -31,8 +33,10 @@
   --plant: #5cc27c; --herb: #6ea6e4; --unknown: #8d9892; --d-1: #199e70; --d-2: #c98500; --d-3: #e66767; --d-4: #9085e9;
   --g-photo: #199e70; --c-1: #8d9892; --c-2: #9085e9; --c-3: #d95926; --c-4: #e66767; --c-5: #d55181;
   --good: #4cc06e; --bad: #ef7a7a; --warn-bg: #3a2f18; --info-bg: #1d2a3a; --ok-bg: #1c3324; color-scheme: dark;
+  --w-cloud: #9085e9; --w-cells: #199e70;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 var(--font-body); }
 main { max-width: 1240px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 14px; }
 h1 { font: 600 22px/1.2 var(--font-display); margin: 0; }
@@ -50,6 +54,7 @@ select, input[type="number"] { background: var(--sunken); border: 1px solid var(
 input[type="number"] { width: 6em; }
 button { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 .status { color: var(--muted); font-size: 13px; }
+.note { flex-basis: 100%; margin: 0; padding: 8px 10px; border-radius: 6px; background: var(--info-bg); font-size: 13px; max-width: none; }
 a { color: var(--accent); }
 code, .mono { font-family: var(--font-mono); font-size: 12px; }
 .good { color: var(--good); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
@@ -86,12 +91,13 @@ rect.hit { fill: transparent; } rect.hit:hover { fill: var(--fg); fill-opacity: 
 <main>
   <header>
     <h1>Log report</h1>
-    <p class="sub">Why some species do better than others, and which settings hold back more complex brains. Load the files of one log (Simulation → Log, or the headless runner with <span class="mono">--log</span>): <span class="mono">species.csv</span> and <span class="mono">settings.csv</span>, and <span class="mono">creatures.csv</span> if you have it. The files are read in the browser and not sent anywhere. The species tree of the same file is in the <a href="species-tree.html">species tree</a> page.</p>
+    <p class="sub">Why some species do better than others, and which settings hold back more complex brains. Load the files of one log (Simulation → Log, or the headless runner with <span class="mono">--log</span>): <span class="mono">species.csv</span> and <span class="mono">settings.csv</span>, and <span class="mono">world.csv</span> (population and water) and <span class="mono">creatures.csv</span> if you have them. The files are read in the browser and not sent anywhere. The species tree of the same file is in the <a href="species-tree.html">species tree</a> page.</p>
   </header>
 
   <section class="panel drop" id="drop">
-    <input type="file" id="file" accept=".csv,text/csv" multiple>
-    <span class="status" id="fileStatus">Choose the files, or drop them here (all at once).</span>
+    <input type="file" id="file" accept=".csv,text/csv,.sim" multiple>
+    <span class="status" id="fileStatus">Choose all the files of the log at once (Ctrl+click or Shift+click in the dialog), or drop them here together.</span>
+    <p class="note"><b>Select the 4 files</b> that saving the log downloads, all together: <span class="mono">… settings.csv</span>, <span class="mono">… species.csv</span>, <span class="mono">… world.csv</span> and <span class="mono">….sim</span> (plus <span class="mono">… creatures.csv</span> if you recorded the creatures). The page can only read the files you give it: one left out is missing from the report. The <span class="mono">.sim</span> is not needed, but selecting it does no harm.</p>
   </section>
 
   <section class="panel controls" id="controls" hidden>
@@ -449,6 +455,9 @@ const fmt = (value, decimals = 1) => (value === null || value === undefined || !
 const pct = (value, decimals = 0) => (value === null || value === undefined ? "—" : `${fmt(value, decimals)}%`);
 const shortId = (id) => id.slice(0, 6);
 
+/** a tick label that fits the margin: 1.5k, 2M */
+const compact = (v) => (Math.abs(v) >= 1e6 ? `${fmt(v / 1e6, 1)}M` : Math.abs(v) >= 1e4 ? `${fmt(v / 1e3, 0)}k` : fmt(v, 2));
+
 /** a line chart in SVG; hovering a generation shows the values of every series */
 function lineChart(title, series, { unit = "" } = {}) {
   const W = 560, H = 210, L = 46, R = 12, T = 10, B = 26;
@@ -463,7 +472,7 @@ function lineChart(title, series, { unit = "" } = {}) {
   const x = (v) => L + (xMax === xMin ? 0.5 : (v - xMin) / (xMax - xMin)) * (W - L - R);
   const y = (v) => T + (1 - v / yMax) * (H - T - B);
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">`;
-  for (let v = 0; v <= yMax + 1e-9; v += step) svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="tick" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v, 2)}</text>`;
+  for (let v = 0; v <= yMax + 1e-9; v += step) svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="tick" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${compact(v)}</text>`;
   const xStep = niceStep(Math.max(1, xMax - xMin));
   for (let v = Math.ceil(xMin / xStep) * xStep; v <= xMax; v += xStep) svg += `<text class="tick" x="${x(v)}" y="${H - 7}" text-anchor="middle">${fmt(v, 0)}</text>`;
   svg += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
@@ -503,7 +512,7 @@ const legendOf = (items) => `<div class="legend">${items.map(([label, color]) =>
 
 // ---------- the report ----------
 
-const state = { files: {}, settings: null, rows: [], runs: [], creaturesCache: new Map(), summaryCsv: "", rendering: 0 };
+const state = { files: {}, settings: null, rows: [], runs: [], worldRuns: [], creaturesCache: new Map(), summaryCsv: "", rendering: 0 };
 
 async function render() {
   const token = ++state.rendering;
@@ -558,7 +567,11 @@ async function render() {
   if (settings.loaded) facts.push(
     ["Type", `${esc(st("simulationType"))}, metabolism ${metab === null ? "—" : metab ? "on" : "off"}`],
     ["World", `${st("size")} × ${st("size")}, initial population ${st("initialPopulation")}, ${st("stepsPerGen")} steps per generation, maximum age ${st("maxAge")}`],
-    ["Population and selection", `${esc(st("populationStrategy"))} · ${esc(st("selectionMethod"))}`],
+    // continuous runs use the population strategy only for generation 1 and have no selection; the
+    // selection method is still saved, but it does nothing
+    ["Population and selection", st("simulationType") === "continuous"
+      ? `${esc(st("populationStrategy"))} (generation 1 only) · no selection: continuous run (the saved selection method, ${esc(st("selectionMethod"))}, is not used)`
+      : `${esc(st("populationStrategy"))} · ${esc(st("selectionMethod"))}`],
     ["Seed", `${esc(st("seed"))} (this run: ${esc(st("runSeed"))})`],
     ["Brain", `initial genome ${st("initialGenomeSize")}, at most ${st("maxGenomeSize")} genes, ${st("maxNumberNeurons")} neurons`],
     ["Mutation", `${esc(st("mutationMode"))}, probability ${st("mutationProbability")}, insertion/deletion ${st("geneInsertionDeletionProbability")}`],
@@ -677,6 +690,113 @@ async function render() {
     if (settings.sensors.includes("Pain")) add("info", "Pain enabled", "Health areas are not applied, so Pain is always 0 (docs/known-issues.md).", "Turn it off.");
     for (const s of ["PredatorDistance", "PredatorDirection"]) if (settings.sensors.includes(s)) add("warn", `${s} enabled`, "It produces no value: brains that read it compute NaN (docs/known-issues.md).", "Turn it off until it is fixed.");
   }
+  // water and carrying capacity, from the world file
+  const worldRun = state.worldRuns[run.index - 1];
+  let waterSection = "";
+  if (worldRun) {
+    // the last row of each generation, as for the species
+    const byGenW = new Map();
+    for (const row of worldRun.rows) {
+      const g = n0(row.generation);
+      const prev = byGenW.get(g);
+      if (!prev || n0(row.step) >= n0(prev.step)) byGenW.set(g, row);
+    }
+    const w = [...byGenW.entries()].sort((a, b) => a[0] - b[0]).map(([gen, row]) => ({
+      gen, creatures: n0(row.creatures), plants: n0(row.plants), animals: n0(row.animals), unknown: n0(row.unknown),
+      total: n0(row.waterTotal), cloud: n0(row.waterCloud), cells: n0(row.waterCells), inCreatures: n0(row.waterCreatures),
+      inPlants: n0(row.waterPlants), inAnimals: n0(row.waterAnimals), inUnknown: n0(row.waterUnknown), capacity: n0(row.cellCapacity),
+      rainTotal: num(row.rainTotal), rainMissedTotal: num(row.rainMissed),
+    }));
+    // rainTotal and rainMissed add up since the world was made: the rain of a generation is the difference with the
+    // previous row. A loaded file or Update simulation makes a new world, which starts again from 0
+    const hasRain = w.length > 0 && w[0].rainTotal !== null;
+    w.forEach((p, i) => {
+      const prev = w[i - 1];
+      const diff = (now, before) => (now === null ? null : before === null || before === undefined || now < before ? now : now - before);
+      p.rain = diff(p.rainTotal, prev?.rainTotal);
+      p.rainMissed = diff(p.rainMissedTotal, prev?.rainMissedTotal);
+    });
+    // the rain of a generation at most: the rain setting on every cell (the first rains come on top)
+    const rainMaxPerCell = settings.get("waterRainMaxPerCell");
+    const size = settings.get("size");
+    const rainMax = rainMaxPerCell !== null && size !== null ? rainMaxPerCell * size * size : null;
+    const wFinal = w.filter((p) => p.gen >= finalFrom);
+    const meanW = (pick) => { const v = wFinal.map(pick).filter((x) => x !== null && Number.isFinite(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+    const shareOf = (pick) => meanW((p) => (p.total > 0 ? (pick(p) / p.total) * 100 : null));
+    const cloudShare = shareOf((p) => p.cloud), cellsShare = shareOf((p) => p.cells), creaturesShare = shareOf((p) => p.inCreatures);
+    const plantsShare = shareOf((p) => p.inPlants), animalsShare = shareOf((p) => p.inAnimals);
+    const cellsFull = meanW((p) => (p.capacity > 0 ? (p.cells / p.capacity) * 100 : null));
+    const plantMass = meanW((p) => (p.plants > 0 ? p.inPlants / p.plants : null));
+    const animalMass = meanW((p) => (p.animals > 0 ? p.inAnimals / p.animals : null));
+    const pyramid = meanW((p) => (p.inPlants > 0 ? p.inAnimals / p.inPlants : null));
+    const hasAnimals = w.some((p) => p.animals > 0);
+    const line = (name, color, pick) => ({ name, color, points: w.map((p) => [p.gen, pick(p)]) });
+    const charts = [
+      lineChart("Where the water is", [
+        line("cloud", "var(--w-cloud)", (p) => p.cloud), line("cells", "var(--w-cells)", (p) => p.cells),
+        line("plants", "var(--plant)", (p) => p.inPlants), line("animals", "var(--herb)", (p) => p.inAnimals),
+        ...(w.some((p) => p.inUnknown > 0) ? [line("no genus", "var(--unknown)", (p) => p.inUnknown)] : []),
+      ]),
+      lineChart("Water in the creatures (% of all the water)", [line("creatures", "var(--accent)", (p) => (p.total > 0 ? (p.inCreatures / p.total) * 100 : null))], { unit: "%" }),
+      lineChart("Water in the cells (% of what they can hold)", [line("cells", "var(--w-cells)", (p) => (p.capacity > 0 ? (p.cells / p.capacity) * 100 : null))], { unit: "%" }),
+      ...(hasRain ? [
+        lineChart("Rain per generation", [
+          line("rain", "var(--w-cells)", (p) => p.rain),
+          ...(rainMax !== null ? [line("rain setting × cells", "var(--unknown)", () => rainMax)] : []),
+        ]),
+        ...(w.some((p) => (p.rainMissed ?? 0) > 0)
+          ? [lineChart(st("simulationType") === "continuous" ? "Steps without rain (the cloud had too little)" : "Rains that did not fall (the cloud had too little)",
+              [line("without rain", "var(--d-3)", (p) => p.rainMissed)])]
+          : []),
+      ] : []),
+      lineChart("Mean mass (water) per creature", [line("plants", "var(--plant)", (p) => (p.plants > 0 ? p.inPlants / p.plants : null)),
+        ...(hasAnimals ? [line("animals", "var(--herb)", (p) => (p.animals > 0 ? p.inAnimals / p.animals : null))] : [])]),
+    ];
+    const first = w[0], last = w[w.length - 1];
+    const placeRow = (label, pick) => [label, fmt(pick(first), 0), pct(first.total > 0 ? (pick(first) / first.total) * 100 : null), fmt(pick(last), 0), pct(last.total > 0 ? (pick(last) / last.total) * 100 : null)];
+    const waterTable = table(["", `Generation ${first.gen}`, "", `Generation ${last.gen}`, ""], [
+      placeRow("Cloud", (p) => p.cloud), placeRow("Cells", (p) => p.cells), placeRow("Plants", (p) => p.inPlants),
+      placeRow("Animals", (p) => p.inAnimals), placeRow("No genus", (p) => p.inUnknown), placeRow("Total", (p) => p.total),
+      ["Creatures", fmt(first.creatures, 0), "", fmt(last.creatures, 0), ""],
+      ...(hasRain ? [["Rain in the generation", fmt(first.rain, 0), "", fmt(last.rain, 0), ""]] : []),
+    ], [false, true, true, true, true]);
+    // why the rain is not the setting on every cell
+    const rainReasons = () => {
+      const reasons = [];
+      const rainType = st("rainType");
+      if (rainType === "rainTypeSinSin") reasons.push("<code>rainTypeSinSin</code> rains a sine of each axis, 41% (4/π²) of the setting on average, and almost nothing near the borders");
+      else if (rainType === "rainTypeUniformNE") reasons.push("<code>rainTypeUniformNE</code> rains the full setting only on the north-east quarter and half on the rest, 62.5% on average");
+      reasons.push("full cells take less");
+      if (st("simulationType") !== "continuous") reasons.push("the first rains of the generations come on top");
+      return `: ${reasons.join("; ")}`;
+    };
+    const missedTotal = w.reduce((t, p) => t + (p.rainMissed ?? 0), 0);
+    const meanRain = meanW((p) => p.rain);
+    const rainText = !hasRain ? "<p class=\"muted\">This world file has no rain columns (<code>rainTotal</code>, <code>rainMissed</code>): it was recorded by a version of the app from before the rain was logged. The water charts work, since their columns are older. To have the rain, reload the app page (F5) and record the log again.</p>"
+      : `<p>${st("simulationType") === "continuous" ? "It rains a little every step." : "It rains once between generations (and the cells get their first rain at the start)."} In the last third, ${fmt(meanRain, 0)} per generation${rainMax ? `, ${pct((meanRain / rainMax) * 100)} of the rain setting on every cell (<code>waterRainMaxPerCell</code> ${cText("waterRainMaxPerCell")} × ${fmt(size * size, 0)} cells)${rainReasons()}` : ""}. ${missedTotal > 0 ? `${fmt(missedTotal, 0)} ${st("simulationType") === "continuous" ? "steps" : "times"} it did not rain, because the cloud had less water than the rain.` : "It rained every time."}</p>`;
+    waterSection = `<section class="panel"><h2>Water and carrying capacity</h2>
+<p>The water of the world is fixed: it is in the cloud, in the cells or in the creatures, whose mass is water. So the total water caps the biomass, and the biomass divided by the mass of each creature caps the population. Rain takes water from the cloud to the cells, plants take it from the cells by photosynthesis, animals take it from what they eat, and the dead, the evaporation and the costs of living give it back. The last row of each generation.</p>
+${rainText}<div class="charts">${charts.join("")}</div>${waterTable}</section>`;
+
+    if (creaturesShare !== null && creaturesShare > 70)
+      add("warn", "Water limits the population", `${pct(creaturesShare)} of the water is in the creatures: they cannot grow in number without more water.`,
+        `The carrying capacity is the total water: raise <code>waterTotalPerCell</code> (now ${cText("waterTotalPerCell")}) for bigger populations, or lower the masses at birth.`);
+    if (cloudShare !== null && cloudShare > 50)
+      add("warn", "Water stuck in the cloud", `${pct(cloudShare)} of the water is in the cloud, so the cells get little.`,
+        `Rain is the bottleneck: raise <code>waterRainMaxPerCell</code> (now ${cText("waterRainMaxPerCell")}) or lower <code>waterEvaporationPerCellPerGeneration</code> (now ${cText("waterEvaporationPerCellPerGeneration")}).`);
+    if (cellsShare !== null && cellsShare > 50 && creaturesShare !== null && creaturesShare < 30)
+      add("info", "Water left in the cells", `${pct(cellsShare)} of the water is in the cells (${pct(cellsFull)} of what they hold) and only ${pct(creaturesShare)} in the creatures.`,
+        `Water is not the limit: plants cannot take it fast enough or where it is. Check <code>MASS_WATER_TO_MASS_PER_STEP</code> (now ${cText("MASS_WATER_TO_MASS_PER_STEP")}), the maximum mass (<code>MASS_MAX_MULTIPLE_MASS_AT_BIRT</code>, now ${cText("MASS_MAX_MULTIPLE_MASS_AT_BIRT")}) and the room for plants to spread.`);
+    const missedFinal = wFinal.reduce((t, p) => t + (p.rainMissed ?? 0), 0);
+    if (missedFinal > 0)
+      add("info", "The cloud runs dry", `In the last third it did not rain ${fmt(missedFinal, 0)} ${st("simulationType") === "continuous" ? "steps" : "times"}: the cloud had less water than the rain.`,
+        `The water is in the cells and the creatures, so the total water is the limit, not the rain: raise <code>waterTotalPerCell</code> (now ${cText("waterTotalPerCell")}).`);
+    if (hasAnimals && pyramid !== null && pyramid > 1)
+      add("warn", "Inverted biomass pyramid", `The animals hold ${fmt(pyramid, 2)} times the water of the plants (${pct(animalsShare)} against ${pct(plantsShare)}).`,
+        "More animals than their food can sustain: expect them to wipe out the plants and crash. Lower <code>ASSIMILATION_EFFICIENCY.attack_plant.prey</code> so that each level keeps less of what it eats.");
+    summary.push(`Water at the end: ${pct(last.total > 0 ? (last.cloud / last.total) * 100 : null)} in the cloud, ${pct(last.total > 0 ? (last.cells / last.total) * 100 : null)} in the cells, ${pct(last.total > 0 ? (last.inPlants / last.total) * 100 : null)} in plants and ${pct(last.total > 0 ? (last.inAnimals / last.total) * 100 : null)} in animals. Mean mass per plant ${fmt(plantMass, 2)}${hasAnimals ? `, per animal ${fmt(animalMass, 2)}` : ""}.`);
+  }
+
   if (findings.length === 0) add("ok", "No clear symptom", "No rule fired.", "Compare several seeds, or change one setting at a time.");
   const levelOrder = { warn: 0, info: 1, ok: 2 };
   findings.sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
@@ -688,6 +808,7 @@ async function render() {
   const popCharts = genera.map((g) => lineChart(`Living creatures: ${genusLabel(g)}`, [{ name: genusLabel(g), color: genusColor(g), points: series.map((p) => [p.gen, p.alive[g]]) }]));
   popCharts.push(lineChart("Living relevant species", [{ name: "species", color: "var(--accent)", points: series.map((p) => [p.gen, (byGen.get(p.gen) ?? []).filter((r) => n0(r.alive) > 0 && (species.get(r.speciesId)?.peak ?? 0) >= MIN_PEAK).length]) }]));
   sections.push(`<section class="panel"><h2>Population</h2><p class="muted">Each genus in its own chart: plants are usually many more and would flatten the animals on a shared axis.</p><div class="charts">${popCharts.join("")}</div></section>`);
+  if (waterSection) sections.push(waterSection);
 
   // most successful species
   const deathBar = (s) => stackBar(DEATHS.map((d, i) => ({ label: DEATH_LABEL[d], value: s.deaths[`pctDeath${d}`].value ?? 0, color: `var(--d-${i + 1})` })));
@@ -891,11 +1012,14 @@ ${table(["Species", "Genus", "At start", "Gains", "Total", "Costs", "Total", "To
 
 // ---------- input ----------
 
-/** which file of the log: by the end of its name */
-const kindOf = (name) => (/species\.csv$/i.test(name) ? "species" : /settings\.csv$/i.test(name) ? "settings" : /creatures\.csv$/i.test(name) ? "creatures" : null);
+/** which file of the log: by the end of its name, also when the browser added " (1)" to a repeated download */
+const kindOf = (name) => {
+  const match = name.match(/(species|settings|creatures|world)(?: ?\(\d+\))?\.csv$/i);
+  return match ? match[1].toLowerCase() : null;
+};
 
 /**
- * sources: { species, settings, creatures }, each a function that returns a ReadableStream, or null.
+ * sources: { species, settings, creatures, world }, each a function that returns a ReadableStream, or null.
  * The species and settings files are read whole; the creatures file is streamed when the report needs it.
  */
 async function load(sources, label) {
@@ -908,6 +1032,9 @@ async function load(sources, label) {
     state.settings = readSettings(await readText(sources.settings));
     state.rows = parseCsv(speciesText);
     state.runs = splitRuns(state.rows);
+    // the world file has a row at every recording, as the species file: its runs go in the same order
+    const worldText = await readText(sources.world);
+    state.worldRuns = worldText ? splitRuns(parseCsv(worldText)) : [];
     state.creaturesCache = new Map();
     if (state.rows.length === 0) { $("fileStatus").textContent = "The species file has no rows."; return; }
     const longest = state.runs.reduce((a, b) => (b.rows.length > a.rows.length ? b : a));
@@ -916,7 +1043,12 @@ async function load(sources, label) {
       return `<option value="${r.index}"${r === longest ? " selected" : ""}>${esc(r.code)} · ${r.index} (generations ${g[0]}–${g[g.length - 1]})</option>`;
     }).join("");
     $("controls").hidden = false;
-    $("fileStatus").textContent = `${label}: ${state.rows.length.toLocaleString("en-US")} species rows${sources.settings ? "" : ", no settings file"}${sources.creatures ? ", with the creatures file" : ""}.`;
+    // the page can only read the files it is given: say which ones of the log are missing
+    const missing = [["settings", "the circuits and the complexity"], ["world", "the water and the rain"], ["creatures", "who eats whom"]]
+      .filter(([kind]) => !sources[kind]);
+    $("fileStatus").textContent = `${label}: ${state.rows.length.toLocaleString("en-US")} species rows.` + (missing.length
+      ? ` Without ${missing.map(([kind, what]) => `${kind}.csv (${what})`).join(", ")}: to add them, choose or drop all the files of the log together.`
+      : "");
     await render();
   } catch (error) {
     $("fileStatus").textContent = `Cannot read ${label}: ${error.message}`;
@@ -925,7 +1057,7 @@ async function load(sources, label) {
 }
 
 function loadFiles(fileList) {
-  const sources = { species: null, settings: null, creatures: null };
+  const sources = { species: null, settings: null, creatures: null, world: null };
   const names = [];
   for (const file of fileList) {
     const kind = kindOf(file.name);
@@ -976,7 +1108,11 @@ if (source && source.startsWith("/") && !source.startsWith("//")) {
   (async () => {
     const settings = source.replace(/species\.csv$/i, "settings.csv");
     const creatures = source.replace(/species\.csv$/i, "creatures.csv");
-    load({ species: open(source), settings: (await exists(settings)) ? open(settings) : null, creatures: (await exists(creatures)) ? open(creatures) : null }, source);
+    const world = source.replace(/species\.csv$/i, "world.csv");
+    load({
+      species: open(source), settings: (await exists(settings)) ? open(settings) : null,
+      creatures: (await exists(creatures)) ? open(creatures) : null, world: (await exists(world)) ? open(world) : null,
+    }, source);
   })();
 }
 </script>

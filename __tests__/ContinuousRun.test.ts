@@ -201,8 +201,68 @@ describe("continuous simulation type", () => {
         expect(sample.step % 2).toBe(0);
         if (i > 0) expect(sample.step - samples[i - 1].step).toBe(2);
         expect(sample.plants + sample.animals).toBe(10);
+        // all the water is in the cloud, the cells or the creatures
+        expect(sample.cloud! + sample.cells! + sample.plantWater! + sample.animalWater!).toBeCloseTo(worldController.worldWater.totalWater, 3);
       });
       expect(samples.some((sample) => sample.step > 20)).toBe(true);
+    });
+
+    test("generational runs with metabolism are sampled too", async () => {
+      start("generational", 20, 1000);
+      worldController.generations.metabolismEnabled = true;
+      await runSteps(30);
+      expect(worldController.generationRegistry.populationSamples.length).toBeGreaterThan(2);
+    });
+
+    test("generational runs with metabolism record a rain between generations", async () => {
+      start("generational", 20, 1000);
+      worldController.generations.metabolismEnabled = true;
+      await runSteps(70);
+      const rains = worldController.generationRegistry.rainEvents;
+      expect(worldController.currentGen).toBeGreaterThan(1);
+      // at the first step of every generation after the first
+      const expected = Array.from({ length: worldController.currentGen - 1 }, (_, i) => (i + 1) * 20 + 1);
+      expect(rains.map((rain) => rain.step)).toEqual(expected);
+      rains.forEach((rain) => expect(rain.skipped).toBeUndefined());
+      const loaded = generationRegistryFormatter.deserialize(generationRegistryFormatter.serialize(worldController.generationRegistry), worldController);
+      expect(loaded.rainEvents.map((rain) => rain.step)).toEqual(expected);
+    });
+
+    test("a rain the cloud cannot pay for is recorded as skipped", () => {
+      start("generational", 20, 1000);
+      worldController.generations.metabolismEnabled = true;
+      const registry = worldController.generationRegistry;
+      registry.recordRain(null);
+      expect(registry.rainEvents.at(-1)).toMatchObject({ water: 0, skipped: true });
+      const loaded = generationRegistryFormatter.deserialize(generationRegistryFormatter.serialize(registry), worldController);
+      expect(loaded.rainEvents.at(-1)).toMatchObject({ water: 0, skipped: true });
+      // rains at the same step add up, and a real rain clears the skip
+      registry.recordRain(5);
+      expect(registry.rainEvents.at(-1)).toEqual({ step: registry.rainEvents.at(-1)!.step, water: 5 });
+      worldController.worldWater.waterInCloud = 0;
+      expect(worldController.worldWater.rain(worldController.grid)).toBeNull();
+    });
+
+    test("continuous runs count the rain of every step in the samples", async () => {
+      start("continuous", 20, 1000);
+      worldController.generations.metabolismEnabled = true;
+      await runSteps(30);
+      const samples = worldController.generationRegistry.populationSamples;
+      expect(samples.length).toBeGreaterThan(1);
+      // it rains every step, and the cloud has water for it
+      samples.forEach((sample) => expect(sample.noRainSteps).toBe(0));
+      expect(samples.some((sample) => sample.rain! > 0)).toBe(true);
+      // a rain bigger than the cloud does not fall
+      const water = worldController.worldWater;
+      water.waterData = { ...water.waterData, waterRainMaxPerCell: 1e9 };
+      const before = samples.length;
+      await runSteps(30);
+      const dry = samples.slice(before);
+      expect(dry.length).toBeGreaterThan(0);
+      dry.forEach((sample) => {
+        expect(sample.rain).toBe(0);
+        expect(sample.noRainSteps).toBe(2);
+      });
     });
 
     test("without metabolism there are no samples", async () => {
@@ -217,7 +277,11 @@ describe("continuous simulation type", () => {
       await runSteps(50);
       const registry = worldController.generationRegistry;
       const loaded = generationRegistryFormatter.deserialize(generationRegistryFormatter.serialize(registry), worldController);
-      expect(loaded.populationSamples).toEqual(registry.populationSamples);
+      // the water is saved with 2 decimals
+      const round = (value: number | undefined) => (value === undefined ? undefined : Math.round(value * 100) / 100);
+      expect(loaded.populationSamples).toEqual(registry.populationSamples.map((sample) => ({
+        ...sample, cloud: round(sample.cloud), cells: round(sample.cells), plantWater: round(sample.plantWater), animalWater: round(sample.animalWater), rain: round(sample.rain),
+      })));
       expect(registry.populationSamples.length).toBeGreaterThan(0);
     });
   });

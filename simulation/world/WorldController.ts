@@ -161,7 +161,7 @@ export default class WorldController {
     this.generations.populate();
     // after populating: the creatures take their mass from the cloud first, and the first rain
     // gets what is left, as between generations. Before, the rain could leave too little for them
-    this.worldWater.firstRain(this.grid);
+    this.generationRegistry.recordRain(this.worldWater.firstRain(this.grid));
     this.startLoop();
 
     return this.simCode;
@@ -457,7 +457,7 @@ export default class WorldController {
 
     // continuous runs spread the rain of a generation over its steps
     if (this.generations.isContinuous) {
-      this.worldWater.rain(this.grid, 1 / this.stepsPerGen);
+      this.generationRegistry.recordStepRain(this.worldWater.rain(this.grid, 1 / this.stepsPerGen));
     }
 
     // Compute step of every creature
@@ -545,12 +545,12 @@ export default class WorldController {
         this.worldWater.reset();
         // the mass of the new generation comes from the cloud, as in generation 1
         this.worldWater.getWaterFromCloud(creaturesMass);
-        this.worldWater.firstRain(this.grid);
+        this.generationRegistry.recordRain(this.worldWater.firstRain(this.grid));
       } else {
         // the cells keep their water, but the creatures were replaced
         this.worldWater.replaceCreaturesWater(creaturesMass);
       }
-      this.worldWater.rain(this.grid);            //TODO rain should occur during generation
+      this.generationRegistry.recordRain(this.worldWater.rain(this.grid));            //TODO rain should occur during generation
     }
     this.generationRegistry.startGeneration();
     // GENERATION_START is logged by runStep() at step 1 of the new generation

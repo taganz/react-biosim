@@ -3,6 +3,8 @@ import WorldController from "../../world/WorldController";
 import SavedGenerationRegistry from "../data/SavedGenerationRegistry";
 import { DataFormatter } from "./DataFormatter";
 
+const round2 = (value: number | undefined) => (value === undefined ? undefined : Math.round(value * 100) / 100);
+
 const generationRegistryFormatter: DataFormatter<
   GenerationRegistry,
   SavedGenerationRegistry
@@ -10,6 +12,7 @@ const generationRegistryFormatter: DataFormatter<
   serialize({
     generations,
     populationSamples,
+    rainEvents,
     maxSurvivorCount,
     minSurvivorCount,
     maxFitnessValue
@@ -25,9 +28,17 @@ const generationRegistryFormatter: DataFormatter<
           d
         })
       ),
-      // only continuous runs with metabolism have them
+      // only runs with metabolism have them. Water rounded to 2 decimals, which keeps the file small
       ...(populationSamples.length > 0
-        ? { populationSamples: populationSamples.map(({ step: s, plants: p, animals: a }) => ({ s, p, a })) }
+        ? {
+            populationSamples: populationSamples.map(({ step: s, plants: p, animals: a, cloud, cells, plantWater, animalWater, rain, noRainSteps }) => ({
+              s, p, a, wc: round2(cloud), we: round2(cells), wp: round2(plantWater), wa: round2(animalWater),
+              ...(rain !== undefined ? { r: round2(rain), nr: noRainSteps } : {}),
+            })),
+          }
+        : {}),
+      ...(rainEvents.length > 0
+        ? { rainEvents: rainEvents.map(({ step: s, water, skipped }) => ({ s, w: round2(water)!, ...(skipped ? { k: 1 as const } : {}) })) }
         : {}),
       maxSurvivorCount,
       minSurvivorCount,
@@ -48,7 +59,13 @@ const generationRegistryFormatter: DataFormatter<
         deaths
       })
     );
-    result.populationSamples = (data.populationSamples ?? []).map(({ s: step, p: plants, a: animals }) => ({ step, plants, animals }));
+    result.populationSamples = (data.populationSamples ?? []).map(({ s: step, p: plants, a: animals, wc, we, wp, wa, r, nr }) => ({
+      step, plants, animals,
+      // older files have no water
+      ...(wc !== undefined ? { cloud: wc, cells: we, plantWater: wp, animalWater: wa } : {}),
+      ...(r !== undefined ? { rain: r, noRainSteps: nr } : {}),
+    }));
+    result.rainEvents = (data.rainEvents ?? []).map(({ s: step, w: water, k }) => ({ step, water, ...(k ? { skipped: true } : {}) }));
     return result;
   },
 };

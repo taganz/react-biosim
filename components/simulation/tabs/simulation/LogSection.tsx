@@ -148,7 +148,7 @@ export default function LogSection() {
     <CollapsibleSection
       title="Log"
       storageKey="simulation.log"
-      description="Tables of species and creatures, one row each, saved as CSV files with a file of settings and a .sim of the simulation."
+      description="Tables of species and creatures, one row each, saved as CSV files with a file of settings, a file of the world (population and water) and a .sim of the simulation."
     >
       <div className="flex flex-col gap-4">
         <div className={FIELDS_GRID}>

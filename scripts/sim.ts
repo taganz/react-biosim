@@ -39,7 +39,7 @@ Options (they override the config file):
   --seed <n>                          seed of the random generator: the same seed repeats the run
                                       (default: the base's seed, or a random one; printed in summary.json)
   --log                               record the log of species (and creatures, with LOG_CREATURES)
-                                      at the end of every generation: log-settings.csv, log-species.csv...
+                                      at the end of every generation: log-settings.csv, log-species.csv, log-world.csv...
   --max-restarts <n>                  stop when the population dies out more than n times (default: 5)
   --max-seconds <s>                   stop after s seconds
   --progress <n>                      print a line every n generations (default: 10, 0: never)

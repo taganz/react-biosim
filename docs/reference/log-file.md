@@ -16,13 +16,14 @@ The id draws no random numbers, so a seeded run gives the same ids every time. C
 
 ## The files
 
-Each snapshot or recording is downloaded as three or four files with the same name and a different ending:
+Each snapshot or recording is downloaded as four or five files with the same name and a different ending:
 
 | File | Content |
 |---|---|
 | `sim <code> log <gens> settings.csv` | The options of the log and the settings and constants of the simulation when it started |
 | `sim <code> log <gens> species.csv` | One row per species, with **Species** on (`LOG_SPECIES`, default on) |
 | `sim <code> log <gens> creatures.csv` | One row per creature, with **Creatures** on (`LOG_CREATURES`, default off) |
+| `sim <code> log <gens> world.csv` | One row per recording: the population by genus and where the water is. Always written |
 | `sim <code> log <gens>.sim` | The simulation when the files were saved, as the Save tab saves it (without stats). For a recording stopped by a restart, a loaded file or an extinction, the running simulation is another run: the `.sim` is then the recorded one as it was just before (after an extinction, with no creatures left). It is missing only when the restart or load came during the pause between generations, when the world is half way. It can be loaded in the app or opened in the energy lab page (`/energy-lab.html`) |
 
 The settings file has the configuration when the recording started and the `.sim` the one when it was saved: they differ if the constants were changed in between. The headless runner does not write this `.sim`: with `--log` it already writes `final.sim`.
@@ -104,6 +105,24 @@ Rows are ordered by `alive`, the largest first.
 
 With **Creatures: also the dead** (`LOG_INCLUDE_DEAD`, default on), a recording writes each creature that died once, in the first row block after its death, with `alive` 0. A snapshot writes every creature that died in the current generation.
 
+## World file
+
+One row each time the rows of species and creatures are written, with the whole world, also with **Marked in Population**. Its rows do not count towards **Maximum rows**.
+
+| Column | Content |
+|---|---|
+| `simCode`, `generation`, `step` | Simulation code, generation and step of the row |
+| `creatures`, `plants`, `animals`, `unknown` | Living creatures, in all and by genus (`animals` is `attack_plant`) |
+| `waterTotal` | All the water of the world: the sum of the cloud, the cells and the creatures. It does not change during a run |
+| `waterCloud`, `waterCells` | Water in the cloud and in the cells |
+| `waterCreatures` | Water in the living creatures: their mass |
+| `waterPlants`, `waterAnimals`, `waterUnknown` | The same by genus |
+| `cellCapacity` | The most water all the cells can hold together |
+| `rainTotal` | Water that has fallen from the cloud to the cells since the world was made: the rains and the first rains. It adds up, so the rain between two rows is the difference. It starts again at 0 in a new world: a restart, a loaded file or **Update simulation** |
+| `rainMissed` | Rains that did not fall since the world was made, because the cloud had less water than the rain. In continuous runs each step is a rain |
+
+The water caps the biomass: a creature's mass is water taken from the cells (photosynthesis) or from its prey, so the creatures can never hold more than `waterTotal`. Where the water is shows what limits the population: the cloud (rain), the cells (plants that cannot take it), or the creatures (the total water).
+
 ## Settings file
 
 Columns `kind;name;value;text`. Numbers and true/false values go to `value`; text goes to `text`, with `value` 0.
@@ -146,7 +165,7 @@ The page loads a file served by the app with `?csv=/<path>`, for example a file 
 
 The **log report** page (`/log-report.html`, linked from *Simulation → Log*; the code is [public/log-report.html](../../public/log-report.html)) shows why some species do better than others and which settings hold back more complex brains.
 
-- Choose the files of one log, or drop them on the page all at once. It tells them apart by the end of their names: `species.csv` (needed), `settings.csv` (needed to decode the genomes) and `creatures.csv` (optional). They work with the names of the app and of the headless runner (`log-species.csv`…). The files are read in the browser. The creatures file is read a piece at a time, so files of hundreds of MB work.
+- Choose all the files of one log at once, or drop them on the page together: the browser does not let the page read the other files of the folder, so a file left out is missing from the report, and the page says which ones are missing. It tells them apart by the end of their names: `species.csv` (needed), `settings.csv` (needed to decode the genomes), `world.csv` (the water and the rain) and `creatures.csv` (optional). They work with the names of the app and of the headless runner (`log-species.csv`…), and with the ` (1)` the browser adds to a repeated download. The files are read in the browser. The creatures file is read a piece at a time, so files of hundreds of MB work.
 - **Run** chooses the run when the log has several (after extinctions). It starts with the longest.
 - A species counts as **relevant** from a peak of 5 creatures; the page can change that.
 - **Download species summary** saves one row per species with its totals and its decoded circuit.
@@ -157,6 +176,7 @@ The report has these sections:
 - **Settings** of the run.
 - **Diagnosis**: rules on the last third of the generations that point to the settings to change.
 - **Population** of each genus.
+- With the world file, **Water and carrying capacity**: the rain of each generation against the rain setting on every cell and the rains that did not fall, where the water is over time, the share held by the creatures, how full the cells are and the mean mass per plant and animal, with rules in the diagnosis for water stuck in the cloud, water left in the cells, water that limits the population, a cloud that runs dry, and an inverted biomass pyramid.
 - **Most successful species**, measured four ways: duration, creatures × generations, peak, and clade (the species and all its descendants).
 - **Successful, relevant and ephemeral species compared**: brain, mass gained and spent, children, causes of death.
 - **Mutations that work**: each daughter species compared with its parent.

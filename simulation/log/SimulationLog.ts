@@ -1,11 +1,13 @@
 import type WorldController from "../world/WorldController";
 import type Creature from "../creature/Creature";
-import { Column, creatureColumns, creatureKey, RowContext, SpeciesSnapshot, speciesColumns, speciesSnapshots } from "./logRows";
+import { Column, creatureColumns, creatureKey, RowContext, SpeciesSnapshot, speciesColumns, speciesSnapshots, worldColumns, worldSnapshot } from "./logRows";
 import { CSV_SEPARATOR, formatValue, headerLine, rowLine } from "./csv";
 import setupParams from "./setupParams";
 import { CONSTANTS_DEFAULT } from "../constantsDefault";
 import { serializeSimulationData } from "../serialization/formatters/simulationDataSerialization";
 import type { SavedSimulationData } from "../serialization/data/SavedSimulationData";
+
+const WORLD_COLUMNS = worldColumns();
 
 /** the version of the format of the files, written in the settings file */
 export const LOG_FORMAT_VERSION = 1;
@@ -53,7 +55,7 @@ export enum LogState {
 }
 
 export interface LogFile {
-  kind: "settings" | "species" | "creatures";
+  kind: "settings" | "world" | "species" | "creatures";
   name: string;
   /** the lines of the file */
   lines: string[];
@@ -67,6 +69,8 @@ interface Recording {
   options: LogOptions;
   scope: LogScope;
   settings: string[];
+  /** the world file: population by genus and water, one row per recording (not counted in the rows) */
+  world: string[];
   species: string[] | null;
   creatures: string[] | null;
   speciesColumns: Column<SpeciesSnapshot>[];
@@ -326,6 +330,7 @@ export default class SimulationLog {
       options,
       scope,
       settings: this.settingsLines(options, scope),
+      world: [headerLine(WORLD_COLUMNS)],
       species: options.LOG_SPECIES ? [] : null,
       creatures: options.LOG_CREATURES ? [] : null,
       speciesColumns: speciesColumns({ creatureList: options.LOG_SPECIES_CREATURE_LIST }),
@@ -358,6 +363,9 @@ export default class SimulationLog {
     const locale = options.LOG_LOCALE_STRING;
     const marked = scope === "marked";
     const room = () => options.LOG_MAX_ROWS - recording.rows;
+
+    // the whole world, also with Marked in Population
+    recording.world.push(rowLine(WORLD_COLUMNS, worldSnapshot(world), context, locale));
 
     if (recording.species) {
       const snapshots = speciesSnapshots(world.generations, marked ? this.markedSpecies : undefined);
@@ -419,6 +427,7 @@ export default class SimulationLog {
     const files: LogFile[] = [{ kind: "settings", name: `${base} settings.csv`, lines: recording.settings }];
     if (recording.species) files.push({ kind: "species", name: `${base} species.csv`, lines: recording.species });
     if (recording.creatures) files.push({ kind: "creatures", name: `${base} creatures.csv`, lines: recording.creatures });
+    files.push({ kind: "world", name: `${base} world.csv`, lines: recording.world });
     return files;
   }
 }

@@ -32,7 +32,7 @@ It uses the same code as the app: the base goes through the same deserializer as
 | `--out <dir>` | `results/<name>` | Output folder. Files in it are overwritten. `results/` is ignored by git. |
 | `--set <path>=<value>` | none | Change one setting. Can be repeated. The value is read as JSON (`500`, `true`, `"text"`, `[1,2]`), otherwise as text. |
 | `--seed <n>` | the base's `seed`, or a random one | Seed of the random generator. The same seed, base and overrides repeat the run exactly. With `--resume` it replaces the random state saved in the file. |
-| `--log` | off | Record the [log](../reference/log-file.md) from the first generation, at the end of every generation, and write `log-settings.csv` and `log-species.csv` (and `log-creatures.csv` with `--set constants.LOG_CREATURES=true`) |
+| `--log` | off | Record the [log](../reference/log-file.md) from the first generation, at the end of every generation, and write `log-settings.csv`, `log-species.csv` and `log-world.csv` (and `log-creatures.csv` with `--set constants.LOG_CREATURES=true`) |
 | `--max-restarts <n>` | 5 | Stop when the population has died out more than `n` times |
 | `--max-seconds <s>` | no limit | Stop after `s` seconds |
 | `--progress <n>` | 10 | Print a line every `n` generations; 0 prints none |
@@ -82,7 +82,7 @@ npm run sim -- experiments/example.json --generations 50
 | `generations.csv` | One row per finished generation, separated by `;` like the log |
 | `setup.sim` | The settings and map the run started with, and its seed: running it again (`--base results/<name>/setup.sim`) repeats the run. Load it in the app to watch the same configuration; delete `seed` from it to get a different run on every Restart. |
 | `final.sim` | The whole simulation at the end, with creatures and stats. Load it in the app, or continue it with `--base results/<name>/final.sim --resume`. |
-| `log-settings.csv`, `log-species.csv`, `log-creatures.csv` | The [log](../reference/log-file.md), with `--log` only |
+| `log-settings.csv`, `log-species.csv`, `log-world.csv`, `log-creatures.csv` | The [log](../reference/log-file.md), with `--log` only |
 
 **Status** is `completed`, `extinct` (the population died out more than `--max-restarts` times) or `timeout` (`--max-seconds`).
 

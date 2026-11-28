@@ -14,12 +14,17 @@ type Getter = (point: any) => [number, number];
 /** a line of the graph: the getter reads its point from every item of the data */
 export type GraphSeries = { getter: Getter; color: string };
 
+/** a vertical mark at a value of the x axis, behind the lines; dashed marks are drawn with a dash */
+export type GraphMarker = { x: number; color: string; dashed?: boolean };
+
 interface Props extends React.ComponentPropsWithoutRef<"canvas"> {
   data: any[];
   /** the point of a single line; ignored when series is given */
   getter?: Getter;
   /** several lines sharing the axes */
   series?: GraphSeries[];
+  /** vertical marks, such as events, at values of the x axis */
+  markers?: GraphMarker[];
   resolution?: number;
   margins?: { top: number; bottom: number; left: number; right: number };
   preSmooth?: boolean;
@@ -37,6 +42,7 @@ export default function LinearGraph({
   data,
   getter,
   series,
+  markers,
   resolution = 1,
   margins = { top: 20, bottom: 40, left: 20, right: 40 },
   preSmooth = true,
@@ -323,6 +329,23 @@ export default function LinearGraph({
         if (bounds.maxX === bounds.minX) bounds.maxX = bounds.minX + 1;
         if (bounds.maxY === bounds.minY) bounds.maxY = bounds.minY + 1;
 
+        // the marks inside the visible range, behind the lines
+        if (markers) {
+          context.save();
+          context.lineWidth = 1;
+          for (const marker of markers) {
+            if (marker.x < bounds.minX || marker.x > bounds.maxX) continue;
+            const [markerX] = pointToCanvasPoint(bounds, marker.x, bounds.minY);
+            context.strokeStyle = marker.color;
+            context.setLineDash(marker.dashed ? [3, 3] : []);
+            context.beginPath();
+            context.moveTo(markerX, margins.top);
+            context.lineTo(markerX, height - margins.bottom);
+            context.stroke();
+          }
+          context.restore();
+        }
+
         filteredLines.forEach(({ points }, lineIndex) => {
           context.strokeStyle = lines[lineIndex].color;
           context.beginPath();
@@ -412,6 +435,7 @@ export default function LinearGraph({
       isMouseInsideCanvas,
       lines,
       series,
+      markers,
       margins.bottom,
       margins.left,
       margins.right,
