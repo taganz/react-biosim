@@ -44,7 +44,8 @@ export default function setupParams(worldController: WorldController): SetupPara
     ["simulationType", wg.simulationType],
     ["maxAge", wg.maxAge],
     ["populationStrategy", wg.populationStrategy.name],
-    ["selectionMethod", wg.selectionMethod.name],
+    // continuous runs keep a selection method in their data but never use it
+    ["selectionMethod", wg.simulationType === "continuous" ? "none" : wg.selectionMethod.name],
     // Neural networks
     ["initialGenomeSize", wg.initialGenomeSize],
     ["maxGenomeSize", wg.maxGenomeSize],

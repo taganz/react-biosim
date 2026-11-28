@@ -567,10 +567,11 @@ async function render() {
   if (settings.loaded) facts.push(
     ["Type", `${esc(st("simulationType"))}, metabolism ${metab === null ? "—" : metab ? "on" : "off"}`],
     ["World", `${st("size")} × ${st("size")}, initial population ${st("initialPopulation")}, ${st("stepsPerGen")} steps per generation, maximum age ${st("maxAge")}`],
-    // continuous runs use the population strategy only for generation 1 and have no selection; the
-    // selection method is still saved, but it does nothing
+    // continuous runs use the population strategy only for generation 1 and have no selection; their
+    // logs write "none", older logs wrote the saved selection method, which does nothing
     ["Population and selection", st("simulationType") === "continuous"
-      ? `${esc(st("populationStrategy"))} (generation 1 only) · no selection: continuous run (the saved selection method, ${esc(st("selectionMethod"))}, is not used)`
+      ? `${esc(st("populationStrategy"))} (generation 1 only) · no selection: continuous run` +
+        (st("selectionMethod") && st("selectionMethod") !== "none" ? ` (the saved selection method, ${esc(st("selectionMethod"))}, is not used)` : "")
       : `${esc(st("populationStrategy"))} · ${esc(st("selectionMethod"))}`],
     ["Seed", `${esc(st("seed"))} (this run: ${esc(st("runSeed"))})`],
     ["Brain", `initial genome ${st("initialGenomeSize")}, at most ${st("maxGenomeSize")} genes, ${st("maxNumberNeurons")} neurons`],
