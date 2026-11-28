@@ -20,6 +20,7 @@ npx tsc --noEmit   # type check
 npm run lint       # ESLint
 npm run build      # production build
 npm run sim        # headless runner, see docs/user/headless-runner.md
+npm run build:brain-editor  # rebuilds public/brain-editor.html, see docs/user/brain-editor.md
 ```
 
 `npm run lint` runs the ESLint CLI with `eslint.config.mjs` (Next.js 16 removed `next lint`) and should report nothing. It includes the React Compiler rules: don't mutate state, props or atom values (change a clone), don't read or write refs during render, and don't call `setState` synchronously in an effect. ESLint does not type-check, so also run `npx tsc --noEmit`.
@@ -40,7 +41,8 @@ Without them the tags load with empty ids and do nothing. You do not need them f
 ```
 app/                     Next.js App Router: page.tsx (tabs), layout.tsx, brain-editor/ (the brain editor page)
 components/
-  brain-editor/          The brain editor page: BrainEditor (file, list, save), GenomeEditor (diagram, genes)
+  brain-editor/          The brain editor: BrainEditor (file, list, save), GenomeEditor (diagram, genes),
+                         GeneListsEditor (sensors, actions, Max neurons), standalone.tsx (entry of brain-editor.html)
   global/                Reusable UI: Button, inputs, tabs, toggles, LinearGraph
   providers/             JotaiProvider
   simulation/            Everything tied to the simulation
@@ -62,8 +64,10 @@ simulation/              The engine: plain TypeScript, no React
   helpers/                 random.ts (the seeded random generator), helpers.ts
   constantsDefault.ts      Default constants and genus list
   startupScenario.ts       The default SimulationData: the app opens with it
-public/                  Scenario .sim files served to the Scenario tab
-scripts/                 sim.ts: command line of the headless runner (npm run sim, with tsx)
+public/                  Scenario .sim files served to the Scenario tab, and standalone pages (energy lab, log
+                         report, species tree, brain-editor.html, which is generated)
+scripts/                 sim.ts: command line of the headless runner (npm run sim, with tsx);
+                         build-brain-editor.ts: builds public/brain-editor.html (npm run build:brain-editor)
 __tests__/               Jest tests for the engine; support/ holds TEST_SIMULATION_DATA
 ```
 
@@ -85,4 +89,4 @@ The reference pages are lists taken from the code. Update them in the same chang
 | The save format | [serialization.md](serialization.md) |
 | A column of the log, or how species ids are made | [log-file.md](../reference/log-file.md) |
 | The headless runner's options or output files | [headless-runner.md](../user/headless-runner.md) |
-| The brain editor page | [brain-editor.md](../user/brain-editor.md) |
+| The brain editor page | [brain-editor.md](../user/brain-editor.md), and run `npm run build:brain-editor` |

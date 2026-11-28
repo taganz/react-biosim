@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import BrainEditor from "@/components/brain-editor/BrainEditor";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function BrainEditorPage() {
   return (
     <main className="min-h-screen bg-grey-dark text-white">
-      <BrainEditor />
+      <BrainEditor backLink={<Link className="underline" href="/">Back to the simulation</Link>} />
     </main>
   );
 }

@@ -7,6 +7,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 - `npm run dev`: dev server on http://localhost:3000
 - `npm test`: Jest. Every suite must pass.
 - `npm run sim -- [config.json] [--generations N] [--set path=value] ...`: headless runner, results in `results/<name>/`. See `docs/user/headless-runner.md`; use it when asked to run simulations.
+- `npm run build:brain-editor`: rebuilds `public/brain-editor.html`, the standalone brain editor. The `brainEditorHtml` test fails while it is out of date.
 - `npx tsc --noEmit`: type check. `npm run lint`: ESLint CLI with `eslint.config.mjs`, must report nothing.
 
 ## Layout
@@ -24,6 +25,7 @@ Browser evolution simulator (Next.js 16, React 19, TypeScript, Jotai, Tailwind 4
 - Read engine values in components with `useWorldValue(getter, default)`. The getter must return a primitive or a stable reference.
 - Population strategies, selection methods and map objects are saved by class `name`. Register new ones in `populationMap`, `selectionMap` and `objectFormatters` respectively.
 - Engine code draws random numbers only with `random()`, `randomInt()` and `shuffle()` from `simulation/helpers/random.ts`, never `Math.random()`, or seeded runs stop repeating.
+- `public/brain-editor.html` is generated from `components/brain-editor/` and the engine code it imports (genes, brains, sensors, actions, save format). After changing any of it, run `npm run build:brain-editor` and commit the file.
 - Known bugs are listed in `docs/known-issues.md`. Check it before assuming something works.
 
 ## Documentation

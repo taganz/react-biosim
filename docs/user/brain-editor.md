@@ -2,7 +2,7 @@
 
 ![Brain editor](images/brain_editor.png)
 
-The brain editor is a separate page, `/brain-editor`, linked under **Scenario → Load scenario → Load .sim file**. It opens a `.sim` file, shows the brain of each genome in it, lets you change the brains gene by gene, and saves the result as a new `.sim` file. It also copies genomes, to start a run with them (see [Default Species](../reference/population-and-selection.md#default-species-defaultspeciespopulation)).
+The brain editor is a separate page, `/brain-editor`, linked under **Scenario → Load scenario → Load .sim file**. It is also a single file, [public/brain-editor.html](../../public/brain-editor.html), that works without the app: see [Standalone file](#standalone-file). It opens a `.sim` file, shows the brain of each genome in it, lets you change the brains gene by gene, and saves the result as a new `.sim` file. It also copies genomes, to start a run with them (see [Default Species](../reference/population-and-selection.md#default-species-defaultspeciespopulation)).
 
 The file is read in the browser and is never changed: the edited copy is a download. Load it in the app with **Load .sim file**.
 
@@ -68,3 +68,11 @@ A genome always keeps at least one gene: a change that would delete all of them 
 An edited species becomes a new species that comes from the one it was, as after a mutation: its id is computed from the new genes and the old id, its parent is the old id, and its first generation is the generation of the file (see [species](../reference/log-file.md#species)). Its creatures keep their positions, mass and age.
 
 Loading the saved file resumes the run with the edited brains. A file saved at the start of a generation (*Save generation*) starts it with the edited genomes, and edited `POPULATION_DEFAULT_SPECIES` are used the next time a run starts with the *Default Species* strategy.
+
+## Standalone file
+
+[public/brain-editor.html](../../public/brain-editor.html) is the same editor in one HTML file, with its code and styles inside. Open it from disk (double click, `file://`) or send it to someone: it needs no server and no network, and works the same as the page of the app, except that it has no link back to the simulation. The app also serves it at `/brain-editor.html`.
+
+It is generated, so do not edit it. `npm run build:brain-editor` builds it again from the code ([scripts/build-brain-editor.ts](../../scripts/build-brain-editor.ts)): esbuild bundles [standalone.tsx](../../components/brain-editor/standalone.tsx) (React, the editor components and the engine code they use) and Tailwind builds the CSS from `styles/globals.css` with the classes of the editor files only. Run it after changing the editor or the engine code it uses (genes, brains, sensors and actions, the save format): the test `brainEditorHtml` fails while the file is out of date.
+
+When the browser refuses the clipboard (as some do for `file://` pages), the copy buttons copy through a hidden text field instead.

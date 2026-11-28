@@ -16,13 +16,14 @@ Everything is in [__tests__/](../../__tests__/) and tests the engine. There are 
 
 | Area | Files |
 |---|---|
-| Genome and brain | `genome`, `brain`, `networkInfluence` |
+| Genome and brain | `genome`, `brain`, `networkInfluence`, `brainEditor` (editing genomes and files) |
 | Creatures | `creature`, `CreatureActions`, `CreatureSensors`, `CreatureSensorsPreyPredator`, `CreatureGenus`, `CreatureMass`, `CreaturePhenotype` |
 | Generations | `population`, `selection`, `selectGenusBased` |
 | World | `grid`, `GridDetect`, `WorldWater`, `WorldControllerLoop` |
 | Save format | `serialization` |
 | Headless runner and seed | `runHeadless`, `Seed` |
 | Log | `SimulationLog` (species ids, rows, recordings, tree completeness), `migrateLogConstants` |
+| Brain editor file | `brainEditorHtml`: `public/brain-editor.html` is what `npm run build:brain-editor` builds |
 | Other | `helpers`, `generateRandomString` |
 
 ## Current status

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "sim": "tsx scripts/sim.ts"
+    "sim": "tsx scripts/sim.ts",
+    "build:brain-editor": "tsx scripts/build-brain-editor.ts"
   },
   "dependencies": {
     "@next/third-parties": "^16.3.8",
@@ -39,6 +40,7 @@
     "@types/file-saver": "^2.0.7",
     "@types/gif.js": "^0.2.5",
     "@types/jest": "^30.0.0",
+    "esbuild": "^0.28.2",
     "jest": "^30.5.2",
     "postcss": "^8.4.21",
     "prettier-plugin-tailwindcss": "^0.8.1",

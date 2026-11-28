@@ -1,7 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { ChangeEvent, ReactNode, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import { saveAs } from "file-saver";
 import { FaCheck, FaClipboard, FaCode } from "react-icons/fa";
@@ -54,8 +53,10 @@ const SOURCE_TITLES: Record<GenomeEntry["source"], string> = {
   plantGenes: "Plant genes",
 };
 
-// Opens a .sim file, shows the brain of each of its genomes, edits them and saves the file again
-export default function BrainEditor() {
+// Opens a .sim file, shows the brain of each of its genomes, edits them and saves the file again.
+// It does not depend on Next.js: the same component is the /brain-editor page of the app and the
+// standalone public/brain-editor.html (see scripts/build-brain-editor.ts). backLink goes after the intro
+export default function BrainEditor({ backLink }: { backLink?: ReactNode }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [current, setCurrent] = useState<Record<string, Gene[]>>({});
@@ -198,8 +199,8 @@ export default function BrainEditor() {
         <div>
           <h1 className="text-2xl font-bold">Brain editor</h1>
           <p className="text-sm">
-            Open a .sim file to see the brains of its species, edit them and save the file with another name.{" "}
-            <Link className="underline" href="/">Back to the simulation</Link>
+            Open a .sim file to see the brains of its species, edit them and save the file with another name.
+            {backLink && <> {backLink}</>}
           </p>
         </div>
         <div className="flex flex-col gap-1">
